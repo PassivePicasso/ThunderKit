@@ -24,7 +24,6 @@ namespace RainOfStages.Proxies
 
         public override SceneDef ToSceneDef()
         {
-
             var def = ScriptableObject.CreateInstance<SceneDef>();
             def.bossSongName = bossSongName;
             def.songName = songName;
