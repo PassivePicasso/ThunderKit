@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded4b6f3d6603214fa261bebbbc410e4, type: 3}
+  m_Name: Basic Monsters
+  m_EditorClassIdentifier: 
+  cards:
+  - {fileID: 11400000, guid: 48e0ca184f0ada847abb214c0a0cd4dd, type: 2}
+  - {fileID: 11400000, guid: 70c7047ee6cc1bf4c8c17e8f025962a4, type: 2}
+  - {fileID: 11400000, guid: 4c54e0119a924cc4ba784006adc50a4c, type: 2}
+  - {fileID: 11400000, guid: 62df8e03b3d9d62489b3596e2ee94501, type: 2}
+  - {fileID: 11400000, guid: 0d2f563975b6aa94084beead50775d1b, type: 2}
+  selectionWeight: 1

@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5580359048370469913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5580359048370469914}
+  - component: {fileID: 5580359048370469912}
+  - component: {fileID: 3906495906405606066}
+  - component: {fileID: 208415461354238586}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &5580359048370469914
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5580359048370469913}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 49.78717, y: 11.173096, z: -8.045441}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5580359048370469912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5580359048370469913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc5d81121fe8041429d6af63e0c1e20f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3906495906405606066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5580359048370469913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 689f67798b4bb3e43b54f61a3d70f6a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teleporterInstance: {fileID: 0}
+  teleporterCardProxy: {fileID: 11400000, guid: 0ee525340b0bbed41a3df5da3c755c1e,
+    type: 2}
+  waveIntervalSetting: {fileID: 11400000, guid: 74282bf275225474287552db2db0b817,
+    type: 2}
+--- !u!114 &208415461354238586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5580359048370469913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1224cd503fd7f724aac6fdf71a5a9756, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Bounds:
+    m_Position: {x: -250, y: 0, z: -250}
+    m_Size: {x: 500, y: 50, z: 500}
+  airHeight: 5
+  spacing: 1
+  debugHullDef: 0
+  startupObject: {fileID: 7032255792726096699, guid: ca13dd9da1d615b45876ae22240a9f06,
+    type: 3}
+  World: {fileID: 0}
+  InteractableCoins: 400
+  MonsterCoins: 150
+  interactableCategories:
+  - {fileID: 11400000, guid: 3895ecd4486c8c446b85632b5ca367e0, type: 2}
+  monsterCategories:
+  - {fileID: 11400000, guid: b0ea2c7400f7c1f41ae83ffcecb672f6, type: 2}
+  - {fileID: 11400000, guid: 8472e0435005e0f4ea2834046683b097, type: 2}
+  - {fileID: 11400000, guid: 464dda881034ba24385993b7862b6d92, type: 2}
+  destinations:
+  - CustomScene
+  AgentHeight: 2
+  AgentRadius: 1
+  AgentSlope: 65
+  AgentClimb: 1
+  VoxelSize: 0.5
+  TileSize: 20
+  navMeshDebugMaterial: {fileID: 2100000, guid: f8822ab84f23150408e40eee6b912892,
+    type: 2}
+  navGizmoMaterial: {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
+  NavMeshGenerated: 1

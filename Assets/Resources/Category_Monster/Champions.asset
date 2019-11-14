@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded4b6f3d6603214fa261bebbbc410e4, type: 3}
+  m_Name: Champions
+  m_EditorClassIdentifier: 
+  cards:
+  - {fileID: 11400000, guid: 99305498d1d012243908456b40a2dfba, type: 2}
+  - {fileID: 11400000, guid: 815feea6376e274428faeecc6029829f, type: 2}
+  - {fileID: 11400000, guid: 7de6b1f17f71f2d43a24e04a5a452f61, type: 2}
+  - {fileID: 11400000, guid: 75d8cfaf9f844cd4c880dc2beefb977a, type: 2}
+  - {fileID: 11400000, guid: fce17f3cc9ad8b64f825a93500ca7154, type: 2}
+  - {fileID: 11400000, guid: 0e6e8d0ceaaf6584baed3e3c6b26d76b, type: 2}
+  - {fileID: 11400000, guid: 24632e5d3ab5dd842961ae7d2e4e54f3, type: 2}
+  selectionWeight: 1
