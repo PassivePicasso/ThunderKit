@@ -93,3 +93,9 @@ crashlytics-build.properties
 /RainOfStages.Plugin/MMHOOK_Assembly-CSharp.dll.meta
 /RainOfStages.Plugin/BepInEx.dll.meta
 /RainOfStages.Plugin/BepInEx.dll
+/RainOfStages/bin/Debug
+/RainOfStages/obj/Debug
+/RainOfStages/MMHOOK_Assembly-CSharp.dll.meta
+/RainOfStages/MMHOOK_Assembly-CSharp.dll
+/RainOfStages/BepInEx.dll.meta
+/RainOfStages/BepInEx.dll
