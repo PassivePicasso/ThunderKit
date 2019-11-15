@@ -1,3 +1,4 @@
+
 ## Rain of Stages
 Rain of Stage is a mod and starter pack for building custom stages for Risk of Rain 2
 
@@ -17,10 +18,13 @@ The Projects are already setup with the References they require so check your Re
 4. Add RoR2 Assembly-CSharp.dll into any directory under Assets\
 5. In Unity, locate Assembly-CSharp.dll in the project and select it.
 6. Using the Inspector un-check Validate Reference then click Apply ![Using the Inspector un-check Validate Reference then click Apply ](https://i.imgur.com/2JywInT.png)
-7.  Select  Assets\RainOfStages.Shared\RainOfStages.Shared  assembly definition and via the Inspector add an Assembly Reference and Select Assembly-CSharp.dll
-![Select RainOfStages.Shared Assembly Definition](https://i.imgur.com/xeztYI1.png)
-![Add Assembly-Csharp reference](https://i.imgur.com/ABVeKvS.png)
+7.  Select Assets\RainOfStages.Shared\RainOfStages.Shared assembly definition
+    * In Inspector add an Assembly Reference and Select Assembly-CSharp.dll
+    * ![Select RainOfStages.Shared Assembly Definition](https://i.imgur.com/xeztYI1.png)
+    * ![Add Assembly-Csharp reference](https://i.imgur.com/ABVeKvS.png)
+
 8. Open RainOfStages\RainOfStages.sln in Visual Studio
+
 9. Fix references in project RainOfStages.Plugin by adding the following assembly references
 	* Assembly-CSharp 
 		*  this is the Assembly-CSharp.dll distributed with Risk Of Rain 2
