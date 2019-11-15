@@ -26,11 +26,9 @@ The Projects are already setup with the References they require so check your Re
 8. Open RainOfStages\RainOfStages.sln in Visual Studio
 
 9. Fix references in project RainOfStages.Plugin by adding the following assembly references
-	* Assembly-CSharp 
-		*  this is the Assembly-CSharp.dll distributed with Risk Of Rain 2
-	* MMHook_Assembly-CSharp 
-		*  I don't know where to find this, but you need it.
-	* BepInEx 
-		* This is the mod package, assume compatibility with latest released version
+	* All DLL files in the Risk Of Rain Data Folder
+	* MMHook_Assembly-CSharp.dll
+		*  This is included with the R2API
+	* BepInEx.dll
 	* RainOfStages.Shared.dll 
 		*  If you launched unity and correctly setup the project then new folders will be generated under the repository root folder, navigate to Library\ScriptAssemblies to find RainOfStages.Shared.dll
