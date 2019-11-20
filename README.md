@@ -4,12 +4,24 @@ Rain of Stage is a mod and starter pack for building custom stages for Risk of R
 
 It is not recommended to publish mods using Rain of Stages at this time as its still under heavy preliminary development and may undergo significant changes before its final release.
 
+### Easy Sandbox setup
+
+Rain of Stages is split into 2 parts, 
+Rain of Stages depends on BepinEx, MMHook, and Risk of Rain 2's Managed assemblies, you will need to provide these to the projects in order to compile them.  The preparation step below provides an easy way to accomplish this, while sandboxing a version of Risk of Rain 2 to work against.
+The Projects are already setup with the References they require so check your References for warnings to see what assembly references you're missing.
+
+#### Preparation
+
+ Make a copy of your Risk of Rain 2 folder and place it in the same parent folder you're going to clone the repository under.
+This will allow the RainOfStages Plugin solution to automatically refernce all the Risk of Rain 2 libraries.
+
+If you followed the Bepinex installation directions and ahve R2API already installed they should also load automatically, however directory structure differences could prevent it.  
+
 ### Setup
 Rain of Stages is split into 2 parts, 
 Rain of Stages depends on BepinEx, MMHook, and Risk of Rain 2's Assembly-CSharp you will need to provide these to the projects in order to compile them.
 The Projects are already setup with the References they require so check your References for warnings to see what assembly references you're missing.
 
- 1. (Preparation) Locate dependencies: Bepinex.dll MMHook_Assembly-CSharp.dll and Assembly-CSharp.dll
  2. Clone this repository 
 	* [Open in Visual Studio](git-client://clone?repo=https://github.com/PassivePicasso/Rain-of-Stages)
 	* [Open in Desktop](github-windows://openRepo/https://github.com/PassivePicasso/Rain-of-Stages)
@@ -25,6 +37,7 @@ The Projects are already setup with the References they require so check your Re
 
 8. Open RainOfStages\RainOfStages.sln in Visual Studio
 
+9. If you conducted the preparation step at the beginning of this process, then the required assemblies should be referenced successfully.  Verify if all references loaded correctly and then build the project and skip the next step.
 9. Fix references in project RainOfStages.Plugin by adding the following assembly references
 	* All DLL files in the Risk Of Rain Data Folder
 	* MMHook_Assembly-CSharp.dll
