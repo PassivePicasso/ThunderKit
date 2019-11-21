@@ -58,6 +58,11 @@ namespace RainOfStages.Plugin
                     var name = sceneDefProxy.name;
                     var sceneAsset = AssetBundle.LoadFromFile(Path.Combine(sceneDefinitionBundle.DirectoryName, name.ToLower()));
                     LoadedScenes.Add(sceneAsset);
+
+                    var assembly = Directory.EnumerateFiles(sceneDefinitionBundle.DirectoryName, $"{name}.dll".ToLower()).FirstOrDefault();
+                    if (string.IsNullOrEmpty(assembly)) continue;
+
+                    Assembly.LoadFrom(assembly);
                 }
 
                 Logger.LogInfo($"Loaded {sceneDefinitions.Length} SceneDefProxies");
@@ -92,10 +97,10 @@ namespace RainOfStages.Plugin
                 //foreach (var validStage in SceneCatalog.allSceneDefs) LogSceneInformation(validStage);
 
 
-                validStages = SceneCatalog.allSceneDefs.Where<SceneDef>((Func<SceneDef, bool>)(sceneDef => sceneDef.sceneType == SceneType.Stage)).ToArray<SceneDef>();
+                //validStages = SceneCatalog.allSceneDefs.Where<SceneDef>((Func<SceneDef, bool>)(sceneDef => sceneDef.sceneType == SceneType.Stage)).ToArray<SceneDef>();
                 //Logger.LogInfo($"############ Valid Stages ############");
                 //foreach (var validStage in validStages) LogSceneInformation(validStage);
-                //validStages = sceneDefList.ToArray();
+                validStages = sceneDefList.ToArray();
             }
             //if (self.ruleBook.stageOrder == StageOrder.Normal)
             //    self.nextStageScene = self.nextStageRng.NextElementUniform<SceneDef>(choices);
