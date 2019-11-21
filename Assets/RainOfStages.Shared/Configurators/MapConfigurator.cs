@@ -38,8 +38,11 @@ namespace RainOfStages.Configurator
         {
             var groundNodeObject = new GameObject();
             groundMapNodeGroup = groundNodeObject.AddComponent<MapNodeGroup>();
+            var airNodeObject = new GameObject();
+            airMapNodeGroup = airNodeObject.AddComponent<MapNodeGroup>();
 
             ConfigureMapNodeGroup(groundMapNodeGroup, MapNodeGroup.GraphType.Ground);
+            ConfigureAirNodes();
 
             ConfigureSceneInfo();
 
@@ -154,6 +157,55 @@ namespace RainOfStages.Configurator
             Debug.Log($"Baked {nodeGraph.GetNodeCount()} ground nodes in {innerWatch.ElapsedMilliseconds}ms");
         }
 
+        private void ConfigureAirNodes()
+        {
+            var mapNodeGroup = airMapNodeGroup;
+            var innerWatch = new Stopwatch();
+            innerWatch.Start();
+            mapNodeGroup.debugHullDef = debugHullDef;
+            mapNodeGroup.graphType = MapNodeGroup.GraphType.Air;
+
+            var nodeGraph = ScriptableObject.CreateInstance<NodeGraph>();
+
+            
+
+            var meshes = World.GetComponentsInChildren<MeshFilter>()
+                              .Where(mf => mf.gameObject.layer == LayerMask.NameToLayer("World"))
+                              .Select(mf => mf.sharedMesh)
+                              .ToArray();
+
+            var groundPos = groundMapNodeGroup.GetNodes().Select(n => n.transform.position).ToList();
+            const float displacement = 5;
+            var airPos = Enumerable.Range(1, 3).SelectMany(i => groundPos.Select(p => p + i*displacement*Vector3.up));
+
+            const float fudgeFactor = 100;
+            var finalSet = new HashSet<Vector3Int>(airPos.Select(
+                                                       vertex => new Vector3Int(
+                                                           (int) (vertex.x*fudgeFactor), 
+                                                           (int) (vertex.y*fudgeFactor),
+                                                           (int) (vertex.z*fudgeFactor))));
+
+            foreach (Vector3 vertex in finalSet.Select(v => ((Vector3)v) / fudgeFactor))
+            {
+                if (meshes.Any(m => m.IsPointInside(vertex))) continue;
+
+                mapNodeGroup.AddNode(vertex);
+            }
+
+            mapNodeGroup.Bake(nodeGraph);
+
+
+            //var bitmask = StartUp.CalculateLineOfSight(nodes);
+            //nodeGraph.SetNodes(nodes.AsReadOnly(), bitmask);
+            mapNodeGroup.nodeGraph = nodeGraph;
+
+            humanMesh = nodeGraph.GenerateLinkDebugMesh(HullClassification.Human);
+
+            innerWatch.Stop();
+
+            Debug.Log($"Baked {nodeGraph.GetNodeCount()} air nodes in {innerWatch.ElapsedMilliseconds}ms");
+        }
+
         #region deprecated code
 
         //var paramTypes = new Type[] { typeof(MapNode), typeof(float), typeof(float), typeof(HullClassification) };
@@ -218,10 +270,10 @@ namespace RainOfStages.Configurator
             sceneInfo.groundNodes = sceneInfo.groundNodeGroup.nodeGraph;
             Debug.Log("Assigned SceneInfo.groundNodes");
 
-            //sceneInfo.airNodeGroup = airMapNodeGroup;
-            //Debug.Log("Assigned SceneInfo.airNodeGroup");
-            //sceneInfo.airNodes = sceneInfo.airNodeGroup.nodeGraph;
-            //Debug.Log("Assigned SceneInfo.airNodes");
+            sceneInfo.airNodeGroup = airMapNodeGroup;
+            Debug.Log("Assigned SceneInfo.airNodeGroup");
+            sceneInfo.airNodes = sceneInfo.airNodeGroup.nodeGraph;
+            Debug.Log("Assigned SceneInfo.airNodes");
 
             //sceneInfo.railNodeGroup = railMapNodeGroup;
             //Debug.Log("Assigned SceneInfo.railNodeGroup");
