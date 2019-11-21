@@ -15,4 +15,4 @@ MonoBehaviour:
   cards:
   - {fileID: 11400000, guid: aeb51a0c2c0fbeb409b3ce24cb82bf66, type: 2}
   - {fileID: 11400000, guid: 617e01e2aa6e5bd429cd5d459d638a57, type: 2}
-  selectionWeight: 0
+  selectionWeight: 1
