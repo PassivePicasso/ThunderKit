@@ -1,12 +1,17 @@
 {
     "name": "RainOfStages.Shared",
-    "references": [],
+    "references": [
+        "Unity.Mathematics",
+        "Unity.Burst"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "Assembly-CSharp.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": []
 }

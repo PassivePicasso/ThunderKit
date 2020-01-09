@@ -6,6 +6,11 @@ namespace RainOfStages
     {
         public GameObject[] gameObjects;
 
+        private void Awake()
+        {
+            StartScene();
+        }
+
         public void StartScene()
         {
             foreach (var obj in gameObjects)
