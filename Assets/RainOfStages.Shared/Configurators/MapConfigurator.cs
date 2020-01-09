@@ -128,13 +128,21 @@ namespace RainOfStages.Configurator
                 .ToArray();
 
             const float fudgeFactor = 100;
-            var finalSet = new HashSet<Vector3Int>(
+            var nodes = new HashSet<Vector3Int>(
                 triangulation.indices
                     .Select(i => triangulation.vertices[i])
                     .Select(vertex => new Vector3Int((int)(vertex.x * fudgeFactor), (int)(vertex.y * fudgeFactor), (int)(vertex.z * fudgeFactor)))
-                );
+                )
+                //.Select(v =>
+                //{
+                //    return new Node
+                //    {
+                //        position = new float3(v.x, v.y, v.z),
+                //    };
+                //})
+                .ToArray();
 
-            foreach (Vector3 vertex in finalSet.Select(v => ((Vector3)v) / fudgeFactor))
+            foreach (Vector3 vertex in nodes.Select(v => ((Vector3)v) / fudgeFactor))
             {
                 if (meshes.Any(m => m.IsPointInside(vertex))) continue;
 
@@ -145,8 +153,10 @@ namespace RainOfStages.Configurator
             mapNodeGroup.UpdateTeleporterMasks();
             mapNodeGroup.Bake(nodeGraph);
 
+            //var results = BakeUtils.Bake(nodes, "Ground");
+            //results.nodes.Select(n => new NodeGraph.Node { position = n.position, forbiddenHulls = n.forbiddenHulls });
 
-            //var bitmask = StartUp.CalculateLineOfSight(nodes);
+            //var bitmask = CalculateLineOfSight(nodes);
             //nodeGraph.SetNodes(nodes.AsReadOnly(), bitmask);
             mapNodeGroup.nodeGraph = nodeGraph;
 
@@ -167,7 +177,7 @@ namespace RainOfStages.Configurator
 
             var nodeGraph = ScriptableObject.CreateInstance<NodeGraph>();
 
-            
+
 
             var meshes = World.GetComponentsInChildren<MeshFilter>()
                               .Where(mf => mf.gameObject.layer == LayerMask.NameToLayer("World"))
@@ -176,14 +186,14 @@ namespace RainOfStages.Configurator
 
             var groundPos = groundMapNodeGroup.GetNodes().Select(n => n.transform.position).ToList();
             const float displacement = 5;
-            var airPos = Enumerable.Range(1, 3).SelectMany(i => groundPos.Select(p => p + i*displacement*Vector3.up));
+            var airPos = Enumerable.Range(1, 3).SelectMany(i => groundPos.Select(p => p + i * displacement * Vector3.up));
 
             const float fudgeFactor = 100;
             var finalSet = new HashSet<Vector3Int>(airPos.Select(
                                                        vertex => new Vector3Int(
-                                                           (int) (vertex.x*fudgeFactor), 
-                                                           (int) (vertex.y*fudgeFactor),
-                                                           (int) (vertex.z*fudgeFactor))));
+                                                           (int)(vertex.x * fudgeFactor),
+                                                           (int)(vertex.y * fudgeFactor),
+                                                           (int)(vertex.z * fudgeFactor))));
 
             foreach (Vector3 vertex in finalSet.Select(v => ((Vector3)v) / fudgeFactor))
             {
@@ -267,12 +277,15 @@ namespace RainOfStages.Configurator
             Debug.Log("Added SceneInfo Component");
             sceneInfo.groundNodeGroup = groundMapNodeGroup;
             Debug.Log("Assigned SceneInfo.groundNodeGroup");
-            sceneInfo.groundNodes = sceneInfo.groundNodeGroup.nodeGraph;
+            var gna = typeof(SceneInfo).GetField("groundNodesAsset", BindingFlags.NonPublic | BindingFlags.Instance);
+            gna.SetValue(sceneInfo, sceneInfo.groundNodeGroup.nodeGraph);
+
             Debug.Log("Assigned SceneInfo.groundNodes");
 
             sceneInfo.airNodeGroup = airMapNodeGroup;
             Debug.Log("Assigned SceneInfo.airNodeGroup");
-            sceneInfo.airNodes = sceneInfo.airNodeGroup.nodeGraph;
+            var ana = typeof(SceneInfo).GetField("airNodesAsset", BindingFlags.NonPublic | BindingFlags.Instance);
+            ana.SetValue(sceneInfo, sceneInfo.groundNodeGroup.nodeGraph);
             Debug.Log("Assigned SceneInfo.airNodes");
 
             //sceneInfo.railNodeGroup = railMapNodeGroup;
@@ -307,7 +320,7 @@ namespace RainOfStages.Configurator
                 if (debugObject) DestroyImmediate(debugObject);
 
                 debugObject = new GameObject("debugObject", typeof(MeshFilter), typeof(MeshRenderer));
-                debugObject.hideFlags = HideFlags.DontSave | HideFlags.DontSaveInBuild | HideFlags.HideInInspector;
+                debugObject.hideFlags = HideFlags.DontSave | HideFlags.DontSaveInBuild;
                 debugObject.transform.parent = World;
                 debugObject.transform.localPosition = Vector3.zero;
 

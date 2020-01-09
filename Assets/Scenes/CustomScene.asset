@@ -16,7 +16,7 @@ MonoBehaviour:
   subtitleToken: CUSTOM_SCENE_SUBTITLE
   loreToken: CUSTOM_SCENE
   stageOrder: 1
-  sceneType: 0
+  previewTexture: {fileID: 0}
   songName: Song05
   bossSongName: Song07
   cachedSceneName: Custom Scene
