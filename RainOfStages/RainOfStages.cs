@@ -12,10 +12,11 @@ using System.Linq;
 using System.Reflection;
 using Unity.Collections;
 using UnityEngine;
-using static R2API.LobbyConfigAPI;
 using Path = System.IO.Path;
 using R2API.Utils;
 using R2API;
+using UnityEngine.UI;
+using RoR2.UI;
 
 namespace RainOfStages.Plugin
 {
@@ -88,24 +89,172 @@ namespace RainOfStages.Plugin
                 Logger.LogInfo($"Created and Loaded {campaignDefinitions.Length} CampaignDefinitions from Definitions File {definitionBundle}");
             }
 
-            //CampaignManager.loade
-            CurrentCampaign = Campaigns.FirstOrDefault();
+            CurrentCampaign = Campaigns.FirstOrDefault(campaign => campaign.Name == "Risk of Rain 2") ?? Campaigns.First();
 
             SetupCustomStageLoading();
 
             Instance = this;
 
             Initialized?.Invoke(this, EventArgs.Empty);
+            On.RoR2.UI.MainMenu.MainMenuController.Start += MainMenuController_Start;
+        }
 
-            LobbyCategory lobbyCategory = new LobbyCategory("Campaigns", Color.magenta, "Choose your campaign");
-            LobbyRule<CampaignDefinition> lobbyRule = new LobbyRule<CampaignDefinition>();
-
-            foreach(var campaign in Campaigns)
+        private void MainMenuController_Start(On.RoR2.UI.MainMenu.MainMenuController.orig_Start orig, RoR2.UI.MainMenu.MainMenuController self)
+        {
+            try
             {
-                lobbyRule.AddChoice(campaign, campaign.Name, campaign.Description, Color.red, Color.black, campaign.Name);
-            }
+                //self.gameObject.AddComponent<CampaignManager>();
+                Logger.LogMessage("Adding Campaign Selector to Main Menu");
+                var profileButtonGo = GameObject.Find("Button, Profile");
+                var profileButtonText = profileButtonGo.GetComponentInChildren<HGTextMeshProUGUI>();
+                var profileButtonImage = profileButtonGo.GetComponent<Image>();
+                var profileButton = profileButtonGo.GetComponent<Button>();
 
-            lobbyCategory.PushRule<CampaignDefinition>(lobbyRule);
+                var profileRectTrans = profileButtonGo.GetComponent<RectTransform>();
+                var buttonPanelRectTrans = profileRectTrans.parent;
+
+                var preview = new GameObject("CampaignImage", typeof(CanvasRenderer));
+                var panel = new GameObject("CampaignPanel", typeof(CanvasRenderer));
+                var next = new GameObject("NextCampaign", typeof(CanvasRenderer));
+                var prev = new GameObject("PrevCampaign", typeof(CanvasRenderer));
+                var header = new GameObject("CampaignHeader", typeof(CanvasRenderer));
+                
+                var previewRectTrans = preview.AddComponent<RectTransform>();
+                var panelRectTrans = panel.AddComponent<RectTransform>();
+                var nextRectTrans = next.AddComponent<RectTransform>();
+                var prevRectTrans = prev.AddComponent<RectTransform>();
+                var headerRectTrans = header.AddComponent<RectTransform>();
+
+                var previewImage = preview.AddComponent<Image>();
+                var nextButtonImage = next.AddComponent<Image>();
+                var prevButtonImage = prev.AddComponent<Image>();
+                var panelImage = panel.AddComponent<Image>();
+
+
+                CopyImageSettings(profileButtonImage, nextButtonImage);
+                CopyImageSettings(profileButtonImage, prevButtonImage);
+                CopyImageSettings(profileButtonImage, panelImage);
+
+                var nextButton = next.AddComponent<Button>();
+                var prevButton = prev.AddComponent<Button>();
+
+                Color buttonNormalColor = profileButton.colors.normalColor;
+                panelImage.color = new Color(buttonNormalColor.r + .1f, buttonNormalColor.g, buttonNormalColor.b, 0.75f);
+
+                var headerText = header.AddComponent<HGTextMeshProUGUI>();
+                headerText.font = HGTextMeshProUGUI.defaultLanguageFont;
+                headerText.color = profileButtonText.color;
+                headerText.alignment = TMPro.TextAlignmentOptions.Center;
+                headerText.autoSizeTextContainer = profileButtonText.autoSizeTextContainer;
+                headerText.text = "Campaign Select";
+
+                prevButton.colors = profileButton.colors;
+                nextButton.colors = profileButton.colors;
+
+                prevButton.image = prevButtonImage;
+                nextButton.image = nextButtonImage;
+
+                int index = 0;
+                nextButton.onClick.AddListener(() =>
+                {
+                    index++;
+                    if (index == Campaigns.Count) index = 0;
+                    CurrentCampaign = Campaigns[index];
+
+                    UpdateCampaignPreview(previewImage);
+                });
+                prevButton.onClick.AddListener(() =>
+                {
+                    index--;
+                    if (index < 0) index = Campaigns.Count - 1;
+                    CurrentCampaign = Campaigns[index];
+
+                    UpdateCampaignPreview(previewImage);
+                });
+
+                headerRectTrans.SetParent(panelRectTrans);
+                nextRectTrans.SetParent(panelRectTrans);
+                prevRectTrans.SetParent(panelRectTrans);
+                previewRectTrans.SetParent(panelRectTrans);
+                panelRectTrans.SetParent(buttonPanelRectTrans);
+                panelRectTrans.SetAsFirstSibling();
+
+                ConfigureTransform(panelRectTrans, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0), new Vector3(0, 5, 0), new Vector2(profileRectTrans.sizeDelta.x, 190));
+
+                ConfigureTransform(headerRectTrans, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0.5f, 0), new Vector3(0, -40, 0), new Vector2(profileRectTrans.sizeDelta.x, 40));
+
+                ConfigureTransform(prevRectTrans, Vector2.zero, new Vector2(0, 1), new Vector2(0, 1), new Vector3(0, -40, 0), new Vector2(30, -42));
+
+                ConfigureTransform(nextRectTrans, new Vector2(1, 0), Vector2.one, Vector2.one, new Vector3(0, -40, 0), new Vector2(30, -42));
+
+                ConfigureTransform(previewRectTrans, Vector2.zero, Vector2.one, new Vector2(0, 1), new Vector3(30, -43, 0), new Vector2(-60, -48));
+
+                if (CurrentCampaign != null)
+                {
+                    UpdateCampaignPreview(previewImage);
+                }
+                else
+                    Logger.LogError("Error Adding Campaign Selector to Main Menu: No Campaign Selected");
+
+
+                Logger.LogMessage("Finished Adding Campaign Selector to Main Menu");
+            }
+            catch (Exception e)
+            {
+                Logger.LogError("Error Adding Campaign Selector to Main Menu");
+                Logger.LogError(e.Message);
+                Logger.LogError(e.StackTrace);
+            }
+            finally
+            {
+                Logger.LogMessage("Finished Main Menu Modifications");
+                orig(self);
+            }
+        }
+
+        private static void ConfigureTransform(RectTransform transform, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector3 anchoredPosition3D, Vector2 sizeDelta)
+        {
+            transform.anchorMin = anchorMin;
+            transform.anchorMax = anchorMax;
+            transform.pivot = pivot;
+            transform.anchoredPosition3D = anchoredPosition3D;
+            transform.sizeDelta = sizeDelta;
+        }
+
+        private void UpdateCampaignPreview(Image previewImage)
+        {
+            previewImage.sprite = Sprite.Create(
+                                    CurrentCampaign.previewTexture,
+                                    new Rect(0, 0, CurrentCampaign.previewTexture.width, CurrentCampaign.previewTexture.height),
+                                    Vector2.zero
+                                );
+        }
+
+        void CopyImageSettings(Image from, Image to)
+        {
+            to.sprite = from.sprite;
+            to.type = from.type;
+            to.fillCenter = from.fillCenter;
+            to.material = from.material;
+            to.useSpriteMesh = from.useSpriteMesh;
+            to.preserveAspect = from.preserveAspect;
+            to.fillAmount = from.fillAmount;
+            to.fillOrigin = from.fillOrigin;
+            to.fillClockwise = from.fillClockwise;
+            to.alphaHitTestMinimumThreshold = from.alphaHitTestMinimumThreshold;
+        }
+
+        private void PrintHieriarchy(Transform transform, int indent = 0)
+        {
+            string indentString = indent > 0 ? Enumerable.Repeat(" ", indent).Aggregate((a, b) => $"{a}{b}") : "";
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform childTransform = transform.GetChild(i);
+                var message = $"{indentString}{childTransform?.gameObject?.name}";
+                Logger.LogMessage(message);
+                PrintHieriarchy(childTransform, indent + 1);
+            }
         }
 
         private void SetupCustomStageLoading()
@@ -122,7 +271,7 @@ namespace RainOfStages.Plugin
 
         private void Run_PickNextStageScene(On.RoR2.Run.orig_PickNextStageScene orig, Run self, SceneDef[] choices)
         {
-            if (CurrentCampaign == null) orig(self, choices);
+            if (CurrentCampaign?.StartSegment == null) orig(self, choices);
             else
                 self.nextStageScene = CurrentCampaign.PickNextScene(self.nextStageRng, self);
         }
