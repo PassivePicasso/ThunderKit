@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Teleporter
   m_EditorClassIdentifier: 
   allowAmbushSpawn: 0
-  cost: 1
   selectionWeight: 1
   spawnDistance: 0
   preventOverhead: 0

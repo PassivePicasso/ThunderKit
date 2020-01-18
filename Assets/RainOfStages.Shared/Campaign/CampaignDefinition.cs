@@ -29,13 +29,20 @@ namespace RainOfStages.Campaign
 
         public virtual SceneDef PickNextScene(Xoroshiro128Plus nextStageRng, Run run)
         {
-            currentSegment = currentSegment?.NextSegment ?? StartSegment;
+            do
+            {
+                if (currentSegment?.Destinations?.Any() ?? false)
+                    currentSegment = nextStageRng.NextElementUniform(currentSegment.Destinations);
+                else
+                    currentSegment = StartSegment;
+            }
+            while (!currentSegment.Locations.Any());
 
-            var destinations = OverrideDestinations(currentSegment.Destinations)
+            var locations = OverrideDestinations(currentSegment.Locations)
                                .Where(sceneDef => sceneDef != run.nextStageScene)
                                .ToArray();
-            var nextStage =  nextStageRng.NextElementUniform(destinations).ToSceneDef();
 
+            var nextStage = nextStageRng.NextElementUniform(locations).ToSceneDef();
 
             return nextStage;
         }

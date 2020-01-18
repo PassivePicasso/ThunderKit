@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e238a0df34daee439bba0ff5e6fd4c4, type: 3}
   m_Name: iscDuplicator
   m_EditorClassIdentifier: 
-  allowAmbushSpawn: 1
-  selectionWeight: 30
+  allowAmbushSpawn: 0
+  selectionWeight: 20
   spawnDistance: 0
   preventOverhead: 0
   minimumStageCompletions: 0

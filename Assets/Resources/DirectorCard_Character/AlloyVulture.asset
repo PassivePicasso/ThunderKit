@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: AlloyVulture
   m_EditorClassIdentifier: 
   allowAmbushSpawn: 1
-  cost: 28
   selectionWeight: 2
   spawnDistance: 0
   preventOverhead: 0
-  minimumStageCompletions: 0
+  minimumStageCompletions: 3
   requiredUnlockable: 
   forbiddenUnlockable: 
   spawnCard: 28

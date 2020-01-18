@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d561b850f5ef124fb4cc56363f5a2a5, type: 3}
   m_Name: OverloadingWorm
   m_EditorClassIdentifier: 
-  allowAmbushSpawn: 1
-  cost: 4000
+  allowAmbushSpawn: 0
   selectionWeight: 2
   spawnDistance: 0
   preventOverhead: 0
-  minimumStageCompletions: 0
+  minimumStageCompletions: 3
   requiredUnlockable: 
   forbiddenUnlockable: 
   spawnCard: 10

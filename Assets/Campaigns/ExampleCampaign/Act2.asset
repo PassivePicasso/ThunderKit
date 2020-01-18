@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9af02d695db586042b5bc592314f8c40, type: 3}
   m_Name: Act2
   m_EditorClassIdentifier: 
-  Destinations:
+  Locations:
+  - {fileID: 11400000, guid: d58087d0abbf68749a860b40f2247793, type: 2}
   - {fileID: 11400000, guid: 5f566d8ba801a3343b913ff819c0d554, type: 2}
-  - {fileID: 11400000, guid: 78efae6cfa4a19d48a9a5f7efc734b42, type: 2}
-  NextSegment: {fileID: 11400000, guid: fc7a2d11f9def0f40badf6beb4fdb4dc, type: 2}
+  Destinations: []
