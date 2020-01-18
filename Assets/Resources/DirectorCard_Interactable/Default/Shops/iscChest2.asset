@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: iscChest2
   m_EditorClassIdentifier: 
   allowAmbushSpawn: 1
-  selectionWeight: 4
+  selectionWeight: 5
   spawnDistance: 0
   preventOverhead: 0
   minimumStageCompletions: 0

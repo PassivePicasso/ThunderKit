@@ -8,8 +8,6 @@ namespace RainOfStages.Proxies
     {
         public bool allowAmbushSpawn = true;
 
-        //[Tooltip("Should not be zero! EVER.")]
-        //public int cost;
         public int selectionWeight;
         public DirectorCore.MonsterSpawnDistance spawnDistance;
         public bool preventOverhead;
@@ -20,9 +18,7 @@ namespace RainOfStages.Proxies
         public virtual DirectorCard ToDirectorCard() =>
             new DirectorCard
             {
-              
                 allowAmbushSpawn = allowAmbushSpawn,
-                //cost = cost,
                 selectionWeight = selectionWeight,
                 spawnDistance = spawnDistance,
                 preventOverhead = preventOverhead,

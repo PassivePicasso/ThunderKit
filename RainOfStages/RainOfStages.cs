@@ -17,6 +17,9 @@ using R2API.Utils;
 using R2API;
 using UnityEngine.UI;
 using RoR2.UI;
+using RainOfStages.Stage;
+using UnityEngine.SceneManagement;
+using RainOfStages.Configurator;
 
 namespace RainOfStages.Plugin
 {
@@ -27,7 +30,6 @@ namespace RainOfStages.Plugin
     //The name is the name of the plugin that's displayed on load, and the version number just specifies what version the plugin is.
     [BepInPlugin("com.PassivePicasso.RainOfStages", "RainOfStages", "2020.1.0")]
     [BepInDependency("com.bepis.r2api")]
-    [R2APISubmoduleDependency(nameof(LobbyConfigAPI))]
     public class RainOfStages : BaseUnityPlugin
     {
 
@@ -36,6 +38,7 @@ namespace RainOfStages.Plugin
 
         private List<AssetBundle> LoadedScenes;
         private List<SceneDef> sceneDefList;
+        private List<NodeGraphProxy> nodeGraphs;
 
         public static List<CampaignDefinition> Campaigns;
 
@@ -48,6 +51,7 @@ namespace RainOfStages.Plugin
             LoadedScenes = new List<AssetBundle>();
             Campaigns = new List<CampaignDefinition>();
             sceneDefList = new List<SceneDef>();
+            nodeGraphs = new List<NodeGraphProxy>();
 
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
             var workingDirectory = Path.GetDirectoryName(assemblyLocation);
@@ -73,11 +77,13 @@ namespace RainOfStages.Plugin
                 Logger.LogInfo($"Loading Scene Definitions: {definitionBundle}");
                 var definitionsBundle = AssetBundle.LoadFromFile($"{definitionBundle}");
                 var sceneDefinitions = definitionsBundle.LoadAllAssets<CustomSceneDefProxy>();
+                var bundleGraphs = definitionsBundle.LoadAllAssets<NodeGraphProxy>();
+                nodeGraphs.AddRange(bundleGraphs);
 
                 foreach (var sceneDefProxy in sceneDefinitions)
                 {
                     string path = Path.Combine(definitionBundle.DirectoryName, sceneDefProxy.name.ToLower());
-                    var sceneAsset = AssetBundle.LoadFromFile(path);
+                    var sceneAsset = AssetBundle.LoadFromFile(path); 
                     LoadedScenes.Add(sceneAsset);
                 }
 
@@ -89,7 +95,7 @@ namespace RainOfStages.Plugin
                 Logger.LogInfo($"Created and Loaded {campaignDefinitions.Length} CampaignDefinitions from Definitions File {definitionBundle}");
             }
 
-            CurrentCampaign = Campaigns.FirstOrDefault(campaign => campaign.Name == "Risk of Rain 2") ?? Campaigns.First();
+            CurrentCampaign = Campaigns.FirstOrDefault(campaign => campaign.Name.StartsWith("Risk of Rain 2")) ?? Campaigns.First();
 
             SetupCustomStageLoading();
 
@@ -97,6 +103,18 @@ namespace RainOfStages.Plugin
 
             Initialized?.Invoke(this, EventArgs.Empty);
             On.RoR2.UI.MainMenu.MainMenuController.Start += MainMenuController_Start;
+            On.RoR2.Run.BeginStage += Run_BeginStage;
+            for (int i = 0; i < 32; i++)
+                if (!string.IsNullOrEmpty(LayerMask.LayerToName(i)))
+                    Logger.LogMessage($"{i}: {LayerMask.LayerToName(i)}");
+        }
+
+        private void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
+        {
+            orig(self);
+
+            var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(go => go.GetComponent<MapConfigurator>());
+            root?.SetActive(true);
         }
 
         private void MainMenuController_Start(On.RoR2.UI.MainMenu.MainMenuController.orig_Start orig, RoR2.UI.MainMenu.MainMenuController self)
@@ -118,7 +136,7 @@ namespace RainOfStages.Plugin
                 var next = new GameObject("NextCampaign", typeof(CanvasRenderer));
                 var prev = new GameObject("PrevCampaign", typeof(CanvasRenderer));
                 var header = new GameObject("CampaignHeader", typeof(CanvasRenderer));
-                
+
                 var previewRectTrans = preview.AddComponent<RectTransform>();
                 var panelRectTrans = panel.AddComponent<RectTransform>();
                 var nextRectTrans = next.AddComponent<RectTransform>();
@@ -261,7 +279,8 @@ namespace RainOfStages.Plugin
         {
             Logger.LogInfo("StartUp Script Started");
             On.RoR2.Run.PickNextStageScene += Run_PickNextStageScene;
-            On.RoR2.Navigation.MapNodeGroup.Bake += MapNodeGroup_Bake;
+            
+            //On.RoR2.Navigation.MapNodeGroup.Bake += MapNodeGroup_Bake;
 
             SceneCatalog.getAdditionalEntries += DopeItUp;
 

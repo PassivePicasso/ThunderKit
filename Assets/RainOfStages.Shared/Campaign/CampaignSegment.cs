@@ -8,7 +8,7 @@ namespace RainOfStages.Campaign
     [CreateAssetMenu(menuName = "ROR2/Act")]
     public class CampaignSegment : ScriptableObject
     {
-        public List<SceneDefProxy> Destinations;
-        public CampaignSegment NextSegment;
+        public List<SceneDefProxy> Locations;
+        public List<CampaignSegment> Destinations;
     }
 }

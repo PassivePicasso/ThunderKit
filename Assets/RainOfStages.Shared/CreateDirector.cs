@@ -11,6 +11,8 @@ namespace RainOfStages
         public DirectorCardProxy teleporterCardProxy;
         public WaveIntervalSetting waveIntervalSetting;
 
+
+
         private void Awake()
         {
             if (NetworkServer.active)
@@ -30,6 +32,7 @@ namespace RainOfStages
                 }
 
                 gameObject.SetActive(false);
+
                 var directorCore = gameObject.AddComponent<DirectorCore>();
                 var sceneDirector = gameObject.AddComponent<SceneDirector>();
 
@@ -38,6 +41,7 @@ namespace RainOfStages
 
                 var combatDirectorA = gameObject.AddComponent<CombatDirector>();
                 combatDirectorA.moneyWaveIntervals = intervals;
+                
 
                 var combatDirectorB = gameObject.AddComponent<CombatDirector>();
                 combatDirectorB.moneyWaveIntervals = intervals;
@@ -45,6 +49,7 @@ namespace RainOfStages
                 gameObject.SetActive(true);
             }
             Destroy(this);
+            Debug.Log($"Completed {GetType().Name}");
         }
     }
 

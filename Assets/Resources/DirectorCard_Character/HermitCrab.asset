@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: HermitCrab
   m_EditorClassIdentifier: 
   allowAmbushSpawn: 1
-  cost: 25
   selectionWeight: 1
   spawnDistance: 0
   preventOverhead: 0
-  minimumStageCompletions: 0
+  minimumStageCompletions: 3
   requiredUnlockable: 
   forbiddenUnlockable: 
   spawnCard: 14

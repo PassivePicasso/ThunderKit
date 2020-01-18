@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: iscShrineCombat
   m_EditorClassIdentifier: 
   allowAmbushSpawn: 1
-  selectionWeight: 10
+  selectionWeight: 12
   spawnDistance: 0
   preventOverhead: 0
   minimumStageCompletions: 0

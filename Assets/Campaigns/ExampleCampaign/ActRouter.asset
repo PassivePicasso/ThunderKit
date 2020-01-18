@@ -9,15 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e238a0df34daee439bba0ff5e6fd4c4, type: 3}
-  m_Name: TripleShop
+  m_Script: {fileID: 11500000, guid: 9af02d695db586042b5bc592314f8c40, type: 3}
+  m_Name: ActRouter
   m_EditorClassIdentifier: 
-  allowAmbushSpawn: 1
-  cost: 30
-  selectionWeight: 2
-  spawnDistance: 0
-  preventOverhead: 0
-  minimumStageCompletions: 0
-  requiredUnlockable: 
-  forbiddenUnlockable: 
-  spawnCard: 34
+  Locations: []
+  Destinations:
+  - {fileID: 11400000, guid: fc7a2d11f9def0f40badf6beb4fdb4dc, type: 2}
+  - {fileID: 11400000, guid: f095baf0af9cb6e40ad1dcbc296d2b0b, type: 2}

@@ -16,8 +16,9 @@ MonoBehaviour:
   subtitleToken: CUSTOM_SCENE_SUBTITLE
   loreToken: CUSTOM_SCENE
   stageOrder: 1
-  previewTexture: {fileID: 0}
-  songName: Song05
+  previewTexture: {fileID: 2800000, guid: b38c2d445230378499ac12347df5acaa, type: 3}
+  dioramaPrefab: {fileID: 0}
+  sceneType: 0
+  songName: Song01
   bossSongName: Song07
-  cachedSceneName: Custom Scene
-  destinations: []
+  cachedSceneName: CustomScene

@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: BeetleGuard
   m_EditorClassIdentifier: 
   allowAmbushSpawn: 1
-  cost: 40
   selectionWeight: 2
   spawnDistance: 0
   preventOverhead: 0
-  minimumStageCompletions: 0
+  minimumStageCompletions: 1
   requiredUnlockable: 
   forbiddenUnlockable: 
   spawnCard: 3
