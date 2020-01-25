@@ -43,6 +43,7 @@ namespace RainOfStages.Plugin
         public static List<CampaignDefinition> Campaigns;
 
         private CampaignDefinition CurrentCampaign;
+        private GameObject configurator;
 
         //The Awake() method is run at the very start when the game is initialized.
         public void Awake()
@@ -100,21 +101,29 @@ namespace RainOfStages.Plugin
             SetupCustomStageLoading();
 
             Instance = this;
+            //for (int i = 0; i < 32; i++)
+            //    if (!string.IsNullOrEmpty(LayerMask.LayerToName(i)))
+            //        Logger.LogMessage($"{i}: {LayerMask.LayerToName(i)}");
 
             Initialized?.Invoke(this, EventArgs.Empty);
             On.RoR2.UI.MainMenu.MainMenuController.Start += MainMenuController_Start;
             On.RoR2.Run.BeginStage += Run_BeginStage;
-            for (int i = 0; i < 32; i++)
-                if (!string.IsNullOrEmpty(LayerMask.LayerToName(i)))
-                    Logger.LogMessage($"{i}: {LayerMask.LayerToName(i)}");
+            On.RoR2.Stage.Start += Stage_Start;
+            SceneDirector.onPostPopulateSceneServer += SceneDirector_onPostPopulateSceneServer;
+        
         }
+
+        public On.RoR2.Stage.orig_Start start;
+
+        private void SceneDirector_onPostPopulateSceneServer(SceneDirector obj) => start(RoR2.Stage.instance);
+        private void Stage_Start(On.RoR2.Stage.orig_Start orig, RoR2.Stage self) => start = orig;
 
         private void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
         {
             orig(self);
 
-            var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(go => go.GetComponent<MapConfigurator>());
-            root?.SetActive(true);
+            configurator = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(go => go.GetComponent<MapConfigurator>());
+            configurator?.SetActive(true);
         }
 
         private void MainMenuController_Start(On.RoR2.UI.MainMenu.MainMenuController.orig_Start orig, RoR2.UI.MainMenu.MainMenuController self)
@@ -312,6 +321,9 @@ namespace RainOfStages.Plugin
             obj.AddRange(sceneDefList);
         }
 
+        #region deprecated
+        /*
+         
         private void MapNodeGroup_Bake(On.RoR2.Navigation.MapNodeGroup.orig_Bake orig, MapNodeGroup self, NodeGraph nodeGraph)
         {
             List<MapNode> nodes = self.GetNodes();
@@ -382,5 +394,8 @@ namespace RainOfStages.Plugin
             return serializableBitArrayList.AsReadOnly();
         }
 
+         
+         */
+        #endregion
     }
 }

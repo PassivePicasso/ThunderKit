@@ -1,7 +1,6 @@
 ﻿using RoR2;
 using RoR2.Navigation;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace RainOfStages.Proxies
 {
@@ -14,10 +13,10 @@ namespace RainOfStages.Proxies
         public MapNodeGroup.GraphType nodeGraphType;
 
         [EnumMask(typeof(NodeFlags))]
-        public NodeFlags requiredFlags;
+        public RoR2.Navigation.NodeFlags requiredFlags;
 
         [EnumMask(typeof(NodeFlags))]
-        public NodeFlags forbiddenFlags;
+        public RoR2.Navigation.NodeFlags forbiddenFlags;
         public bool occupyPosition;
 
         public SpawnCard ToSpawnCard()
