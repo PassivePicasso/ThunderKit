@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5580359048370469914}
   - component: {fileID: 5584274080247442236}
-  - component: {fileID: 9147689635318643372}
-  - component: {fileID: 6384183286362507861}
   m_Layer: 0
   m_Name: MapConfigurator
   m_TagString: Untagged
@@ -48,42 +46,22 @@ MonoBehaviour:
   airHeight: 5
   spacing: 1
   debugHullDef: 0
-  InteractableCoins: 300
+  DebugMaterial: {fileID: 2100000, guid: 795cf3d1cbb93bf469aa0e24fc30a543, type: 2}
+  InteractableCoins: 200
   MonsterCoins: 0
-  interactableCategories:
-  - {fileID: 11400000, guid: 3895ecd4486c8c446b85632b5ca367e0, type: 2}
-  monsterCategories:
-  - {fileID: 11400000, guid: b0ea2c7400f7c1f41ae83ffcecb672f6, type: 2}
-  - {fileID: 11400000, guid: 8472e0435005e0f4ea2834046683b097, type: 2}
-  - {fileID: 11400000, guid: 464dda881034ba24385993b7862b6d92, type: 2}
-  airNodeGraph: {fileID: 0}
-  groundNodeGraph: {fileID: 0}
---- !u!114 &9147689635318643372
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5580359048370469913}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc5d81121fe8041429d6af63e0c1e20f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6384183286362507861
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5580359048370469913}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 689f67798b4bb3e43b54f61a3d70f6a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   teleporterInstance: {fileID: 0}
   teleporterCardProxy: {fileID: 11400000, guid: 0ee525340b0bbed41a3df5da3c755c1e,
     type: 2}
   waveIntervalSetting: {fileID: 11400000, guid: 74282bf275225474287552db2db0b817,
+    type: 2}
+  interactableCategories:
+  - {fileID: 11400000, guid: 3895ecd4486c8c446b85632b5ca367e0, type: 2}
+  monsterCategories:
+  - {fileID: 11400000, guid: b0ea2c7400f7c1f41ae83ffcecb672f6, type: 2}
+  - {fileID: 11400000, guid: 24ac6173f4063c54d8663cf1329f2bd6, type: 2}
+  - {fileID: 11400000, guid: 8472e0435005e0f4ea2834046683b097, type: 2}
+  - {fileID: 11400000, guid: 464dda881034ba24385993b7862b6d92, type: 2}
+  - {fileID: 11400000, guid: 30514692bffb1b440a0f00864476b357, type: 2}
+  airNodeGraphProxy: {fileID: 11400000, guid: 15a3f9df674858f48a3e1d1d882fb84d, type: 2}
+  groundNodeGraphProxy: {fileID: 11400000, guid: 6b3a432a91122ad44bb0f9633625dc7f,
     type: 2}

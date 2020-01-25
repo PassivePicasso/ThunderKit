@@ -4,12 +4,13 @@ using UnityEngine.SceneManagement;
 using UnityEngine.AI;
 using RoR2;
 using System.Collections.Generic;
-using RoR2.Navigation;
 using System.Linq;
-using RainOfStages.Configurators;
 using System.Diagnostics;
 using RainOfStages.Configurator;
 using RainOfStages.Stage;
+using GraphType = RainOfStages.Stage.MapNodeGroup.GraphType;
+using MapNodeGroup = RainOfStages.Stage.MapNodeGroup;
+using RainOfStages.Configurators;
 
 namespace RainOfStages
 {
@@ -67,35 +68,56 @@ namespace RainOfStages
                                     .ToArray();
 
             const float fudgeFactor = 1000;
-            var groundNodes = new HashSet<Vector3>(
-                triangulation.vertices.Select(vertex => new Vector3((int)(vertex.x * fudgeFactor), (int)(vertex.y * fudgeFactor), (int)(vertex.z * fudgeFactor)))
-                ).ToList();
+            var nodeRootPositions =
+                new HashSet<Vector3>(
+                    triangulation.indices.Select(i =>
+                    {
+                        var vertex = triangulation.vertices[i];
 
-            const float displacementValue = 5;
-            var displacement = displacementValue * Vector3.up;
-            var airNodes = Enumerable.Range(0, 3).SelectMany(i => groundNodes.Select(p => p + (i * displacement)));
 
-            BakeGraph(mapConfigurator, meshes, fudgeFactor, groundNodes, MapNodeGroup.GraphType.Ground);
+                        //else
+                        return new Vector3(((int)(vertex.x * fudgeFactor)) / fudgeFactor,
+                                           ((int)(vertex.y * fudgeFactor)) / fudgeFactor,
+                                           ((int)(vertex.z * fudgeFactor)) / fudgeFactor);
+                    })
+                );
 
-            BakeGraph(mapConfigurator, meshes, fudgeFactor, airNodes, MapNodeGroup.GraphType.Air);
+            var airNodes = Enumerable.Range(1, 3).SelectMany(i => nodeRootPositions.Select(p => p + (i * 5 * Vector3.up))).ToArray();
+            var groundNodes = nodeRootPositions.ToList();
+
+            var airNodeGroup = BakeGraph(mapConfigurator, meshes, airNodes, GraphType.Air, $"{GraphType.Air}");
+            var groundNodeGroup = BakeGraph(mapConfigurator, meshes, groundNodes, GraphType.Ground, $"{GraphType.Ground}");
+            DestroyImmediate(groundNodeGroup);
+            DestroyImmediate(airNodeGroup);
+
+            EditorApplication.MarkSceneDirty();
         }
 
-        private void BakeGraph(MapConfigurator mapConfigurator, Mesh[] meshes, float fudgeFactor, IEnumerable<Vector3> positions, MapNodeGroup.GraphType graphType)
+        private GameObject BakeGraph(MapConfigurator mapConfigurator, Mesh[] meshes, IEnumerable<Vector3> positions, GraphType graphType, string name)
         {
             var nodeGraphObject = new GameObject();
             var mapNodeGroup = nodeGraphObject.AddComponent<MapNodeGroup>();
 
-            positions.Select(v => v / fudgeFactor)
-                            .Where(vertex => !meshes.Any(m => m.IsPointInside(vertex)))
-                            .ToList()
-                            .ForEach(mapNodeGroup.AddNode);
+            positions.Where(vertex => !meshes.Any(m => m.IsPointInside(vertex))).ToList().ForEach(mapNodeGroup.AddNode);
 
-            var nodeGraph = ConfigureMapNodeGroup(mapNodeGroup, MapNodeGroup.GraphType.Ground, HullClassification.Human);
-            mapConfigurator.groundNodeGraph = nodeGraph;
+            var nodeGraph = ConfigureMapNodeGroup(mapConfigurator, mapNodeGroup, graphType, name);
 
-            SaveGraph(nodeGraph, $"{graphType}NodeGraph");
+            NodeGraphProxy nodeGraphProxy = nodeGraph;
 
-            DestroyImmediate(nodeGraphObject);
+            SaveGraph(nodeGraphProxy, $"{name}NodeGraph");
+
+            if (name == $"{MapNodeGroup.GraphType.Ground}")
+            {
+                mapConfigurator.groundNodeGraphProxy = nodeGraphProxy;
+                mapConfigurator.groundNodeGraph = nodeGraph;
+            }
+            else
+            {
+                mapConfigurator.airNodeGraphProxy = nodeGraphProxy;
+                mapConfigurator.airNodeGraph = nodeGraph;
+            }
+
+            return nodeGraphObject;
         }
 
         NavMeshTriangulation GenerateTriangulation(Transform world)
@@ -113,26 +135,26 @@ namespace RainOfStages
             return triangulation;
         }
 
-        NodeGraphProxy ConfigureMapNodeGroup(MapNodeGroup mapNodeGroup, MapNodeGroup.GraphType graphType, HullClassification hullClassification)
+        NodeGraph ConfigureMapNodeGroup(MapConfigurator mapConfigurator, MapNodeGroup mapNodeGroup, GraphType graphType, string name)
         {
             var innerWatch = new Stopwatch();
             innerWatch.Start();
 
             var nodeGraph = ScriptableObject.CreateInstance<NodeGraph>();
-            nodeGraph.name = $"{graphType}NodeGraph";
+            nodeGraph.name = $"{name}NodeGraph";
 
-            mapNodeGroup.debugHullDef = hullClassification;
             mapNodeGroup.graphType = graphType;
-            mapNodeGroup.name = $"{graphType}MapNodeGroup";
+            mapNodeGroup.name = $"{name}MapNodeGroup";
+
+
             mapNodeGroup.UpdateNoCeilingMasks();
-            if (graphType == MapNodeGroup.GraphType.Ground)
-                mapNodeGroup.UpdateTeleporterMasks();
+            mapNodeGroup.UpdateTeleporterMasks();
 
             mapNodeGroup.Bake(nodeGraph);
 
             innerWatch.Stop();
 
-            UnityEngine.Debug.Log($"Baked {nodeGraph.GetNodeCount()} {graphType} nodes in {innerWatch.ElapsedMilliseconds}ms");
+            UnityEngine.Debug.Log($"Baked {nodeGraph.nodes.Length} {name} nodes in {innerWatch.ElapsedMilliseconds}ms");
 
             return nodeGraph;
         }

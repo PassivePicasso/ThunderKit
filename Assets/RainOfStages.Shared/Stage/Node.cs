@@ -22,7 +22,7 @@ namespace RainOfStages.Stage
         public byte gateIndex;
         public byte[] bytes;
 
-        public static implicit operator Node(NodeGraph.Node node) => new Node
+        public static implicit operator Node(RoR2.Navigation.NodeGraph.Node node) => new Node
         {
             position = node.position,
             linkIndex = node.linkListIndex.index,
@@ -33,16 +33,16 @@ namespace RainOfStages.Stage
             flags = (int)node.flags,
         };
 
-        public static implicit operator NodeGraph.Node(Node node)
+        public static implicit operator RoR2.Navigation.NodeGraph.Node(Node node)
         {
-            var nnode = new NodeGraph.Node
+            var nnode = new RoR2.Navigation.NodeGraph.Node
             {
                 position = node.position,
-                linkListIndex = new NodeGraph.LinkListIndex { index = node.linkIndex, size = node.listSize },
+                linkListIndex = new RoR2.Navigation.NodeGraph.LinkListIndex { index = node.linkIndex, size = node.listSize },
                 forbiddenHulls = (RoR2.HullMask)node.forbiddenHulls,
                 lineOfSightMask = new SerializableBitArray(node.bytes.Length),
                 gateIndex = node.gateIndex,
-                flags = (NodeFlags)node.flags,
+                flags = (RoR2.Navigation.NodeFlags)node.flags,
             };
             bytesField.SetValue(nnode.lineOfSightMask, node.bytes);
             return nnode;

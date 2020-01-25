@@ -15,7 +15,7 @@ namespace RainOfStages.Stage
         public int jumpHullMask;
         public byte gateIndex;
 
-        public static implicit operator Link(NodeGraph.Link li) => new Link
+        public static implicit operator Link(RoR2.Navigation.NodeGraph.Link li) => new Link
         {
             nodeIndexA = li.nodeIndexA.nodeIndex,
             nodeIndexB = li.nodeIndexB.nodeIndex,
@@ -26,10 +26,10 @@ namespace RainOfStages.Stage
             jumpHullMask = li.jumpHullMask,
             gateIndex = li.gateIndex,
         };
-        public static implicit operator NodeGraph.Link(Link li) => new NodeGraph.Link
+        public static implicit operator RoR2.Navigation.NodeGraph.Link(Link li) => new RoR2.Navigation.NodeGraph.Link
         {
-            nodeIndexA = new NodeGraph.NodeIndex { nodeIndex = li.nodeIndexA },
-            nodeIndexB = new NodeGraph.NodeIndex { nodeIndex = li.nodeIndexB },
+            nodeIndexA = new RoR2.Navigation.NodeGraph.NodeIndex { nodeIndex = li.nodeIndexA },
+            nodeIndexB = new RoR2.Navigation.NodeGraph.NodeIndex { nodeIndex = li.nodeIndexB },
             distanceScore = li.distanceScore,
             maxSlope = li.maxSlope,
             minJumpHeight = li.minJumpHeight,
