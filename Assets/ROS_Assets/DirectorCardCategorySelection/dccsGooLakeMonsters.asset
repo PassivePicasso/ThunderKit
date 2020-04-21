@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5044bbe07b249674f9a9df83ae08734f, type: 3}
+  m_Name: dccsGooLakeMonsters
+  m_EditorClassIdentifier: 
+  categories:
+  - name: Champions
+    cards:
+    - spawnCard: {fileID: 11400000, guid: 96c6db20a7954b248bcd83ee4b1228bf, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 7b5a6751fd4202e4285d9464b3190656, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 4552861c14e8d5e448915a8d856f56e9, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 2
+  - name: Minibosses
+    cards:
+    - spawnCard: {fileID: 11400000, guid: 1701f25cada19b345bbb249cb9699d78, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 66e5d11df4b4d0544b460c482964fc1a, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 1
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 20468704138efb64688d85f2a3a98008, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 2
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 2
+  - name: Basic Monsters
+    cards:
+    - spawnCard: {fileID: 11400000, guid: 04034874e7c109f4a8ad2c483a60f172, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 29341b2a42eb1e0428cdde99612a9407, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 1
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: d167cc45c5266f9489404ec17fc302c8, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 3
+  - name: Special
+    cards:
+    - spawnCard: {fileID: 11400000, guid: c36314a39996c214aa41f0d27c0252ab, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 0
+      preventOverhead: 0
+      minimumStageCompletions: 5
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 1

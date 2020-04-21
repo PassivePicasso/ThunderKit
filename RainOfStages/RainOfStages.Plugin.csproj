@@ -25,15 +25,15 @@
   <Target Name="CopyOutput" AfterTargets="Build">
     <Message Text="########################################## Copying Plugin output ##########################################" />
     <ItemGroup>
-      <RainOfStagesManifests Include="$(AssetBundleOutput)\*.manifest" Exclude="$(AssetBundleOutput)\mapsystem_*.manifest;$(AssetBundleOutput)\StandaloneWindows.manifest" />
-      <RainOfStagesLibraries Include="@(RainOfStagesManifests -> '$(ScriptAssemblies)\%(FileName).dll')" />
+      <RainOfStagesManifests Include="$(AssetBundleOutput)\*.manifest" Exclude="$(AssetBundleOutput)\ror2assetpackage.manifest"/>
+      <RainOfStagesFiles Include="@(RainOfStagesManifests);@(RainOfStagesManifests -> '$(AssetBundleOutput)\%(FileName)');@(RainOfStagesManifests -> '$(ScriptAssemblies)\%(FileName).dll')" />
     </ItemGroup>
+    <Message Text="@(RainOfStagesFiles, '%0D  ')" />
     <ItemGroup>
-      <CopyOutputFiles Include="$(OutputPath)\$(AssemblyName).dll" />
-      <CopyOutputFiles Include="$(OutputPath)\RainOfStages.Shared.dll" />
-      <CopyOutputFiles Include="$(OutputPath)\Unity.Burst.dll" />
-      <CopyOutputFiles Include="$(AssetBundleOutput)\*" />
-      <CopyOutputFiles Include="@(RainOfStagesLibraries)" />
+      <CopyOutputFiles Include="$(OutputPath)$(AssemblyName).dll" />
+      <CopyOutputFiles Include="$(OutputPath)RainOfStages.Shared.dll" />
+      <CopyOutputFiles Include="$(OutputPath)Unity.Burst.dll" />
+      <CopyOutputFiles Include="@(RainOfStagesFiles)" />
     </ItemGroup>
     <Copy SourceFiles="@(CopyOutputFiles)" DestinationFolder="$(RainOfStagesPluginDir)" ContinueOnError="true" />
     <Message Text="########################################## Copied Plugin output ##########################################" />
@@ -60,7 +60,7 @@
       <HintPath>$(RoR2Managed)\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>$(RoR2Path)BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>$(RoR2Path)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Steamworks">
       <HintPath>$(RoR2Managed)\Facepunch.Steamworks.dll</HintPath>

@@ -1,0 +1,19 @@
+{
+    "name": "RainOfStages.Editor",
+    "references": [
+        "RainOfStages.Shared",
+        "VisualTemplates"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Assembly-CSharp.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

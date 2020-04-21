@@ -1,0 +1,9 @@
+{
+  "name": "com.unity.stochastic",
+  "description": "Unity stochastic texturing for 2018.3",
+  "version": "5.0.1",
+  "unity": "2018.3",
+  "displayName": "Stochastic Texturing",
+  "dependencies": {
+  }
+}

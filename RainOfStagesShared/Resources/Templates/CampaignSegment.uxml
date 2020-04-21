@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:engine="UnityEngine.Experimental.UIElements"
+            xmlns:editor="UnityEditor.Experimental.UIElements"
+            xmlns:vt="VisualTemplates"
+            xmlns:upm="UnityEditor.PackageManager.UI"
+            xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+            xsi:schemaLocation="
+              UnityEngine.Experimental.UIElements ../../../UIElementsSchema/UnityEngine.Experimental.UIElements.xsd
+              UnityEditor.Experimental.UIElements ../../../UIElementsSchema/UnityEditor.Experimental.UIElements.xsd
+              UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd
+              VisualTemplates ../../../UIElementsSchema/VisualTemplates.xsd
+            ">
+
+  <engine:VisualElement class="campaign-field">
+    <engine:Label text="Segment Details" class="field-label"/>
+    <vt:ListControl binding-path="Locations" />
+
+    <!--<vt:ListControl binding-path="Destinations" />-->
+  </engine:VisualElement>
+
+</engine:UXML>

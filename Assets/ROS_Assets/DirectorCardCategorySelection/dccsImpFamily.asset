@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5044bbe07b249674f9a9df83ae08734f, type: 3}
+  m_Name: dccsImpFamily
+  m_EditorClassIdentifier: 
+  categories:
+  - name: Champions
+    cards:
+    - spawnCard: {fileID: 11400000, guid: f56ca04eaab5d9746b5b9dbf00227eba, type: 2}
+      selectionWeight: 1
+      spawnDistance: 2
+      allowAmbushSpawn: 0
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 2
+  - name: Basic Monsters
+    cards:
+    - spawnCard: {fileID: 11400000, guid: 687041f820b32f741a86c62995ea3a61, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 3

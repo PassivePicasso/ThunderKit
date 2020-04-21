@@ -1,0 +1,228 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5044bbe07b249674f9a9df83ae08734f, type: 3}
+  m_Name: dccsFrozenWallInteractables
+  m_EditorClassIdentifier: 
+  categories:
+  - name: Chests
+    cards:
+    - spawnCard: {fileID: 11400000, guid: 9ceac2b2d30d0894e970a971197de5de, type: 2}
+      selectionWeight: 24
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 29941c320209ca748a2ea2d160356ae4, type: 2}
+      selectionWeight: 4
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: c06794c012849ab49b5962f5ed4a617a, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 7faebdcc1f97fa04688141e28dec4ea7, type: 2}
+      selectionWeight: 8
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 2c7e71735c641a94ab22c503563b0f0a, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: d0d26dd0dbaf30e429602462771b71ec, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 113afacb7aa86624eaae88fab742af1e, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: a432eb784fc6eff46ad675dc1bc16556, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: b9b31372727877c40a9295ba74c9d6ee, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 45
+  - name: Barrels
+    cards:
+    - spawnCard: {fileID: 11400000, guid: 9e95a7b4aa73fff44b2932bc0e5e1936, type: 2}
+      selectionWeight: 10
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 10
+  - name: Shrines
+    cards:
+    - spawnCard: {fileID: 11400000, guid: 8006e62370adcdd4a8b54450feecb389, type: 2}
+      selectionWeight: 3
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: e420725e6d1d7824ab3784ec604ac414, type: 2}
+      selectionWeight: 4
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: d367dcaddd474c74dabf31d48a041494, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 1
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 8c3f4525fbf9067439978108110e78f7, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 1
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 7
+  - name: Drones
+    cards:
+    - spawnCard: {fileID: 11400000, guid: e2e77104b546195479d27d96c093e218, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: b9199b7322aeb0e4ebde7700dad0dfe4, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 4.5
+  - name: Misc
+    cards: []
+    selectionWeight: 0
+  - name: Rare
+    cards:
+    - spawnCard: {fileID: 11400000, guid: fce4b64848e01584f97fd359cd3478a5, type: 2}
+      selectionWeight: 6
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 8352d990267903b49ae605d731a2ffd5, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: Logs.Stages.frozenwall
+    - spawnCard: {fileID: 11400000, guid: 93991a4cbe3e43b458766101ee6011af, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 1
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: fb23b6e54f276524ab0637fc32c890af, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 3
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 0.4
+  - name: Duplicator
+    cards:
+    - spawnCard: {fileID: 11400000, guid: 22837c9da84ebfc40bf9f8c29d2adf27, type: 2}
+      selectionWeight: 30
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 0
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: 4e7c04a1063ee53448aff44f3a3b99df, type: 2}
+      selectionWeight: 6
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 1
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: fd338148ab1866a4599c039da7c5ed8c, type: 2}
+      selectionWeight: 1
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 4
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    - spawnCard: {fileID: 11400000, guid: c9855a669791d914597696b116bff3bc, type: 2}
+      selectionWeight: 2
+      spawnDistance: 0
+      allowAmbushSpawn: 1
+      preventOverhead: 0
+      minimumStageCompletions: 1
+      requiredUnlockable: 
+      forbiddenUnlockable: 
+    selectionWeight: 3
