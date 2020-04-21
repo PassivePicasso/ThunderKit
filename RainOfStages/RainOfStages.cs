@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using RainOfStages.Campaign;
+using RainOfStages.Proxy;
 using RoR2;
 using RoR2.UI;
 using System;
@@ -8,15 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Path = System.IO.Path;
-using SceneInfo = RainOfStages.Proxy.SceneInfo;
 using NodeGraph = RainOfStages.Proxy.NodeGraph;
-using RainOfStages.Proxy;
-using DCCS = RainOfStages.Proxy.DirectorCardCategorySelection;
-using static RoR2.DirectorCardCategorySelection;
-using static RoR2.ClassicStageInfo;
+using Path = System.IO.Path;
 
 namespace RainOfStages.Plugin
 {

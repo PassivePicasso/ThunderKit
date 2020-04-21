@@ -1,5 +1,4 @@
 ﻿using RoR2;
-using RoR2.Hologram;
 using System;
 using UnityEngine;
 using UnityEngine.Events;

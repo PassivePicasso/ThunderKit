@@ -48,7 +48,6 @@ namespace RainOfStages
 
             Undo.RecordObject(sceneInfo, "Bake NodeGraph");
 
-
             var world = rootObjects.FirstOrDefault(ro => ro.layer == LayerMask.NameToLayer("World"));
 
             if (world == null)
