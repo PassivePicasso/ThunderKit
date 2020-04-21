@@ -14,6 +14,11 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
+#RainOfStages exclusions
+*NodeGraph.asset
+Assets/Campaigns/
+Assets/[Pp]lugin/
+
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
 
@@ -100,3 +105,5 @@ crashlytics-build.properties
 /RainOfStages/BepInEx.dll.meta
 /RainOfStages/BepInEx.dll
 /AssetBundles/RainOfStages
+/Assets/epyphany
+/Assets/Textures

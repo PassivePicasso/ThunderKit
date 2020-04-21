@@ -1,25 +1,22 @@
 ﻿using BepInEx;
 using RainOfStages.Campaign;
-using RainOfStages.Proxies;
 using RoR2;
-using RoR2.Navigation;
+using RoR2.UI;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Unity.Collections;
 using UnityEngine;
-using Path = System.IO.Path;
-using R2API.Utils;
-using R2API;
-using UnityEngine.UI;
-using RoR2.UI;
-using RainOfStages.Stage;
 using UnityEngine.SceneManagement;
-using RainOfStages.Configurator;
+using UnityEngine.UI;
+using Path = System.IO.Path;
+using SceneInfo = RainOfStages.Proxy.SceneInfo;
+using NodeGraph = RainOfStages.Proxy.NodeGraph;
+using RainOfStages.Proxy;
+using DCCS = RainOfStages.Proxy.DirectorCardCategorySelection;
+using static RoR2.DirectorCardCategorySelection;
+using static RoR2.ClassicStageInfo;
 
 namespace RainOfStages.Plugin
 {
@@ -32,18 +29,19 @@ namespace RainOfStages.Plugin
     [BepInDependency("com.bepis.r2api")]
     public class RainOfStages : BaseUnityPlugin
     {
+        private static FieldInfo[] sceneDefFields = typeof(SceneDef).GetFields(BindingFlags.Public | BindingFlags.Instance);
 
         public static RainOfStages Instance { get; private set; }
         public static event EventHandler Initialized;
 
         private List<AssetBundle> LoadedScenes;
         private List<SceneDef> sceneDefList;
-        private List<NodeGraphProxy> nodeGraphs;
+        private List<NodeGraph> nodeGraphs;
 
         public static List<CampaignDefinition> Campaigns;
 
         private CampaignDefinition CurrentCampaign;
-        private GameObject configurator;
+        private int selectedCampaignIndex = 0;
 
         //The Awake() method is run at the very start when the game is initialized.
         public void Awake()
@@ -52,7 +50,7 @@ namespace RainOfStages.Plugin
             LoadedScenes = new List<AssetBundle>();
             Campaigns = new List<CampaignDefinition>();
             sceneDefList = new List<SceneDef>();
-            nodeGraphs = new List<NodeGraphProxy>();
+            nodeGraphs = new List<NodeGraph>();
 
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
             var workingDirectory = Path.GetDirectoryName(assemblyLocation);
@@ -63,32 +61,27 @@ namespace RainOfStages.Plugin
 
             if (dir == null) throw new ArgumentException(@"invalid plugin path detected, could not find expected ""plugins"" folder in parent tree");
 
+
             var campaignManifest = dir.GetFiles("campaignmanifest", SearchOption.AllDirectories);
 
-            //var libraries = sceneDefinitionBundles.Select(sdb => sdb.DirectoryName).Distinct().SelectMany(sdPath => Directory.EnumerateFiles(sdPath, $"*.dll")).Distinct();
-            //foreach (var lib in libraries)
-            //    if (Directory.Exists(lib))
-            //    {
-            //        Assembly.LoadFrom(lib);
-            //        Logger.LogInfo($"Loaded assembly: {lib}");
-            //    }
+            On.RoR2.SceneDef.Awake += SceneDef_Awake;
 
             foreach (var definitionBundle in campaignManifest)
             {
                 Logger.LogInfo($"Loading Scene Definitions: {definitionBundle}");
                 var definitionsBundle = AssetBundle.LoadFromFile($"{definitionBundle}");
                 var sceneDefinitions = definitionsBundle.LoadAllAssets<CustomSceneDefProxy>();
-                var bundleGraphs = definitionsBundle.LoadAllAssets<NodeGraphProxy>();
+                var bundleGraphs = definitionsBundle.LoadAllAssets<NodeGraph>();
                 nodeGraphs.AddRange(bundleGraphs);
 
-                foreach (var sceneDefProxy in sceneDefinitions)
+                foreach (var sceneDef in sceneDefinitions)
                 {
-                    string path = Path.Combine(definitionBundle.DirectoryName, sceneDefProxy.name.ToLower());
-                    var sceneAsset = AssetBundle.LoadFromFile(path); 
+                    string path = Path.Combine(definitionBundle.DirectoryName, sceneDef.name.ToLower());
+                    var sceneAsset = AssetBundle.LoadFromFile(path);
                     LoadedScenes.Add(sceneAsset);
                 }
 
-                sceneDefList.AddRange(sceneDefinitions.Select(sdp => sdp.ToSceneDef()));
+                sceneDefList.AddRange(sceneDefinitions.Select(sdp => sdp));
                 Logger.LogInfo($"Created and Loaded {sceneDefinitions.Length} SceneDefs from Definitions File {definitionBundle}");
 
                 var campaignDefinitions = definitionsBundle.LoadAllAssets<CampaignDefinition>();
@@ -96,34 +89,67 @@ namespace RainOfStages.Plugin
                 Logger.LogInfo($"Created and Loaded {campaignDefinitions.Length} CampaignDefinitions from Definitions File {definitionBundle}");
             }
 
-            CurrentCampaign = Campaigns.FirstOrDefault(campaign => campaign.Name.StartsWith("Risk of Rain 2")) ?? Campaigns.First();
+            CurrentCampaign = Campaigns.FirstOrDefault(campaign => campaign.name == "RiskOfRain2Campaign") ?? Campaigns.First();
+            selectedCampaignIndex = Campaigns.IndexOf(CurrentCampaign);
 
             SetupCustomStageLoading();
 
             Instance = this;
-            //for (int i = 0; i < 32; i++)
-            //    if (!string.IsNullOrEmpty(LayerMask.LayerToName(i)))
-            //        Logger.LogMessage($"{i}: {LayerMask.LayerToName(i)}");
 
             Initialized?.Invoke(this, EventArgs.Empty);
             On.RoR2.UI.MainMenu.MainMenuController.Start += MainMenuController_Start;
-            On.RoR2.Run.BeginStage += Run_BeginStage;
-            On.RoR2.Stage.Start += Stage_Start;
-            SceneDirector.onPostPopulateSceneServer += SceneDirector_onPostPopulateSceneServer;
-        
         }
 
-        public On.RoR2.Stage.orig_Start start;
-
-        private void SceneDirector_onPostPopulateSceneServer(SceneDirector obj) => start(RoR2.Stage.instance);
-        private void Stage_Start(On.RoR2.Stage.orig_Start orig, RoR2.Stage self) => start = orig;
-
-        private void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
+        private void SceneDef_Awake(On.RoR2.SceneDef.orig_Awake orig, SceneDef self)
         {
+            if(self is SceneDefReference sdr)
+            {
+                var def = Resources.Load<SceneDef>($"SceneDefs/{sdr.name}");
+                foreach (var field in sceneDefFields)
+                    field.SetValue(self, field.GetValue(def));
+            }
             orig(self);
+        }
 
-            configurator = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(go => go.GetComponent<MapConfigurator>());
-            configurator?.SetActive(true);
+        private void ResolveSpawncard(DirectorCard card)
+        {
+            bool spawnCardResolved = false;
+            RoR2.SpawnCard result = null;
+
+            var isRoSCard = card.spawnCard.GetType().Namespace.StartsWith(nameof(RainOfStages));
+            if (!isRoSCard) return;
+
+            string cardName = card?.spawnCard?.name;
+            Logger.LogMessage($"Evaluating Spawncard {cardName}");
+
+            switch (card.spawnCard)
+            {
+                case Proxy.InteractableSpawnCard isc:
+                    Logger.LogMessage($"Resolving Spawncard for: {cardName}");
+                    result = isc.ResolveProxy();
+                    spawnCardResolved = true;
+                    break;
+
+                case Proxy.CharacterSpawnCard csc:
+                    Logger.LogMessage($"Resolving Spawncard for: {cardName}");
+                    result = csc.ResolveProxy();
+                    spawnCardResolved = true;
+                    break;
+
+                case Proxy.BodySpawnCard bsc:
+                    Logger.LogMessage($"Resolving Spawncard for: {cardName}");
+                    result = bsc.ResolveProxy();
+                    spawnCardResolved = true;
+                    break;
+
+                case Proxy.SpawnCard sc: break;
+                default:
+                    break;
+            }
+            if (spawnCardResolved && result == null)
+                Logger.LogMessage($"No Spawncard found for: {cardName}");
+            else if (spawnCardResolved)
+                card.spawnCard = result;
         }
 
         private void MainMenuController_Start(On.RoR2.UI.MainMenu.MainMenuController.orig_Start orig, RoR2.UI.MainMenu.MainMenuController self)
@@ -132,7 +158,9 @@ namespace RainOfStages.Plugin
             {
                 //self.gameObject.AddComponent<CampaignManager>();
                 Logger.LogMessage("Adding Campaign Selector to Main Menu");
-                var profileButtonGo = GameObject.Find("Button, Profile");
+                Logger.LogMessage($"HB: {128}");
+
+                var profileButtonGo = GameObject.Find("GenericMenuButton (Singleplayer)");
                 var profileButtonText = profileButtonGo.GetComponentInChildren<HGTextMeshProUGUI>();
                 var profileButtonImage = profileButtonGo.GetComponent<Image>();
                 var profileButton = profileButtonGo.GetComponent<Button>();
@@ -157,7 +185,6 @@ namespace RainOfStages.Plugin
                 var prevButtonImage = prev.AddComponent<Image>();
                 var panelImage = panel.AddComponent<Image>();
 
-
                 CopyImageSettings(profileButtonImage, nextButtonImage);
                 CopyImageSettings(profileButtonImage, prevButtonImage);
                 CopyImageSettings(profileButtonImage, panelImage);
@@ -181,20 +208,20 @@ namespace RainOfStages.Plugin
                 prevButton.image = prevButtonImage;
                 nextButton.image = nextButtonImage;
 
-                int index = 0;
                 nextButton.onClick.AddListener(() =>
                 {
-                    index++;
-                    if (index == Campaigns.Count) index = 0;
-                    CurrentCampaign = Campaigns[index];
+                    selectedCampaignIndex++;
+
+                    if (selectedCampaignIndex >= Campaigns.Count) selectedCampaignIndex = 0;
+                    CurrentCampaign = Campaigns[selectedCampaignIndex];
 
                     UpdateCampaignPreview(previewImage);
                 });
                 prevButton.onClick.AddListener(() =>
                 {
-                    index--;
-                    if (index < 0) index = Campaigns.Count - 1;
-                    CurrentCampaign = Campaigns[index];
+                    selectedCampaignIndex--;
+                    if (selectedCampaignIndex < 0) selectedCampaignIndex = Campaigns.Count - 1;
+                    CurrentCampaign = Campaigns[selectedCampaignIndex];
 
                     UpdateCampaignPreview(previewImage);
                 });
@@ -288,7 +315,7 @@ namespace RainOfStages.Plugin
         {
             Logger.LogInfo("StartUp Script Started");
             On.RoR2.Run.PickNextStageScene += Run_PickNextStageScene;
-            
+
             //On.RoR2.Navigation.MapNodeGroup.Bake += MapNodeGroup_Bake;
 
             SceneCatalog.getAdditionalEntries += DopeItUp;
@@ -296,23 +323,12 @@ namespace RainOfStages.Plugin
             Logger.LogInfo($"Loaded {sceneDefList.Count} SceneDefs");
         }
 
-
         private void Run_PickNextStageScene(On.RoR2.Run.orig_PickNextStageScene orig, Run self, SceneDef[] choices)
         {
-            if (CurrentCampaign?.StartSegment == null) orig(self, choices);
-            else
+            if (CurrentCampaign?.StartSegment != null)
                 self.nextStageScene = CurrentCampaign.PickNextScene(self.nextStageRng, self);
-        }
-
-        private void LogSceneInformation(SceneDef validStage)
-        {
-            Logger.LogInfo($"############ {validStage.nameToken} ############");
-            Logger.LogInfo($"   Object name: {validStage.name}");
-            Logger.LogInfo($"    Scene Type: {validStage.sceneType}");
-            Logger.LogInfo($"   Stage Order: {validStage.stageOrder}");
-            Logger.LogInfo($"    Scene Name: {validStage.baseSceneName}");
-            Logger.LogInfo($"Subtitle Token: {validStage.subtitleToken}");
-            Logger.LogInfo("\r\n");
+            else
+                orig(self, choices);
         }
 
         private void DopeItUp(List<SceneDef> obj)

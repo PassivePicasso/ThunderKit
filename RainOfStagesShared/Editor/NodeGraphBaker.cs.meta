@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 52d9f7828a7b8df4b86d4fa29e71d417
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - BakeSettings: {fileID: 11400000, guid: ca31fd8c3515fa14eb5845d893f0e888, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

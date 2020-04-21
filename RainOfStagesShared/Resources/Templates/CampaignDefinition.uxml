@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:engine="UnityEngine.Experimental.UIElements"
+            xmlns:editor="UnityEditor.Experimental.UIElements"
+            xmlns:upm="UnityEditor.PackageManager.UI"
+            xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+            xsi:schemaLocation="
+              UnityEngine.Experimental.UIElements ../../../UIElementsSchema/UnityEngine.Experimental.UIElements.xsd
+              UnityEditor.Experimental.UIElements ../../../UIElementsSchema/UnityEditor.Experimental.UIElements.xsd
+              UnityEditor.PackageManager.UI ../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd
+              VisualTemplates ../../../UIElementsSchema/VisualTemplates.xsd
+            ">
+
+  <engine:VisualElement class="title">
+    <engine:VisualElement class="campaign-field">
+      <engine:Label text="Campaign Name" class="field-label title-text"/>
+      <engine:TextField binding-path="Name" name="campaign-definition-name-field" class="title-text"/>
+    </engine:VisualElement>
+  </engine:VisualElement>
+  
+  <engine:VisualElement name="editor-content-container">
+
+    <engine:VisualElement class="campaign-field">
+      <engine:Label text="Description" class="field-label"/>
+      <engine:TextField binding-path="Description" name="campaign-definition-description-field" multiline="true" />
+    </engine:VisualElement>
+
+    <engine:VisualElement class="campaign-field">
+      <engine:Label text="Start Segment" class="field-label"/>
+      <editor:ObjectField binding-path="StartSegment" name="campaign-definition-start-segment-field" allow-scene-objects="false"  />
+    </engine:VisualElement>
+
+    <ContentControl xmlns="VisualTemplates" binding-path="StartSegment"/>
+
+    <engine:VisualElement class="campaign-field">
+      <engine:Label text="Preview Texture" class="field-label"/>
+      <editor:PropertyField binding-path="PreviewTexture" name="campaign-definition-preview-texture-field" />
+      <!--<engine:Image name="preview-texture-image" />-->
+    </engine:VisualElement>
+    
+  </engine:VisualElement>
+</engine:UXML>
