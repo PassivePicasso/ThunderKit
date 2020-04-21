@@ -1,6 +1,4 @@
-﻿using RoR2;
-using System;
-using System.Reflection;
+﻿using System.Reflection;
 using UnityEngine;
 
 namespace RainOfStages.Proxy

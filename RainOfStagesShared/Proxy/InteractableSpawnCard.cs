@@ -1,6 +1,4 @@
-﻿using RoR2;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace RainOfStages.Proxy
 {
@@ -9,6 +7,7 @@ namespace RainOfStages.Proxy
     {
         void Awake()
         {
+            if (Application.isEditor) return;
             var card = (RoR2.InteractableSpawnCard)ResolveProxy();
 
             prefab = card.prefab;
