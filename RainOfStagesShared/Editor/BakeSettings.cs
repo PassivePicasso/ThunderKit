@@ -1,18 +1,48 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace RainOfStages
 {
-    [CreateAssetMenu]
+    [CreateAssetMenu(menuName ="Rain of Stages/Bake Settings")]
     public class BakeSettings : ScriptableObject
     {
-        public float AgentHeight = 2;
-        public float AgentRadius = 2;
-        public float AgentSlope = 45;
-        public float AgentClimb = 1;
-        public float VoxelSize = 0.5f;
-        public int TileSize = 20;
+        public Boolean DebugMode;
+        public bool showMesh;
+        
+
+        public Material DebugMaterial;
+        public int agentTypeID;
+        public float agentRadius;
+        public float agentHeight;
+        public float agentSlope;
+        public float agentClimb;
+        public float minRegionArea;
+        public bool overrideVoxelSize;
+        public float voxelSize;
+        public bool overrideTileSize;
+        public int tileSize;
+
+        [HideInInspector]
+        public GameObject NodeMeshObject;
+
+        public NavMeshBuildSettings bakeSettings => new NavMeshBuildSettings
+        {
+            agentClimb = agentClimb,
+            agentHeight = agentHeight,
+            agentRadius = agentRadius,
+            agentSlope = agentSlope,
+            agentTypeID = agentTypeID,
+            minRegionArea = minRegionArea,
+            overrideTileSize = overrideTileSize,
+            overrideVoxelSize = overrideVoxelSize,
+            tileSize = tileSize
+        };
+
+        private void OnValidate()
+        {
+            NodeMeshObject?.SetActive(showMesh);
+        }
 
     }
 }
