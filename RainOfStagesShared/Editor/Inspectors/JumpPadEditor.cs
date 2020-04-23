@@ -12,11 +12,11 @@ namespace RainOfStages.Editor
             JumpPad jumpPad = (JumpPad)target;
 
             EditorGUI.BeginChangeCheck();
-            Vector3 newTargetPosition = Handles.PositionHandle(jumpPad.target, Quaternion.identity);
+            Vector3 newTargetPosition = Handles.PositionHandle(jumpPad.destination, Quaternion.identity);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(jumpPad, "Change JumpPad Target Position");
-                jumpPad.target = newTargetPosition;
+                jumpPad.destination = newTargetPosition;
             }
         }
     }

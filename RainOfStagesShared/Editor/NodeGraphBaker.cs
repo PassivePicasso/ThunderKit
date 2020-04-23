@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine.SceneManagement;
 using UnityEngine.AI;
+using UnityEditor.AI;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
@@ -9,37 +10,24 @@ using GraphType = RoR2.Navigation.MapNodeGroup.GraphType;
 using MapNodeGroup = RoR2.Navigation.MapNodeGroup;
 using RainOfStages.Configurators;
 using SceneInfo = RainOfStages.Proxy.SceneInfo;
+using UnityEditor.SceneManagement;
 
 namespace RainOfStages
 {
     public class NodeGraphBaker : ScriptableObject
     {
+        public BakeSettings bakeSettings;
         [MenuItem("Tools/Rain of Stages/Bake NodeGraph")]
         public static void Bake()
         {
             var baker = ScriptableObject.CreateInstance<NodeGraphBaker>();
+
             baker.Build();
+
             DestroyImmediate(baker);
         }
 
-        public float AgentHeight = 2;
-        public float AgentRadius = 2;
-        public float AgentSlope = 45;
-        public float AgentClimb = 1;
-        public float VoxelSize = 0.5f;
-        public int TileSize = 20;
-
-        NavMeshBuildSettings settings => new NavMeshBuildSettings
-        {
-            agentClimb = AgentClimb,
-            agentHeight = AgentHeight,
-            agentRadius = AgentRadius,
-            agentSlope = AgentSlope,
-            overrideTileSize = true,
-            overrideVoxelSize = true,
-            voxelSize = VoxelSize,
-            tileSize = TileSize,
-        };
+        NavMeshBuildSettings settings => bakeSettings.bakeSettings;
 
         public void Build()
         {
@@ -58,7 +46,38 @@ namespace RainOfStages
 
             var meshFilters = world.GetComponentsInChildren<MeshFilter>();
 
-            var triangulation = GenerateTriangulation(world.transform);
+            var (triangulation, bounds) = GenerateTriangulation(world.transform);
+
+            GameObject obj = GameObject.Find("NodeMesh");
+            if (obj) DestroyImmediate(obj);
+
+            var nodeMesh = new Mesh
+            {
+                vertices = triangulation.vertices,
+                triangles = triangulation.indices
+            };
+            nodeMesh.RecalculateNormals();
+            nodeMesh.RecalculateTangents();
+            nodeMesh.RecalculateBounds();
+
+            var nodeGraphMeshObject = bakeSettings.NodeMeshObject = new GameObject("NodeMesh", typeof(MeshFilter), typeof(MeshRenderer), typeof(BoxCollider));
+            nodeGraphMeshObject.hideFlags = HideFlags.HideAndDontSave;
+
+            var filter = nodeGraphMeshObject.GetComponent<MeshFilter>();
+            filter.sharedMesh = nodeMesh;
+
+            var renderer = nodeGraphMeshObject.GetComponent<MeshRenderer>();
+            renderer.material = bakeSettings.DebugMaterial;
+
+            var collider = nodeGraphMeshObject.GetComponent<BoxCollider>();
+            collider.size = bounds.size;
+            collider.center = bounds.center;
+
+            nodeGraphMeshObject.SetActive(bakeSettings.showMesh);
+
+            if (bakeSettings.DebugMode) return;
+
+
 
             var meshes = meshFilters.Where(mf => mf.gameObject.layer == LayerMask.NameToLayer("World"))
                                     .Select(mf => mf.sharedMesh)
@@ -112,19 +131,38 @@ namespace RainOfStages
             return nodeGraphObject;
         }
 
-        NavMeshTriangulation GenerateTriangulation(Transform world)
+        (NavMeshTriangulation, Bounds) GenerateTriangulation(Transform world)
         {
             NavMesh.RemoveAllNavMeshData();
             var markups = new List<NavMeshBuildMarkup>();
             var sources = new List<NavMeshBuildSource>();
-            NavMeshBuilder.CollectSources(world, LayerMask.GetMask("World"), NavMeshCollectGeometry.RenderMeshes, 0, markups, sources);
-            var renderers = world.gameObject.GetComponentsInChildren<MeshRenderer>();
+            UnityEngine.AI.NavMeshBuilder.CollectSources(world, LayerMask.GetMask("World"), NavMeshCollectGeometry.RenderMeshes, 0, markups, sources);
+            var renderers = world.gameObject.GetComponentsInChildren<MeshRenderer>().Where(mr => mr.gameObject.layer == LayerMask.NameToLayer("World"));
             var bounds = renderers.Select(r => r.bounds).Aggregate((a, b) => { a.Encapsulate(b); return a; });
-            var nvd = NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, world.position, world.rotation);
+            var nvd = UnityEngine.AI.NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, world.position, world.rotation);
             NavMesh.AddNavMeshData(nvd);
             var triangulation = NavMesh.CalculateTriangulation();
             NavMesh.RemoveAllNavMeshData();
-            return triangulation;
+            return (triangulation, bounds);
+        }
+        (NavMeshTriangulation, Bounds) GenerateTriangulation2(Transform world)
+        {
+            NavMesh.RemoveAllNavMeshData();
+
+            var markups = new List<NavMeshBuildMarkup>();
+            var sources = new List<NavMeshBuildSource>();
+            var renderers = world.gameObject.GetComponentsInChildren<MeshRenderer>();
+            var bounds = renderers.Select(r => r.bounds).Aggregate((a, b) => { a.Encapsulate(b); return a; });
+            bounds.center = Vector3.zero;
+            Scene scene = SceneManager.GetActiveScene();
+            UnityEditor.AI.NavMeshBuilder.CollectSourcesInStage(world, LayerMask.GetMask("World"), NavMeshCollectGeometry.RenderMeshes, 0, markups, scene, sources);
+            //UnityEditor.AI.NavMeshBuilder.navMeshSettingsObject
+            var nvd = UnityEngine.AI.NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, world.position, world.rotation);
+            NavMesh.AddNavMeshData(nvd);
+            var triangulation = NavMesh.CalculateTriangulation();
+
+            NavMesh.RemoveAllNavMeshData();
+            return (triangulation, bounds);
         }
 
         RoR2.Navigation.NodeGraph ConfigureMapNodeGroup(MapNodeGroup mapNodeGroup, GraphType graphType, string name)
@@ -158,6 +196,9 @@ namespace RainOfStages
 
             scenePath = System.IO.Path.GetDirectoryName(scenePath);
             nodeGraph.name = name;
+
+            if (!AssetDatabase.IsValidFolder(System.IO.Path.Combine(scenePath, activeScene.name)))
+                AssetDatabase.CreateFolder(scenePath, activeScene.name);
 
             AssetDatabase.CreateAsset(nodeGraph, System.IO.Path.Combine(scenePath, activeScene.name, $"{nodeGraph.name}.asset"));
         }

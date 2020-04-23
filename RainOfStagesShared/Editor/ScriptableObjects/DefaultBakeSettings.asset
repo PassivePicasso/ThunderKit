@@ -12,9 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a68f8bbcffd7a544bd4e51f9c46f447, type: 3}
   m_Name: DefaultBakeSettings
   m_EditorClassIdentifier: 
-  AgentHeight: 2
-  AgentRadius: 2
-  AgentSlope: 45
-  AgentClimb: 1
-  VoxelSize: 1
-  TileSize: 10
+  DebugMode: 0
+  showMesh: 0
+  DebugMaterial: {fileID: 2100000, guid: 94af9f71377a33142ba8f57c71da78be, type: 2}
+  agentTypeID: 0
+  agentRadius: 1
+  agentHeight: 2
+  agentSlope: 50
+  agentClimb: 0.8
+  minRegionArea: 1
+  overrideVoxelSize: 0
+  voxelSize: 0.16
+  overrideTileSize: 1
+  tileSize: 50
+  NodeMeshObject: {fileID: 0}

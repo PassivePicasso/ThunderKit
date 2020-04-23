@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿using EntityStates.Missions.Arena.NullWard;
+using RoR2;
 using UnityEngine;
 
 namespace RainOfStages.Behaviours
@@ -12,8 +13,10 @@ namespace RainOfStages.Behaviours
         [SerializeField]
         public Vector3 jumpVelocity;
 
+        public float time;
+
         [SerializeField, HideInInspector]
-        public Vector3 target;
+        public Vector3 destination;
         private Vector3 origin => transform.position;
 
         public string jumpSoundString;
@@ -21,7 +24,7 @@ namespace RainOfStages.Behaviours
         private Vector3 lastTargetPosition;
         private float lastJumpAngle = 45;
 
-        public void OnTriggerEnter(Collider other)
+        public void OnTriggerStay(Collider other)
         {
             RoR2.CharacterMotor motor = other.GetComponent<CharacterMotor>();
             if (!(bool)((UnityEngine.Object)motor) || !motor.hasEffectiveAuthority)
@@ -32,50 +35,36 @@ namespace RainOfStages.Behaviours
             }
             SetTargetWithAngle();
             motor.disableAirControlUntilCollision = true;
-            motor.velocity += jumpVelocity;
+            motor.velocity = jumpVelocity;
             motor.Motor.ForceUnground();
         }
 
         void OnDrawGizmos()
         {
-            var (_, offset, distance) = LoadVariables();
-            DrawArc(iterations,
-                    LaunchSpeed(distance, offset, Physics.gravity.magnitude, jumpAngle * Mathf.Deg2Rad),
-                    distance, Physics.gravity.magnitude, jumpAngle * Mathf.Deg2Rad);
+            SetTargetWithAngle();
+            var (offset, planarOffset, normalPlanarOffset) = LoadVariables();
+            float speed = Trajectory.CalculateGroundSpeed(time, planarOffset.magnitude);
 
-            var planarTargetPosition = new Vector3(target.x, origin.y, target.z);
+            DrawArc(iterations, speed, offset.magnitude, Physics.gravity.magnitude, jumpAngle * Mathf.Deg2Rad);
+
+            var planarTargetPosition = new Vector3(destination.x, origin.y, destination.z);
             transform.forward = planarTargetPosition - origin;
 
-        }
-
-        public void SetTargetWithAngle()
-        {
-            var (_, offset, distance) = LoadVariables();
-
-            if (jumpAngle == lastJumpAngle && lastTargetPosition == target) return;
-            lastTargetPosition = target;
-            lastJumpAngle = jumpAngle;
-
-            var currentSpeed = LaunchSpeed(distance, offset, Physics.gravity.magnitude, jumpAngle * Mathf.Deg2Rad);
-
-            DrawArc(iterations, currentSpeed, distance, Physics.gravity.magnitude, jumpAngle * Mathf.Deg2Rad);
-
-            var velocityX = currentSpeed * Mathf.Cos(jumpAngle);
-            var velocityY = currentSpeed * Mathf.Sin(jumpAngle);
-
-            var planarTargetPosition = new Vector3(target.x, origin.y, target.z);
-            transform.forward = planarTargetPosition - origin;
-            jumpVelocity = transform.TransformVector(new Vector3(0, velocityY, velocityX));
-
+            Gizmos.DrawSphere(destination, 3);
             Gizmos.color = Color.red;
             Gizmos.DrawLine(origin, origin + jumpVelocity);
         }
 
-        public static float LaunchSpeed(float distance, float yOffset, float gravity, float angle) =>
-            (distance * Mathf.Sqrt(gravity) * Mathf.Sqrt(1 / Mathf.Cos(angle))) / Mathf.Sqrt(2 * distance * Mathf.Sin(angle) + 2 * yOffset * Mathf.Cos(angle));
+        public void SetTargetWithAngle()
+        {
+            if (jumpAngle == lastJumpAngle && lastTargetPosition == destination) return;
+            var (offset, planarOffset, normalPlanarOffset) = LoadVariables();
 
-        //Projects a vector onto a plane. The output is not normalized.
-        public static Vector3 ProjectVectorOnPlane(Vector3 planeNormal, Vector3 vector) => vector - (Vector3.Dot(vector, planeNormal) * planeNormal);
+            float planarVelocity = Trajectory.CalculateGroundSpeed(time, planarOffset.magnitude);
+            float verticalVelocity = Trajectory.CalculateInitialYSpeed(time, offset.y);
+
+            jumpVelocity = new Vector3(normalPlanarOffset.x * planarVelocity, verticalVelocity, normalPlanarOffset.z * planarVelocity);
+        }
 
         public void DrawArc(int iterations, float speed, float distance, float gravity, float angle)
         {
@@ -98,19 +87,18 @@ namespace RainOfStages.Behaviours
                 points[i] = transform.TransformPoint(p);
             }
 
-            for (int i = 0; i < points.Length - 1; i++) 
+            for (int i = 0; i < points.Length - 1; i++)
                 Gizmos.DrawLine(points[i], points[i + 1]);
         }
 
 
-        (Vector3 direction, float offset, float distance) LoadVariables()
+        (Vector3 offset, Vector3 planarOffset, Vector3 normalPlanarOffset) LoadVariables()
         {
-            Vector3 direction = target - origin;
-            float yOffset = -direction.y;
-            direction = ProjectVectorOnPlane(Vector3.up, direction);
-            float distance = direction.magnitude;
+            var offset = destination - origin;
+            var planarOffset = Vector3.ProjectOnPlane(offset, Vector3.up);
+            var normalPlanarOffset = planarOffset.normalized;
 
-            return (direction, yOffset, distance);
+            return (offset, planarOffset, normalPlanarOffset);
         }
     }
 }

@@ -4,7 +4,7 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - BakeSettings: {fileID: 11400000, guid: ca31fd8c3515fa14eb5845d893f0e888, type: 2}
+  - bakeSettings: {fileID: 11400000, guid: ca31fd8c3515fa14eb5845d893f0e888, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
