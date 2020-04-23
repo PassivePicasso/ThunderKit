@@ -1,3 +1,4 @@
+##Warning: this readme is currently significantly out of date and will be updated soon (4/23/2020)
 
 ## Rain of Stages
 Rain of Stage is a mod and starter pack for building custom stages for Risk of Rain 2
