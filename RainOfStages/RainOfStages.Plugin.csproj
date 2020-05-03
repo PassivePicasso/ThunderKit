@@ -21,11 +21,13 @@
     <RainOfStagesShared>$(RainOfStagesPluginDir)\RainOfStages.Shared.dll</RainOfStagesShared>
     <AssetBundleOutput>..\AssetBundles\RainOfStages</AssetBundleOutput>
     <ScriptAssemblies>..\Library\ScriptAssemblies</ScriptAssemblies>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <Target Name="CopyOutput" AfterTargets="Build">
     <Message Text="########################################## Copying Plugin output ##########################################" />
     <ItemGroup>
-      <RainOfStagesManifests Include="$(AssetBundleOutput)\*.manifest" Exclude="$(AssetBundleOutput)\ror2assetpackage.manifest"/>
+      <RainOfStagesManifests Include="$(AssetBundleOutput)\*.manifest" Exclude="$(AssetBundleOutput)\ror2assetpackage.manifest" />
       <RainOfStagesFiles Include="@(RainOfStagesManifests);@(RainOfStagesManifests -> '$(AssetBundleOutput)\%(FileName)');@(RainOfStagesManifests -> '$(ScriptAssemblies)\%(FileName).dll')" />
     </ItemGroup>
     <Message Text="@(RainOfStagesFiles, '%0D  ')" />
@@ -38,6 +40,7 @@
     <Copy SourceFiles="@(CopyOutputFiles)" DestinationFolder="$(RainOfStagesPluginDir)" ContinueOnError="true" />
     <Message Text="########################################## Copied Plugin output ##########################################" />
   </Target>
+  
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -55,6 +58,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy|AnyCPU'">
+    <OutputPath>bin\Deploy\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(RoR2Managed)\Assembly-CSharp.dll</HintPath>
@@ -69,11 +82,14 @@
       <HintPath>$(RoR2Managed)\KdTreeLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
-    <Reference Include="MMHOOK_Assembly-CSharp">
-      <HintPath>$(BepinexPlugins)\R2API\MMHOOK_Assembly-CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Security">
       <HintPath>$(RoR2Managed)\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour">
+      <HintPath>..\..\Risk of Rain 2\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>..\..\Risk of Rain 2\BepInEx\core\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -90,9 +106,6 @@
     </Reference>
     <Reference Include="ProBuilderMeshOps">
       <HintPath>$(RoR2Managed)\ProBuilderMeshOps.dll</HintPath>
-    </Reference>
-    <Reference Include="R2API">
-      <HintPath>..\..\Risk of Rain 2\BepInEx\plugins\R2API\R2API.dll</HintPath>
     </Reference>
     <Reference Include="RainOfStages.Shared, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -421,8 +434,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="GetReferencedAssembliesTask.cs" />
+    <Compile Include="Delegates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RainOfStages.cs" />
+    <None Include="manifest.json" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  
+  <Target Name="SupahDeploy" AfterTargets="CopyOutput">
+    <ItemGroup>
+      <Plugin Include="@(RainOfStagesFiles)" />
+      <Plugin Include="@(CopyOutputFiles)" />
+      <Icon Include="icon.png" />
+      <Manifest Include="manifest.json" />
+    </ItemGroup>
+    <Message Text="Loaded Files for Deployment" />
+    <Message Text="@(Plugin->'%0A%(Filename)%(Extension)');" />
+    <Copy SourceFiles="@(Plugin)" DestinationFolder="$(OutputPath)$(AssemblyName)Mod\plugins\RainOfStages\" ContinueOnError="true"/>
+
+    <Message Text="@(Icon->'%0A%(Filename)%(Extension)');" />
+    <Copy SourceFiles="@(Icon)" DestinationFolder="$(OutputPath)$(AssemblyName)Mod\" ContinueOnError="true" />
+
+    <Message Text="@(Manifest->'%0A%(Filename)%(Extension)');" />
+    <Copy SourceFiles="@(Manifest)" DestinationFolder="$(OutputPath)$(AssemblyName)Mod\" ContinueOnError="true" />
+  </Target>
 </Project>

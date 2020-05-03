@@ -1,8 +1,10 @@
 ﻿using BepInEx;
+using MonoMod.RuntimeDetour.HookGen;
 using RainOfStages.Campaign;
 using RainOfStages.Proxy;
 using RoR2;
 using RoR2.UI;
+using RoR2.UI.MainMenu;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +17,6 @@ using Path = System.IO.Path;
 
 namespace RainOfStages.Plugin
 {
-
     //This attribute is required, and lists metadata for your plugin.
     //The GUID should be a unique ID for this plugin, which is human readable (as it is used in places like the config). I like to use the java package notation, which is "com.[your name here].[your plugin name here]"
 
@@ -24,6 +25,13 @@ namespace RainOfStages.Plugin
     [BepInDependency("com.bepis.r2api")]
     public class RainOfStages : BaseUnityPlugin
     {
+        class ManifestMap
+        {
+            public FileInfo File;
+            public string[] Content;
+        }
+        private const string campaignManifestName = "campaignmanifest";
+        private const string NamePrefix = "      Name: ";
         private static FieldInfo[] sceneDefFields = typeof(SceneDef).GetFields(BindingFlags.Public | BindingFlags.Instance);
 
         public static RainOfStages Instance { get; private set; }
@@ -55,49 +63,101 @@ namespace RainOfStages.Plugin
             while (dir != null && dir.Name != "plugins") dir = dir.Parent;
 
             if (dir == null) throw new ArgumentException(@"invalid plugin path detected, could not find expected ""plugins"" folder in parent tree");
+            Func<string, bool> hasNameEntry = line => line.StartsWith(NamePrefix);
 
+            var manifestMaps = dir.GetFiles("*.manifest", SearchOption.AllDirectories)
+                               .Select(manifestFile => new ManifestMap { File = manifestFile, Content = File.ReadAllLines(manifestFile.FullName) })
+                               .Where(mfm => mfm.Content.Any(line => line.StartsWith("AssetBundleManifest:")))
+                               .Where(mfm => mfm.Content.Any(line => line.Contains("campaignmanifest")))
+                               .ToArray();
 
-            var campaignManifest = dir.GetFiles("campaignmanifest", SearchOption.AllDirectories);
-
-            On.RoR2.SceneDef.Awake += SceneDef_Awake;
-
-            foreach (var definitionBundle in campaignManifest)
+            Logger.LogInfo($"Loaded Rain of Stages compatible AssetBundles");
+            foreach (var mfm in manifestMaps)
             {
-                Logger.LogInfo($"Loading Scene Definitions: {definitionBundle}");
-                var definitionsBundle = AssetBundle.LoadFromFile($"{definitionBundle}");
-                var sceneDefinitions = definitionsBundle.LoadAllAssets<CustomSceneDefProxy>();
-                var bundleGraphs = definitionsBundle.LoadAllAssets<NodeGraph>();
-                nodeGraphs.AddRange(bundleGraphs);
-
-                foreach (var sceneDef in sceneDefinitions)
+                try
                 {
-                    string path = Path.Combine(definitionBundle.DirectoryName, sceneDef.name.ToLower());
-                    var sceneAsset = AssetBundle.LoadFromFile(path);
-                    LoadedScenes.Add(sceneAsset);
+                    var directory = mfm.File.DirectoryName;
+                    var filename = Path.GetFileNameWithoutExtension(mfm.File.FullName);
+                    var abmPath = Path.Combine(directory, filename);
+                    var namedBundle = AssetBundle.LoadFromFile(abmPath);
+                    var manifest = namedBundle.LoadAsset<AssetBundleManifest>("assetbundlemanifest");
+                    var dependentBundles = manifest.GetAllAssetBundles();
+                    foreach (var definitionBundle in dependentBundles)
+                    {
+                        try
+                        {
+                            var bundlePath = Path.Combine(directory, definitionBundle);
+                            var bundle = AssetBundle.LoadFromFile(bundlePath);
+
+                            if (bundle.isStreamedSceneAssetBundle)
+                            {
+                                LoadedScenes.Add(bundle);
+                                Logger.LogInfo($"Loaded Scene {definitionBundle}");
+                            }
+                            else
+                            {
+                                var sceneDefinitions = bundle.LoadAllAssets<CustomSceneDefProxy>();
+                                if (sceneDefinitions.Length > 0)
+                                {
+                                    sceneDefList.AddRange(sceneDefinitions);
+                                    Logger.LogInfo($"Loaded Scene Definitions {sceneDefinitions.Select(sd => sd.name).Aggregate((a, b) => $"{a}, {b}")}");
+                                }
+
+                                var campaignDefinitions = bundle.LoadAllAssets<CampaignDefinition>();
+                                if (sceneDefinitions.Length > 0)
+                                {
+                                    Campaigns.AddRange(campaignDefinitions);
+                                    Logger.LogInfo($"Created and Loaded {campaignDefinitions.Length} CampaignDefinitions from Definitions File {definitionBundle}");
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.LogError(e);
+                        }
+                    }
                 }
-
-                sceneDefList.AddRange(sceneDefinitions.Select(sdp => sdp));
-                Logger.LogInfo($"Created and Loaded {sceneDefinitions.Length} SceneDefs from Definitions File {definitionBundle}");
-
-                var campaignDefinitions = definitionsBundle.LoadAllAssets<CampaignDefinition>();
-                Campaigns.AddRange(campaignDefinitions);
-                Logger.LogInfo($"Created and Loaded {campaignDefinitions.Length} CampaignDefinitions from Definitions File {definitionBundle}");
+                catch (Exception e)
+                {
+                    Logger.LogError(e);
+                }
             }
 
             CurrentCampaign = Campaigns.FirstOrDefault(campaign => campaign.name == "RiskOfRain2Campaign") ?? Campaigns.First();
             selectedCampaignIndex = Campaigns.IndexOf(CurrentCampaign);
 
-            SetupCustomStageLoading();
-
             Instance = this;
 
             Initialized?.Invoke(this, EventArgs.Empty);
-            On.RoR2.UI.MainMenu.MainMenuController.Start += MainMenuController_Start;
+
+            var mmcStart = typeof(MainMenuController).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic);
+            var sdAwake = typeof(SceneDef).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
+            var runPNS = typeof(Run).GetMethod(nameof(Run.PickNextStageScene));
+
+            HookEndpointManager.Add<Hook<MainMenuController>>(mmcStart, (Hook<MainMenuController>)MainMenuController_Start);
+            HookEndpointManager.Add<Hook<SceneDef>>(sdAwake, (Hook<SceneDef>)SceneDef_Awake);
+            HookEndpointManager.Add<Hook<Run>>(runPNS, (Hook<Run, SceneDef[]>)(Run_PickNextStageScene));
+
+            SceneCatalog.getAdditionalEntries += ProvideAdditionalSceneDefs;
         }
 
-        private void SceneDef_Awake(On.RoR2.SceneDef.orig_Awake orig, SceneDef self)
+        private void Run_PickNextStageScene(MethodCall<Run, SceneDef[]> orig, Run self, SceneDef[] choices)
         {
-            if(self is SceneDefReference sdr)
+            if (CurrentCampaign?.StartSegment != null)
+                self.nextStageScene = CurrentCampaign.PickNextScene(self.nextStageRng, self);
+            else
+                orig(self, choices);
+        }
+
+        private void ProvideAdditionalSceneDefs(List<SceneDef> obj)
+        {
+            Logger.LogInfo("Loading additional scenes");
+            obj.AddRange(sceneDefList);
+        }
+
+        private void SceneDef_Awake(MethodCall<SceneDef> orig, SceneDef self)
+        {
+            if (self is SceneDefReference sdr)
             {
                 var def = Resources.Load<SceneDef>($"SceneDefs/{sdr.name}");
                 foreach (var field in sceneDefFields)
@@ -106,48 +166,7 @@ namespace RainOfStages.Plugin
             orig(self);
         }
 
-        private void ResolveSpawncard(DirectorCard card)
-        {
-            bool spawnCardResolved = false;
-            RoR2.SpawnCard result = null;
-
-            var isRoSCard = card.spawnCard.GetType().Namespace.StartsWith(nameof(RainOfStages));
-            if (!isRoSCard) return;
-
-            string cardName = card?.spawnCard?.name;
-            Logger.LogMessage($"Evaluating Spawncard {cardName}");
-
-            switch (card.spawnCard)
-            {
-                case Proxy.InteractableSpawnCard isc:
-                    Logger.LogMessage($"Resolving Spawncard for: {cardName}");
-                    result = isc.ResolveProxy();
-                    spawnCardResolved = true;
-                    break;
-
-                case Proxy.CharacterSpawnCard csc:
-                    Logger.LogMessage($"Resolving Spawncard for: {cardName}");
-                    result = csc.ResolveProxy();
-                    spawnCardResolved = true;
-                    break;
-
-                case Proxy.BodySpawnCard bsc:
-                    Logger.LogMessage($"Resolving Spawncard for: {cardName}");
-                    result = bsc.ResolveProxy();
-                    spawnCardResolved = true;
-                    break;
-
-                case Proxy.SpawnCard sc: break;
-                default:
-                    break;
-            }
-            if (spawnCardResolved && result == null)
-                Logger.LogMessage($"No Spawncard found for: {cardName}");
-            else if (spawnCardResolved)
-                card.spawnCard = result;
-        }
-
-        private void MainMenuController_Start(On.RoR2.UI.MainMenu.MainMenuController.orig_Start orig, RoR2.UI.MainMenu.MainMenuController self)
+        private void MainMenuController_Start(MethodCall<MainMenuController> orig, MainMenuController self)
         {
             try
             {
@@ -305,108 +324,5 @@ namespace RainOfStages.Plugin
                 PrintHieriarchy(childTransform, indent + 1);
             }
         }
-
-        private void SetupCustomStageLoading()
-        {
-            Logger.LogInfo("StartUp Script Started");
-            On.RoR2.Run.PickNextStageScene += Run_PickNextStageScene;
-
-            //On.RoR2.Navigation.MapNodeGroup.Bake += MapNodeGroup_Bake;
-
-            SceneCatalog.getAdditionalEntries += DopeItUp;
-
-            Logger.LogInfo($"Loaded {sceneDefList.Count} SceneDefs");
-        }
-
-        private void Run_PickNextStageScene(On.RoR2.Run.orig_PickNextStageScene orig, Run self, SceneDef[] choices)
-        {
-            if (CurrentCampaign?.StartSegment != null)
-                self.nextStageScene = CurrentCampaign.PickNextScene(self.nextStageRng, self);
-            else
-                orig(self, choices);
-        }
-
-        private void DopeItUp(List<SceneDef> obj)
-        {
-            Logger.LogInfo("Loading additional scenes");
-            obj.AddRange(sceneDefList);
-        }
-
-        #region deprecated
-        /*
-         
-        private void MapNodeGroup_Bake(On.RoR2.Navigation.MapNodeGroup.orig_Bake orig, MapNodeGroup self, NodeGraph nodeGraph)
-        {
-            List<MapNode> nodes = self.GetNodes();
-
-            ReadOnlyCollection<MapNode> readonlyNodes = nodes.AsReadOnly();
-
-            foreach (var node in nodes) node.BuildLinks(readonlyNodes, self.graphType);
-
-            nodeGraph.SetNodes(readonlyNodes, CalculateLineOfSight(nodes));
-        }
-
-        private ReadOnlyCollection<SerializableBitArray> CalculateLineOfSight(List<MapNode> nodes)
-        {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            int testSetSize = nodes.Count * nodes.Count;
-
-            NativeArray<RaycastHit> results = new NativeArray<RaycastHit>(testSetSize, Allocator.Temp);
-            NativeArray<RaycastCommand> commands = new NativeArray<RaycastCommand>(testSetSize, Allocator.Temp);
-
-            for (int index1 = 0; index1 < nodes.Count; ++index1)
-            {
-                var offset = index1 * nodes.Count;
-                MapNode mapNode = nodes[index1];
-                for (int index2 = 0; index2 < nodes.Count; ++index2)
-                {
-                    MapNode other = nodes[index2];
-
-                    var origin = mapNode.transform.position + Vector3.up;
-                    var destination = other.transform.position + Vector3.up;
-                    var direction = destination - origin;
-                    commands[offset + index2] = new RaycastCommand(origin, direction, Vector3.Distance(origin, destination), LayerIndex.world.mask, 1);
-                }
-            }
-
-            stopwatch.Stop();
-            Logger.LogInfo($"Prepared {testSetSize} RaycastCommands in {stopwatch.ElapsedMilliseconds}ms");
-
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            var handle = RaycastCommand.ScheduleBatch(commands, results, 1);
-            handle.Complete();
-
-            stopwatch.Stop();
-            Logger.LogInfo($"Executed {testSetSize} RaycastCommands in {stopwatch.ElapsedMilliseconds}ms");
-
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            var serializableBitArrayList = new List<SerializableBitArray>(nodes.Count);
-            for (int index1 = 0; index1 < nodes.Count; ++index1)
-            {
-                var offset = index1 * nodes.Count;
-                SerializableBitArray serializableBitArray = new SerializableBitArray(nodes.Count);
-                for (int index2 = 0; index2 < nodes.Count; ++index2)
-                    serializableBitArray[index2] = results[offset + index2].collider == null;
-
-                serializableBitArrayList.Add(serializableBitArray);
-            }
-            stopwatch.Stop();
-            Logger.LogInfo($"Processed {testSetSize} RaycastHits into BitArray in {stopwatch.ElapsedMilliseconds}ms");
-
-            results.Dispose();
-            commands.Dispose();
-
-            return serializableBitArrayList.AsReadOnly();
-        }
-
-         
-         */
-        #endregion
     }
 }
