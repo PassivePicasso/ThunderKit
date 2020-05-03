@@ -1,0 +1,20 @@
+{
+    "name": "RainOfStages.Plugin",
+    "references": [
+        "RainOfStages.Shared",
+        "Unity.TextMeshPro"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Assembly-CSharp.dll",
+        "BepInEx.dll",
+        "MonoMod.RuntimeDetour.dll",
+        "MonoMod.Utils.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
