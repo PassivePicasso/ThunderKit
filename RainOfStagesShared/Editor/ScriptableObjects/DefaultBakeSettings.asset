@@ -14,15 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugMode: 0
   showMesh: 0
-  DebugMaterial: {fileID: 2100000, guid: 94af9f71377a33142ba8f57c71da78be, type: 2}
+  DebugMaterial: {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   agentTypeID: 0
-  agentRadius: 1
-  agentHeight: 2
+  agentRadius: 2
+  agentHeight: 10
   agentSlope: 50
-  agentClimb: 0.8
-  minRegionArea: 1
+  agentClimb: 3
+  minRegionArea: 2
   overrideVoxelSize: 0
   voxelSize: 0.16
   overrideTileSize: 1
-  tileSize: 50
+  tileSize: 20
+  globalNavigationOffset: {x: 0, y: 0, z: 0}
   NodeMeshObject: {fileID: 0}
