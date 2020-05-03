@@ -35,6 +35,12 @@ namespace RainOfStages
             var sceneInfo = rootObjects.FirstOrDefault(ro => ro.GetComponent<SceneInfo>() != null).GetComponent<SceneInfo>();
 
             Undo.RecordObject(sceneInfo, "Bake NodeGraph");
+            var worlds = rootObjects.Count(ro => ro.layer == LayerMask.NameToLayer("World"));
+            if(worlds > 1)
+            {
+                UnityEngine.Debug.LogError("Bake Failed: Multiple root GameObjects found on World Layer");
+                return;
+            }
 
             var world = rootObjects.FirstOrDefault(ro => ro.layer == LayerMask.NameToLayer("World"));
 
@@ -48,9 +54,10 @@ namespace RainOfStages
 
             var (triangulation, bounds) = GenerateTriangulation(world.transform);
 
+            triangulation.vertices = triangulation.vertices.Select(v => v + bakeSettings.globalNavigationOffset).ToArray();
+
             GameObject obj = GameObject.Find("NodeMesh");
             if (obj) DestroyImmediate(obj);
-
             var nodeMesh = new Mesh
             {
                 vertices = triangulation.vertices,
@@ -60,7 +67,7 @@ namespace RainOfStages
             nodeMesh.RecalculateTangents();
             nodeMesh.RecalculateBounds();
 
-            var nodeGraphMeshObject = bakeSettings.NodeMeshObject = new GameObject("NodeMesh", typeof(MeshFilter), typeof(MeshRenderer), typeof(BoxCollider));
+            var nodeGraphMeshObject = bakeSettings.NodeMeshObject = new GameObject("NodeMesh", typeof(MeshFilter), typeof(MeshRenderer));
             nodeGraphMeshObject.hideFlags = HideFlags.HideAndDontSave;
 
             var filter = nodeGraphMeshObject.GetComponent<MeshFilter>();
@@ -69,15 +76,9 @@ namespace RainOfStages
             var renderer = nodeGraphMeshObject.GetComponent<MeshRenderer>();
             renderer.material = bakeSettings.DebugMaterial;
 
-            var collider = nodeGraphMeshObject.GetComponent<BoxCollider>();
-            collider.size = bounds.size;
-            collider.center = bounds.center;
-
             nodeGraphMeshObject.SetActive(bakeSettings.showMesh);
 
             if (bakeSettings.DebugMode) return;
-
-
 
             var meshes = meshFilters.Where(mf => mf.gameObject.layer == LayerMask.NameToLayer("World"))
                                     .Select(mf => mf.sharedMesh)
@@ -106,7 +107,7 @@ namespace RainOfStages
             DestroyImmediate(groundNodeGroup);
             DestroyImmediate(airNodeGroup);
 
-            EditorApplication.MarkSceneDirty();
+            EditorSceneManager.MarkAllScenesDirty();
         }
 
         private GameObject BakeGraph(SceneInfo sceneInfo, Mesh[] meshes, IEnumerable<Vector3> positions, GraphType graphType, string name)
@@ -137,7 +138,7 @@ namespace RainOfStages
             var markups = new List<NavMeshBuildMarkup>();
             var sources = new List<NavMeshBuildSource>();
             UnityEngine.AI.NavMeshBuilder.CollectSources(world, LayerMask.GetMask("World"), NavMeshCollectGeometry.RenderMeshes, 0, markups, sources);
-            var renderers = world.gameObject.GetComponentsInChildren<MeshRenderer>().Where(mr => mr.gameObject.layer == LayerMask.NameToLayer("World"));
+            var renderers = world.gameObject.GetComponentsInChildren<MeshRenderer>().Where(mr => mr?.gameObject?.layer == LayerMask.NameToLayer("World"));
             var bounds = renderers.Select(r => r.bounds).Aggregate((a, b) => { a.Encapsulate(b); return a; });
             var nvd = UnityEngine.AI.NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, world.position, world.rotation);
             NavMesh.AddNavMeshData(nvd);
