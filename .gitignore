@@ -107,3 +107,7 @@ crashlytics-build.properties
 /AssetBundles/RainOfStages
 /Assets/epyphany
 /Assets/Textures
+/RainOfStages/bin/Deploy
+/RainOfStages/obj/Deploy
+/Assets/RainOfStagesSettings.asset.meta
+/Assets/RainOfStagesSettings.asset
