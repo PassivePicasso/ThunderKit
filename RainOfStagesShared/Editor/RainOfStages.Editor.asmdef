@@ -1,8 +1,7 @@
 {
     "name": "RainOfStages.Editor",
     "references": [
-        "RainOfStages.Shared",
-        "VisualTemplates"
+        "RainOfStages.Shared"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
