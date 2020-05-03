@@ -20,7 +20,7 @@ MonoBehaviour:
   portalMaterial: {fileID: 0}
   portalSelectionMessageString: 
   dioramaPrefab: {fileID: 0}
-  sceneType: 0
+  sceneType: 1
   songName: FULLSong02
   bossSongName: Song16
   isOfflineScene: 0
