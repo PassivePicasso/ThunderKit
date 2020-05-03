@@ -4,12 +4,13 @@ using UnityEngine;
 
 namespace RainOfStages.Behaviours
 {
-    [RequireComponent(typeof(BoxCollider))]
+    [RequireComponent(typeof(Collider))]
     public class JumpPad : MonoBehaviour
     {
         public int iterations = 20;
         [HideInInspector]
         public float jumpAngle = 45;
+
         [SerializeField]
         public Vector3 jumpVelocity;
 
