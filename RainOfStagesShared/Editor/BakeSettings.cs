@@ -4,12 +4,12 @@ using UnityEngine.AI;
 
 namespace RainOfStages
 {
-    [CreateAssetMenu(menuName ="Rain of Stages/Bake Settings")]
+    [CreateAssetMenu(menuName = "Rain of Stages/Bake Settings")]
     public class BakeSettings : ScriptableObject
     {
         public Boolean DebugMode;
         public bool showMesh;
-        
+
 
         public Material DebugMaterial;
         public int agentTypeID;
@@ -22,6 +22,7 @@ namespace RainOfStages
         public float voxelSize;
         public bool overrideTileSize;
         public int tileSize;
+        public Vector3 globalNavigationOffset;
 
         [HideInInspector]
         public GameObject NodeMeshObject;
@@ -41,7 +42,8 @@ namespace RainOfStages
 
         private void OnValidate()
         {
-            NodeMeshObject?.SetActive(showMesh);
+            if (NodeMeshObject)
+                NodeMeshObject.SetActive(showMesh);
         }
 
     }
