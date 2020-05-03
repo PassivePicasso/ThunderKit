@@ -1,9 +1,6 @@
 {
     "name": "RainOfStages.Shared",
-    "references": [
-        "Unity.Mathematics",
-        "Unity.Burst"
-    ],
+    "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
