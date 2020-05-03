@@ -36,6 +36,9 @@ namespace RainOfStages.AutoConfig
             var results = RequiredAssemblies.SelectMany(ra => AssetDatabase.FindAssets(ra)).Distinct().ToArray();
             var destinationFolder = Path.Combine(projectDirectory, "Assets", "Assemblies");
 
+            if (!Directory.Exists(destinationFolder))
+                Directory.CreateDirectory(destinationFolder);
+
             if (RequiredAssemblies.All(asm => File.Exists(Path.Combine(destinationFolder, asm))))
                 return;
 
@@ -65,11 +68,13 @@ namespace RainOfStages.AutoConfig
                 File.WriteAllText(destinationMetaData, MetaData);
             }
 
+            RainOfStages.RainOfStagesShared.AutoConfig.Editor.BepInExPackLoader.DownloadBepinex();
+
             AssetDatabase.Refresh();
         }
 
 
-        const string MetaData =
+        internal const string MetaData =
 @"fileFormatVersion: 2
 guid: fc64261ca6282254da01b0f016bcfcea
 PluginImporter:
@@ -80,7 +85,7 @@ PluginImporter:
   defineConstraints: []
   isPreloaded: 0
   isOverridable: 0
-  isExplicitlyReferenced: 0
+  isExplicitlyReferenced: 1
   validateReferences: 1
   platformData:
   - first:

@@ -1,0 +1,7 @@
+{
+  "name": "RainOfStages",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/PassivePicasso/Rain-of-Stages",
+  "description": "The Premiere Risk of Rain 2 Map Loader and Map Content Creation System!",
+  "dependencies": [ "bbepis-BepInExPack-3.0.0" ]
+}
