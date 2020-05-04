@@ -1,8 +1,8 @@
 {
     "name": "RainOfStages.Plugin",
     "references": [
-        "RainOfStages.Shared",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "RainOfStages.RoR2"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

@@ -1,7 +1,7 @@
 {
-    "name": "AutoConfig",
+    "name": "RainOfStages.Thunderstore",
     "references": [
-        "Thunderstore"
+        "RainOfStages.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
@@ -13,6 +13,6 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": []
 }
