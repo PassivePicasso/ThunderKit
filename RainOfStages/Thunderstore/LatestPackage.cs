@@ -1,5 +1,5 @@
 ﻿using System;
-namespace RainOfStages.RainOfStagesShared.AutoConfig.Editor.Thunderstore
+namespace RainOfStages.Thunderstore
 {
 
     [Serializable]

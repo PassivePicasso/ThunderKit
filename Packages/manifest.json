@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.passivepicasso.rainofstages.shared": "file:F:/Projects/RoR2_Modding/Rain-of-Stages/RainOfStagesShared",
+    "com.passivepicasso.rainofstages": "file:F:/Projects/RoR2_Modding/Rain-of-Stages/RainOfStages",
     "com.unity.assetbundlebrowser": "1.7.0",
     "com.unity.package-manager-ui": "2.0.8",
     "com.unity.polybrush": "1.0.2-preview.4",

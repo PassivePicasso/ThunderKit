@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -42,7 +41,7 @@ namespace RainOfStages.AutoConfig
             if (RequiredAssemblies.All(asm => File.Exists(Path.Combine(destinationFolder, asm))))
                 return;
 
-            if (results.Length == RequiredAssemblies.Length 
+            if (results.Length == RequiredAssemblies.Length
              && !string.IsNullOrEmpty(settings.RoR2Path)
              && File.Exists(Path.Combine(settings.RoR2Path, "Risk of Rain 2.exe")))
                 return;
@@ -68,7 +67,7 @@ namespace RainOfStages.AutoConfig
                 File.WriteAllText(destinationMetaData, MetaData);
             }
 
-            RainOfStages.RainOfStagesShared.AutoConfig.Editor.BepInExPackLoader.DownloadBepinex();
+            _ = Editor.BepInExPackLoader.DownloadBepinex();
 
             AssetDatabase.Refresh();
         }
