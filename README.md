@@ -22,7 +22,8 @@ To use this project you will need a copy of Unity that matches Risk of Rain 2's 
      * The loading process will take some time so be patient.
  1. After the initial load completes, you will be prompted to locate the "Risk of Rain 2.exe" you will be using to test your content in.
  1. Rain of Stages will now retrieve a number of dependencies from Risk of Rain 2 as well as BepInEx from Thunderstore.io
- 1. It will take a few minutes for all the libraries to load and the project to compile, once complete you are ready to go!
+     * Another long loading process here, unity may appear to hang at points, don't close it.
+ 1. You are ready to start making content!
 
 
 ### Hello Maps!
