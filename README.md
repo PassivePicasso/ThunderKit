@@ -1,5 +1,5 @@
 ## Rain of Stages
-Rain of Stage is a Map and Mod Kit for Risk of Rain 2, providing all the bare essentials for getting started with making Risk of Rain 2 Maps and Mods.
+Rain of Stage is a Map and Mod Kit for Risk of Rain 2, providing all the bare essentials for getting started with making RoR2 Maps and Mods.
 
 
 #### Preparation
