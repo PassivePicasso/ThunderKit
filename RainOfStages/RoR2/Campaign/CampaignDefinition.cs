@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using RainOfStages.Utilities;
+using UnityEditor;
+#endif
 
 namespace RainOfStages.Campaign
 {
-    [CreateAssetMenu(menuName = "Rain of Stages/Campaign")]
     public class CampaignDefinition : ScriptableObject
     {
         public string Name;
@@ -44,5 +47,10 @@ namespace RainOfStages.Campaign
 
             return nextStage;
         }
+
+#if UNITY_EDITOR
+        [MenuItem("Assets/Rain of Stages/Stages/" + nameof(CampaignDefinition))]
+        public static void Create() => ScriptableHelper.CreateAsset<CampaignDefinition>();
+#endif
     }
 }

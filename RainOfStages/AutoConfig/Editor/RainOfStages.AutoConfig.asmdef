@@ -1,7 +1,8 @@
 {
     "name": "RainOfStages.AutoConfig",
     "references": [
-        "RainOfStages.Thunderstore"
+        "RainOfStages.Thunderstore",
+        "RainOfStages.Utilities"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

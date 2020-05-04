@@ -1,4 +1,5 @@
-﻿using RainOfStages.Thunderstore;
+﻿#if UNITY_EDITOR
+using RainOfStages.Thunderstore;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -99,3 +100,4 @@ namespace RainOfStages.AutoConfig.Editor
         }
     }
 }
+#endif

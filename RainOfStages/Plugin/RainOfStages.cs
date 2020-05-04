@@ -22,7 +22,6 @@ namespace RainOfStages.Plugin
 
     //The name is the name of the plugin that's displayed on load, and the version number just specifies what version the plugin is.
     [BepInPlugin("com.PassivePicasso.RainOfStages", "RainOfStages", "2020.1.0")]
-    [BepInDependency("com.bepis.r2api")]
     public class RainOfStages : BaseUnityPlugin
     {
         class ManifestMap

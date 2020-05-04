@@ -1,7 +1,9 @@
 {
-    "name": "RainOfStages.RoR2",
+    "name": "RainOfStages.Deploy",
     "references": [
-        "RainOfStages.Utilities"
+        "RainOfStages.Thunderstore",
+        "RainOfStages.Utilities",
+        "Unity.AssetBundleBrowser.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
