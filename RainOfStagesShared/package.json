@@ -1,9 +1,0 @@
-{
-  "name": "com.passivepicasso.rainofstages.shared",
-  "version": "0.1.1",
-  "displayName": "Rain of Stages Shared Library",
-  "description": "The Shared Library contains all the necessary parts to populate stage data for a custom Risk of Rain 2 stage.",
-  "unity": "2018.3",
-  "release": "13f1",
-  "dependencies": {}
-}

@@ -1,16 +1,15 @@
-﻿using UnityEngine;
-using UnityEditor;
-using UnityEngine.SceneManagement;
-using UnityEngine.AI;
-using UnityEditor.AI;
+﻿using RainOfStages.Configurators;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 using GraphType = RoR2.Navigation.MapNodeGroup.GraphType;
 using MapNodeGroup = RoR2.Navigation.MapNodeGroup;
-using RainOfStages.Configurators;
 using SceneInfo = RainOfStages.Proxy.SceneInfo;
-using UnityEditor.SceneManagement;
 
 namespace RainOfStages
 {
@@ -36,7 +35,7 @@ namespace RainOfStages
 
             Undo.RecordObject(sceneInfo, "Bake NodeGraph");
             var worlds = rootObjects.Count(ro => ro.layer == LayerMask.NameToLayer("World"));
-            if(worlds > 1)
+            if (worlds > 1)
             {
                 UnityEngine.Debug.LogError("Bake Failed: Multiple root GameObjects found on World Layer");
                 return;

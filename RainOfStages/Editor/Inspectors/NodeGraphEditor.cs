@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using UnityEditor;
-using RoR2.Navigation;
+﻿using RoR2.Navigation;
 using System.Reflection;
+using UnityEditor;
+using UnityEngine;
 
 [CustomEditor(typeof(NodeGraph))]
 public class NodeGraphEditor : Editor
@@ -13,7 +13,7 @@ public class NodeGraphEditor : Editor
 
         var nodes = nodesField.GetValue(nodeGraph) as RoR2.Navigation.NodeGraph.Node[];
 
-        foreach(var node in nodes)
+        foreach (var node in nodes)
         {
             Handles.DrawSphere(0, node.position, Quaternion.identity, 1);
         }
