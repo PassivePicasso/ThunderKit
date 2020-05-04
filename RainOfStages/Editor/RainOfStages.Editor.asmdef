@@ -1,7 +1,7 @@
 {
     "name": "RainOfStages.Editor",
     "references": [
-        "RainOfStages.Shared"
+        "RainOfStages.RoR2"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
@@ -10,9 +10,7 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
-    "precompiledReferences": [
-        "Assembly-CSharp.dll"
-    ],
+    "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": []
 }

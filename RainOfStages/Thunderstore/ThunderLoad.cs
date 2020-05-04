@@ -14,41 +14,46 @@ namespace RainOfStages.Thunderstore
         const string PackageApi = ThunderstoreIO + "/package/download";
 
         internal static List<Page> loadedPages = new List<Page>();
-        private static WebClient client = new WebClient();
 
         public static async Task<Package> LookupPackage(string name, int pageIndex = 1)
         {
-            Debug.Log($"Looking up {name}");
-
-            Uri address = new Uri($"{PackageListApi}/?page={pageIndex}");
-
-            Page page;
-            if (loadedPages.Count > pageIndex)
-                page = loadedPages[pageIndex];
-            else
+            using (WebClient client = new WebClient())
             {
-                var response = await client.DownloadStringTaskAsync(address);
+                Debug.Log($"Looking up {name}");
 
-                page = JsonUtility.FromJson<Page>(response);
-                if (page == null || page.count == 0)
+                Uri address = new Uri($"{PackageListApi}/?page={pageIndex}");
+
+                Page page;
+                if (loadedPages.Count > pageIndex)
+                    page = loadedPages[pageIndex];
+                else
                 {
-                    Debug.Log("No Thunderstore results found");
-                    return null;
+                    var response = await client.DownloadStringTaskAsync(address);
+
+                    page = JsonUtility.FromJson<Page>(response);
+                    if (page == null || page.count == 0)
+                    {
+                        Debug.Log("No Thunderstore results found");
+                        return null;
+                    }
+                    loadedPages.Add(page);
                 }
-                loadedPages.Add(page);
+
+                var targetPackage = page.results.FirstOrDefault(package => package.name.Contains(name));
+
+                return targetPackage == null ? await LookupPackage(name) : targetPackage;
             }
-
-            var targetPackage = page.results.FirstOrDefault(package => package.name.Contains(name));
-
-            return targetPackage == null ? await LookupPackage(name) : targetPackage;
         }
 
         public static Task DownloadPackageAsync(Package package, string filePath)
         {
-            var latest = package.latest;
-            var url = $"{PackageApi}/{package.owner}/{package.name}/{latest.version_number}/";
+            using (WebClient client = new WebClient())
+            {
+                var latest = package.latest;
+                var url = $"{PackageApi}/{package.owner}/{package.name}/{latest.version_number}/";
 
-            return client.DownloadFileTaskAsync(url, filePath);
+                return client.DownloadFileTaskAsync(url, filePath);
+            }
         }
     }
 }
