@@ -15,14 +15,14 @@ To use this project you will need a copy of Unity that matches Risk of Rain 2's 
 	* [Open in Visual Studio](git-client://clone?repo=https://github.com/PassivePicasso/Rain-of-Stages)
 	* [Open in Desktop](github-windows://openRepo/https://github.com/PassivePicasso/Rain-of-Stages)
 	* [Download Zip](https://github.com/PassivePicasso/Rain-of-Stages/archive/master.zip)
- 2. If you downloaded the Zip, extract the contents to folder on your computer, this is where you will work from.
- 2. Launch Unity Hub
- 3. Add a project using the Add button
- 4. Locate your extracted or cloned Rain of Stages directory and open the folder to create your new project.
- 6. The loading process will take some time so be patient.
- 7. After the initial load completes, you will be prompted to locate the "Risk of Rain 2.exe" you will be using to test your content in.
- 8. Rain of Stages will now retrieve a number of dependencies from Risk of Rain 2 as well as BepInEx from Thunderstore.io
- 9. It will take a few minutes for all the libraries to load and the project to compile, once complete you are ready to go!
+ 	  * If you downloaded the Zip, extract the contents to folder on your computer, this is where you will work from.
+ 1. Launch Unity Hub
+ 1. Add a project using the Add button
+ 1. Locate your extracted or cloned Rain of Stages directory and open the folder to create your new project.
+     * The loading process will take some time so be patient.
+ 1. After the initial load completes, you will be prompted to locate the "Risk of Rain 2.exe" you will be using to test your content in.
+ 1. Rain of Stages will now retrieve a number of dependencies from Risk of Rain 2 as well as BepInEx from Thunderstore.io
+ 1. It will take a few minutes for all the libraries to load and the project to compile, once complete you are ready to go!
 
 
 ### Hello Maps!
