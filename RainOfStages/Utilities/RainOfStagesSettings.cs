@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Experimental.UIElements;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace RainOfStages.AutoConfig
         [SerializeField]
         public string RoR2Path;
 
-        internal static RainOfStagesSettings GetOrCreateSettings()
+        public static RainOfStagesSettings GetOrCreateSettings()
         {
             var settings = AssetDatabase.LoadAssetAtPath<RainOfStagesSettings>(SettingsPath);
             if (settings == null)
@@ -27,7 +28,7 @@ namespace RainOfStages.AutoConfig
             return settings;
         }
 
-        internal static SerializedObject GetSerializedSettings()
+        public static SerializedObject GetSerializedSettings()
         {
             return new SerializedObject(GetOrCreateSettings());
         }
@@ -64,3 +65,4 @@ namespace RainOfStages.AutoConfig
 
 
 }
+#endif

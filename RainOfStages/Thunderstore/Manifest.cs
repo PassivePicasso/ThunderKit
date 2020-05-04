@@ -1,8 +1,8 @@
-﻿using RainOfStages.Editor;
-using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine;
+#if UNITY_EDITOR
+using RainOfStages.Utilities;
 using UnityEditor;
-using UnityEngine;
+#endif
 
 namespace RainOfStages.Thunderstore
 {
@@ -13,10 +13,12 @@ namespace RainOfStages.Thunderstore
         public string description;
         public string[] dependencies;
 
+#if UNITY_EDITOR
         [MenuItem("Assets/Rain of Stages/Mod Manifest")]
         public static void Create()
         {
-            ScriptableHelper.CreateAsset<Manifest>("Manifest");
+            ScriptableHelper.CreateAsset<Manifest>();
         }
+#endif
     }
 }

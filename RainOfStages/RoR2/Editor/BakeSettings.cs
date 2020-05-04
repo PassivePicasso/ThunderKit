@@ -1,6 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.AI;
+#if UNITY_EDITOR
+using RainOfStages.Utilities;
+using UnityEditor;
+#endif
 
 namespace RainOfStages
 {
@@ -46,5 +50,9 @@ namespace RainOfStages
                 NodeMeshObject.SetActive(showMesh);
         }
 
+#if UNITY_EDITOR
+        [MenuItem("Assets/Rain of Stages/Stages/" + nameof(BakeSettings))]
+        public static void Create() => ScriptableHelper.CreateAsset<BakeSettings>();
+#endif
     }
 }

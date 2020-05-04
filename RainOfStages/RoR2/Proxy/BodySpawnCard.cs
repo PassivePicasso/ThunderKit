@@ -1,4 +1,8 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
+using RainOfStages.Utilities;
+using UnityEditor;
+#endif
 
 namespace RainOfStages.Proxy
 {
@@ -32,5 +36,10 @@ namespace RainOfStages.Proxy
             return card;
         }
 
+
+#if UNITY_EDITOR
+        [MenuItem("Assets/Rain of Stages/SpawnCards/" + nameof(BodySpawnCard))]
+        public static void Create() => ScriptableHelper.CreateAsset<BodySpawnCard>();
+#endif
     }
 }
