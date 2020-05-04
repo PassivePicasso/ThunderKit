@@ -16,8 +16,7 @@
 
 #RainOfStages exclusions
 *NodeGraph.asset
-Assets/Campaigns/
-Assets/[Pp]lugin/
+/Assets/
 
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
