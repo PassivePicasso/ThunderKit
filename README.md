@@ -20,7 +20,7 @@ To use this project you will need a copy of Unity that matches Risk of Rain 2's 
  1. Add a project using the Add button
  1. Locate your extracted or cloned Rain of Stages directory and open the folder to create your new project.
      * The loading process will take some time so be patient.
- 1. After the initial load completes, you will be prompted to locate the "Risk of Rain 2.exe" you will be using to test your content in.
+ 1. Once loaded Rain of Stages will prompt you to locate the your preferred "Risk of Rain 2.exe" 
  1. Rain of Stages will now retrieve a number of dependencies from Risk of Rain 2 as well as BepInEx from Thunderstore.io
      * Another long loading process here, unity may appear to hang at points, don't close it.
  1. You are ready to start making content!
