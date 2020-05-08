@@ -1,8 +1,6 @@
 {
     "name": "RainOfStages.RoR2",
-    "references": [
-        "RainOfStages.Utilities"
-    ],
+    "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],

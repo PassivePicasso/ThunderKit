@@ -1,12 +1,7 @@
 ﻿using UnityEngine;
 
-#if UNITY_EDITOR
-using RainOfStages.Utilities;
-using UnityEditor;
-#endif
 namespace RainOfStages.Proxy
 {
-    [CreateAssetMenu(menuName = "Rain of Stages/Interactable SpawnCard")]
     public class InteractableSpawnCard : RoR2.InteractableSpawnCard, IProxyReference<RoR2.SpawnCard>
     {
         void Awake()
@@ -36,9 +31,5 @@ namespace RainOfStages.Proxy
                 card = Resources.Load<T>($"SpawnCards/{typeof(T).Name}/{name}");
             return card;
         }
-#if UNITY_EDITOR
-        [MenuItem("Assets/Rain of Stages/SpawnCards/" + nameof(InteractableSpawnCard))]
-        public static void Create() => ScriptableHelper.CreateAsset<InteractableSpawnCard>();
-#endif
     }
 }

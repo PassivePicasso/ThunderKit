@@ -1,17 +1,16 @@
 ﻿using BepInEx;
 using MonoMod.RuntimeDetour.HookGen;
-using RainOfStages.Campaign;
 using RainOfStages.Proxy;
 using RoR2;
 using RoR2.UI;
-using RoR2.UI.MainMenu;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.UI;
 using NodeGraph = RainOfStages.Proxy.NodeGraph;
 using Path = System.IO.Path;
 
@@ -24,6 +23,8 @@ namespace RainOfStages.Plugin
     [BepInPlugin("com.PassivePicasso.RainOfStages", "RainOfStages", "2020.1.0")]
     public class RainOfStages : BaseUnityPlugin
     {
+        private const int GameBuild = 4892828;
+
         class ManifestMap
         {
             public FileInfo File;
@@ -40,17 +41,29 @@ namespace RainOfStages.Plugin
         private List<SceneDef> sceneDefList;
         private List<NodeGraph> nodeGraphs;
 
-        public static List<CampaignDefinition> Campaigns;
-
-        private CampaignDefinition CurrentCampaign;
         private int selectedCampaignIndex = 0;
 
-        //The Awake() method is run at the very start when the game is initialized.
         public void Awake()
         {
-            Logger.LogInfo("Initializing MapSystem");
+            try
+            {
+                Thread.Sleep(10000);
+                Debugger.Break();
+                var consoleRedirectorType = typeof(RoR2.RoR2Application).GetNestedType("UnitySystemConsoleRedirector", BindingFlags.NonPublic);
+                Logger.LogMessage($"{consoleRedirectorType.FullName} found in {typeof(RoR2Application).FullName}");
+                var redirect = consoleRedirectorType.GetMethod("Redirect", BindingFlags.Public | BindingFlags.Static);
+                Logger.LogMessage($"{redirect.Name}() found in {consoleRedirectorType.FullName}");
+                HookEndpointManager.Add<Hook>(redirect, (Hook)(_ => { }));
+
+                
+            }
+            catch (Exception e)
+            {
+                Logger.LogError("Failed to redirect console");
+            }
+
+            Logger.LogInfo("Initializing Rain of Stages");
             LoadedScenes = new List<AssetBundle>();
-            Campaigns = new List<CampaignDefinition>();
             sceneDefList = new List<SceneDef>();
             nodeGraphs = new List<NodeGraph>();
 
@@ -67,7 +80,7 @@ namespace RainOfStages.Plugin
             var manifestMaps = dir.GetFiles("*.manifest", SearchOption.AllDirectories)
                                .Select(manifestFile => new ManifestMap { File = manifestFile, Content = File.ReadAllLines(manifestFile.FullName) })
                                .Where(mfm => mfm.Content.Any(line => line.StartsWith("AssetBundleManifest:")))
-                               .Where(mfm => mfm.Content.Any(line => line.Contains("campaignmanifest")))
+                               .Where(mfm => mfm.Content.Any(line => line.Contains("stagemanifest")))
                                .ToArray();
 
             Logger.LogInfo($"Loaded Rain of Stages compatible AssetBundles");
@@ -101,13 +114,6 @@ namespace RainOfStages.Plugin
                                     sceneDefList.AddRange(sceneDefinitions);
                                     Logger.LogInfo($"Loaded Scene Definitions {sceneDefinitions.Select(sd => sd.name).Aggregate((a, b) => $"{a}, {b}")}");
                                 }
-
-                                var campaignDefinitions = bundle.LoadAllAssets<CampaignDefinition>();
-                                if (sceneDefinitions.Length > 0)
-                                {
-                                    Campaigns.AddRange(campaignDefinitions);
-                                    Logger.LogInfo($"Created and Loaded {campaignDefinitions.Length} CampaignDefinitions from Definitions File {definitionBundle}");
-                                }
                             }
                         }
                         catch (Exception e)
@@ -122,39 +128,54 @@ namespace RainOfStages.Plugin
                 }
             }
 
-            CurrentCampaign = Campaigns.FirstOrDefault(campaign => campaign.name == "RiskOfRain2Campaign") ?? Campaigns.First();
-            selectedCampaignIndex = Campaigns.IndexOf(CurrentCampaign);
+            RoR2Application.isModded = true;
+
+            var qpbcStart = typeof(QuickPlayButtonController).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic);
+            var digmOnEnable = typeof(DisableIfGameModded).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.Public);
+            var sdAwake = typeof(SceneDef).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
+            var runPNS = typeof(Run).GetMethod(nameof(Run.PickNextStageScene));
+
+            HookEndpointManager.Add<Hook<QuickPlayButtonController>>(qpbcStart, (Hook<QuickPlayButtonController>)DisableQuickPlay);
+            HookEndpointManager.Add<Hook<DisableIfGameModded>>(digmOnEnable, (Hook<DisableIfGameModded>)DisableIfGameModded_Start);
+            HookEndpointManager.Add<Hook<SceneDef>>(sdAwake, (Hook<SceneDef>)SceneDef_Awake);
+            HookEndpointManager.Add<Hook<Run, SceneDef[]>>(runPNS, (Hook<Run, SceneDef[]>)Run_PickNextStageScene);
+
+            SceneCatalog.getAdditionalEntries += ProvideAdditionalSceneDefs;
 
             Instance = this;
 
             Initialized?.Invoke(this, EventArgs.Empty);
-
-            var mmcStart = typeof(MainMenuController).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic);
-            var sdAwake = typeof(SceneDef).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
-            var runPNS = typeof(Run).GetMethod(nameof(Run.PickNextStageScene));
-
-            HookEndpointManager.Add<Hook<MainMenuController>>(mmcStart, (Hook<MainMenuController>)MainMenuController_Start);
-            HookEndpointManager.Add<Hook<SceneDef>>(sdAwake, (Hook<SceneDef>)SceneDef_Awake);
-            HookEndpointManager.Add<Hook<Run>>(runPNS, (Hook<Run, SceneDef[]>)(Run_PickNextStageScene));
-
-            SceneCatalog.getAdditionalEntries += ProvideAdditionalSceneDefs;
         }
 
-        private void Run_PickNextStageScene(MethodCall<Run, SceneDef[]> orig, Run self, SceneDef[] choices)
+
+        private void Run_PickNextStageScene(Action<Run, SceneDef[]> orig, Run self, SceneDef[] choices)
         {
-            if (CurrentCampaign?.StartSegment != null)
-                self.nextStageScene = CurrentCampaign.PickNextScene(self.nextStageRng, self);
-            else
-                orig(self, choices);
+            Logger.LogInfo("picking");
+            orig(self, choices);
         }
+        private static void DisableQuickPlay(Action<QuickPlayButtonController> orig, QuickPlayButtonController self) => self.gameObject.SetActive(false);
+        private static void DisableIfGameModded_Start(Action<DisableIfGameModded> orig, DisableIfGameModded self) => self.gameObject.SetActive(false);
 
-        private void ProvideAdditionalSceneDefs(List<SceneDef> obj)
+        private void ProvideAdditionalSceneDefs(List<SceneDef> sceneDefinitions)
         {
             Logger.LogInfo("Loading additional scenes");
-            obj.AddRange(sceneDefList);
+
+            var lookups = sceneDefinitions.ToDictionary(sd => sd.baseSceneName);
+
+            Logger.LogInfo("Lodded dictionary for sceneNameOverride doping");
+
+            foreach (var csd in sceneDefList.OfType<CustomSceneDefProxy>())
+                foreach (var resno in csd.reverseSceneNameOverrides)
+                    if (lookups.ContainsKey(resno))
+                    {
+                        Logger.LogInfo($"Adding {csd.baseSceneName} to scene {resno}");
+                        lookups[resno].sceneNameOverrides.Add(csd.baseSceneName);
+                    }
+
+            sceneDefinitions.AddRange(sceneDefList);
         }
 
-        private void SceneDef_Awake(MethodCall<SceneDef> orig, SceneDef self)
+        private void SceneDef_Awake(Action<SceneDef> orig, SceneDef self)
         {
             if (self is SceneDefReference sdr)
             {
@@ -163,152 +184,6 @@ namespace RainOfStages.Plugin
                     field.SetValue(self, field.GetValue(def));
             }
             orig(self);
-        }
-
-        private void MainMenuController_Start(MethodCall<MainMenuController> orig, MainMenuController self)
-        {
-            try
-            {
-                //self.gameObject.AddComponent<CampaignManager>();
-                Logger.LogMessage("Adding Campaign Selector to Main Menu");
-                Logger.LogMessage($"HB: {128}");
-
-                var profileButtonGo = GameObject.Find("GenericMenuButton (Singleplayer)");
-                var profileButtonText = profileButtonGo.GetComponentInChildren<HGTextMeshProUGUI>();
-                var profileButtonImage = profileButtonGo.GetComponent<Image>();
-                var profileButton = profileButtonGo.GetComponent<Button>();
-
-                var profileRectTrans = profileButtonGo.GetComponent<RectTransform>();
-                var buttonPanelRectTrans = profileRectTrans.parent;
-
-                var preview = new GameObject("CampaignImage", typeof(CanvasRenderer));
-                var panel = new GameObject("CampaignPanel", typeof(CanvasRenderer));
-                var next = new GameObject("NextCampaign", typeof(CanvasRenderer));
-                var prev = new GameObject("PrevCampaign", typeof(CanvasRenderer));
-                var header = new GameObject("CampaignHeader", typeof(CanvasRenderer));
-
-                var previewRectTrans = preview.AddComponent<RectTransform>();
-                var panelRectTrans = panel.AddComponent<RectTransform>();
-                var nextRectTrans = next.AddComponent<RectTransform>();
-                var prevRectTrans = prev.AddComponent<RectTransform>();
-                var headerRectTrans = header.AddComponent<RectTransform>();
-
-                var previewImage = preview.AddComponent<Image>();
-                var nextButtonImage = next.AddComponent<Image>();
-                var prevButtonImage = prev.AddComponent<Image>();
-                var panelImage = panel.AddComponent<Image>();
-
-                CopyImageSettings(profileButtonImage, nextButtonImage);
-                CopyImageSettings(profileButtonImage, prevButtonImage);
-                CopyImageSettings(profileButtonImage, panelImage);
-
-                var nextButton = next.AddComponent<Button>();
-                var prevButton = prev.AddComponent<Button>();
-
-                Color buttonNormalColor = profileButton.colors.normalColor;
-                panelImage.color = new Color(buttonNormalColor.r + .1f, buttonNormalColor.g, buttonNormalColor.b, 0.75f);
-
-                var headerText = header.AddComponent<HGTextMeshProUGUI>();
-                headerText.font = HGTextMeshProUGUI.defaultLanguageFont;
-                headerText.color = profileButtonText.color;
-                headerText.alignment = TMPro.TextAlignmentOptions.Center;
-                headerText.autoSizeTextContainer = profileButtonText.autoSizeTextContainer;
-                headerText.text = "Campaign Select";
-
-                prevButton.colors = profileButton.colors;
-                nextButton.colors = profileButton.colors;
-
-                prevButton.image = prevButtonImage;
-                nextButton.image = nextButtonImage;
-
-                nextButton.onClick.AddListener(() =>
-                {
-                    selectedCampaignIndex++;
-
-                    if (selectedCampaignIndex >= Campaigns.Count) selectedCampaignIndex = 0;
-                    CurrentCampaign = Campaigns[selectedCampaignIndex];
-
-                    UpdateCampaignPreview(previewImage);
-                });
-                prevButton.onClick.AddListener(() =>
-                {
-                    selectedCampaignIndex--;
-                    if (selectedCampaignIndex < 0) selectedCampaignIndex = Campaigns.Count - 1;
-                    CurrentCampaign = Campaigns[selectedCampaignIndex];
-
-                    UpdateCampaignPreview(previewImage);
-                });
-
-                headerRectTrans.SetParent(panelRectTrans);
-                nextRectTrans.SetParent(panelRectTrans);
-                prevRectTrans.SetParent(panelRectTrans);
-                previewRectTrans.SetParent(panelRectTrans);
-                panelRectTrans.SetParent(buttonPanelRectTrans);
-                panelRectTrans.SetAsFirstSibling();
-
-                ConfigureTransform(panelRectTrans, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0), new Vector3(0, 5, 0), new Vector2(profileRectTrans.sizeDelta.x, 190));
-
-                ConfigureTransform(headerRectTrans, new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0.5f, 0), new Vector3(0, -40, 0), new Vector2(profileRectTrans.sizeDelta.x, 40));
-
-                ConfigureTransform(prevRectTrans, Vector2.zero, new Vector2(0, 1), new Vector2(0, 1), new Vector3(0, -40, 0), new Vector2(30, -42));
-
-                ConfigureTransform(nextRectTrans, new Vector2(1, 0), Vector2.one, Vector2.one, new Vector3(0, -40, 0), new Vector2(30, -42));
-
-                ConfigureTransform(previewRectTrans, Vector2.zero, Vector2.one, new Vector2(0, 1), new Vector3(30, -43, 0), new Vector2(-60, -48));
-
-                if (CurrentCampaign != null)
-                {
-                    UpdateCampaignPreview(previewImage);
-                }
-                else
-                    Logger.LogError("Error Adding Campaign Selector to Main Menu: No Campaign Selected");
-
-
-                Logger.LogMessage("Finished Adding Campaign Selector to Main Menu");
-            }
-            catch (Exception e)
-            {
-                Logger.LogError("Error Adding Campaign Selector to Main Menu");
-                Logger.LogError(e.Message);
-                Logger.LogError(e.StackTrace);
-            }
-            finally
-            {
-                Logger.LogMessage("Finished Main Menu Modifications");
-                orig(self);
-            }
-        }
-
-        private static void ConfigureTransform(RectTransform transform, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector3 anchoredPosition3D, Vector2 sizeDelta)
-        {
-            transform.anchorMin = anchorMin;
-            transform.anchorMax = anchorMax;
-            transform.pivot = pivot;
-            transform.anchoredPosition3D = anchoredPosition3D;
-            transform.sizeDelta = sizeDelta;
-        }
-
-        private void UpdateCampaignPreview(Image previewImage)
-        {
-            previewImage.sprite = Sprite.Create(
-                                    CurrentCampaign.previewTexture,
-                                    new Rect(0, 0, CurrentCampaign.previewTexture.width, CurrentCampaign.previewTexture.height),
-                                    Vector2.zero
-                                );
-        }
-
-        void CopyImageSettings(Image from, Image to)
-        {
-            to.sprite = from.sprite;
-            to.type = from.type;
-            to.fillCenter = from.fillCenter;
-            to.material = from.material;
-            to.useSpriteMesh = from.useSpriteMesh;
-            to.preserveAspect = from.preserveAspect;
-            to.fillAmount = from.fillAmount;
-            to.fillOrigin = from.fillOrigin;
-            to.fillClockwise = from.fillClockwise;
-            to.alphaHitTestMinimumThreshold = from.alphaHitTestMinimumThreshold;
         }
 
         private void PrintHieriarchy(Transform transform, int indent = 0)

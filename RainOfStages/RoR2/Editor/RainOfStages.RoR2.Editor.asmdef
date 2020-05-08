@@ -4,9 +4,7 @@
         "RainOfStages.RoR2",
         "RainOfStages.Utilities"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
