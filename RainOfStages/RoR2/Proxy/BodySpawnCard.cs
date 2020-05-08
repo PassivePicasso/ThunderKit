@@ -1,12 +1,7 @@
 ﻿using UnityEngine;
-#if UNITY_EDITOR
-using RainOfStages.Utilities;
-using UnityEditor;
-#endif
 
 namespace RainOfStages.Proxy
 {
-    [CreateAssetMenu(menuName = "Rain of Stages/Body SpawnCard")]
     public class BodySpawnCard : RoR2.BodySpawnCard, IProxyReference<RoR2.SpawnCard>
     {
 
@@ -35,11 +30,5 @@ namespace RainOfStages.Proxy
                 card = Resources.Load<T>($"spawncards/{typeof(T).Name.ToLower()}s/{name}");
             return card;
         }
-
-
-#if UNITY_EDITOR
-        [MenuItem("Assets/Rain of Stages/SpawnCards/" + nameof(BodySpawnCard))]
-        public static void Create() => ScriptableHelper.CreateAsset<BodySpawnCard>();
-#endif
     }
 }

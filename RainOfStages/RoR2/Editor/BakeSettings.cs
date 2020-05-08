@@ -8,7 +8,6 @@ using UnityEditor;
 
 namespace RainOfStages
 {
-    [CreateAssetMenu(menuName = "Rain of Stages/Bake Settings")]
     public class BakeSettings : ScriptableObject
     {
         public Boolean DebugMode;
@@ -50,9 +49,5 @@ namespace RainOfStages
                 NodeMeshObject.SetActive(showMesh);
         }
 
-#if UNITY_EDITOR
-        [MenuItem("Assets/Rain of Stages/Stages/" + nameof(BakeSettings))]
-        public static void Create() => ScriptableHelper.CreateAsset<BakeSettings>();
-#endif
     }
 }

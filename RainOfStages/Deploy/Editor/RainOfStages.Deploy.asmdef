@@ -6,11 +6,17 @@
         "Unity.AssetBundleBrowser.Editor"
     ],
     "optionalUnityReferences": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "BepInEx.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": []
 }

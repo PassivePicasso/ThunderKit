@@ -1,9 +1,5 @@
 ﻿using System.Reflection;
 using UnityEngine;
-#if UNITY_EDITOR
-using RainOfStages.Utilities;
-using UnityEditor;
-#endif
 
 namespace RainOfStages.Proxy
 {
@@ -45,9 +41,5 @@ namespace RainOfStages.Proxy
                 card = Resources.Load<T>($"SpawnCards/{typeof(T).Name}s/Titan/{name}");
             return card;
         }
-#if UNITY_EDITOR
-        [MenuItem("Assets/Rain of Stages/SpawnCards/" + nameof(CharacterSpawnCard))]
-        public static void Create() => ScriptableHelper.CreateAsset<CharacterSpawnCard>();
-#endif
     }
 }

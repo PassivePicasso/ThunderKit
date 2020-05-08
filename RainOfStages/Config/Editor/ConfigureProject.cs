@@ -29,6 +29,14 @@ namespace RainOfStages.AutoConfig
             AssemblyReloadEvents.beforeAssemblyReload += ValidateRoRReferences;
         }
 
+        [MenuItem("Assets/Rain of Stages/Setup DnSpy")]
+        public static void LocateDnSpy()
+        {
+            var settings = RainOfStagesSettings.GetOrCreateSettings();
+            settings.DnSpyPath = EditorUtility.OpenFolderPanel("Open dnSpy Root Folder", Directory.GetCurrentDirectory(), "dnSpy.exe");
+            EditorUtility.SetDirty(settings);
+        }
+
         private static void ValidateRoRReferences()
         {
             string projectDirectory = Directory.GetCurrentDirectory();

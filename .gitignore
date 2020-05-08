@@ -17,6 +17,7 @@
 #RainOfStages exclusions
 *NodeGraph.asset
 /Assets/
+/ThunderPacks/
 
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta

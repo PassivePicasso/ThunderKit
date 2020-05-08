@@ -15,6 +15,9 @@ namespace RainOfStages.AutoConfig
         [SerializeField]
         public string RoR2Path;
 
+        [SerializeField]
+        public string DnSpyPath;
+
         public static RainOfStagesSettings GetOrCreateSettings()
         {
             var settings = AssetDatabase.LoadAssetAtPath<RainOfStagesSettings>(SettingsPath);
@@ -22,6 +25,7 @@ namespace RainOfStages.AutoConfig
             {
                 settings = CreateInstance<RainOfStagesSettings>();
                 settings.RoR2Path = "";
+                settings.DnSpyPath = "";
                 AssetDatabase.CreateAsset(settings, SettingsPath);
                 AssetDatabase.SaveAssets();
             }
@@ -50,6 +54,9 @@ namespace RainOfStages.AutoConfig
 
                     var pathField = new TextField { bindingPath = nameof(RoR2Path) };
 
+                    rootElement.Add(pathField);
+
+                    pathField = new TextField { bindingPath = nameof(DnSpyPath) };
                     rootElement.Add(pathField);
 
                     rootElement.Bind(settings);
