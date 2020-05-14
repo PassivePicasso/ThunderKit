@@ -113,3 +113,5 @@ crashlytics-build.properties
 /Assets/RainOfStagesSettings.asset
 /Referenced/plugins
 /Deployments
+/DebugProject/obj/Debug
+/DebugProject/bin/Debug

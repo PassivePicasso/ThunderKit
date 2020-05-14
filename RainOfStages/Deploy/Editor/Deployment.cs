@@ -7,10 +7,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Networking.PlayerConnection;
 using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Networking.PlayerConnection;
 using Debug = UnityEngine.Debug;
 
 namespace RainOfStages.Deploy
@@ -23,7 +21,6 @@ namespace RainOfStages.Deploy
         InstallBepInEx = 2,
         Package = 4,
         Clean = 8,
-        AttachDnSpy = 16,
         DeployMdbFiles = 32,
         ShowConsole = 64,
         Run = 8192,
@@ -140,6 +137,13 @@ namespace RainOfStages.Deploy
                     RedirectStandardOutput = true,
                     UseShellExecute = false
                 };
+                //string connectionAddress = "127.0.0.1";
+                //string connectionPort = "55555";
+                //rorPsi.Environment["DNSPY_UNITY_DBG"] = $"--debugger-agent=transport=dt_socket,server=y,address={connectionAddress}:{connectionPort},defer=y,no-hide-debugger";
+                //rorPsi.Environment["DNSPY_UNITY_DBG2"] = $"--debugger-agent=transport=dt_socket,server=y,address={connectionAddress}:{connectionPort},suspend=n,no-hide-debugger";
+                //var envVariables = Environment.GetEnvironmentVariables();
+                //foreach (var variable in envVariables.Keys.OfType<string>())
+                //    rorPsi.Environment[variable] = envVariables[variable] as string;
 
                 var rorProcess = new Process { StartInfo = rorPsi };
 
@@ -147,7 +151,6 @@ namespace RainOfStages.Deploy
                 //process.BeginOutputReadLine();
                 rorProcess.Start();
             }
-
 
             AssetDatabase.Refresh();
 
@@ -216,7 +219,7 @@ namespace RainOfStages.Deploy
 #warning This is to setup the Bepinex Config until bepinex is updated
             string GetBepInExConfig(bool consoleEnabled)
             {
-                string configTemplatePath = Path.Combine(currentDir, "RainOfStages", "Deploy", "configtemplate.txt");
+                string configTemplatePath = Path.Combine(currentDir, "RainOfStages", "Deploy", "Editor", "configtemplate.txt");
 
                 if (configTemplate == null)
                     configTemplate = File.ReadAllText(configTemplatePath);
@@ -224,6 +227,7 @@ namespace RainOfStages.Deploy
                 return string.Format(configTemplate, consoleEnabled.ToString().ToLower());
             }
         }
+
 
         public static DirectoryInfo CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
         {
