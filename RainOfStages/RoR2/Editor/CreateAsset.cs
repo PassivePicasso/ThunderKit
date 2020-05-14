@@ -26,8 +26,8 @@ namespace RainOfStages.Editor
         [MenuItem("Assets/Rain of Stages/Stages/" + nameof(SceneDefReference))]
         public static void CreateSceneDefReference() => ScriptableHelper.CreateAsset<SceneDefReference>();
 
-        [MenuItem("Assets/Rain of Stages/Stages/" + nameof(CustomSceneDefProxy))]
-        public static void CreateCustomSceneProxy() => ScriptableHelper.CreateAsset<CustomSceneDefProxy>();
+        [MenuItem("Assets/Rain of Stages/Stages/" + nameof(SceneDefinition))]
+        public static void CreateCustomSceneProxy() => ScriptableHelper.CreateAsset<SceneDefinition>();
 
         [MenuItem("Assets/Rain of Stages/Modding Assets/" + nameof(BakeSettings))]
         public static void Create() => ScriptableHelper.CreateAsset<BakeSettings>();

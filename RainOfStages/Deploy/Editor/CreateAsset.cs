@@ -1,4 +1,5 @@
-﻿using RainOfStages.Utilities;
+﻿#if UNITY_EDITOR
+using RainOfStages.Utilities;
 using UnityEditor;
 
 namespace RainOfStages.Deploy
@@ -9,3 +10,4 @@ namespace RainOfStages.Deploy
         public static void Create() => ScriptableHelper.CreateAsset<Deployment>();
     }
 }
+#endif

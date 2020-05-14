@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace RainOfStages.Proxy
 {
-    public class CustomSceneDefProxy : SceneDef
+    public class SceneDefinition : SceneDef
     {
-        public List<string> reverseSceneNameOverrides;
+        public List<SceneDefReference> reverseSceneNameOverrides;
+        public List<SceneDefReference> destionationInjections;
     }
-
 }
