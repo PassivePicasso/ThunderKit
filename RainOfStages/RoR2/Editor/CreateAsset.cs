@@ -67,10 +67,13 @@ namespace RainOfStages.Editor
             RenderSettings.ambientGroundColor = light.color;
             RenderSettings.ambientEquatorColor = light.color;
             RenderSettings.ambientIntensity = 0.8f;
-            Lightmapping.realtimeGI = false;
             Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
+            Lightmapping.realtimeGI = false;
             Lightmapping.bakedGI = false;
+            
             DynamicGI.UpdateEnvironment();
+            EditorSceneManager.MarkSceneDirty(scene);
+            
 
             //var tab = new LightingExplorerTab()
 
