@@ -9,35 +9,6 @@ namespace RainOfStages.Editor
     [CustomPropertyDrawer(typeof(DirectorCardCategorySelection), true)]
     public class DirectorCardCategorySelectionDrawer : PropertyDrawer
     {
-        static string[] CategorySelectionGuids;
-        static DirectorCardCategorySelection[] CategorySelections;
-        static DirectorCardCategorySelection[] MonsterSelections;
-        static DirectorCardCategorySelection[] InteractableSelections;
-        static DirectorCardCategorySelection[] MonsterFamilies;
-
-        [InitializeOnLoadMethod()]
-        static void Initialize()
-        {
-            EditorApplication.projectChanged += UpdateSelectionsCache;
-            UpdateSelectionsCache();
-        }
-
-        private static void UpdateSelectionsCache()
-        {
-            string[] set = AssetDatabase.FindAssets("t:DirectorCardCategorySelection");
-            if (CategorySelectionGuids != null && CategorySelectionGuids.SequenceEqual(set)) return;
-
-            CategorySelectionGuids = set;
-
-            CategorySelections = set.Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-                                .Select(path => AssetDatabase.LoadAssetAtPath<DirectorCardCategorySelection>(path))
-                                .ToArray();
-
-            MonsterSelections = CategorySelections.Where(dccs => dccs.name.Contains("Monsters")).ToArray();
-            InteractableSelections = CategorySelections.Where(dccs => dccs.name.Contains("Interactables")).ToArray();
-            MonsterFamilies = CategorySelections.Where(dccs => dccs.name.Contains("Family")).ToArray();
-        }
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             //base.OnGUI(position, property, label);
@@ -47,18 +18,18 @@ namespace RainOfStages.Editor
             switch (label.text)
             {
                 case string name when "Monster Categories".Equals(name):
-                    names = MonsterSelections.Select(ms => ms.name).ToList();
-                    pickedCategory = MonsterSelections;
+                    names = DCCSProcessor.MonsterSelections.Select(ms => ms.name).ToList();
+                    pickedCategory = DCCSProcessor.MonsterSelections;
                     replacement = "Monsters";
                     break;
                 case string name when "Interactable Categories".Equals(name):
-                    names = InteractableSelections.Select(ms => ms.name).ToList();
-                    pickedCategory = InteractableSelections;
+                    names = DCCSProcessor.InteractableSelections.Select(ms => ms.name).ToList();
+                    pickedCategory = DCCSProcessor.InteractableSelections;
                     replacement = "Interactables";
                     break;
                 case string name when "Monster Family Categories".Equals(name):
-                    names = MonsterFamilies.Select(ms => ms.name).ToList();
-                    pickedCategory = MonsterFamilies;
+                    names = DCCSProcessor.MonsterFamilies.Select(ms => ms.name).ToList();
+                    pickedCategory = DCCSProcessor.MonsterFamilies;
                     break;
             }
             if (pickedCategory == null)
@@ -84,6 +55,8 @@ namespace RainOfStages.Editor
 
             if (newIndex > -1)
                 property.objectReferenceValue = pickedCategory[newIndex];
+            else
+                property.objectReferenceValue = null;
 
             EditorGUI.EndProperty();
 
