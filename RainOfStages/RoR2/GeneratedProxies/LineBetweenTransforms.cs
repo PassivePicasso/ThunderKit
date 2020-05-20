@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class LineBetweenTransforms : global::LineBetweenTransforms{}
+    public class LineBetweenTransforms : global::LineBetweenTransforms {}
 }

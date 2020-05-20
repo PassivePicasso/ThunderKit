@@ -1,5 +1,5 @@
 using global::RoR2.UI;
 namespace RainOfStages.Proxy.RoR2.UI
 {
-    public class ColumnLayoutGroupElement : global::RoR2.UI.ColumnLayoutGroupElement{}
+    public class ColumnLayoutGroupElement : global::RoR2.UI.ColumnLayoutGroupElement {}
 }

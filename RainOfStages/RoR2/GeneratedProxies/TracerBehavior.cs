@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class TracerBehavior : global::TracerBehavior{}
+    public class TracerBehavior : global::TracerBehavior {}
 }

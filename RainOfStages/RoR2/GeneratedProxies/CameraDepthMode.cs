@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class CameraDepthMode : global::CameraDepthMode{}
+    public class CameraDepthMode : global::CameraDepthMode {}
 }

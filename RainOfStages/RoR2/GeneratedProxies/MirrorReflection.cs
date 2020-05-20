@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class MirrorReflection : global::MirrorReflection{}
+    public class MirrorReflection : global::MirrorReflection {}
 }

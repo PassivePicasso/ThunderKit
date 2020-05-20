@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class POISecretChest : global::POISecretChest{}
+    public class POISecretChest : global::POISecretChest {}
 }

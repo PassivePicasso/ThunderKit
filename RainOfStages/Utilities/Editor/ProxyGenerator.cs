@@ -34,15 +34,19 @@ namespace RainOfStages.Utilities
                         $"{(isGlobal ? "" : $"using global::{type.Namespace};")}",
                         $"namespace {nameof(RainOfStages)}.Proxy{namespaceSeparator}{type.Namespace}",
                         $"{{",
-                        $"    public class {type.Name} : global::{type.FullName}{namespaceSeparator}{type.Name}{{}}",
+                        $"    public class {type.Name} : global::{type.FullName} {{}}",
                         $"}}"
                     );
                 var filePath = proxyPath;
                 if (!isGlobal) filePath = Path.Combine(proxyPath, Path.Combine(type.Namespace.Split('.')));
 
+                string fileName = $"{type.Name}.cs";
                 if (!Directory.Exists(filePath)) Directory.CreateDirectory(filePath);
 
-                File.WriteAllText(Path.Combine(filePath, $"{type.Name}.cs"), definition);
+                filePath = Path.Combine(filePath, fileName);
+                if (!File.Exists(filePath)) File.Delete(filePath);
+
+                File.WriteAllText(filePath, definition);
             }
 
             AssetDatabase.Refresh();

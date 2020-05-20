@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class NoGravZone : global::NoGravZone{}
+    public class NoGravZone : global::NoGravZone {}
 }

@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class DestroyOnSoundEnd : global::DestroyOnSoundEnd{}
+    public class DestroyOnSoundEnd : global::DestroyOnSoundEnd {}
 }

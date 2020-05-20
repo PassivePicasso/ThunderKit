@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class LightIntensityCurve : global::LightIntensityCurve{}
+    public class LightIntensityCurve : global::LightIntensityCurve {}
 }

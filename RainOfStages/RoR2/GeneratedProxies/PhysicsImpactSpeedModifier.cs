@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class PhysicsImpactSpeedModifier : global::PhysicsImpactSpeedModifier{}
+    public class PhysicsImpactSpeedModifier : global::PhysicsImpactSpeedModifier {}
 }

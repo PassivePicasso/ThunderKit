@@ -1,5 +1,5 @@
 using global::RoR2.UI;
 namespace RainOfStages.Proxy.RoR2.UI
 {
-    public class MPEventSystem : global::RoR2.UI.MPEventSystem{}
+    public class MPEventSystem : global::RoR2.UI.MPEventSystem {}
 }

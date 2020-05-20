@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class FogControl : global::FogControl{}
+    public class FogControl : global::FogControl {}
 }

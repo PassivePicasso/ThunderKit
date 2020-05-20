@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class DynamicBone : global::DynamicBone{}
+    public class DynamicBone : global::DynamicBone {}
 }

@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class BezierCurveLine : global::BezierCurveLine{}
+    public class BezierCurveLine : global::BezierCurveLine {}
 }

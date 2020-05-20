@@ -1,5 +1,5 @@
 using global::RoR2;
 namespace RainOfStages.Proxy.RoR2
 {
-    public class PaladinBarrierController : global::RoR2.PaladinBarrierController{}
+    public class PaladinBarrierController : global::RoR2.PaladinBarrierController {}
 }

@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class MaintainRotation : global::MaintainRotation{}
+    public class MaintainRotation : global::MaintainRotation {}
 }

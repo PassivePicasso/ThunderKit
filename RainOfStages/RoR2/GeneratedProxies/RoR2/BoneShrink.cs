@@ -1,5 +1,5 @@
 using global::RoR2;
 namespace RainOfStages.Proxy.RoR2
 {
-    public class BoneShrink : global::RoR2.BoneShrink{}
+    public class BoneShrink : global::RoR2.BoneShrink {}
 }

@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class VectorPID : global::VectorPID{}
+    public class VectorPID : global::VectorPID {}
 }

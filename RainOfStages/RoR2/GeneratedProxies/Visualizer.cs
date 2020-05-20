@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class Visualizer : global::Visualizer{}
+    public class Visualizer : global::Visualizer {}
 }

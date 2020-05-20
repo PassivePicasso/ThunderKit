@@ -1,5 +1,5 @@
 using global::RoR2.UI;
 namespace RainOfStages.Proxy.RoR2.UI
 {
-    public class ContextManager : global::RoR2.UI.ContextManager{}
+    public class ContextManager : global::RoR2.UI.ContextManager {}
 }

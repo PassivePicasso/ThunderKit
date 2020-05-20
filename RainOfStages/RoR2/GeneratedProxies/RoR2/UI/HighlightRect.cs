@@ -1,5 +1,5 @@
 using global::RoR2.UI;
 namespace RainOfStages.Proxy.RoR2.UI
 {
-    public class HighlightRect : global::RoR2.UI.HighlightRect{}
+    public class HighlightRect : global::RoR2.UI.HighlightRect {}
 }

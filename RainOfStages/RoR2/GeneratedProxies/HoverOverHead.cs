@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class HoverOverHead : global::HoverOverHead{}
+    public class HoverOverHead : global::HoverOverHead {}
 }

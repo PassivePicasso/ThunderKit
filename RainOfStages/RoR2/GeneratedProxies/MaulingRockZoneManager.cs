@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class MaulingRockZoneManager : global::MaulingRockZoneManager{}
+    public class MaulingRockZoneManager : global::MaulingRockZoneManager {}
 }
