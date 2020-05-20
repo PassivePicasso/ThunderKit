@@ -7,14 +7,12 @@ namespace RainOfStages.Utilities
 {
     public class ProxyGenerator
     {
-        //[MenuItem("Tools/Rain of Stages/Generate Proxies")]
-        public static void GenerateProxies()
+        public static void GenerateProxies(Type targetType, string gameDir)
         {
-
             var currentDir = Directory.GetCurrentDirectory();
-            string proxyPath = Path.Combine(currentDir, "RainOfStages", "RoR2", "GeneratedProxies");
+            string proxyPath = Path.Combine(currentDir, "RainOfStages", gameDir, "GeneratedProxies");
 
-            var assembly = typeof(RoR2.RoR2Application).Assembly;
+            var assembly = targetType.Assembly;
 
             var assemblyTypes = assembly.GetTypes();
             var uniObjects = assemblyTypes.Where(t => typeof(UnityEngine.Object).IsAssignableFrom(t));
@@ -50,7 +48,6 @@ namespace RainOfStages.Utilities
             }
 
             AssetDatabase.Refresh();
-            //AssetDatabase.LoadAssetAtPath("Assets/Assemblies/Assembly-CSharp.dll");
         }
     }
 }

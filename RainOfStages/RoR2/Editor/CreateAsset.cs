@@ -88,7 +88,8 @@ namespace RainOfStages.Editor
         public static void CreateBakeSettings() => ScriptableHelper.CreateAsset<BakeSettings>();
 
 
-
+        //[MenuItem("Tools/Rain of Stages/Generate Proxies")]
+        public static void GenerateProxies() => ProxyGenerator.GenerateProxies(typeof(RoR2.RoR2Application), "RoR2");
 
     }
 }
