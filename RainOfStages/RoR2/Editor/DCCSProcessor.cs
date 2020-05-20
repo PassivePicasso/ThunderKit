@@ -1,4 +1,4 @@
-﻿using RainOfStages.Proxy;
+﻿using RainOfStages.Proxy.RoR2;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;

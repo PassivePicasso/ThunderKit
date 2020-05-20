@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace RainOfStages.Proxy
 {
-    public class CharacterSpawnCard : RoR2.CharacterSpawnCard, IProxyReference<RoR2.SpawnCard>
+    public class CharacterSpawnCard : global::RoR2.CharacterSpawnCard, IProxyReference<global::RoR2.SpawnCard>
     {
-        static FieldInfo runtimeLoadoutField = typeof(RoR2.CharacterSpawnCard).GetField("runtimeLoadout", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        static FieldInfo runtimeLoadoutField = typeof(global::RoR2.CharacterSpawnCard).GetField("runtimeLoadout", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
         void Awake()
         {
             if (Application.isEditor) return;
-            var card = (RoR2.CharacterSpawnCard)ResolveProxy();
+            var card = (global::RoR2.CharacterSpawnCard)ResolveProxy();
 
             prefab = card.prefab;
             loadout = card.loadout;
@@ -28,9 +28,9 @@ namespace RainOfStages.Proxy
             directorCreditCost = card.directorCreditCost;
 
         }
-        public RoR2.SpawnCard ResolveProxy() => LoadCard<RoR2.CharacterSpawnCard>();
+        public global::RoR2.SpawnCard ResolveProxy() => LoadCard<global::RoR2.CharacterSpawnCard>();
 
-        private T LoadCard<T>() where T : RoR2.SpawnCard
+        private T LoadCard<T>() where T : global::RoR2.SpawnCard
         {
             var card = Resources.Load<T>($"spawncards/{typeof(T).Name.ToLower()}s/{name}");
             if (card == null)

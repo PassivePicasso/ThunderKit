@@ -1,6 +1,8 @@
 {
     "name": "RainOfStages.RoR2",
-    "references": [],
+    "references": [
+        "Unity.TextMeshPro"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
