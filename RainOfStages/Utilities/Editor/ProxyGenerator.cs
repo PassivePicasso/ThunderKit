@@ -31,7 +31,7 @@ namespace RainOfStages.Utilities
                 var isGlobal = string.IsNullOrWhiteSpace(type.Namespace);
                 var namespaceSeparator = isGlobal ? "" : ".";
                 var definition = string.Join(Environment.NewLine,
-                        $"{(isGlobal ? "" : $"using global::{type.Namespace};")}",
+                        isGlobal ? "" : $"using global::{type.Namespace};",
                         $"namespace {nameof(RainOfStages)}.Proxy{namespaceSeparator}{type.Namespace}",
                         $"{{",
                         $"    public class {type.Name} : global::{type.FullName} {{}}",
