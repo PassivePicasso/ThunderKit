@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class ParentEnergyFXController : global::ParentEnergyFXController{}
+    public class ParentEnergyFXController : global::ParentEnergyFXController {}
 }

@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class Spinner : global::Spinner{}
+    public class Spinner : global::Spinner {}
 }

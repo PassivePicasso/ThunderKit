@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class PositionFromParentRaycast : global::PositionFromParentRaycast{}
+    public class PositionFromParentRaycast : global::PositionFromParentRaycast {}
 }

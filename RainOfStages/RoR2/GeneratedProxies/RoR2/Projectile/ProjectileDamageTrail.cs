@@ -1,5 +1,5 @@
 using global::RoR2.Projectile;
 namespace RainOfStages.Proxy.RoR2.Projectile
 {
-    public class ProjectileDamageTrail : global::RoR2.Projectile.ProjectileDamageTrail{}
+    public class ProjectileDamageTrail : global::RoR2.Projectile.ProjectileDamageTrail {}
 }

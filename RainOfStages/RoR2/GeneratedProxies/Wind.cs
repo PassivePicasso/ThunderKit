@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class Wind : global::Wind{}
+    public class Wind : global::Wind {}
 }

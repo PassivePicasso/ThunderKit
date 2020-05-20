@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class GlobalShaderTextures : global::GlobalShaderTextures{}
+    public class GlobalShaderTextures : global::GlobalShaderTextures {}
 }

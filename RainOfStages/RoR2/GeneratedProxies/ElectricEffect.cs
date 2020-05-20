@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class ElectricEffect : global::ElectricEffect{}
+    public class ElectricEffect : global::ElectricEffect {}
 }

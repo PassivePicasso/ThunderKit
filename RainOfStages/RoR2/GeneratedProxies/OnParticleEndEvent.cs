@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class OnParticleEndEvent : global::OnParticleEndEvent{}
+    public class OnParticleEndEvent : global::OnParticleEndEvent {}
 }

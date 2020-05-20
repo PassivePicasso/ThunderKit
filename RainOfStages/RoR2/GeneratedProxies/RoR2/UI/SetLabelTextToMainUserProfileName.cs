@@ -1,5 +1,5 @@
 using global::RoR2.UI;
 namespace RainOfStages.Proxy.RoR2.UI
 {
-    public class SetLabelTextToMainUserProfileName : global::RoR2.UI.SetLabelTextToMainUserProfileName{}
+    public class SetLabelTextToMainUserProfileName : global::RoR2.UI.SetLabelTextToMainUserProfileName {}
 }

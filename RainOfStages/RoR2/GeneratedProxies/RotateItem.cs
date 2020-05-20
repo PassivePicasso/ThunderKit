@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class RotateItem : global::RotateItem{}
+    public class RotateItem : global::RotateItem {}
 }

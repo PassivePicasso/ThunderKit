@@ -1,5 +1,5 @@
 using global::RoR2;
 namespace RainOfStages.Proxy.RoR2
 {
-    public class MultiPointBezierCurveLine : global::RoR2.MultiPointBezierCurveLine{}
+    public class MultiPointBezierCurveLine : global::RoR2.MultiPointBezierCurveLine {}
 }

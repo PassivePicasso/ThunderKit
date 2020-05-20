@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class WarningIndicator : global::WarningIndicator{}
+    public class WarningIndicator : global::WarningIndicator {}
 }

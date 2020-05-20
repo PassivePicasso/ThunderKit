@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class ShrinePlaceTotem : global::ShrinePlaceTotem{}
+    public class ShrinePlaceTotem : global::ShrinePlaceTotem {}
 }

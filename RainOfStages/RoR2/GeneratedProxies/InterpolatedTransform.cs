@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class InterpolatedTransform : global::InterpolatedTransform{}
+    public class InterpolatedTransform : global::InterpolatedTransform {}
 }

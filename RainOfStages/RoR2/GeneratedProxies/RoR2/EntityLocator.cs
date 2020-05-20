@@ -1,5 +1,5 @@
 using global::RoR2;
 namespace RainOfStages.Proxy.RoR2
 {
-    public class EntityLocator : global::RoR2.EntityLocator{}
+    public class EntityLocator : global::RoR2.EntityLocator {}
 }

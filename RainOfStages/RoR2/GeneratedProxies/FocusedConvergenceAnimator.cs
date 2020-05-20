@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class FocusedConvergenceAnimator : global::FocusedConvergenceAnimator{}
+    public class FocusedConvergenceAnimator : global::FocusedConvergenceAnimator {}
 }

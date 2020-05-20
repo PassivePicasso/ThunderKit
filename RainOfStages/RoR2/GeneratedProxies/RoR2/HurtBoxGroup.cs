@@ -1,5 +1,5 @@
 using global::RoR2;
 namespace RainOfStages.Proxy.RoR2
 {
-    public class HurtBoxGroup : global::RoR2.HurtBoxGroup{}
+    public class HurtBoxGroup : global::RoR2.HurtBoxGroup {}
 }

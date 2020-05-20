@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class SetAngularVelocity : global::SetAngularVelocity{}
+    public class SetAngularVelocity : global::SetAngularVelocity {}
 }

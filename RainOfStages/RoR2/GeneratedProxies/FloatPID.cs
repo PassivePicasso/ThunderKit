@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class FloatPID : global::FloatPID{}
+    public class FloatPID : global::FloatPID {}
 }

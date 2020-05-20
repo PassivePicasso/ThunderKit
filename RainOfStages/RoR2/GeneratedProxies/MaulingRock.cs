@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class MaulingRock : global::MaulingRock{}
+    public class MaulingRock : global::MaulingRock {}
 }

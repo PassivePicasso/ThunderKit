@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class BeamPointsFromTransforms : global::BeamPointsFromTransforms{}
+    public class BeamPointsFromTransforms : global::BeamPointsFromTransforms {}
 }

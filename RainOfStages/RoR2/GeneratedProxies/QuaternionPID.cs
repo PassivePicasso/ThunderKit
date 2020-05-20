@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class QuaternionPID : global::QuaternionPID{}
+    public class QuaternionPID : global::QuaternionPID {}
 }

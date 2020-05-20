@@ -1,5 +1,5 @@
 using global::RoR2.UI;
 namespace RainOfStages.Proxy.RoR2.UI
 {
-    public class MainUIArea : global::RoR2.UI.MainUIArea{}
+    public class MainUIArea : global::RoR2.UI.MainUIArea {}
 }

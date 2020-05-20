@@ -1,5 +1,5 @@
 
 namespace RainOfStages.Proxy
 {
-    public class RootMotionAccumulator : global::RootMotionAccumulator{}
+    public class RootMotionAccumulator : global::RootMotionAccumulator {}
 }
