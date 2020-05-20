@@ -1,9 +1,13 @@
 ﻿using RainOfStages.Proxy;
+using RainOfStages.Proxy.RoR2;
 using RainOfStages.Utilities;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using BodySpawnCard = RainOfStages.Proxy.BodySpawnCard;
+using InteractableSpawnCard = RainOfStages.Proxy.InteractableSpawnCard;
+using CharacterSpawnCard = RainOfStages.Proxy.CharacterSpawnCard;
 
 namespace RainOfStages.Editor
 {
@@ -70,10 +74,10 @@ namespace RainOfStages.Editor
             Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
             Lightmapping.realtimeGI = false;
             Lightmapping.bakedGI = false;
-            
+
             DynamicGI.UpdateEnvironment();
             EditorSceneManager.MarkSceneDirty(scene);
-            
+
 
             //var tab = new LightingExplorerTab()
 

@@ -115,3 +115,4 @@ crashlytics-build.properties
 /Deployments
 /DebugProject/obj/Debug
 /DebugProject/bin/Debug
+/ros_temp

@@ -2,13 +2,13 @@
 
 namespace RainOfStages.Proxy
 {
-    public class BodySpawnCard : RoR2.BodySpawnCard, IProxyReference<RoR2.SpawnCard>
+    public class BodySpawnCard : global::RoR2.BodySpawnCard, IProxyReference<global::RoR2.SpawnCard>
     {
 
         void Awake()
         {
             if (Application.isEditor) return;
-            var card = (RoR2.BodySpawnCard)ResolveProxy();
+            var card = (global::RoR2.BodySpawnCard)ResolveProxy();
 
             prefab = card.prefab;
             sendOverNetwork = card.sendOverNetwork;
@@ -21,9 +21,9 @@ namespace RainOfStages.Proxy
         }
 
 
-        public RoR2.SpawnCard ResolveProxy() => LoadCard<RoR2.BodySpawnCard>();
+        public global::RoR2.SpawnCard ResolveProxy() => LoadCard<global::RoR2.BodySpawnCard>();
 
-        private T LoadCard<T>() where T : RoR2.SpawnCard
+        private T LoadCard<T>() where T : global::RoR2.SpawnCard
         {
             var card = Resources.Load<T>($"SpawnCards/{typeof(T).Name}s/{name}");
             if (card == null)

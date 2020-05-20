@@ -9,7 +9,7 @@ using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using GraphType = RoR2.Navigation.MapNodeGroup.GraphType;
 using MapNodeGroup = RoR2.Navigation.MapNodeGroup;
-using SceneInfo = RainOfStages.Proxy.SceneInfo;
+using SceneInfo = RainOfStages.Proxy.RoR2.SceneInfo;
 
 namespace RainOfStages
 {

@@ -77,7 +77,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6474242042706043882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c9abb5ab81280042b469279877f5f76, type: 3}
+  m_Script: {fileID: 11500000, guid: 3b0f5a8c0e3382f47963c59a78c5fe27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6474242042706043888
@@ -89,14 +89,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6474242042706043882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c29bb14f4778886458c880037eef3ec5, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e5685569638977408a8ada0b48c65b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   teleporterSpawnCard: {fileID: 11400000, guid: f6f59d96e3c6e074884c86e1a62c6fff,
     type: 2}
-  expRewardCoefficient: 0.06666667
-  eliteBias: 2
-  spawnDistanceMultiplier: 6
+  expRewardCoefficient: 0
+  eliteBias: 0
+  spawnDistanceMultiplier: 0
   teleporterInstance: {fileID: 0}
 --- !u!114 &6474242042706043886
 MonoBehaviour:
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6474242042706043882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d70855a3ca3041448c2568d4e8b5bce, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cdc91441534e4344b8fbbee5a050a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   customName: 
@@ -115,12 +115,10 @@ MonoBehaviour:
   expRewardCoefficient: 0.2
   minSeriesSpawnInterval: 0.1
   maxSeriesSpawnInterval: 1
-  minRerollSpawnInterval: 4.5
-  maxRerollSpawnInterval: 9
-  moneyWaveIntervals:
-  - min: 1
-    max: 1
-  creditMultiplier: 0.1
+  minRerollSpawnInterval: 2.3333333
+  maxRerollSpawnInterval: 4.3333335
+  moneyWaveIntervals: []
+  creditMultiplier: 1
   spawnDistanceMultiplier: 1
   shouldSpawnOneWave: 0
   targetPlayers: 1
@@ -144,7 +142,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6474242042706043882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d70855a3ca3041448c2568d4e8b5bce, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cdc91441534e4344b8fbbee5a050a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   customName: 
@@ -152,12 +150,10 @@ MonoBehaviour:
   expRewardCoefficient: 0.2
   minSeriesSpawnInterval: 0.1
   maxSeriesSpawnInterval: 1
-  minRerollSpawnInterval: 22.5
-  maxRerollSpawnInterval: 30
-  moneyWaveIntervals:
-  - min: 1
-    max: 1
-  creditMultiplier: 0.1
+  minRerollSpawnInterval: 2.3333333
+  maxRerollSpawnInterval: 4.3333335
+  moneyWaveIntervals: []
+  creditMultiplier: 1
   spawnDistanceMultiplier: 1
   shouldSpawnOneWave: 0
   targetPlayers: 1

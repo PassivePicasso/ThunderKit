@@ -41,19 +41,24 @@ namespace RainOfStages.AutoConfig
         {
             string projectDirectory = Directory.GetCurrentDirectory();
             var settings = RainOfStagesSettings.GetOrCreateSettings();
-            var results = RequiredAssemblies.SelectMany(ra => AssetDatabase.FindAssets(ra)).Distinct().ToArray();
+            var results = RequiredAssemblies.SelectMany(requiredAssembly => AssetDatabase.FindAssets(requiredAssembly)).Distinct().ToArray();
+            var fileResults = results.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).Where(p => p.StartsWith("Assets/Assemblies")).ToList();
             var destinationFolder = Path.Combine(projectDirectory, "Assets", "Assemblies");
 
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
 
             if (RequiredAssemblies.All(asm => File.Exists(Path.Combine(destinationFolder, asm))))
+            {
                 return;
+            }
 
-            if (results.Length == RequiredAssemblies.Length
+            if (RequiredAssemblies.All(ra => fileResults.Any(r=> r.Contains(ra)))
              && !string.IsNullOrEmpty(settings.RoR2Path)
              && File.Exists(Path.Combine(settings.RoR2Path, "Risk of Rain 2.exe")))
+            {
                 return;
+            }
 
             Debug.Log("Acquiring references for Rain of Stages");
 
