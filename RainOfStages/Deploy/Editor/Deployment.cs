@@ -132,7 +132,7 @@ namespace RainOfStages.Deploy
                 var rorPsi = new ProcessStartInfo(ror2Executable)
                 {
                     WorkingDirectory = bepinexDir,
-                    Arguments = $"--doorstop-enable true --doorstop-target {Path.Combine(bepinexCoreDir, "BepInEx.Preloader.dll")}",
+                    Arguments = $"--doorstop-enable true --doorstop-target \"{Path.Combine(bepinexCoreDir, "BepInEx.Preloader.dll")}\"",
                     //Standard output redirection doesn't currently work with bepinex, appears to be considered a bepinex bug
                     RedirectStandardOutput = true,
                     UseShellExecute = false
