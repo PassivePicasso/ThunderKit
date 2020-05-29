@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Bootstrap;
 using MonoMod.RuntimeDetour.HookGen;
 using RainOfStages.Proxy;
 using RoR2;
@@ -18,6 +19,7 @@ namespace RainOfStages.Plugin
 
     //The name is the name of the plugin that's displayed on load, and the version number just specifies what version the plugin is.
     [BepInPlugin("com.PassivePicasso.RainOfStages", "RainOfStages", "2020.1.0")]
+    [BepInDependency("R2API", BepInDependency.DependencyFlags.SoftDependency)]
     public class RainOfStages : BaseUnityPlugin
     {
         private const int GameBuild = 4892828;
@@ -39,28 +41,33 @@ namespace RainOfStages.Plugin
         public RainOfStages()
         {
             Logger.LogWarning("Constructor Executed");
-            RoR2Application.isModded = true;
-            try
-            {
-                var consoleRedirectorType = typeof(RoR2.RoR2Application).GetNestedType("UnitySystemConsoleRedirector", BindingFlags.NonPublic);
-                Logger.LogMessage($"{consoleRedirectorType.FullName} found in {typeof(RoR2Application).FullName}");
-                var redirect = consoleRedirectorType.GetMethod("Redirect", BindingFlags.Public | BindingFlags.Static);
-                Logger.LogMessage($"{redirect.Name}() found in {consoleRedirectorType.FullName}");
-                HookEndpointManager.Add<Hook>(redirect, (Hook)(_ => { }));
-            }
-            catch (Exception e)
-            {
-                Logger.LogError("Failed to redirect console");
-            }
 
-
-            var qpbcStart = typeof(QuickPlayButtonController).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic);
-            var digmOnEnable = typeof(DisableIfGameModded).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.Public);
             var sdAwake = typeof(SceneDef).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
             var scInit = typeof(SceneCatalog).GetMethod("Init", BindingFlags.Static | BindingFlags.NonPublic);
 
-            HookEndpointManager.Add<Hook<QuickPlayButtonController>>(qpbcStart, (Hook<QuickPlayButtonController>)DisableQuickPlay);
-            HookEndpointManager.Add<Hook<DisableIfGameModded>>(digmOnEnable, (Hook<DisableIfGameModded>)DisableIfGameModded_Start);
+            if (!Chainloader.PluginInfos.ContainsKey("R2API"))
+            {
+                RoR2Application.isModded = true;
+
+                try
+                {
+                    var consoleRedirectorType = typeof(RoR2.RoR2Application).GetNestedType("UnitySystemConsoleRedirector", BindingFlags.NonPublic);
+                    Logger.LogMessage($"{consoleRedirectorType.FullName} found in {typeof(RoR2Application).FullName}");
+                    var redirect = consoleRedirectorType.GetMethod("Redirect", BindingFlags.Public | BindingFlags.Static);
+                    Logger.LogMessage($"{redirect.Name}() found in {consoleRedirectorType.FullName}");
+                    HookEndpointManager.Add<Hook>(redirect, (Hook)(_ => { }));
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError("Failed to redirect console");
+                }
+
+                var qpbcStart = typeof(QuickPlayButtonController).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic);
+                var digmOnEnable = typeof(DisableIfGameModded).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.Public);
+                HookEndpointManager.Add<Hook<QuickPlayButtonController>>(qpbcStart, (Hook<QuickPlayButtonController>)DisableQuickPlay);
+                HookEndpointManager.Add<Hook<DisableIfGameModded>>(digmOnEnable, (Hook<DisableIfGameModded>)DisableIfGameModded_Start);
+            }
+
             HookEndpointManager.Add<Hook<SceneDef>>(sdAwake, (Hook<SceneDef>)SceneDef_Awake);
             HookEndpointManager.Add<Hook>(scInit, (Hook)Init);
 
