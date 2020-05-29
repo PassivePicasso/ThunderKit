@@ -179,12 +179,12 @@ namespace RainOfStages.Deploy
                     if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles))
                     {
 
-                        string monodatabase = $"{Path.Combine(scriptAssemblies, fileName)}.mdb";
+                        string monodatabase = $"{Path.Combine(scriptAssemblies, fileName)}.dll.mdb";
                         if (File.Exists(monodatabase))
                         {
-                            if (File.Exists($"{fileOutputBase}.mdb")) File.Delete($"{fileOutputBase}.mdb");
+                            if (File.Exists($"{fileOutputBase}.dll.mdb")) File.Delete($"{fileOutputBase}.dll.mdb");
 
-                            File.Copy(monodatabase, $"{fileOutputBase}.mdb");
+                            File.Copy(monodatabase, $"{fileOutputBase}.dll.mdb");
                         }
 
                         string programdatabase = Path.Combine(scriptAssemblies, $"{fileName}.pdb");
