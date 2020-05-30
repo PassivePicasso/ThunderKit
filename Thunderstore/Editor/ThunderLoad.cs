@@ -10,7 +10,7 @@ namespace RainOfStages.Thunderstore
 {
     public class ThunderLoad
     {
-        const string ThunderstoreIO = "https://beta.thunderstore.io";
+        const string ThunderstoreIO = "https://thunderstore.io";
         const string PackageListApi = ThunderstoreIO + "/api/v2/package";
         const string PackageApi = ThunderstoreIO + "/package/download";
 
