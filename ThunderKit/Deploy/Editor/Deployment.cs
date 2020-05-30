@@ -53,7 +53,7 @@ namespace RainOfStages.Deploy
         {
             Deployment deployment = Selection.activeObject as Deployment;
 
-            var settings = RainOfStagesSettings.GetOrCreateSettings();
+            var settings = ThunderKitSettings.GetOrCreateSettings();
             var currentDir = Directory.GetCurrentDirectory();
             var scriptAssemblies = Path.Combine(currentDir, "Library", "ScriptAssemblies");
             var thunderPacks = Path.Combine(currentDir, "ThunderPacks", deployment.name);
@@ -92,9 +92,9 @@ namespace RainOfStages.Deploy
                 File.Delete(Path.Combine(bepinexPackDir, "doorstop_config.ini"));
 
             if (File.Exists(Path.Combine(bepinexPackDir, "winhttp.dll"))
-            && !File.Exists(Path.Combine(settings.RoR2Path, "winhttp.dll")))
+            && !File.Exists(Path.Combine(settings.GamePath, "winhttp.dll")))
                 File.Copy(Path.Combine(bepinexPackDir, "winhttp.dll"),
-                          Path.Combine(settings.RoR2Path, "winhttp.dll"));
+                          Path.Combine(settings.GamePath, "winhttp.dll"));
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean))
             {
@@ -123,7 +123,7 @@ namespace RainOfStages.Deploy
                 ZipFile.CreateFromDirectory(outputPath, outputFile);
             }
 
-            var ror2Executable = Path.Combine(settings.RoR2Path, "Risk of Rain 2.exe");
+            var ror2Executable = Path.Combine(settings.GamePath, "Risk of Rain 2.exe");
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
             {
                 CopyAllReferences(bepinexDir);

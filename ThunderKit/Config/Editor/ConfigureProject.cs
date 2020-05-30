@@ -29,18 +29,18 @@ namespace RainOfStages.AutoConfig
             AssemblyReloadEvents.beforeAssemblyReload += ValidateRoRReferences;
         }
 
-        [MenuItem("Assets/Rain of Stages/Setup DnSpy")]
-        public static void LocateDnSpy()
-        {
-            var settings = RainOfStagesSettings.GetOrCreateSettings();
-            settings.DnSpyPath = EditorUtility.OpenFolderPanel("Open dnSpy Root Folder", Directory.GetCurrentDirectory(), "dnSpy.exe");
-            EditorUtility.SetDirty(settings);
-        }
+        //[MenuItem("Assets/Rain of Stages/Setup DnSpy")]
+        //public static void LocateDnSpy()
+        //{
+        //    var settings = ThunderKitSettings.GetOrCreateSettings();
+        //    settings.DnSpyPath = EditorUtility.OpenFolderPanel("Open dnSpy Root Folder", Directory.GetCurrentDirectory(), "dnSpy.exe");
+        //    EditorUtility.SetDirty(settings);
+        //}
 
         private static void ValidateRoRReferences()
         {
             string projectDirectory = Directory.GetCurrentDirectory();
-            var settings = RainOfStagesSettings.GetOrCreateSettings();
+            var settings = ThunderKitSettings.GetOrCreateSettings();
             var results = RequiredAssemblies.SelectMany(requiredAssembly => AssetDatabase.FindAssets(requiredAssembly)).Distinct().ToArray();
             var fileResults = results.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).Where(p => p.StartsWith("Assets/Assemblies")).ToList();
             var destinationFolder = Path.Combine(projectDirectory, "Assets", "Assemblies");
@@ -54,8 +54,8 @@ namespace RainOfStages.AutoConfig
             }
 
             if (RequiredAssemblies.All(ra => fileResults.Any(r=> r.Contains(ra)))
-             && !string.IsNullOrEmpty(settings.RoR2Path)
-             && File.Exists(Path.Combine(settings.RoR2Path, "Risk of Rain 2.exe")))
+             && !string.IsNullOrEmpty(settings.GamePath)
+             && File.Exists(Path.Combine(settings.GamePath, "Risk of Rain 2.exe")))
             {
                 return;
             }
@@ -66,7 +66,7 @@ namespace RainOfStages.AutoConfig
             while (!Directory.EnumerateFiles(ror2Path, RoR2Executable).Any())
                 ror2Path = EditorUtility.OpenFolderPanel("Open Risk of Rain 2 Root Folder", Directory.GetCurrentDirectory(), RoR2Executable);
 
-            settings.RoR2Path = ror2Path;
+            settings.GamePath = ror2Path;
             settings.SetDirty();
 
             foreach (var asm in RequiredAssemblies)
