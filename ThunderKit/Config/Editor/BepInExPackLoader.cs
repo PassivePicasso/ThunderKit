@@ -29,7 +29,8 @@ namespace RainOfStages.AutoConfig.Editor
         {
             Debug.Log("Acquiring latest BepInExPack");
 
-            var bepinex = await ThunderLoad.LookupPackage("BepInExPack");
+            var bepinexPacks = await ThunderLoad.LookupPackage("BepInExPack");
+            var bepinex = bepinexPacks.FirstOrDefault();
 
             if (bepinex == null)
             {

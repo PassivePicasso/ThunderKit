@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace RainOfStages.Thunderstore
 {
@@ -7,7 +8,6 @@ namespace RainOfStages.Thunderstore
         public string version_number;
         public string website_url;
         public string description;
-        public string[] dependencies;
-
+        public List<string> dependencies;
     }
 }

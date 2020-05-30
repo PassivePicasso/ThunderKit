@@ -21,6 +21,7 @@ namespace RainOfStages.Deploy
         InstallBepInEx = 2,
         Package = 4,
         Clean = 8,
+        InstallDependencies = 16,
         DeployMdbFiles = 32,
         ShowConsole = 64,
         Run = 8192,
@@ -39,9 +40,9 @@ namespace RainOfStages.Deploy
         public AssemblyDefinitionAsset[] Plugins;
         public AssemblyDefinitionAsset[] Patchers;
         public AssemblyDefinitionAsset[] Monomod;
-        public Texture2D Icon;
+        public TextAsset Readme;
 
-        private string[] Bundles;
+        public Texture2D Icon;
 
         private static string configTemplate = null;
 
@@ -55,6 +56,7 @@ namespace RainOfStages.Deploy
 
             var settings = ThunderKitSettings.GetOrCreateSettings();
             var currentDir = Directory.GetCurrentDirectory();
+            var dependencies = Path.Combine(currentDir, "Assets", "Dependencies");
             var scriptAssemblies = Path.Combine(currentDir, "Library", "ScriptAssemblies");
             var thunderPacks = Path.Combine(currentDir, "ThunderPacks", deployment.name);
             var tmpDir = Path.Combine(thunderPacks, "tmp");
@@ -64,13 +66,18 @@ namespace RainOfStages.Deploy
             var deployments = "Deployments";
             var outputPath = $"{deployments}/{deployment.name}";
 
-
-            if (!Directory.Exists(bepinexPackDir)
-             || deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx))
+            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx)
+            || (!Directory.Exists(bepinexPackDir) 
+                && (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies) 
+                    || deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles)
+                    || deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
+               ))
             {
                 if (Directory.Exists(bepinexPackDir)) Directory.Delete(bepinexPackDir, true);
 
-                var bepinex = await ThunderLoad.LookupPackage("BepInExPack");
+                var bepinexPacks = await ThunderLoad.LookupPackage("BepInExPack");
+                var bepinex = bepinexPacks.FirstOrDefault();
+
                 string filePath = Path.Combine(currentDir, $"{bepinex.full_name}.zip");
                 await ThunderLoad.DownloadPackageAsync(bepinex, filePath);
 
@@ -102,6 +109,32 @@ namespace RainOfStages.Deploy
                 CleanManifestFiles(outputPath);
             }
 
+            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies))
+            {
+                if (Directory.Exists(dependencies))
+                {
+                    var dependencyDirs = Directory.EnumerateDirectories(dependencies, "*", searchOption: SearchOption.TopDirectoryOnly).ToArray();
+
+                    foreach (var modDir in dependencyDirs)
+                    {
+                        string patcher = Path.Combine(modDir, "patchers");
+                        string plugins = Path.Combine(modDir, "plugins");
+                        string monomod = Path.Combine(modDir, "monomod");
+
+                        if (!Directory.Exists(patcher) && !Directory.Exists(plugins) && !Directory.Exists(monomod))
+                        {
+                            CopyFilesRecursively(modDir, Path.Combine(bepinexDir, "plugins"));
+                        }
+                        else
+                        {
+                            if (Directory.Exists(patcher)) CopyFilesRecursively(patcher, Path.Combine(bepinexDir, "patchers"));
+                            if (Directory.Exists(plugins)) CopyFilesRecursively(plugins, Path.Combine(bepinexDir, "plugins"));
+                            if (Directory.Exists(monomod)) CopyFilesRecursively(monomod, Path.Combine(bepinexDir, "monomod"));
+                        }
+                    }
+                }
+            }
+
             if (!Directory.Exists(deployments)) Directory.CreateDirectory(deployments);
             if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
@@ -110,7 +143,13 @@ namespace RainOfStages.Deploy
                 CopyAllReferences(outputPath);
 
                 var manifestJson = JsonUtility.ToJson(deployment.Manifest);
+
+                manifestJson = manifestJson.Substring(1);
+                manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
                 File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
+
+                var readmePath = AssetDatabase.GetAssetPath(deployment.Readme);
+                File.Copy(readmePath, Path.Combine(outputPath, Path.GetFileName(readmePath)), true);
 
                 if (deployment.Icon)
                     File.WriteAllBytes(Path.Combine(outputPath, "icon.png"), deployment.Icon.EncodeToPNG());
@@ -219,7 +258,7 @@ namespace RainOfStages.Deploy
 #warning This is to setup the Bepinex Config until bepinex is updated
             string GetBepInExConfig(bool consoleEnabled)
             {
-                string configTemplatePath = Path.Combine(currentDir, "RainOfStages", "Deploy", "Editor", "configtemplate.txt");
+                string configTemplatePath = Path.Combine(currentDir, "ThunderKit", "Deploy", "Editor", "configtemplate.txt");
 
                 if (configTemplate == null)
                     configTemplate = File.ReadAllText(configTemplatePath);
@@ -229,16 +268,16 @@ namespace RainOfStages.Deploy
         }
 
 
-        public static DirectoryInfo CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
+        public static void CopyFilesRecursively(string source, string target)
         {
-            var newDirectoryInfo = target.CreateSubdirectory(source.Name);
-            foreach (var fileInfo in source.GetFiles())
-                fileInfo.CopyTo(Path.Combine(newDirectoryInfo.FullName, fileInfo.Name));
-
-            foreach (var childDirectoryInfo in source.GetDirectories())
-                CopyFilesRecursively(childDirectoryInfo, newDirectoryInfo);
-
-            return newDirectoryInfo;
+            foreach (var file in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories).Where(f => !f.EndsWith("meta")))
+            {
+                var parentDirectory = Path.GetFileName(Path.GetDirectoryName(file));
+                var targetParent = Path.GetFileName(target);
+                var subdirectory = parentDirectory.Equals(targetParent) ? target : Path.Combine(target, parentDirectory);
+                Directory.CreateDirectory(subdirectory);
+                File.Copy(file, Path.Combine(subdirectory, Path.GetFileName(file)), true);
+            }
         }
         private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
