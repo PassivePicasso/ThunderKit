@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.passivepicasso.rainofstages": "file:../RainOfStages",
+    "com.passivepicasso.thunderkit": "file:../ThunderKit",
     "com.unity.assetbundlebrowser": "1.7.0",
     "com.unity.package-manager-ui": "2.0.8",
     "com.unity.polybrush": "1.0.2-preview.4",

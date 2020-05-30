@@ -1,9 +1,0 @@
-{
-  "name": "com.passivepicasso.rainofstages",
-  "version": "0.2.0",
-  "displayName": "Rain of Stages",
-  "description": "Map and Mod toolkit for Risk of Rain 2.  Providing all the essential features required to make custom maps and simple single stage additive mods for Risk of Rain 2.",
-  "unity": "2018.4",
-  "release": "20f1",
-  "dependencies": {}
-}
