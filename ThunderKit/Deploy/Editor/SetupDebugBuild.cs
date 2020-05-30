@@ -16,9 +16,9 @@ namespace RainOfStages.Deploy
         [MenuItem("Tools/Rain of Stages/Setup Debug Build")]
         public static void Execute()
         {
-            var settings = RainOfStagesSettings.GetOrCreateSettings();
+            var settings = ThunderKitSettings.GetOrCreateSettings();
 
-            var rorPath = settings.RoR2Path;
+            var rorPath = settings.GamePath;
             var rorDir = new DirectoryInfo(rorPath);
             var rorName = rorDir.Name;
             var rorMonoPath = Path.Combine(rorPath, $"MonoBleedingEdge");

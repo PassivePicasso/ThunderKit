@@ -8,24 +8,25 @@ using UnityEngine.Experimental.UIElements;
 namespace RainOfStages.AutoConfig
 {
     // Create a new type of Settings Asset.
-    public class RainOfStagesSettings : ScriptableObject
+    public class ThunderKitSettings : ScriptableObject
     {
-        public const string SettingsPath = "Assets/RainOfStagesSettings.asset";
-        private const string RiskOfRain2PathLabel = "Risk of Rain 2 Path";
+        public static string SettingsPath => $"Assets/{nameof(ThunderKitSettings)}.asset";
+        private const string RiskOfRain2PathLabel = "Game Path";
         [SerializeField]
-        public string RoR2Path;
+        public string GamePath;
 
-        [SerializeField]
-        public string DnSpyPath;
 
-        public static RainOfStagesSettings GetOrCreateSettings()
+        //[SerializeField]
+        //public string DnSpyPath;
+
+        public static ThunderKitSettings GetOrCreateSettings()
         {
-            var settings = AssetDatabase.LoadAssetAtPath<RainOfStagesSettings>(SettingsPath);
+            var settings = AssetDatabase.LoadAssetAtPath<ThunderKitSettings>(SettingsPath);
             if (settings == null)
             {
-                settings = CreateInstance<RainOfStagesSettings>();
-                settings.RoR2Path = "";
-                settings.DnSpyPath = "";
+                settings = CreateInstance<ThunderKitSettings>();
+                settings.GamePath = "";
+                //settings.DnSpyPath = "";
                 AssetDatabase.CreateAsset(settings, SettingsPath);
                 AssetDatabase.SaveAssets();
             }
@@ -52,12 +53,12 @@ namespace RainOfStages.AutoConfig
                 {
                     var settings = GetSerializedSettings();
 
-                    var pathField = new TextField { bindingPath = nameof(RoR2Path) };
+                    var pathField = new TextField { bindingPath = nameof(GamePath) };
 
                     rootElement.Add(pathField);
 
-                    pathField = new TextField { bindingPath = nameof(DnSpyPath) };
-                    rootElement.Add(pathField);
+                    //pathField = new TextField { bindingPath = nameof(DnSpyPath) };
+                    //rootElement.Add(pathField);
 
                     rootElement.Bind(settings);
                 },
