@@ -116,3 +116,4 @@ crashlytics-build.properties
 /DebugProject/obj/Debug
 /DebugProject/bin/Debug
 /ros_temp
+/ProjectSettings/Packages/com.unity.probuilder
