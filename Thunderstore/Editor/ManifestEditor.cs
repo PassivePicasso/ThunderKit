@@ -43,6 +43,9 @@ public class ManifestEditor : Editor
         var manifest = target as Manifest;
         serializedObject.Update();
 
+        if (manifest.dependencies == null)
+            manifest.dependencies = new List<string>();
+
         AddField(versionNumberField);
         AddField(websiteUrlField);
         AddField(descriptionField);
@@ -53,6 +56,7 @@ public class ManifestEditor : Editor
         var rect = EGL.GetControlRect(true, EGU.singleLineHeight);
         GUI.Label(rect, "Manifest Dependencies");
 
+        var depCount = manifest.dependencies.Count;
         rect = EGL.GetControlRect(true, (manifest.dependencies.Count + 1) * EGU.singleLineHeight * 1.5f);
 
         GUI.Box(rect, "Manifest Dependencies");
