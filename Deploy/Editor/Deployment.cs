@@ -148,13 +148,16 @@ namespace RainOfStages.Deploy
                 manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
                 File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
 
-                var readmePath = AssetDatabase.GetAssetPath(deployment.Readme);
-                File.Copy(readmePath, Path.Combine(outputPath, Path.GetFileName(readmePath)), true);
+                if (deployment.Readme)
+                {
+                    var readmePath = AssetDatabase.GetAssetPath(deployment.Readme);
+                    File.Copy(readmePath, Path.Combine(outputPath, Path.GetFileName(readmePath)), true);
+                }
+                else File.WriteAllText(Path.Combine(outputPath, "README.md"), $"# {deployment.Manifest.name}");
+
 
                 if (deployment.Icon)
                     File.WriteAllBytes(Path.Combine(outputPath, "icon.png"), deployment.Icon.EncodeToPNG());
-
-                File.WriteAllText(Path.Combine(outputPath, "README.md"), $"# {deployment.Manifest.name}");
 
                 string outputFile = Path.Combine(deployments, $"{deployment.Manifest.name}.zip");
                 if (File.Exists(outputFile)) File.Delete(outputFile);
