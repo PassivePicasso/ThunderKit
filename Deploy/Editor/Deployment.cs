@@ -44,8 +44,6 @@ namespace RainOfStages.Deploy
 
         public Texture2D Icon;
 
-        private static string configTemplate = null;
-
         [MenuItem("Assets/Run Deployment", isValidateFunction: true)]
         public static bool CanDeploy() => Selection.activeObject is Deployment;
 
@@ -67,8 +65,8 @@ namespace RainOfStages.Deploy
             var outputPath = $"{deployments}/{deployment.name}";
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx)
-            || (!Directory.Exists(bepinexPackDir) 
-                && (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies) 
+            || (!Directory.Exists(bepinexPackDir)
+                && (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies)
                     || deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles)
                     || deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
                ))
@@ -259,15 +257,7 @@ namespace RainOfStages.Deploy
             }
 
 #warning This is to setup the Bepinex Config until bepinex is updated
-            string GetBepInExConfig(bool consoleEnabled)
-            {
-                string configTemplatePath = Path.Combine(currentDir, "ThunderKit", "Deploy", "Editor", "configtemplate.txt");
-
-                if (configTemplate == null)
-                    configTemplate = File.ReadAllText(configTemplatePath);
-
-                return string.Format(configTemplate, consoleEnabled.ToString().ToLower());
-            }
+            string GetBepInExConfig(bool consoleEnabled) => string.Format(ConfigTemplate.Content, consoleEnabled.ToString().ToLower());
         }
 
 
