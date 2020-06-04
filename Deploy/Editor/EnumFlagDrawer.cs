@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-namespace RainOfStages.Deploy
+namespace PassivePicasso.ThunderKit.Deploy.Editor
 {
 	using System;
 	using System.Reflection;

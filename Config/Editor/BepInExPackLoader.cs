@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using RainOfStages.Thunderstore;
+using PassivePicasso.ThunderKit.Thunderstore.Editor;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -10,7 +10,7 @@ using UnityEngine;
 using Directory = System.IO.Directory;
 using Path = System.IO.Path;
 
-namespace RainOfStages.AutoConfig.Editor
+namespace PassivePicasso.ThunderKit.AutoConfig.Editor
 {
     public class BepInExPackLoader
     {

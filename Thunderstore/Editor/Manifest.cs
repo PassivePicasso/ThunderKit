@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace RainOfStages.Thunderstore
+namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 {
     public class Manifest : ScriptableObject
     {

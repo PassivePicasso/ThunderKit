@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RainOfStages.Deploy
+namespace PassivePicasso.ThunderKit.Deploy.Editor
 {
     [Serializable]
     public partial class AssemblyDef
