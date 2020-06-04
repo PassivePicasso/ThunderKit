@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace RainOfStages.Thunderstore
+namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 {
     public class ThunderLoad
     {

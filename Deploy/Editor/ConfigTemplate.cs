@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public static class ConfigTemplate 
+namespace PassivePicasso.ThunderKit.Editor
 {
+    public static class ConfigTemplate
+    {
 
-    public static readonly string Content = @"[Caching]
+        public static readonly string Content = @"[Caching]
 ## Enable/disable assembly metadata cache
 ## Enabling this will speed up discovery of plugins and patchers by caching the metadata of all types BepInEx discovers.
 # Setting type: Boolean
@@ -94,4 +96,5 @@ Type = Application
 # Default value: .cctor
 Method = .cctor
 ";
+    }
 }

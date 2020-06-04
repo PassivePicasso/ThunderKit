@@ -1,5 +1,5 @@
 ﻿using System;
-namespace RainOfStages.Thunderstore
+namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 {
 
     [Serializable]

@@ -1,12 +1,12 @@
 ﻿#if UNITY_EDITOR
-using RainOfStages.Utilities;
+using PassivePicasso.ThunderKit.Utilities;
 using UnityEditor;
 
-namespace RainOfStages.Deploy
+namespace PassivePicasso.ThunderKit.Deploy.Editor
 {
     public class CreateAsset
     {
-        [MenuItem("Assets/Rain of Stages/Modding Assets/" + nameof(Deployment))]
+        [MenuItem("Assets/ThunderKit/Modding Assets/" + nameof(Deployment))]
         public static void Create() => ScriptableHelper.CreateAsset<Deployment>();
     }
 }

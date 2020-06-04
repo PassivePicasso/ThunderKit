@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace RainOfStages.Utilities
+namespace PassivePicasso.ThunderKit.Utilities
 {
     public static class ScriptableHelper
     {

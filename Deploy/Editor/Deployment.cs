@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
-using RainOfStages.AutoConfig;
-using RainOfStages.Thunderstore;
+using PassivePicasso.ThunderKit.Editor;
+using PassivePicasso.ThunderKit.Thunderstore.Editor;
+using PassivePicasso.ThunderKit.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +12,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace RainOfStages.Deploy
+namespace PassivePicasso.ThunderKit.Deploy.Editor
 {
     [Flags]
     public enum DeploymentOptions
@@ -64,6 +65,15 @@ namespace RainOfStages.Deploy
             var deployments = "Deployments";
             var outputPath = $"{deployments}/{deployment.name}";
 
+            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean))
+            {
+                CleanManifestFiles(bepinexDir);
+                CleanManifestFiles(outputPath);
+            }
+
+            if (!Directory.Exists(deployments)) Directory.CreateDirectory(deployments);
+            if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx)
             || (!Directory.Exists(bepinexPackDir)
                 && (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies)
@@ -89,23 +99,14 @@ namespace RainOfStages.Deploy
 
                 string configPath = Path.Combine(bepinexDir, "Config", "BepInEx.cfg");
                 File.Delete(configPath);
-                string contents = GetBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole));
+                string contents = CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole));
                 File.WriteAllText(configPath, contents);
             }
-
-            if (File.Exists(Path.Combine(bepinexPackDir, "doorstop_config.ini")))
-                File.Delete(Path.Combine(bepinexPackDir, "doorstop_config.ini"));
 
             if (File.Exists(Path.Combine(bepinexPackDir, "winhttp.dll"))
             && !File.Exists(Path.Combine(settings.GamePath, "winhttp.dll")))
                 File.Copy(Path.Combine(bepinexPackDir, "winhttp.dll"),
                           Path.Combine(settings.GamePath, "winhttp.dll"));
-
-            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean))
-            {
-                CleanManifestFiles(bepinexDir);
-                CleanManifestFiles(outputPath);
-            }
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies))
             {
@@ -133,8 +134,6 @@ namespace RainOfStages.Deploy
                 }
             }
 
-            if (!Directory.Exists(deployments)) Directory.CreateDirectory(deployments);
-            if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
             {
@@ -163,11 +162,14 @@ namespace RainOfStages.Deploy
                 ZipFile.CreateFromDirectory(outputPath, outputFile);
             }
 
-            var ror2Executable = Path.Combine(settings.GamePath, "Risk of Rain 2.exe");
+            var ror2Executable = Path.Combine(settings.GamePath, settings.GameExecutable);
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
             {
+                if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.ini")))
+                    File.Move(Path.Combine(settings.GamePath, "doorstop_config.ini"), Path.Combine(settings.GamePath, "doorstop_config.bak.ini"));
+
                 CopyAllReferences(bepinexDir);
-                Debug.Log("Launching Risk of Rain 2");
+                Debug.Log($"Launching {Path.GetFileNameWithoutExtension(settings.GameExecutable)}");
 
                 var rorPsi = new ProcessStartInfo(ror2Executable)
                 {
@@ -177,18 +179,16 @@ namespace RainOfStages.Deploy
                     RedirectStandardOutput = true,
                     UseShellExecute = false
                 };
-                //string connectionAddress = "127.0.0.1";
-                //string connectionPort = "55555";
-                //rorPsi.Environment["DNSPY_UNITY_DBG"] = $"--debugger-agent=transport=dt_socket,server=y,address={connectionAddress}:{connectionPort},defer=y,no-hide-debugger";
-                //rorPsi.Environment["DNSPY_UNITY_DBG2"] = $"--debugger-agent=transport=dt_socket,server=y,address={connectionAddress}:{connectionPort},suspend=n,no-hide-debugger";
-                //var envVariables = Environment.GetEnvironmentVariables();
-                //foreach (var variable in envVariables.Keys.OfType<string>())
-                //    rorPsi.Environment[variable] = envVariables[variable] as string;
 
-                var rorProcess = new Process { StartInfo = rorPsi };
+                var rorProcess = new Process { StartInfo = rorPsi, EnableRaisingEvents = true };
+                rorProcess.Exited += RorProcess_Exited;
+                void RorProcess_Exited(object sender, EventArgs e)
+                {
+                    rorProcess.Exited -= RorProcess_Exited;
+                    if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.bak.ini")))
+                        File.Move(Path.Combine(settings.GamePath, "doorstop_config.bak.ini"), Path.Combine(settings.GamePath, "doorstop_config.ini"));
+                }
 
-                //process.OutputDataReceived += Process_OutputDataReceived;
-                //process.BeginOutputReadLine();
                 rorProcess.Start();
             }
 
@@ -256,9 +256,10 @@ namespace RainOfStages.Deploy
                 CopyReferences(deployment.Monomod, monomodPath);
             }
 
-#warning This is to setup the Bepinex Config until bepinex is updated
-            string GetBepInExConfig(bool consoleEnabled) => string.Format(ConfigTemplate.Content, consoleEnabled.ToString().ToLower());
         }
+
+
+        public static string CreatBepInExConfig(bool consoleEnabled) => string.Format(ConfigTemplate.Content, consoleEnabled.ToString().ToLower());
 
 
         public static void CopyFilesRecursively(string source, string target)

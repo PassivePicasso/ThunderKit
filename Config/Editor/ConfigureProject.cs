@@ -1,79 +1,62 @@
 ﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.Utilities;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace RainOfStages.AutoConfig
+namespace PassivePicasso.ThunderKit.AutoConfig.Editor
 {
     [InitializeOnLoad]
     public class ConfigureProject
     {
-
-        private static string[] RequiredAssemblies = new[]
-        {
-            "Assembly-CSharp",
-            "Facepunch.Steamworks",
-            "Rewired_Core",
-            "Rewired_CSharp",
-            "Rewired_Windows_Lib",
-            "Unity.Postprocessing.Runtime",
-            "WWise",
-            "Zio"
-        };
-        private const string RoR2Executable = "Risk of Rain 2.exe";
-
         static ConfigureProject()
         {
-            EditorApplication.update += ValidateRoRReferences;
-            AssemblyReloadEvents.beforeAssemblyReload += ValidateRoRReferences;
+            EditorApplication.update += ValidateReferences;
+            AssemblyReloadEvents.beforeAssemblyReload += ValidateReferences;
         }
 
-        //[MenuItem("Assets/Rain of Stages/Setup DnSpy")]
-        //public static void LocateDnSpy()
-        //{
-        //    var settings = ThunderKitSettings.GetOrCreateSettings();
-        //    settings.DnSpyPath = EditorUtility.OpenFolderPanel("Open dnSpy Root Folder", Directory.GetCurrentDirectory(), "dnSpy.exe");
-        //    EditorUtility.SetDirty(settings);
-        //}
-
-        private static void ValidateRoRReferences()
+        private static void ValidateReferences()
         {
-            string projectDirectory = Directory.GetCurrentDirectory();
+            string currentDir = Directory.GetCurrentDirectory();
             var settings = ThunderKitSettings.GetOrCreateSettings();
-            var results = RequiredAssemblies.SelectMany(requiredAssembly => AssetDatabase.FindAssets(requiredAssembly)).Distinct().ToArray();
+
+            var results = settings.RequiredAssemblies.SelectMany(requiredAssembly => AssetDatabase.FindAssets(requiredAssembly)).Distinct().ToArray();
             var fileResults = results.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).Where(p => p.StartsWith("Assets/Assemblies")).ToList();
-            var destinationFolder = Path.Combine(projectDirectory, "Assets", "Assemblies");
+            var destinationFolder = Path.Combine(currentDir, "Assets", "Assemblies");
 
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
 
-            if (RequiredAssemblies.All(asm => File.Exists(Path.Combine(destinationFolder, asm))))
-            {
+            if (!settings.RequiredAssemblies.Any() || settings.RequiredAssemblies.All(asm => File.Exists(Path.Combine(destinationFolder, asm)))
+             || (settings.RequiredAssemblies.All(ra => fileResults.Any(r => r.Contains(ra)))
+                 && !string.IsNullOrEmpty(settings.GamePath)
+                 && File.Exists(Path.Combine(settings.GamePath, settings.GameExecutable))))
                 return;
+
+            Debug.Log("Acquiring references");
+
+            if (string.IsNullOrEmpty(settings.GameExecutable))
+            {
+                string executablePath = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
+                settings.GameExecutable = Path.GetFileName(executablePath);
+                settings.GamePath = Path.GetFileName(Path.GetDirectoryName(executablePath));
+                settings.SetDirty();
+            }
+            else
+            {
+                while (!Directory.EnumerateFiles(settings.GamePath, settings.GameExecutable).Any())
+                    settings.GamePath = Path.GetDirectoryName(EditorUtility.OpenFilePanel("Open Game Executable", currentDir, settings.GameExecutable));
+
             }
 
-            if (RequiredAssemblies.All(ra => fileResults.Any(r=> r.Contains(ra)))
-             && !string.IsNullOrEmpty(settings.GamePath)
-             && File.Exists(Path.Combine(settings.GamePath, "Risk of Rain 2.exe")))
-            {
-                return;
-            }
-
-            Debug.Log("Acquiring references for Rain of Stages");
-
-            string ror2Path = projectDirectory;
-            while (!Directory.EnumerateFiles(ror2Path, RoR2Executable).Any())
-                ror2Path = EditorUtility.OpenFolderPanel("Open Risk of Rain 2 Root Folder", Directory.GetCurrentDirectory(), RoR2Executable);
-
-            settings.GamePath = ror2Path;
             settings.SetDirty();
 
-            foreach (var asm in RequiredAssemblies)
+            foreach (var asm in settings.RequiredAssemblies)
             {
-                var destinationFile = Path.Combine(projectDirectory, "Assets", "Assemblies", $"{asm}.dll");
-                var assemblyPath = Path.Combine(ror2Path, "Risk of Rain 2_Data", "Managed", $"{asm}.dll");
-                var destinationMetaData = Path.Combine(projectDirectory, "Assets", "Assemblies", $"{asm}.meta");
+                var destinationFile = Path.Combine(currentDir, "Assets", "Assemblies", $"{asm}.dll");
+                var assemblyPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed", $"{asm}.dll");
+                var destinationMetaData = Path.Combine(currentDir, "Assets", "Assemblies", $"{asm}.meta");
 
                 if (File.Exists(destinationFile)) File.Delete(destinationFile);
                 File.Copy(assemblyPath, destinationFile);
@@ -81,7 +64,7 @@ namespace RainOfStages.AutoConfig
                 File.WriteAllText(destinationMetaData, MetaData);
             }
 
-            _ = Editor.BepInExPackLoader.DownloadBepinex();
+            _ = BepInExPackLoader.DownloadBepinex();
 
             AssetDatabase.Refresh();
         }

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 
-namespace RainOfStages.Utilities
+namespace PassivePicasso.ThunderKit.Utilities
 {
     public class ProxyGenerator
     {
@@ -30,7 +30,7 @@ namespace RainOfStages.Utilities
                 var namespaceSeparator = isGlobal ? "" : ".";
                 var definition = string.Join(Environment.NewLine,
                         isGlobal ? "" : $"using global::{type.Namespace};",
-                        $"namespace {nameof(RainOfStages)}.Proxy{namespaceSeparator}{type.Namespace}",
+                        $"namespace {nameof(PassivePicasso)}.Proxy{namespaceSeparator}{type.Namespace}",
                         $"{{",
                         $"    public class {type.Name} : global::{type.FullName} {{}}",
                         $"}}"
