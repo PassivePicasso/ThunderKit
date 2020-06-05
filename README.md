@@ -3,7 +3,11 @@ ThunderKit is a Mod kit construction toolset with Thunderstore.io integration fo
 
 ### Setup
 
-#### Pre-Unity 2019
+#### Unity 2017 and lower
+Start a new Unity3d Project 
+Download this repository as a zip and extract it into your project's Assets folder.
+
+#### Unity 2018
  Start a new Unity3d Project and add this to your Packages/manifest.json dependencies array;
 ```json
     "com.passivepicasso.thunderkit": "https://github.com/PassivePicasso/ThunderKit.git",
