@@ -2,8 +2,7 @@
     "name": "RainOfStages.Deploy",
     "references": [
         "RainOfStages.Thunderstore",
-        "RainOfStages.Utilities",
-        "Unity.AssetBundleBrowser.Editor"
+        "RainOfStages.Utilities"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

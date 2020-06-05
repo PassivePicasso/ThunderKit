@@ -1,10 +1,12 @@
 ﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Utilities;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace PassivePicasso.ThunderKit.AutoConfig.Editor
 {
@@ -37,9 +39,15 @@ namespace PassivePicasso.ThunderKit.AutoConfig.Editor
                     foundExecutable = Directory.EnumerateFiles(settings.GamePath, settings.GameExecutable).Any();
                 }
                 EditorUtility.SetDirty(settings);
-            }
+            }  
 
             if (string.IsNullOrEmpty(settings.GamePath) || string.IsNullOrEmpty(settings.GameExecutable)) return;
+
+            var unityVersion = Application.unityVersion;
+            var playerVersion = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable)).ProductVersion;
+            var versionMatch = unityVersion.Equals(playerVersion);
+            Debug.Log($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}){(versionMatch ? "" : ", aborting startup")}");
+            //if(!versionMatch) return;
 
             var destinationFolder = Path.Combine(currentDir, "Assets", "Assemblies");
             if (!Directory.Exists(destinationFolder))

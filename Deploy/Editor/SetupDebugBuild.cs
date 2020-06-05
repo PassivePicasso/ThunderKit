@@ -4,16 +4,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 
 namespace PassivePicasso.ThunderKit.Deploy.Editor
 {
-    public class SetupDebugBuild : NetworkBehaviour
+    public class SetupDebugBuild 
     {
         private const string playerConnectionDebug1 = "player-connection-debug=1";
 
-        [MenuItem("Tools/ThunderKit/Setup Debug Build")]
+        [MenuItem("ThunderKit/Setup Debug Build")]
         public static void Execute()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings();
