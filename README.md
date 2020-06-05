@@ -1,5 +1,5 @@
 ## ThunderKit
-ThunderKit is a Mod Kit with Thunderstore.io integration for Unity3d games, providing the bare essentials for getting started with making Mods for Unity games to publish on Thunderstore.
+ThunderKit is a Mod kit construction toolset with Thunderstore.io integration for Unity3d games, providing the bare essentials for getting started with making Mods for Unity games to publish on Thunderstore.
 
 ### Setup
 
