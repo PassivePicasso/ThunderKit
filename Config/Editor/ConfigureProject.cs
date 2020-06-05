@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Utilities;
+using System;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -7,59 +8,59 @@ using UnityEngine;
 
 namespace PassivePicasso.ThunderKit.AutoConfig.Editor
 {
-    [InitializeOnLoad]
     public class ConfigureProject
     {
-        static ConfigureProject()
-        {
-            EditorApplication.update += ValidateReferences;
-            AssemblyReloadEvents.beforeAssemblyReload += ValidateReferences;
-        }
-
+        [MenuItem("ThunderKit/Configure ThunderKit")]
         private static void ValidateReferences()
         {
             string currentDir = Directory.GetCurrentDirectory();
             var settings = ThunderKitSettings.GetOrCreateSettings();
 
-            var results = settings.RequiredAssemblies.SelectMany(requiredAssembly => AssetDatabase.FindAssets(requiredAssembly)).Distinct().ToArray();
-            var fileResults = results.Select(guid => AssetDatabase.GUIDToAssetPath(guid)).Where(p => p.StartsWith("Assets/Assemblies")).ToList();
-            var destinationFolder = Path.Combine(currentDir, "Assets", "Assemblies");
-
-            if (!Directory.Exists(destinationFolder))
-                Directory.CreateDirectory(destinationFolder);
-
-            if (!settings.RequiredAssemblies.Any() || settings.RequiredAssemblies.All(asm => File.Exists(Path.Combine(destinationFolder, asm)))
-             || (settings.RequiredAssemblies.All(ra => fileResults.Any(r => r.Contains(ra)))
-                 && !string.IsNullOrEmpty(settings.GamePath)
-                 && File.Exists(Path.Combine(settings.GamePath, settings.GameExecutable))))
-                return;
-
-            Debug.Log("Acquiring references");
-
             if (string.IsNullOrEmpty(settings.GameExecutable))
             {
                 string executablePath = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
                 settings.GameExecutable = Path.GetFileName(executablePath);
-                settings.GamePath = Path.GetFileName(Path.GetDirectoryName(executablePath));
-                settings.SetDirty();
+                settings.GamePath = Path.GetDirectoryName(executablePath);
+                EditorUtility.SetDirty(settings);
             }
             else
             {
-                while (!Directory.EnumerateFiles(settings.GamePath, settings.GameExecutable).Any())
-                    settings.GamePath = Path.GetDirectoryName(EditorUtility.OpenFilePanel("Open Game Executable", currentDir, settings.GameExecutable));
+                var foundExecutable = string.IsNullOrEmpty(settings.GamePath)
+                                    ? false
+                                    : Directory.EnumerateFiles(settings.GamePath ?? currentDir, settings.GameExecutable).Any();
 
+                while (!foundExecutable)
+                {
+                    string path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
+                    if (string.IsNullOrEmpty(path)) return;
+                    settings.GamePath = Path.GetDirectoryName(path);
+                    foundExecutable = Directory.EnumerateFiles(settings.GamePath, settings.GameExecutable).Any();
+                }
+                EditorUtility.SetDirty(settings);
             }
 
-            settings.SetDirty();
+            if (string.IsNullOrEmpty(settings.GamePath) || string.IsNullOrEmpty(settings.GameExecutable)) return;
 
-            foreach (var asm in settings.RequiredAssemblies)
+            var destinationFolder = Path.Combine(currentDir, "Assets", "Assemblies");
+            if (!Directory.Exists(destinationFolder))
+                Directory.CreateDirectory(destinationFolder);
+
+            Debug.Log("Acquiring references");
+
+            EditorUtility.SetDirty(settings);
+
+            var locations = AppDomain.CurrentDomain.GetAssemblies().Where(asm => !asm.IsDynamic).Select(asm => asm.Location).ToArray();
+            var managedPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
+            foreach (var asm in Directory.EnumerateFiles(managedPath, "*.dll"))
             {
-                var destinationFile = Path.Combine(currentDir, "Assets", "Assemblies", $"{asm}.dll");
-                var assemblyPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed", $"{asm}.dll");
+                if (locations.Any(l => l.Contains(Path.GetFileNameWithoutExtension(asm)))) continue;
+
+                var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(asm));
+
                 var destinationMetaData = Path.Combine(currentDir, "Assets", "Assemblies", $"{asm}.meta");
 
                 if (File.Exists(destinationFile)) File.Delete(destinationFile);
-                File.Copy(assemblyPath, destinationFile);
+                File.Copy(asm, destinationFile);
 
                 File.WriteAllText(destinationMetaData, MetaData);
             }
@@ -68,7 +69,6 @@ namespace PassivePicasso.ThunderKit.AutoConfig.Editor
 
             AssetDatabase.Refresh();
         }
-
 
         internal const string MetaData =
 @"fileFormatVersion: 2

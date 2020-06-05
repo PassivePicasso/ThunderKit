@@ -17,8 +17,8 @@ namespace PassivePicasso.ThunderKit.Utilities
         public string GameExecutable;
         [SerializeField]
         public string GamePath;
-        [SerializeField]
-        public string[] RequiredAssemblies;
+        //[SerializeField]
+        //public string[] RequiredAssemblies = new string[0];
 
         //[SerializeField]
         //public string DnSpyPath;
@@ -64,8 +64,6 @@ namespace PassivePicasso.ThunderKit.Utilities
                     pathField = new TextField { bindingPath = nameof(GamePath) };
                     rootElement.Add(pathField);
 
-                    pathField = new TextField { bindingPath = nameof(RequiredAssemblies) };
-                    rootElement.Add(pathField);
 
                     //pathField = new TextField { bindingPath = nameof(DnSpyPath) };
                     //rootElement.Add(pathField);
