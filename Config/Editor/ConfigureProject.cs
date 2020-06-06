@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace PassivePicasso.ThunderKit.AutoConfig.Editor
+namespace PassivePicasso.ThunderKit.Config.Editor
 {
     public class ConfigureProject
     {
