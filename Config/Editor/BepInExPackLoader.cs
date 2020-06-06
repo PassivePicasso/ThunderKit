@@ -10,7 +10,7 @@ using UnityEngine;
 using Directory = System.IO.Directory;
 using Path = System.IO.Path;
 
-namespace PassivePicasso.ThunderKit.AutoConfig.Editor
+namespace PassivePicasso.ThunderKit.Config.Editor
 {
     public class BepInExPackLoader
     {

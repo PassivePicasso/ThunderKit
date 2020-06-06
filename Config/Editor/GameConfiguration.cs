@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.AutoConfig.Editor
+namespace PassivePicasso.ThunderKit.Config.Editor
 {
     public class GameConfiguration : ScriptableObject
     {

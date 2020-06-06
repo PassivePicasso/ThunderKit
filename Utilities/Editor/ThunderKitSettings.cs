@@ -15,17 +15,12 @@ namespace PassivePicasso.ThunderKit.Utilities
 
         [SerializeField]
         public string GameExecutable;
+
         [SerializeField]
         public string GamePath;
 
         [SerializeField]
         public bool Is64Bit;
-
-        //[SerializeField]
-        //public string[] RequiredAssemblies = new string[0];
-
-        //[SerializeField]
-        //public string DnSpyPath;
 
         public static ThunderKitSettings GetOrCreateSettings()
         {
@@ -82,7 +77,5 @@ namespace PassivePicasso.ThunderKit.Utilities
             return provider;
         }
     }
-
-
 }
 #endif
