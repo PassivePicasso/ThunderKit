@@ -17,6 +17,10 @@ namespace PassivePicasso.ThunderKit.Utilities
         public string GameExecutable;
         [SerializeField]
         public string GamePath;
+
+        [SerializeField]
+        public bool Is64Bit;
+
         //[SerializeField]
         //public string[] RequiredAssemblies = new string[0];
 

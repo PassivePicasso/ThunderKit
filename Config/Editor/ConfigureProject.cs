@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -13,11 +14,42 @@ namespace PassivePicasso.ThunderKit.AutoConfig.Editor
     public class ConfigureProject
     {
         [MenuItem("ThunderKit/Configure ThunderKit")]
-        private static void ValidateReferences()
+        private static void Configure()
         {
             string currentDir = Directory.GetCurrentDirectory();
             var settings = ThunderKitSettings.GetOrCreateSettings();
 
+            LocateExecutable(settings);
+            EditorUtility.SetDirty(settings);
+
+            if (string.IsNullOrEmpty(settings.GamePath) || string.IsNullOrEmpty(settings.GameExecutable)) return;
+
+            SetBitness(settings);
+            EditorUtility.SetDirty(settings);
+
+            if (!CheckUnityVersion(settings)) return;
+
+            string destinationFolder = AssertDestination(currentDir);
+
+            GetReferences(currentDir, settings, destinationFolder);
+            EditorUtility.SetDirty(settings);
+
+            _ = BepInExPackLoader.DownloadBepinex();
+
+            AssetDatabase.Refresh();
+        }
+
+        private static string AssertDestination(string currentDir)
+        {
+            var destinationFolder = Path.Combine(currentDir, "Assets", "Assemblies");
+            if (!Directory.Exists(destinationFolder))
+                Directory.CreateDirectory(destinationFolder);
+            return destinationFolder;
+        }
+
+        private static void LocateExecutable(ThunderKitSettings settings)
+        {
+            string currentDir = Directory.GetCurrentDirectory();
             if (string.IsNullOrEmpty(settings.GameExecutable))
             {
                 string executablePath = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
@@ -39,24 +71,29 @@ namespace PassivePicasso.ThunderKit.AutoConfig.Editor
                     foundExecutable = Directory.EnumerateFiles(settings.GamePath, settings.GameExecutable).Any();
                 }
                 EditorUtility.SetDirty(settings);
-            }  
+            }
+        }
 
-            if (string.IsNullOrEmpty(settings.GamePath) || string.IsNullOrEmpty(settings.GameExecutable)) return;
+        private static bool CheckUnityVersion(ThunderKitSettings settings)
+        {
+            var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
+            var windowsStandalonePath = Path.Combine(editorPath, "Data", "PlaybackEngines", "windowsstandalonesupport");
 
-            var unityVersion = Application.unityVersion;
+            var regs = new Regex("(\\d\\d\\d\\d\\.\\d+\\.\\d+).*");
+
+            var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
+
             var playerVersion = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable)).ProductVersion;
+            playerVersion = regs.Replace(playerVersion, match => match.Groups[1].Value);
+
             var versionMatch = unityVersion.Equals(playerVersion);
-            Debug.Log($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}){(versionMatch ? "" : ", aborting startup")}");
-            //if(!versionMatch) return;
+            Debug.Log($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}){(versionMatch ? "" : ", aborting setup.\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.")}");
+            return versionMatch;
+        }
 
-            var destinationFolder = Path.Combine(currentDir, "Assets", "Assemblies");
-            if (!Directory.Exists(destinationFolder))
-                Directory.CreateDirectory(destinationFolder);
-
+        private static void GetReferences(string currentDir, ThunderKitSettings settings, string destinationFolder)
+        {
             Debug.Log("Acquiring references");
-
-            EditorUtility.SetDirty(settings);
-
             var locations = AppDomain.CurrentDomain.GetAssemblies().Where(asm => !asm.IsDynamic).Select(asm => asm.Location).ToArray();
             var managedPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
             foreach (var asm in Directory.EnumerateFiles(managedPath, "*.dll"))
@@ -72,12 +109,26 @@ namespace PassivePicasso.ThunderKit.AutoConfig.Editor
 
                 File.WriteAllText(destinationMetaData, MetaData);
             }
-
-            _ = BepInExPackLoader.DownloadBepinex();
-
-            AssetDatabase.Refresh();
         }
 
+        public static void SetBitness(ThunderKitSettings settings)
+        {
+            var assembly = Path.Combine(settings.GamePath, settings.GameExecutable);
+            using (var stream = File.OpenRead(assembly))
+            using (var binStream = new BinaryReader(stream))
+            {
+                stream.Seek(0x3C, SeekOrigin.Begin);
+                if (binStream.PeekChar() != -1)
+                {
+                    var e_lfanew = binStream.ReadInt32();
+                    stream.Seek(e_lfanew + 0x4, SeekOrigin.Begin);
+                    var cpuType = binStream.ReadUInt16();
+                    if (cpuType == 0x8664)
+                        settings.Is64Bit = true;
+                }
+            }
+            settings.Is64Bit = false;
+        }
         internal const string MetaData =
 @"fileFormatVersion: 2
 guid: fc64261ca6282254da01b0f016bcfcea
