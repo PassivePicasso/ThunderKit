@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.AutoConfig.Editor;
 using PassivePicasso.ThunderKit.Utilities;
 using System.Diagnostics;
 using System.IO;
@@ -6,9 +7,9 @@ using System.Linq;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
-namespace PassivePicasso.ThunderKit.Deploy.Editor
+namespace PassivePicasso.ThunderKit.Config.Editor
 {
-    public class SetupDebugBuild 
+    public class SetupDebugBuild
     {
         private const string playerConnectionDebug1 = "player-connection-debug=1";
 
@@ -27,17 +28,26 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
             var windowsStandalonePath = Path.Combine(editorPath, "Data", "PlaybackEngines", "windowsstandalonesupport");
-            var bit64Path = Path.Combine(windowsStandalonePath, "Variations", "win64_development_mono");
-            var monoBleedingEdgePath = Path.Combine(bit64Path, "MonoBleedingEdge");
-            var dataManagedPath = Path.Combine(bit64Path, "Data", "Managed");
 
-            var (winPlayer, gamePlayer) = GetSwapPair(bit64Path, gamePath, "WindowsPlayer.exe", $"{gameName}.exe");
-            var (unityCrashHandler, rorCrashHandler) = GetSwapPair(bit64Path, gamePath, "UnityCrashHandler64.exe");
-            var (unityPlayer, rorUnityPlayer) = GetSwapPair(bit64Path, gamePath, "UnityPlayer.dll");
-            var (unityPlayerLib, rorUnityPlayerLib) = GetSwapPair(bit64Path, gamePath, "UnityPlayer.dll.lib");
-            var (unityPlayerDpdb, rorUnityPlayerDpdb) = GetSwapPair(bit64Path, gamePath, "UnityPlayer_Win64_development_mono_x64.pdb");
-            var (unityPlayerRpdb, rorUnityPlayerRpdb) = GetSwapPair(bit64Path, gamePath, "WindowsPlayer_Release_mono_x64.pdb");
-            var (winPixDll, rorwinPixDll) = GetSwapPair(bit64Path, gamePath, "WinPixEventRuntime.dll");
+            var gamePlayer = Path.Combine(gamePath, $"{gameName}.exe");
+
+            var monoString = settings.Is64Bit ? "win64_development_mono" : "win32_development_mono";
+            var crashHandlerFile = settings.Is64Bit ? "UnityCrashHandler64.exe" : "UnityCrashHandler32";
+            var playerPdbFile = settings.Is64Bit ? "UnityPlayer_Win64_development_mono_x64.pdb" : "UnityPlayer_Win32_development_mono_x86";
+            var playerReleasePdb = settings.Is64Bit ? "WindowsPlayer_Release_mono_x64.pdb" : "WindowsPlayer_Release_mono_x86";
+
+            var bitVersionPath = Path.Combine(windowsStandalonePath, "Variations", monoString);
+            var monoBleedingEdgePath = Path.Combine(bitVersionPath, "MonoBleedingEdge");
+            var dataManagedPath = Path.Combine(bitVersionPath, "Data", "Managed");
+            var winPlayer = Path.Combine(bitVersionPath, "WindowsPlayer.exe");
+
+
+            var crashHandler = GetSwapPair(bitVersionPath, gamePath, crashHandlerFile);
+            var player = GetSwapPair(bitVersionPath, gamePath, "UnityPlayer.dll");
+            var playerLib = GetSwapPair(bitVersionPath, gamePath, "UnityPlayer.dll.lib");
+            var playerPdb = GetSwapPair(bitVersionPath, gamePath, playerPdbFile);
+            var releasePdb = GetSwapPair(bitVersionPath, gamePath, playerReleasePdb);
+            var winPix = GetSwapPair(bitVersionPath, gamePath, "WinPixEventRuntime.dll");
 
             var editorVersion = FileVersionInfo.GetVersionInfo(winPlayer);
             var gameVersion = FileVersionInfo.GetVersionInfo(gamePlayer);
@@ -48,13 +58,13 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 return;
             }
 
-            Overwrite(winPlayer, gamePlayer);
-            Overwrite(unityCrashHandler, rorCrashHandler);
-            Overwrite(unityPlayer, rorUnityPlayer);
-            Overwrite(unityPlayerLib, rorUnityPlayerLib);
-            Overwrite(unityPlayerDpdb, rorUnityPlayerDpdb);
-            Overwrite(unityPlayerRpdb, rorUnityPlayerRpdb);
-            Overwrite(winPixDll, rorwinPixDll);
+            Overwrite((winPlayer, gamePlayer));
+            Overwrite(crashHandler);
+            Overwrite(player);
+            Overwrite(playerLib);
+            Overwrite(playerPdb);
+            Overwrite(releasePdb);
+            Overwrite(winPix);
 
             CopyFolder(monoBleedingEdgePath, gameMonoPath);
             CopyFolder(dataManagedPath, gameManagedPath);
@@ -71,11 +81,9 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 File.WriteAllText(gameBootConfigFile, playerConnectionDebug1);
         }
 
-        private static (string sourcePath, string destinationPath) GetSwapPair(string sourceRoot, string destRoot, string sourceFilename, string destinationFilename = null)
-        {
-            return (Path.Combine(sourceRoot, sourceFilename), Path.Combine(destRoot, destinationFilename ?? sourceFilename));
-        }
+        private static (string sourcePath, string destinationPath) GetSwapPair(string sourceRoot, string destRoot, string fileName) => (Path.Combine(sourceRoot, fileName), Path.Combine(destRoot, fileName));
 
+        private static void Overwrite((string newFile, string originalFile) swapPair) => Overwrite(swapPair.newFile, swapPair.originalFile);
         private static void Overwrite(string newFile, string originalFile)
         {
             if (File.Exists(originalFile)) File.Delete(originalFile);
