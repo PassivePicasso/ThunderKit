@@ -31,9 +31,9 @@ namespace PassivePicasso.ThunderKit.Config.Editor
             var gamePlayer = Path.Combine(gamePath, $"{gameName}.exe");
 
             var monoString = settings.Is64Bit ? "win64_development_mono" : "win32_development_mono";
-            var crashHandlerFile = settings.Is64Bit ? "UnityCrashHandler64.exe" : "UnityCrashHandler32";
-            var playerPdbFile = settings.Is64Bit ? "UnityPlayer_Win64_development_mono_x64.pdb" : "UnityPlayer_Win32_development_mono_x86";
-            var playerReleasePdb = settings.Is64Bit ? "WindowsPlayer_Release_mono_x64.pdb" : "WindowsPlayer_Release_mono_x86";
+            var crashHandlerFile = settings.Is64Bit ? "UnityCrashHandler64.exe" : "UnityCrashHandler32.exe";
+            var playerPdbFile = settings.Is64Bit ? "UnityPlayer_Win64_development_mono_x64.pdb" : "UnityPlayer_Win32_development_mono_x86.pdb";
+            var playerReleasePdb = settings.Is64Bit ? "WindowsPlayer_Release_mono_x64.pdb" : "WindowsPlayer_Release_mono_x86.pdb";
 
             var bitVersionPath = Path.Combine(windowsStandalonePath, "Variations", monoString);
             var monoBleedingEdgePath = Path.Combine(bitVersionPath, "MonoBleedingEdge");

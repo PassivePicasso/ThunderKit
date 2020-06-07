@@ -20,6 +20,9 @@ namespace PassivePicasso.ThunderKit.Utilities
         public string GamePath;
 
         [SerializeField]
+        public string DnSpyPath;
+
+        [SerializeField]
         public bool Is64Bit;
 
         public static ThunderKitSettings GetOrCreateSettings()
@@ -29,7 +32,7 @@ namespace PassivePicasso.ThunderKit.Utilities
             {
                 settings = CreateInstance<ThunderKitSettings>();
                 settings.GamePath = "";
-                //settings.DnSpyPath = "";
+                settings.DnSpyPath = "";
                 AssetDatabase.CreateAsset(settings, SettingsPath);
                 AssetDatabase.SaveAssets();
             }
