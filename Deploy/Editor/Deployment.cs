@@ -176,8 +176,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                     WorkingDirectory = bepinexDir,
                     Arguments = $"--doorstop-enable true --doorstop-target \"{Path.Combine(bepinexCoreDir, "BepInEx.Preloader.dll")}\"",
                     //Standard output redirection doesn't currently work with bepinex, appears to be considered a bepinex bug
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false
+                    //RedirectStandardOutput = true,
+                    UseShellExecute = true
                 };
 
                 var rorProcess = new Process { StartInfo = rorPsi, EnableRaisingEvents = true };
