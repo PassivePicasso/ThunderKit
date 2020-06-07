@@ -63,7 +63,8 @@ namespace PassivePicasso.ThunderKit.Config.Editor
             Overwrite(playerLib);
             Overwrite(playerPdb);
             Overwrite(releasePdb);
-            Overwrite(winPix);
+            if (File.Exists(winPix.sourcePath))
+                Overwrite(winPix);
 
             CopyFolder(monoBleedingEdgePath, gameMonoPath);
             CopyFolder(dataManagedPath, gameManagedPath);
