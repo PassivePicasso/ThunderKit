@@ -3,7 +3,7 @@ ThunderKit is a Mod kit construction toolset with Thunderstore.io integration fo
 
 ### Setup
 
-#### Unity 2017 and lower
+#### Unity 2017 and lower (Currently not supported, but support is being investigated)
 1. Start a new Unity3d Project 
 1. Download this repository as a zip 
 1. Extract it into your project's Assets folder.
