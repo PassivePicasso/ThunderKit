@@ -1,8 +1,8 @@
 {
-    "name": "RainOfStages.Deploy",
+    "name": "ThunderKit.Deploy",
     "references": [
-        "RainOfStages.Thunderstore",
-        "RainOfStages.Utilities"
+        "ThunderKit.Thunderstore",
+        "ThunderKit.Utilities"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
