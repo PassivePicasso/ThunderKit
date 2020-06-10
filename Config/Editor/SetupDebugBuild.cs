@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Utilities;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,18 @@ using Debug = UnityEngine.Debug;
 
 namespace PassivePicasso.ThunderKit.Config.Editor
 {
+    internal struct SwapPair
+    {
+        public string newFile;
+        public string originalFile;
+
+        public SwapPair(string newFile, string originalFile)
+        {
+            this.newFile = newFile;
+            this.originalFile = originalFile;
+        }
+    }
+
     public class SetupDebugBuild
     {
         private const string playerConnectionDebug1 = "player-connection-debug=1";
@@ -57,13 +70,13 @@ namespace PassivePicasso.ThunderKit.Config.Editor
                 return;
             }
 
-            Overwrite((winPlayer, gamePlayer));
+            Overwrite(new SwapPair { newFile = winPlayer, originalFile = gamePlayer });
             Overwrite(crashHandler);
             Overwrite(player);
             Overwrite(playerLib);
             Overwrite(playerPdb);
             Overwrite(releasePdb);
-            if (File.Exists(winPix.sourcePath))
+            if (File.Exists(winPix.newFile))
                 Overwrite(winPix);
 
             CopyFolder(monoBleedingEdgePath, gameMonoPath);
@@ -81,9 +94,12 @@ namespace PassivePicasso.ThunderKit.Config.Editor
                 File.WriteAllText(gameBootConfigFile, playerConnectionDebug1);
         }
 
-        private static (string sourcePath, string destinationPath) GetSwapPair(string sourceRoot, string destRoot, string fileName) => (Path.Combine(sourceRoot, fileName), Path.Combine(destRoot, fileName));
+        private static SwapPair GetSwapPair(string sourceRoot, string destRoot, string fileName)
+        {
+            return new SwapPair { newFile = Path.Combine(sourceRoot, fileName), originalFile = Path.Combine(destRoot, fileName) };
+        }
 
-        private static void Overwrite((string newFile, string originalFile) swapPair) => Overwrite(swapPair.newFile, swapPair.originalFile);
+        private static void Overwrite(SwapPair swapPair) => Overwrite(swapPair.newFile, swapPair.originalFile);
         private static void Overwrite(string newFile, string originalFile)
         {
             if (File.Exists(originalFile)) File.Delete(originalFile);
@@ -100,9 +116,8 @@ namespace PassivePicasso.ThunderKit.Config.Editor
                 var original = Path.Combine(destinationPath, fileName.Substring(sourcePath.Length + 1));
                 Overwrite(fileName, original);
             }
-
         }
-
     }
+
 }
 #endif

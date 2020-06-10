@@ -34,7 +34,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
             GetReferences(currentDir, settings, destinationFolder);
             EditorUtility.SetDirty(settings);
 
-            _ = BepInExPackLoader.DownloadBepinex();
+            var x = BepInExPackLoader.DownloadBepinex();
 
             AssetDatabase.Refresh();
         }

@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -103,9 +104,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                         lookups.Add(ThunderLoad.LookupPackage(dependency));
                     }
 
-                    EditorApplication.update += AwaitLookup;
 
-                    void AwaitLookup()
+                    var AwaitLookup = new Action(() =>
                     {
                         if (!lookups.All(t => t.IsCompleted)) return;
 
@@ -118,7 +118,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                             lookedUpDeps.Add(dependency.latest.full_name);
                             InstallDependency(dependency);
                         }
-                    }
+                    });
+                    EditorApplication.update += new EditorApplication.CallbackFunction(AwaitLookup);
                 }
 
             rect = EGL.GetControlRect(true, EGU.singleLineHeight);
@@ -138,9 +139,9 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
             {
                 SearchTask = ThunderLoad.LookupPackage(searchString, isCaseSensitive: false);
                 searchResults = null;
-                EditorApplication.update += WaitForSearchResults;
 
-                void WaitForSearchResults()
+                EditorApplication.CallbackFunction WaitForSearchResults = null;
+                WaitForSearchResults = new EditorApplication.CallbackFunction(() =>
                 {
                     if (!SearchTask.IsCompleted) return;
 
@@ -152,7 +153,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                     Repaint();
 
                     AssetDatabase.Refresh();
-                }
+                });
+                EditorApplication.update += WaitForSearchResults;
             }
 
             if (string.IsNullOrEmpty(searchString)) searchResults = null;
@@ -199,9 +201,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                 lookups.Add(ThunderLoad.LookupPackage(dependency));
             }
 
-            EditorApplication.update += AwaitLookup;
-
-            void AwaitLookup()
+            EditorApplication.CallbackFunction AwaitLookup = null;
+            AwaitLookup = new EditorApplication.CallbackFunction(() =>
             {
                 var completedLookups = lookups.Where(t => t.IsCompleted);
                 var completedLookupsWithDeps = completedLookups.Where(t => t.Result.Any(package => package.latest.dependencies.Any()));
@@ -221,11 +222,11 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 
                 EditorApplication.update -= AwaitLookup;
 
-                var downloads = new List<Task<(Package package, string filePath)>>
-            {
-                ThunderLoad.DownloadPackageAsync(dependencyPackage, Path.Combine(TempDir, GetZipFileName(dependencyPackage)))
-                           .ContinueWith(dl=> (dependencyPackage, dl.Result))
-            };
+                var downloads = new List<Task<KeyValuePair<Package, string>>>
+                {
+                    ThunderLoad.DownloadPackageAsync(dependencyPackage, Path.Combine(TempDir, GetZipFileName(dependencyPackage)))
+                               .ContinueWith(dl=> new KeyValuePair<Package, string>(dependencyPackage, dl.Result))
+                };
 
                 var lookupResults = lookups.Select(t => t.Result.FirstOrDefault()).Where(prop => prop != null);
                 foreach (var dependency in lookupResults)
@@ -233,19 +234,21 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                     if (dependency.latest.full_name.Contains("BepInExPack")) continue;
 
                     downloads.Add(ThunderLoad.DownloadPackageAsync(dependency, Path.Combine(TempDir, GetZipFileName(dependency)))
-                                             .ContinueWith(dl => (dependency, dl.Result)));
+                                             .ContinueWith(dl => new KeyValuePair<Package, string>(dependency, dl.Result)));
                 }
 
-                EditorApplication.update += FileCreated;
-
-                void FileCreated()
+                EditorApplication.CallbackFunction FileCreated = null;
+                FileCreated = new EditorApplication.CallbackFunction(() =>
                 {
                     if (!downloads.All(t => t.IsCompleted)) return;
 
                     EditorApplication.update -= FileCreated;
 
-                    foreach ((Package package, string filePath) in downloads.Select(dlt => dlt.Result))
+                    foreach (var kvp in downloads.Select(dlt => dlt.Result))
                     {
+                        Package package = kvp.Key;
+                        string filePath = kvp.Value;
+
                         var dependencyPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Dependencies", package.latest.full_name);
 
                         if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
@@ -259,8 +262,11 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                             archive.ExtractToDirectory(Path.Combine(dependencyPath));
                     }
                     AssetDatabase.Refresh();
-                }
-            }
+                });
+            });
+
+            EditorApplication.update += new EditorApplication.CallbackFunction(AwaitLookup);
+
         }
 
         private static string GetZipFileName(Package package) => GetZipFileName(package.latest.full_name);
