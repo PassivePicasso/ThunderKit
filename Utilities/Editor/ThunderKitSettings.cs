@@ -44,7 +44,13 @@ namespace PassivePicasso.ThunderKit.Utilities
             return new SerializedObject(GetOrCreateSettings());
         }
 
+        [MenuItem("ThunderKit/Create Settings")]
+        public static void CreateSettings()
+        {
+            GetOrCreateSettings();
+        }
 
+#if UNITY_2018_OR_NEWER
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider()
         {
@@ -79,6 +85,8 @@ namespace PassivePicasso.ThunderKit.Utilities
 
             return provider;
         }
+#endif
+
     }
 }
 #endif

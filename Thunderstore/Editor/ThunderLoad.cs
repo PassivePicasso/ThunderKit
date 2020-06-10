@@ -64,7 +64,13 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                 return client.DownloadFileTaskAsync(url, filePath).ContinueWith(t => filePath);
             }
         }
+
+#if UNITY_2018_OR_NEWER
         public static Task<string> DownloadPackageAsync((string owner, string name, string version_number) package, string filePath)
+#elif UNITY_2017
+        public struct PackageOld { public string owner, name, version_number; }
+        public static Task<string> DownloadPackageAsync(PackageOld package, string filePath)
+#endif
         {
             using (WebClient client = new WebClient())
             {

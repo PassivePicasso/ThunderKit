@@ -67,8 +67,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean))
             {
-                CleanManifestFiles(bepinexDir);
-                CleanManifestFiles(outputPath);
+                CleanManifestFiles(bepinexDir, deployment);
+                CleanManifestFiles(outputPath, deployment);
             }
 
             if (!Directory.Exists(deployments)) Directory.CreateDirectory(deployments);
@@ -137,7 +137,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
             {
-                CopyAllReferences(outputPath);
+                CopyAllReferences(outputPath, scriptAssemblies, deployment);
 
                 var manifestJson = JsonUtility.ToJson(deployment.Manifest);
 
@@ -168,7 +168,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.ini")))
                     File.Move(Path.Combine(settings.GamePath, "doorstop_config.ini"), Path.Combine(settings.GamePath, "doorstop_config.bak.ini"));
 
-                CopyAllReferences(bepinexDir);
+                CopyAllReferences(bepinexDir, scriptAssemblies, deployment);
                 Debug.Log($"Launching {Path.GetFileNameWithoutExtension(settings.GameExecutable)}");
 
                 var rorPsi = new ProcessStartInfo(ror2Executable)
@@ -181,83 +181,86 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 };
 
                 var rorProcess = new Process { StartInfo = rorPsi, EnableRaisingEvents = true };
-                rorProcess.Exited += RorProcess_Exited;
-                void RorProcess_Exited(object sender, EventArgs e)
+                EventHandler RorProcess_Exited = null;
+                RorProcess_Exited = new EventHandler((object sender, EventArgs e) =>
                 {
                     rorProcess.Exited -= RorProcess_Exited;
                     if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.bak.ini")))
                         File.Move(Path.Combine(settings.GamePath, "doorstop_config.bak.ini"), Path.Combine(settings.GamePath, "doorstop_config.ini"));
-                }
+                });
+                rorProcess.Exited += RorProcess_Exited;
 
                 rorProcess.Start();
             }
 
             AssetDatabase.Refresh();
 
-            void CleanManifestFiles(string rootPath)
-            {
-                var pluginPath = Path.Combine(rootPath, "plugins", deployment.Manifest.name);
-                var patcherPath = Path.Combine(rootPath, "patchers", deployment.Manifest.name);
-                var monomodPath = Path.Combine(rootPath, "monomod", deployment.Manifest.name);
 
-                if (Directory.Exists(pluginPath)) Directory.Delete(pluginPath, true);
-                if (Directory.Exists(patcherPath)) Directory.Delete(patcherPath, true);
-                if (Directory.Exists(monomodPath)) Directory.Delete(monomodPath, true);
-            }
 
-            void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string assemblyOutputPath)
-            {
-                foreach (var plugin in assemblyDefs)
-                {
-                    var assemblyDef = JsonUtility.FromJson<AssemblyDef>(plugin.text);
-                    var fileOutputBase = Path.Combine(assemblyOutputPath, assemblyDef.name);
-                    var fileName = Path.GetFileName(fileOutputBase);
-                    if (File.Exists($"{fileOutputBase}.dll")) File.Delete($"{fileOutputBase}.dll");
-
-                    File.Copy(Path.Combine(scriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll");
-
-                    if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles))
-                    {
-
-                        string monodatabase = $"{Path.Combine(scriptAssemblies, fileName)}.dll.mdb";
-                        if (File.Exists(monodatabase))
-                        {
-                            if (File.Exists($"{fileOutputBase}.dll.mdb")) File.Delete($"{fileOutputBase}.dll.mdb");
-
-                            File.Copy(monodatabase, $"{fileOutputBase}.dll.mdb");
-                        }
-
-                        string programdatabase = Path.Combine(scriptAssemblies, $"{fileName}.pdb");
-                        if (File.Exists(programdatabase))
-                        {
-                            if (File.Exists($"{fileOutputBase}.pdb")) File.Delete($"{fileOutputBase}.pdb");
-
-                            File.Copy(programdatabase, $"{fileOutputBase}.pdb");
-                        }
-                    }
-                }
-            }
-
-            void CopyAllReferences(string rootPath)
-            {
-                var pluginPath = Path.Combine(rootPath, "plugins", deployment.Manifest.name);
-                var patcherPath = Path.Combine(rootPath, "patchers", deployment.Manifest.name);
-                var monomodPath = Path.Combine(rootPath, "monomod", deployment.Manifest.name);
-
-                if (deployment.Plugins.Any() && !Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
-                if (deployment.Patchers.Any() && !Directory.Exists(patcherPath)) Directory.CreateDirectory(patcherPath);
-                if (deployment.Monomod.Any() && !Directory.Exists(monomodPath)) Directory.CreateDirectory(monomodPath);
-
-                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles))
-                    BuildPipeline.BuildAssetBundles(pluginPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
-
-                CopyReferences(deployment.Plugins, pluginPath);
-                CopyReferences(deployment.Patchers, patcherPath);
-                CopyReferences(deployment.Monomod, monomodPath);
-            }
 
         }
 
+        static void CleanManifestFiles(string rootPath, Deployment deployment)
+        {
+            var pluginPath = Path.Combine(rootPath, "plugins", deployment.Manifest.name);
+            var patcherPath = Path.Combine(rootPath, "patchers", deployment.Manifest.name);
+            var monomodPath = Path.Combine(rootPath, "monomod", deployment.Manifest.name);
+
+            if (Directory.Exists(pluginPath)) Directory.Delete(pluginPath, true);
+            if (Directory.Exists(patcherPath)) Directory.Delete(patcherPath, true);
+            if (Directory.Exists(monomodPath)) Directory.Delete(monomodPath, true);
+        }
+
+        static void CopyAllReferences(string rootPath, string scriptAssemblies, Deployment deployment)
+        {
+            var pluginPath = Path.Combine(rootPath, "plugins", deployment.Manifest.name);
+            var patcherPath = Path.Combine(rootPath, "patchers", deployment.Manifest.name);
+            var monomodPath = Path.Combine(rootPath, "monomod", deployment.Manifest.name);
+
+            if (deployment.Plugins.Any() && !Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
+            if (deployment.Patchers.Any() && !Directory.Exists(patcherPath)) Directory.CreateDirectory(patcherPath);
+            if (deployment.Monomod.Any() && !Directory.Exists(monomodPath)) Directory.CreateDirectory(monomodPath);
+
+            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles))
+                BuildPipeline.BuildAssetBundles(pluginPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
+
+            CopyReferences(deployment.Plugins, pluginPath, scriptAssemblies, deployment);
+            CopyReferences(deployment.Patchers, patcherPath, scriptAssemblies, deployment);
+            CopyReferences(deployment.Monomod, monomodPath, scriptAssemblies, deployment);
+        }
+
+        static void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string assemblyOutputPath, string scriptAssemblies, Deployment deployment)
+        {
+            foreach (var plugin in assemblyDefs)
+            {
+                var assemblyDef = JsonUtility.FromJson<AssemblyDef>(plugin.text);
+                var fileOutputBase = Path.Combine(assemblyOutputPath, assemblyDef.name);
+                var fileName = Path.GetFileName(fileOutputBase);
+                if (File.Exists($"{fileOutputBase}.dll")) File.Delete($"{fileOutputBase}.dll");
+
+                File.Copy(Path.Combine(scriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll");
+
+                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles))
+                {
+
+                    string monodatabase = $"{Path.Combine(scriptAssemblies, fileName)}.dll.mdb";
+                    if (File.Exists(monodatabase))
+                    {
+                        if (File.Exists($"{fileOutputBase}.dll.mdb")) File.Delete($"{fileOutputBase}.dll.mdb");
+
+                        File.Copy(monodatabase, $"{fileOutputBase}.dll.mdb");
+                    }
+
+                    string programdatabase = Path.Combine(scriptAssemblies, $"{fileName}.pdb");
+                    if (File.Exists(programdatabase))
+                    {
+                        if (File.Exists($"{fileOutputBase}.pdb")) File.Delete($"{fileOutputBase}.pdb");
+
+                        File.Copy(programdatabase, $"{fileOutputBase}.pdb");
+                    }
+                }
+            }
+        }
 
         public static string CreatBepInExConfig(bool consoleEnabled) => string.Format(ConfigTemplate.Content, consoleEnabled.ToString().ToLower());
 
