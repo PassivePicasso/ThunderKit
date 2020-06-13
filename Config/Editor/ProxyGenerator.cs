@@ -42,7 +42,7 @@ namespace PassivePicasso.ThunderKit.Config
                         isGlobal ? "" : $"using global::{type.Namespace};",
                         $"namespace {nameof(PassivePicasso)}.{nameof(ThunderKit)}.Proxy{namespaceSeparator}{type.Namespace}",
                         $"{{",
-                        $"    public class {type.Name} : global::{type.FullName} {{}}",
+                        $"    public partial class {type.Name} : global::{type.FullName} {{}}",
                         $"}}"
                     );
 
