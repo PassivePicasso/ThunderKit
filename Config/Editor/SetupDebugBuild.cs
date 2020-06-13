@@ -32,7 +32,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
 
             var gamePath = settings.GamePath;
             var gameDir = new DirectoryInfo(gamePath);
-            var gameName = gameDir.Name;
+            var gameName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
             var gameMonoPath = Path.Combine(gamePath, $"MonoBleedingEdge");
             var gameDataPath = Path.Combine(gamePath, $"{gameName}_Data");
             var gameManagedPath = Path.Combine(gameDataPath, "Managed");
