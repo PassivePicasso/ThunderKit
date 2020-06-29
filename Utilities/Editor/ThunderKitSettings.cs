@@ -1,9 +1,14 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.Experimental.UIElements;
 using UnityEngine;
+#if UNITY_2019 || UNITY_2020
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+#else
+using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
+#endif
 
 namespace PassivePicasso.ThunderKit.Utilities
 {
@@ -50,7 +55,7 @@ namespace PassivePicasso.ThunderKit.Utilities
             GetOrCreateSettings();
         }
 
-#if UNITY_2018_OR_NEWER
+#if UNITY_2018 || UNITY_2019
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider()
         {
