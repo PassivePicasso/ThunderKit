@@ -103,10 +103,9 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 File.WriteAllText(configPath, contents);
             }
 
-            if (File.Exists(Path.Combine(bepinexPackDir, "winhttp.dll"))
-            && !File.Exists(Path.Combine(settings.GamePath, "winhttp.dll")))
+            if (File.Exists(Path.Combine(bepinexPackDir, "winhttp.dll")))
                 File.Copy(Path.Combine(bepinexPackDir, "winhttp.dll"),
-                          Path.Combine(settings.GamePath, "winhttp.dll"));
+                          Path.Combine(settings.GamePath, "winhttp.dll"), true);
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies))
             {
@@ -194,10 +193,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             }
 
             AssetDatabase.Refresh();
-
-
-
-
         }
 
         static void CleanManifestFiles(string rootPath, Deployment deployment)
