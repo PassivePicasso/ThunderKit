@@ -28,7 +28,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         Run = 8192,
     }
 
-    [Flags]
     public enum LogLevel
     {
         //Disables all log messages
@@ -57,7 +56,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         [EnumFlag]
         public DeploymentOptions DeploymentOptions;
 
-        [EnumFlag]
         public LogLevel LogLevel;
 
         public AssemblyDefinitionAsset[] Plugins;

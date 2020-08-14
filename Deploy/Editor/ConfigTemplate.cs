@@ -37,7 +37,7 @@ Enabled = {0}
 # Default value: False
 ShiftJisEncoding = false
 
-DisplayedLogLevel = {LogLevel}
+DisplayedLogLevel = {1}
 
 [Logging.Disk]
 
@@ -47,7 +47,7 @@ AppendLog = false
 
 Enabled = true
 
-DisplayedLogLevel = Info
+DisplayedLogLevel = {1}
 
 [Preloader]
 
