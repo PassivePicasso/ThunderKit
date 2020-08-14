@@ -119,7 +119,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
                 string configPath = Path.Combine(bepinexDir, "Config", "BepInEx.cfg");
                 File.Delete(configPath);
-                string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), deployment.LogLevel);
+                string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), $"{deployment.LogLevel}");
                 File.WriteAllText(configPath, contents);
             }
 

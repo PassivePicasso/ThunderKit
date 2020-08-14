@@ -1,12 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using PassivePicasso.ThunderKit.Deploy.Editor;
-
-namespace PassivePicasso.ThunderKit.Editor
+﻿namespace PassivePicasso.ThunderKit.Editor
 {
     public static class ConfigTemplate
     {
-        public static string CreatBepInExConfig(bool consoleEnabled, LogLevel logLevel) =>
+        public static string CreatBepInExConfig(bool consoleEnabled, string logLevel) =>
             string.Format(Content, consoleEnabled.ToString().ToLower(), logLevel);
 
         public static readonly string Content = @"[Caching]
