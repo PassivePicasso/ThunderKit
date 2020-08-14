@@ -3,7 +3,7 @@
     public static class ConfigTemplate
     {
         public static string CreatBepInExConfig(bool consoleEnabled, string logLevel) =>
-            string.Format(Content, consoleEnabled.ToString().ToLower(), logLevel);
+            string.Format(Content, consoleEnabled.ToString().ToLower(), logLevel.Replace("None, ", ""));
 
         public static readonly string Content = @"[Caching]
 
