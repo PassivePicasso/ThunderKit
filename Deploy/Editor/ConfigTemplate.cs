@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using PassivePicasso.ThunderKit.Deploy.Editor;
 
 namespace PassivePicasso.ThunderKit.Editor
 {
     public static class ConfigTemplate
     {
+        public static string CreatBepInExConfig(bool consoleEnabled, LogLevel logLevel) =>
+            string.Format(Content, consoleEnabled.ToString().ToLower(), logLevel);
 
         public static readonly string Content = @"[Caching]
 ## Enable/disable assembly metadata cache
@@ -34,7 +37,7 @@ Enabled = {0}
 # Default value: False
 ShiftJisEncoding = false
 
-DisplayedLogLevel = Info
+DisplayedLogLevel = {LogLevel}
 
 [Logging.Disk]
 

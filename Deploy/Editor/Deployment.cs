@@ -28,6 +28,25 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         Run = 8192,
     }
 
+    [Flags]
+    public enum LogLevel
+    {
+        //Disables all log messages
+        None = 0,
+        //Errors which cannot be recovered from; the game cannot continue to run
+        Fatal = 1,
+        //Errors are recoverable from; the game can be run, albeit with further errors
+        Error = 2,
+        //Messages that signify an anomaly that is not an error
+        Warning = 4,
+        //Important messages that should be displayed
+        Message = 8,
+        //Messages of low importance
+        Info = 16,
+        //Messages intended for developers
+        Debug = 32, 
+    }
+
     public class Deployment : ScriptableObject
     {
         public Manifest Manifest;
@@ -37,6 +56,9 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
         [EnumFlag]
         public DeploymentOptions DeploymentOptions;
+
+        [EnumFlag]
+        public LogLevel LogLevel;
 
         public AssemblyDefinitionAsset[] Plugins;
         public AssemblyDefinitionAsset[] Patchers;
@@ -99,7 +121,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
                 string configPath = Path.Combine(bepinexDir, "Config", "BepInEx.cfg");
                 File.Delete(configPath);
-                string contents = CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole));
+                string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), deployment.LogLevel);
                 File.WriteAllText(configPath, contents);
             }
 
@@ -257,7 +279,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             }
         }
 
-        public static string CreatBepInExConfig(bool consoleEnabled) => string.Format(ConfigTemplate.Content, consoleEnabled.ToString().ToLower());
 
 
         public static void CopyFilesRecursively(string source, string target)
