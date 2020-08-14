@@ -121,13 +121,13 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 Directory.Move(Path.Combine(tmpDir, "BepInExPack"), Path.Combine(thunderPacks, "BepInExPack"));
                 Directory.Delete(tmpDir, true);
                 Debug.Log("Rebuilt Bepinex dir");
-
-                string configPath = Path.Combine(bepinexDir, "Config", "BepInEx.cfg");
-                File.Delete(configPath);
-                var logLevels = GetFlags<LogLevel>(deployment.LogLevel).Select(f => $"{f}").Aggregate((a, b) => $"{a}, {b}");
-                string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), logLevels);
-                File.WriteAllText(configPath, contents);
             }
+
+            string configPath = Path.Combine(bepinexDir, "Config", "BepInEx.cfg");
+            File.Delete(configPath);
+            var logLevels = GetFlags(deployment.LogLevel).Select(f => $"{f}").Aggregate((a, b) => $"{a}, {b}");
+            string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), logLevels);
+            File.WriteAllText(configPath, contents);
 
             if (File.Exists(Path.Combine(bepinexPackDir, "winhttp.dll")))
                 File.Copy(Path.Combine(bepinexPackDir, "winhttp.dll"),
