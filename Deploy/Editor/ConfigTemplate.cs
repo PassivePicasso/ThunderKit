@@ -44,7 +44,7 @@ PreloaderConsoleOutRedirection = true
 ## Enables showing a console for log output.
 # Setting type: Boolean
 # Default value: false
-Enabled = true
+Enabled = {0}
 
 ## If true, console is set to the Shift-JIS encoding, otherwise UTF-8 encoding.
 # Setting type: Boolean
@@ -56,7 +56,7 @@ ShiftJisEncoding = false
 # Default value: Fatal, Error, Warning, Message, Info
 # Acceptable values: None, Fatal, Error, Warning, Message, Info, Debug, All
 # Multiple values can be set at the same time by separating them with , (e.g. Debug, Warning)
-LogLevels = Fatal, Error, Warning, Message, Info
+LogLevels = {1}
 
 DisplayedLogLevel = Debug
 
