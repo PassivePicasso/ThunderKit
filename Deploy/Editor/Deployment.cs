@@ -3,6 +3,7 @@ using PassivePicasso.ThunderKit.Editor;
 using PassivePicasso.ThunderKit.Thunderstore.Editor;
 using PassivePicasso.ThunderKit.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -28,6 +29,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         Run = 8192,
     }
 
+    [Flags]
     public enum LogLevel
     {
         //Disables all log messages
@@ -43,7 +45,9 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         //Messages of low importance
         Info = 16,
         //Messages intended for developers
-        Debug = 32, 
+        Debug = 32,
+
+        //All = Fatal | Error | Warning | Message | Info | Debug
     }
 
     public class Deployment : ScriptableObject
@@ -56,6 +60,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         [EnumFlag]
         public DeploymentOptions DeploymentOptions;
 
+        [EnumFlag]
         public LogLevel LogLevel;
 
         public AssemblyDefinitionAsset[] Plugins;
@@ -119,7 +124,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
                 string configPath = Path.Combine(bepinexDir, "Config", "BepInEx.cfg");
                 File.Delete(configPath);
-                string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), $"{deployment.LogLevel}");
+                var logLevels = GetFlags<LogLevel>(deployment.LogLevel).Select(f => $"{f}").Aggregate((a, b) => $"{a}, {b}");
+                string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), logLevels);
                 File.WriteAllText(configPath, contents);
             }
 
@@ -295,6 +301,12 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             Debug.Log(e.Data);
         }
 
+        public static IEnumerable<T> GetFlags<T>(T input) where T : struct, Enum
+        {
+            foreach (T value in (T[])Enum.GetValues(typeof(T)))
+                if (input.HasFlag(value))
+                    yield return value;
+        }
     }
 }
 #endif
