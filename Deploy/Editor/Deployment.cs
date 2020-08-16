@@ -124,10 +124,13 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             }
 
             string configPath = Path.Combine(bepinexDir, "Config", "BepInEx.cfg");
-            File.Delete(configPath);
-            var logLevels = GetFlags(deployment.LogLevel).Select(f => $"{f}").Aggregate((a, b) => $"{a}, {b}");
-            string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), logLevels);
-            File.WriteAllText(configPath, contents);
+            if (Directory.Exists(Path.Combine(bepinexDir, "Config")))
+            {
+                File.Delete(configPath);
+                var logLevels = GetFlags(deployment.LogLevel).Select(f => $"{f}").Aggregate((a, b) => $"{a}, {b}");
+                string contents = ConfigTemplate.CreatBepInExConfig(deployment.DeploymentOptions.HasFlag(DeploymentOptions.ShowConsole), logLevels);
+                File.WriteAllText(configPath, contents);
+            }
 
             if (File.Exists(Path.Combine(bepinexPackDir, "winhttp.dll")))
                 File.Copy(Path.Combine(bepinexPackDir, "winhttp.dll"),
@@ -173,7 +176,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 if (deployment.Readme)
                 {
                     var readmePath = AssetDatabase.GetAssetPath(deployment.Readme);
-                    File.Copy(readmePath, Path.Combine(outputPath, Path.GetFileName(readmePath)), true);
+                    File.Copy(readmePath, Path.Combine(outputPath, "README.md"), true);
                 }
                 else File.WriteAllText(Path.Combine(outputPath, "README.md"), $"# {deployment.Manifest.name}");
 
