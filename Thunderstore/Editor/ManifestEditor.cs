@@ -97,15 +97,20 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                 {
                     List<string> lookedUpDeps = new List<string>();
                     var lookups = new List<Task<IEnumerable<Package>>>();
-                    foreach (var dependency in manifest.dependencies)
+
+                    void GetDependences(IEnumerable<string> dependencies)
                     {
-                        if (Directory.Exists(Path.Combine(dependenciesPath, dependency))) continue;
+                        foreach (var dependency in dependencies)
+                        {
+                            if (Directory.Exists(Path.Combine(dependenciesPath, dependency))) continue;
 
-                        lookups.Add(ThunderLoad.LookupPackage(dependency));
+                            lookups.Add(ThunderLoad.LookupPackage(dependency));
+                        }
                     }
+                    GetDependences(manifest.dependencies);
 
-
-                    var AwaitLookup = new Action(() =>
+                    Action awaitLookups = null;
+                    awaitLookups = new Action(() =>
                     {
                         if (!lookups.All(t => t.IsCompleted)) return;
 
@@ -116,10 +121,18 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                             if (lookedUpDeps.Contains(dependency.latest.full_name)) continue;
                             if (dependency.latest.full_name.Contains("BepInExPack")) continue;
                             lookedUpDeps.Add(dependency.latest.full_name);
-                            InstallDependency(dependency);
+                            GetDependences(dependency.latest.dependencies.Except(lookedUpDeps));
+                        }
+
+                        if (lookups.All(t => t.IsCompleted))
+                        {
+                            EditorApplication.update -= new EditorApplication.CallbackFunction(awaitLookups);
+                            foreach (var dependency in lookups.Select(r => r.Result).SelectMany(r => r))
+                                InstallDependency(dependency);
                         }
                     });
-                    EditorApplication.update += new EditorApplication.CallbackFunction(AwaitLookup);
+
+                    EditorApplication.update += new EditorApplication.CallbackFunction(awaitLookups);
                 }
 
             rect = EGL.GetControlRect(true, EGU.singleLineHeight);
