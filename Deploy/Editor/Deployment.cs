@@ -108,7 +108,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             {
                 if (Directory.Exists(bepinexPackDir)) Directory.Delete(bepinexPackDir, true);
 
-                var bepinexPacks = await ThunderLoad.LookupPackage("BepInExPack");
+                var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
                 var bepinex = bepinexPacks.FirstOrDefault();
 
                 string filePath = Path.Combine(currentDir, $"{bepinex.full_name}.zip");
