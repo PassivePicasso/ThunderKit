@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -77,18 +78,23 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         public async static void Deploy()
         {
             Deployment deployment = Selection.activeObject as Deployment;
+            if (deployment == null) return;
 
+            await RunDemployment(deployment);
+        }
+
+        private static async Task RunDemployment(Deployment deployment)
+        {
             var settings = ThunderKitSettings.GetOrCreateSettings();
             var currentDir = Directory.GetCurrentDirectory();
             var dependencies = Path.Combine(currentDir, "Assets", "Dependencies");
-            var scriptAssemblies = Path.Combine(currentDir, "Library", "ScriptAssemblies");
             var thunderPacks = Path.Combine(currentDir, "ThunderPacks", deployment.name);
             var tmpDir = Path.Combine(thunderPacks, "tmp");
             var bepinexPackDir = Path.Combine(thunderPacks, "BepInExPack");
             var bepinexDir = Path.Combine(thunderPacks, "BepInExPack", "BepInEx");
             var bepinexCoreDir = Path.Combine(bepinexDir, "core");
             var deployments = "Deployments";
-            var outputPath = $"{deployments}/{deployment.name}";
+            var outputPath = Path.Combine(deployments, deployment.name);
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean))
             {
@@ -106,7 +112,9 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                     || deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
                ))
             {
-                if (Directory.Exists(bepinexPackDir)) Directory.Delete(bepinexPackDir, true);
+                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx)
+                 && Directory.Exists(bepinexPackDir))
+                    Directory.Delete(bepinexPackDir, true);
 
                 var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
                 var bepinex = bepinexPacks.FirstOrDefault();
@@ -163,15 +171,16 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             }
 
 
+            var manifestJson = JsonUtility.ToJson(deployment.Manifest);
+
+            manifestJson = manifestJson.Substring(1);
+            manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
+            File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
+
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
             {
-                CopyAllReferences(outputPath, scriptAssemblies, deployment);
+                CopyAllReferences(outputPath, deployment);
 
-                var manifestJson = JsonUtility.ToJson(deployment.Manifest);
-
-                manifestJson = manifestJson.Substring(1);
-                manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
-                File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
 
                 if (deployment.Readme)
                 {
@@ -196,7 +205,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.ini")))
                     File.Move(Path.Combine(settings.GamePath, "doorstop_config.ini"), Path.Combine(settings.GamePath, "doorstop_config.bak.ini"));
 
-                CopyAllReferences(bepinexDir, scriptAssemblies, deployment);
+                CopyAllReferences(bepinexDir, deployment);
                 Debug.Log($"Launching {Path.GetFileNameWithoutExtension(settings.GameExecutable)}");
 
                 var rorPsi = new ProcessStartInfo(ror2Executable)
@@ -235,11 +244,11 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             if (Directory.Exists(monomodPath)) Directory.Delete(monomodPath, true);
         }
 
-        static void CopyAllReferences(string rootPath, string scriptAssemblies, Deployment deployment)
+        static void CopyAllReferences(string outputRoot, Deployment deployment)
         {
-            var pluginPath = Path.Combine(rootPath, "plugins", deployment.Manifest.name);
-            var patcherPath = Path.Combine(rootPath, "patchers", deployment.Manifest.name);
-            var monomodPath = Path.Combine(rootPath, "monomod", deployment.Manifest.name);
+            var pluginPath = Path.Combine(outputRoot, "plugins", deployment.Manifest.name);
+            var patcherPath = Path.Combine(outputRoot, "patchers", deployment.Manifest.name);
+            var monomodPath = Path.Combine(outputRoot, "monomod", deployment.Manifest.name);
 
             if (deployment.Plugins.Any() && !Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
             if (deployment.Patchers.Any() && !Directory.Exists(patcherPath)) Directory.CreateDirectory(patcherPath);
@@ -248,13 +257,15 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles))
                 BuildPipeline.BuildAssetBundles(pluginPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
 
-            CopyReferences(deployment.Plugins, pluginPath, scriptAssemblies, deployment);
-            CopyReferences(deployment.Patchers, patcherPath, scriptAssemblies, deployment);
-            CopyReferences(deployment.Monomod, monomodPath, scriptAssemblies, deployment);
+            CopyReferences(deployment.Plugins, pluginPath, deployment);
+            CopyReferences(deployment.Patchers, patcherPath, deployment);
+            CopyReferences(deployment.Monomod, monomodPath, deployment);
         }
 
-        static void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string assemblyOutputPath, string scriptAssemblies, Deployment deployment)
+        static void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string assemblyOutputPath, Deployment deployment)
         {
+            var scriptAssemblies = Path.Combine(Directory.GetCurrentDirectory(), "Library", "ScriptAssemblies");
+
             foreach (var plugin in assemblyDefs)
             {
                 var assemblyDef = JsonUtility.FromJson<AssemblyDef>(plugin.text);
