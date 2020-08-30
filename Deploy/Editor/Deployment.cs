@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿//#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Editor;
 using PassivePicasso.ThunderKit.Thunderstore.Editor;
 using PassivePicasso.ThunderKit.Utilities;
@@ -86,9 +86,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         private static async Task RunDemployment(Deployment deployment)
         {
             var settings = ThunderKitSettings.GetOrCreateSettings();
-            var currentDir = Directory.GetCurrentDirectory();
-            var dependencies = Path.Combine(currentDir, "Assets", "Dependencies");
-            var thunderPacks = Path.Combine(currentDir, "ThunderPacks", deployment.name);
+            var dependencies = Path.Combine("Assets", "Dependencies");
+            var thunderPacks = Path.Combine("ThunderPacks", deployment.name);
             var tmpDir = Path.Combine(thunderPacks, "tmp");
             var bepinexPackDir = Path.Combine(thunderPacks, "BepInExPack");
             var bepinexDir = Path.Combine(thunderPacks, "BepInExPack", "BepInEx");
@@ -119,8 +118,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
                 var bepinex = bepinexPacks.FirstOrDefault();
 
-                string filePath = Path.Combine(currentDir, $"{bepinex.full_name}.zip");
-                await ThunderLoad.DownloadPackageAsync(bepinex, filePath);
+                await ThunderLoad.DownloadPackageAsync(bepinex, $"{bepinex.full_name}.zip");
 
                 using (var fileStream = File.OpenRead(filePath))
                 using (var archive = new ZipArchive(fileStream))
@@ -170,17 +168,9 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 }
             }
 
-
-            var manifestJson = JsonUtility.ToJson(deployment.Manifest);
-
-            manifestJson = manifestJson.Substring(1);
-            manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
-            File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
-
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
             {
                 CopyAllReferences(outputPath, deployment);
-
 
                 if (deployment.Readme)
                 {
@@ -260,11 +250,17 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             CopyReferences(deployment.Plugins, pluginPath, deployment);
             CopyReferences(deployment.Patchers, patcherPath, deployment);
             CopyReferences(deployment.Monomod, monomodPath, deployment);
+
+            var manifestJson = JsonUtility.ToJson(deployment.Manifest);
+
+            manifestJson = manifestJson.Substring(1);
+            manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
+            File.WriteAllText(Path.Combine(pluginPath, "manifest.json"), manifestJson);
         }
 
         static void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string assemblyOutputPath, Deployment deployment)
         {
-            var scriptAssemblies = Path.Combine(Directory.GetCurrentDirectory(), "Library", "ScriptAssemblies");
+            var scriptAssemblies = Path.Combine("Library", "ScriptAssemblies");
 
             foreach (var plugin in assemblyDefs)
             {
@@ -323,4 +319,4 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         }
     }
 }
-#endif
+//#endif
