@@ -118,7 +118,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
                 var bepinex = bepinexPacks.FirstOrDefault();
 
-                await ThunderLoad.DownloadPackageAsync(bepinex, $"{bepinex.full_name}.zip");
+                var filePath = $"{bepinex.full_name}.zip";
+                await ThunderLoad.DownloadPackageAsync(bepinex, filePath);
 
                 using (var fileStream = File.OpenRead(filePath))
                 using (var archive = new ZipArchive(fileStream))
