@@ -80,11 +80,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             Deployment deployment = Selection.activeObject as Deployment;
             if (deployment == null) return;
 
-            await RunDemployment(deployment);
-        }
-
-        private static async Task RunDemployment(Deployment deployment)
-        {
             var settings = ThunderKitSettings.GetOrCreateSettings();
             var dependencies = Path.Combine("Assets", "Dependencies");
             var thunderPacks = Path.Combine("ThunderPacks", deployment.name);
