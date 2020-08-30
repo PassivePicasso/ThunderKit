@@ -82,13 +82,13 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             var settings = ThunderKitSettings.GetOrCreateSettings();
             var dependencies = Path.Combine("Assets", "Dependencies");
-            var thunderPacks = Path.Combine("ThunderPacks", deployment.name);
+            var thunderPacks = Path.Combine("ThunderPacks", deployment.Manifest.name);
             var tmpDir = Path.Combine(thunderPacks, "tmp");
             var bepinexPackDir = Path.Combine(thunderPacks, "BepInExPack");
             var bepinexDir = Path.Combine(thunderPacks, "BepInExPack", "BepInEx");
             var bepinexCoreDir = Path.Combine(bepinexDir, "core");
             var deployments = "Deployments";
-            var outputPath = Path.Combine(deployments, deployment.name);
+            var outputPath = Path.Combine(deployments, deployment.Manifest.name);
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean))
             {
