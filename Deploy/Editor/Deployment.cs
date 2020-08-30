@@ -1,4 +1,4 @@
-﻿//#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Editor;
 using PassivePicasso.ThunderKit.Thunderstore.Editor;
 using PassivePicasso.ThunderKit.Utilities;
@@ -320,4 +320,4 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         }
     }
 }
-//#endif
+#endif
