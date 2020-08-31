@@ -36,9 +36,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
 
             _ = BepInExPackLoader.DownloadBepinex();
 
-            var currentDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
-            if (!currentDefines.Contains("THUNDERKIT_CONFIGURED"))
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, $"{currentDefines};THUNDERKIT_CONFIGURED");
+            ScriptingSymbolManager.AddScriptingDefine("THUNDERKIT_CONFIGURED");
 
             AssetDatabase.Refresh();
         }
