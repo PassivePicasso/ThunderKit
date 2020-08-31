@@ -15,11 +15,13 @@ namespace PassivePicasso.ThunderKit.Config
         {
             var settings = ThunderKitSettings.GetOrCreateSettings();
             var currentDir = Directory.GetCurrentDirectory();
-            var proxyPath = Path.Combine(currentDir, "Assets", Path.GetFileNameWithoutExtension(settings.GameExecutable), "GeneratedProxies");
+            //var proxyPath = Path.Combine(currentDir, "Assets", Path.GetFileNameWithoutExtension(settings.GameExecutable), "GeneratedProxies");
             var assembliesPath = Path.Combine(currentDir, "Assets", "Assemblies");
             var gameAssembly = EditorUtility.OpenFilePanel("Open Game Assembly", assembliesPath, "dll");
+            var proxyPath = EditorUtility.OpenFolderPanel("Output Location", Path.Combine(currentDir, "Assets"), Path.Combine(Path.GetFileNameWithoutExtension(settings.GameExecutable), "GeneratedProxies"));
             var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(asm => asm.CodeBase.Contains(gameAssembly));
 
+            var overwrite = EditorUtility.DisplayDialog("Overwrite", "Overwrite existing proxy files?", "Yes", "No");
             if (assembly == null)
             {
                 Debug.LogError("Assembly not loaded cannot generate proxies. Only load assemblies from under the Assets directory.");
@@ -55,7 +57,7 @@ namespace PassivePicasso.ThunderKit.Config
                 if (!Directory.Exists(filePath)) Directory.CreateDirectory(filePath);
 
                 filePath = Path.Combine(filePath, fileName);
-                if (!File.Exists(filePath)) File.Delete(filePath);
+                if(overwrite && File.Exists(filePath)) File.Delete(filePath);
 
                 File.WriteAllText(filePath, definition);
             }
