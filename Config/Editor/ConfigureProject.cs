@@ -34,7 +34,11 @@ namespace PassivePicasso.ThunderKit.Config.Editor
             GetReferences(currentDir, settings, destinationFolder);
             EditorUtility.SetDirty(settings);
 
-            var x = BepInExPackLoader.DownloadBepinex();
+            _ = BepInExPackLoader.DownloadBepinex();
+
+            var currentDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
+            if (!currentDefines.Contains("THUNDERKIT_CONFIGURED"))
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, $"{currentDefines};THUNDERKIT_CONFIGURED");
 
             AssetDatabase.Refresh();
         }

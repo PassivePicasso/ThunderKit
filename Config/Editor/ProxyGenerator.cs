@@ -39,11 +39,13 @@ namespace PassivePicasso.ThunderKit.Config
                 var isGlobal = string.IsNullOrWhiteSpace(type.Namespace);
                 var namespaceSeparator = isGlobal ? "" : ".";
                 var definition = string.Join(Environment.NewLine,
-                        isGlobal ? "" : $"using global::{type.Namespace};",
+                        $"#if THUNDERKIT_CONFIGURED",
+        isGlobal ? "" : $"using global::{type.Namespace};",
                         $"namespace {nameof(PassivePicasso)}.{nameof(ThunderKit)}.Proxy{namespaceSeparator}{type.Namespace}",
                         $"{{",
                         $"    public partial class {type.Name} : global::{type.FullName} {{}}",
-                        $"}}"
+                        $"}}",
+                        $"#endif"
                     );
 
                 var filePath = proxyPath;
