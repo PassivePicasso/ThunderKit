@@ -169,7 +169,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             if (buildBundles)
             {
-                var pluginPath = Path.Combine(bepinexDir, "plugins");
+                var pluginPath = Path.Combine(bepinexDir, "plugins", deployment.Manifest.name);
                 if (!Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
                 BuildPipeline.BuildAssetBundles(pluginPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
             }
