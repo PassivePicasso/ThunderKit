@@ -141,6 +141,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 File.Copy(Path.Combine(bepinexPackDir, "winhttp.dll"),
                           Path.Combine(settings.GamePath, "winhttp.dll"), true);
 
+
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies))
             {
                 if (Directory.Exists(dependencies))
@@ -165,6 +166,13 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                         }
                     }
                 }
+            }
+
+            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles))
+            {
+                var pluginPath = Path.Combine(bepinexDir, "plugins");
+                if (!Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
+                BuildPipeline.BuildAssetBundles(pluginPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
             }
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
@@ -243,11 +251,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             if (deployment.Patchers.Any() && !Directory.Exists(patcherPath)) Directory.CreateDirectory(patcherPath);
             if (deployment.Monomod.Any() && !Directory.Exists(monomodPath)) Directory.CreateDirectory(monomodPath);
 
-            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles))
-            {
-                if (!Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
-                BuildPipeline.BuildAssetBundles(pluginPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
-            }
 
             CopyReferences(deployment.Plugins, pluginPath, deployment);
             CopyReferences(deployment.Patchers, patcherPath, deployment);
