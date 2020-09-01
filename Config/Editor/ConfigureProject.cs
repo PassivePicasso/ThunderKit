@@ -38,7 +38,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
 
             ScriptingSymbolManager.AddScriptingDefine("THUNDERKIT_CONFIGURED");
 
-            AssetDatabase.Refresh();
+            AssetDatabase.ImportAsset("Assets", ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
         }
 
         private static string AssertDestination(string currentDir)
