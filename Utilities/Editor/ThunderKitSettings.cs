@@ -25,7 +25,7 @@ namespace PassivePicasso.ThunderKit.Utilities
         public string GamePath;
 
         [SerializeField]
-        public string DnSpyPath;
+        public string[] deployment_exclusions;
 
         [SerializeField]
         public bool Is64Bit;
@@ -37,7 +37,7 @@ namespace PassivePicasso.ThunderKit.Utilities
             {
                 settings = CreateInstance<ThunderKitSettings>();
                 settings.GamePath = "";
-                settings.DnSpyPath = "";
+                settings.deployment_exclusions = new string[0];
                 AssetDatabase.CreateAsset(settings, SettingsPath);
                 AssetDatabase.SaveAssets();
             }
