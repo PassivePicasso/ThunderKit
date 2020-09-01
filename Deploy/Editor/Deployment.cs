@@ -244,7 +244,10 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             if (deployment.Monomod.Any() && !Directory.Exists(monomodPath)) Directory.CreateDirectory(monomodPath);
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles))
+            {
+                if (!Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
                 BuildPipeline.BuildAssetBundles(pluginPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
+            }
 
             CopyReferences(deployment.Plugins, pluginPath, deployment);
             CopyReferences(deployment.Patchers, patcherPath, deployment);
