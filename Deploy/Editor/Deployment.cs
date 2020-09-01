@@ -26,6 +26,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         Clean = 8,
         InstallDependencies = 16,
         DeployMdbFiles = 32,
+        DeployAssemblies = 128,
         ShowConsole = 64,
         Run = 8192,
     }
@@ -265,19 +266,25 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         static void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string assemblyOutputPath, Deployment deployment)
         {
             var scriptAssemblies = Path.Combine("Library", "ScriptAssemblies");
+            bool deployAssemblies = deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployAssemblies);
+            bool deployMdbs = deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles);
+
+            if (!deployAssemblies && !deployMdbs) return;
 
             foreach (var plugin in assemblyDefs)
             {
                 var assemblyDef = JsonUtility.FromJson<AssemblyDef>(plugin.text);
                 var fileOutputBase = Path.Combine(assemblyOutputPath, assemblyDef.name);
                 var fileName = Path.GetFileName(fileOutputBase);
-                if (File.Exists($"{fileOutputBase}.dll")) File.Delete($"{fileOutputBase}.dll");
 
-                File.Copy(Path.Combine(scriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll");
-
-                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles))
+                if (deployAssemblies)
                 {
+                    if (File.Exists($"{fileOutputBase}.dll")) File.Delete($"{fileOutputBase}.dll");
+                    File.Copy(Path.Combine(scriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll");
+                }
 
+                if (deployMdbs)
+                {
                     string monodatabase = $"{Path.Combine(scriptAssemblies, fileName)}.dll.mdb";
                     if (File.Exists(monodatabase))
                     {
