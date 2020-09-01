@@ -92,8 +92,11 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean))
             {
-                CleanManifestFiles(bepinexDir, deployment);
-                CleanManifestFiles(outputPath, deployment);
+                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
+                    CleanManifestFiles(outputPath, deployment);
+
+                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
+                    CleanManifestFiles(bepinexDir, deployment);
             }
 
             if (!Directory.Exists(deployments)) Directory.CreateDirectory(deployments);
