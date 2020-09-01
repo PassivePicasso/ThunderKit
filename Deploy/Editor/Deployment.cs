@@ -80,37 +80,36 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             Deployment deployment = Selection.activeObject as Deployment;
             if (deployment == null) return;
 
-            var settings = ThunderKitSettings.GetOrCreateSettings();
-            var dependencies = Path.Combine("Assets", "Dependencies");
-            var thunderPacks = Path.Combine("ThunderPacks", deployment.Manifest.name);
-            var tmpDir = Path.Combine(thunderPacks, "tmp");
-            var bepinexPackDir = Path.Combine(thunderPacks, "BepInExPack");
-            var bepinexDir = Path.Combine(thunderPacks, "BepInExPack", "BepInEx");
-            var bepinexCoreDir = Path.Combine(bepinexDir, "core");
-            var deployments = "Deployments";
-            var outputPath = Path.Combine(deployments, deployment.Manifest.name);
+            var deployments/*    */= "Deployments";
+            var settings/*       */= ThunderKitSettings.GetOrCreateSettings();
+            var dependencies/*   */= Path.Combine("Assets", "Dependencies");
+            var thunderPacks/*   */= Path.Combine("ThunderPacks", deployment.Manifest.name);
+            var tmpDir/*         */= Path.Combine(thunderPacks, "tmp");
+            var bepinexPackDir/**/ = Path.Combine(thunderPacks, "BepInExPack");
+            var bepinexDir/*     */= Path.Combine(thunderPacks, "BepInExPack", "BepInEx");
+            var bepinexCoreDir/* */= Path.Combine(bepinexDir, "core");
+            var outputPath/*     */= Path.Combine(deployments, deployment.Manifest.name);
 
-            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean))
+            bool clean/*           */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean);
+            bool installBepinex/*  */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx);
+            bool installDependencies = deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies);
+            bool deployMdbs/*      */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles);
+            bool run/*             */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run);
+            bool buildBundles/*    */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles);
+            bool package/*         */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package);
+
+            if (clean)
             {
-                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
-                    CleanManifestFiles(outputPath, deployment);
-
-                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
-                    CleanManifestFiles(bepinexDir, deployment);
+                CleanManifestFiles(outputPath, deployment);
+                CleanManifestFiles(bepinexDir, deployment);
             }
 
             if (!Directory.Exists(deployments)) Directory.CreateDirectory(deployments);
             if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
-            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx)
-            || (!Directory.Exists(bepinexPackDir)
-                && (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies)
-                    || deployment.DeploymentOptions.HasFlag(DeploymentOptions.DeployMdbFiles)
-                    || deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
-               ))
+            if (installBepinex || (!Directory.Exists(bepinexPackDir) && (installDependencies || deployMdbs || run)))
             {
-                if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx)
-                 && Directory.Exists(bepinexPackDir))
+                if (installBepinex && Directory.Exists(bepinexPackDir))
                     Directory.Delete(bepinexPackDir, true);
 
                 var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
@@ -142,7 +141,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                           Path.Combine(settings.GamePath, "winhttp.dll"), true);
 
 
-            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallDependencies))
+            if (installDependencies)
             {
                 if (Directory.Exists(dependencies))
                 {
@@ -168,14 +167,14 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 }
             }
 
-            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles))
+            if (buildBundles)
             {
                 var pluginPath = Path.Combine(bepinexDir, "plugins");
                 if (!Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
                 BuildPipeline.BuildAssetBundles(pluginPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
             }
 
-            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
+            if (package)
             {
                 CopyAllReferences(outputPath, deployment);
 
@@ -197,7 +196,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             }
 
             var ror2Executable = Path.Combine(settings.GamePath, settings.GameExecutable);
-            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Run))
+            if (run)
             {
                 if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.ini")))
                     File.Move(Path.Combine(settings.GamePath, "doorstop_config.ini"), Path.Combine(settings.GamePath, "doorstop_config.bak.ini"));
