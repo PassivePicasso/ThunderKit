@@ -106,7 +106,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                     {
                         var deps = dependencies.SelectMany(dep => ThunderLoad.LookupPackage(dep));
                         var subDeps = deps.SelectMany(idep => idep.latest.dependencies).Distinct();
-                        
+
                         if (subDeps.Any())
                             return deps.Union(RecurseDeps(subDeps));
 
@@ -116,6 +116,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                     var distinctResults = RecurseDeps(manifest.dependencies).GroupBy(dep => dep.latest.full_name).Select(g => g.First());
                     var packages = distinctResults.Where(dep => !dep.latest.full_name.Contains("BepInEx")).ToList();
                     activeInstallations = new bool[packages.Count];
+
+                    if (!Directory.Exists(TempDir)) Directory.CreateDirectory(TempDir);
 
                     async void Install(Package package, int i)
                     {
@@ -143,6 +145,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                 AssetDatabase.Refresh();
                 activeInstallations = null;
                 installing = false;
+                Directory.Delete(TempDir, true);
             }
 
             rect = EGL.GetControlRect(true, EGU.singleLineHeight);
