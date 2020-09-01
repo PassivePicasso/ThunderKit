@@ -261,6 +261,12 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             manifestJson = manifestJson.Substring(1);
             manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
             File.WriteAllText(Path.Combine(outputRoot, "manifest.json"), manifestJson);
+
+            var settings = ThunderKitSettings.GetOrCreateSettings();
+            if (settings?.deployment_exclusions?.Any() ?? false)
+                foreach(var deployment_exclusion in settings.deployment_exclusions)
+                    foreach (var file in Directory.EnumerateFiles(pluginPath, deployment_exclusion, SearchOption.AllDirectories))
+                        File.Delete(file);
         }
 
         static void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string assemblyOutputPath, Deployment deployment)
