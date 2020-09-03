@@ -286,7 +286,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             var settings = ThunderKitSettings.GetOrCreateSettings();
             if (settings?.deployment_exclusions?.Any() ?? false)
                 foreach (var deployment_exclusion in settings.deployment_exclusions)
-                    foreach (var file in Directory.EnumerateFiles(pluginPath, deployment_exclusion, SearchOption.AllDirectories))
+                    foreach (var file in Directory.EnumerateFiles(pluginPath, deployment_exclusion, SearchOption.AllDirectories).ToArray())
                         File.Delete(file);
         }
 
