@@ -28,9 +28,6 @@ namespace PassivePicasso.ThunderKit.Utilities
         public string[] deployment_exclusions;
 
         [SerializeField]
-        public string[] extraCommandLineArgs;
-
-        [SerializeField]
         public bool Is64Bit;
 
         public static ThunderKitSettings GetOrCreateSettings()
