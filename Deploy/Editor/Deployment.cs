@@ -205,11 +205,21 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
                 CopyAllReferences(bepinexDir, deployment);
                 Debug.Log($"Launching {Path.GetFileNameWithoutExtension(settings.GameExecutable)}");
+                var arguments = new List<string>
+                {
+                    "--doorstop-enable true",
+                    $"--doorstop-target \"{Path.Combine(Directory.GetCurrentDirectory(), bepinexCoreDir, "BepInEx.Preloader.dll")}\""
+                };
+                if (settings.extraCommandLineArgs?.Any() ?? false)
+                    arguments.AddRange(settings.extraCommandLineArgs);
+
+                var args = arguments.Aggregate((a, b) => $"{a} {b}");
 
                 var rorPsi = new ProcessStartInfo(ror2Executable)
                 {
                     WorkingDirectory = bepinexDir,
-                    Arguments = $"--doorstop-enable true --doorstop-target \"{Path.Combine(Directory.GetCurrentDirectory(), bepinexCoreDir, "BepInEx.Preloader.dll")}\"",
+                    Arguments = args,
+
                     //Standard output redirection doesn't currently work with bepinex, appears to be considered a bepinex bug
                     //RedirectStandardOutput = true,
                     UseShellExecute = true
@@ -265,7 +275,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             var settings = ThunderKitSettings.GetOrCreateSettings();
             if (settings?.deployment_exclusions?.Any() ?? false)
-                foreach(var deployment_exclusion in settings.deployment_exclusions)
+                foreach (var deployment_exclusion in settings.deployment_exclusions)
                     foreach (var file in Directory.EnumerateFiles(pluginPath, deployment_exclusion, SearchOption.AllDirectories))
                         File.Delete(file);
         }
