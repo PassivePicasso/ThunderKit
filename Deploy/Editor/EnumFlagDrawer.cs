@@ -18,11 +18,18 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 			string propName = flagSettings.enumName;
 			if (string.IsNullOrEmpty(propName))
 				propName = Regex.Replace(property.name, "([^^])([A-Z])", "$1 $2");
-
+			EditorGUI.BeginChangeCheck();
 			EditorGUI.BeginProperty(position, label, property);
+
 			Enum enumNew = EditorGUI.EnumFlagsField(position, propName, targetEnum);
-			property.intValue = (int)Convert.ChangeType(enumNew, targetEnum.GetType());
+
 			EditorGUI.EndProperty();
+            if (EditorGUI.EndChangeCheck())
+            {
+				property.intValue = (int)Convert.ChangeType(enumNew, targetEnum.GetType());
+				property.serializedObject.ApplyModifiedProperties();
+				property.serializedObject.UpdateIfRequiredOrScript();
+			}
 		}
 
 		static T GetBaseProperty<T>(SerializedProperty prop)
