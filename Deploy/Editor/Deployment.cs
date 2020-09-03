@@ -180,6 +180,10 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                                          : Path.Combine(bepinexDir, "plugins", deployment.Manifest.name);
                 if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
                 BuildPipeline.BuildAssetBundles(targetPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
+
+                //Domain reload causes loss of settings object
+                if (!settings)
+                    settings/*       */= ThunderKitSettings.GetOrCreateSettings();
             }
 
             if (package)
