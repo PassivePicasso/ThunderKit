@@ -68,6 +68,10 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         public AssemblyDefinitionAsset[] Plugins;
         public AssemblyDefinitionAsset[] Patchers;
         public AssemblyDefinitionAsset[] Monomod;
+
+        [SerializeField]
+        public string[] extraCommandLineArgs;
+
         public TextAsset Readme;
 
         public Texture2D Icon;
@@ -210,8 +214,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                     "--doorstop-enable true",
                     $"--doorstop-target \"{Path.Combine(Directory.GetCurrentDirectory(), bepinexCoreDir, "BepInEx.Preloader.dll")}\""
                 };
-                if (settings.extraCommandLineArgs?.Any() ?? false)
-                    arguments.AddRange(settings.extraCommandLineArgs);
+                if (deployment.extraCommandLineArgs?.Any() ?? false)
+                    arguments.AddRange(deployment.extraCommandLineArgs);
 
                 var args = arguments.Aggregate((a, b) => $"{a} {b}");
 
