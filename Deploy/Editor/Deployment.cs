@@ -154,6 +154,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
                     foreach (var modDir in dependencyDirs)
                     {
+                        if (!deployment.Manifest.dependencies.Contains(Path.GetFileName(modDir))) continue;
+
                         string patcher = Path.Combine(modDir, "patchers");
                         string plugins = Path.Combine(modDir, "plugins");
                         string monomod = Path.Combine(modDir, "monomod");
