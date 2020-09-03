@@ -286,7 +286,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             var settings = ThunderKitSettings.GetOrCreateSettings();
             if (settings?.deployment_exclusions?.Any() ?? false)
                 foreach (var deployment_exclusion in settings.deployment_exclusions)
-                    foreach (var file in Directory.EnumerateFiles(pluginPath, deployment_exclusion, SearchOption.AllDirectories))
+                    foreach (var file in Directory.EnumerateFiles(pluginPath, deployment_exclusion, SearchOption.AllDirectories).ToArray())
                         File.Delete(file);
         }
 
@@ -335,7 +335,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
         public static void CopyFilesRecursively(string source, string target)
         {
-            foreach (var file in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories).Where(f => !f.EndsWith("meta")))
+            foreach (var file in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories).Where(f => !f.EndsWith("meta")).ToArray())
             {
                 var parentDirectory = Path.GetFileName(Path.GetDirectoryName(file));
                 var targetParent = Path.GetFileName(target);
