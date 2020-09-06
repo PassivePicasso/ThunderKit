@@ -10,6 +10,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEditorInternal;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -76,13 +77,29 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
         public Texture2D Icon;
 
+        public bool ExecuteOnDoubleClick;
+
         [MenuItem("Assets/Run Deployment", isValidateFunction: true)]
         public static bool CanDeploy() => Selection.activeObject is Deployment;
 
         [MenuItem("Assets/Run Deployment")]
-        public async static void Deploy()
+        public static void ContextDeploy()
         {
             Deployment deployment = Selection.activeObject as Deployment;
+            Deploy(deployment);
+        }
+
+        [OnOpenAsset]
+        public static bool DoubleClickDeploy(int instanceID, int line)
+        {
+            var instance = (Deployment)EditorUtility.InstanceIDToObject(instanceID);
+            if (instance.ExecuteOnDoubleClick) Deploy(instance);
+
+            return instance.ExecuteOnDoubleClick;
+        }
+
+        public async static void Deploy(Deployment deployment)
+        {
             if (deployment == null) return;
 
             var deployments/*    */= "Deployments";
