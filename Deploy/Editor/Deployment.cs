@@ -110,7 +110,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             var bepinexPackDir/**/ = Path.Combine(thunderPacks, "BepInExPack");
             var bepinexDir/*     */= Path.Combine(thunderPacks, "BepInExPack", "BepInEx");
             var bepinexCoreDir/* */= Path.Combine(bepinexDir, "core");
-            var outputPath/*     */= Path.Combine(deployments, deployment.Manifest.name);
+            var packageDir/*     */= Path.Combine(deployments, deployment.Manifest.name);
 
             bool clean/*           */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.Clean);
             bool installBepinex/*  */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.InstallBepInEx);
@@ -120,14 +120,12 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             bool buildBundles/*    */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.BuildBundles);
             bool package/*         */= deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package);
 
+            var targetPath = package ? Path.Combine(packageDir, "plugins", deployment.Manifest.name)
+                                     : Path.Combine(bepinexDir, "plugins", deployment.Manifest.name);
             if (clean)
-            {
-                CleanManifestFiles(outputPath, deployment);
-                CleanManifestFiles(bepinexDir, deployment);
-            }
+                CleanManifestFiles(targetPath, deployment);
 
-            if (!Directory.Exists(deployments)) Directory.CreateDirectory(deployments);
-            if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+            if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
 
             if (installBepinex || (!Directory.Exists(bepinexPackDir) && (installDependencies || deployMdbs || run)))
             {
@@ -193,8 +191,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             if (buildBundles)
             {
-                var targetPath = package ? Path.Combine(outputPath, "plugins", deployment.Manifest.name)
-                                         : Path.Combine(bepinexDir, "plugins", deployment.Manifest.name);
                 if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
                 BuildPipeline.BuildAssetBundles(targetPath, deployment.AssetBundleBuildOptions, BuildTarget.StandaloneWindows);
 
@@ -203,25 +199,26 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                     settings/*       */= ThunderKitSettings.GetOrCreateSettings();
             }
 
+            if(run || package)
+                CopyAllReferences(targetPath, deployment);
+
             if (package)
             {
-                CopyAllReferences(outputPath, deployment);
-
                 if (deployment.Readme)
                 {
                     var readmePath = AssetDatabase.GetAssetPath(deployment.Readme);
-                    File.Copy(readmePath, Path.Combine(outputPath, "README.md"), true);
+                    File.Copy(readmePath, Path.Combine(targetPath, "README.md"), true);
                 }
-                else File.WriteAllText(Path.Combine(outputPath, "README.md"), $"# {deployment.Manifest.name}");
+                else File.WriteAllText(Path.Combine(targetPath, "README.md"), $"# {deployment.Manifest.name}");
 
 
                 if (deployment.Icon)
-                    File.WriteAllBytes(Path.Combine(outputPath, "icon.png"), deployment.Icon.EncodeToPNG());
+                    File.WriteAllBytes(Path.Combine(targetPath, "icon.png"), deployment.Icon.EncodeToPNG());
 
                 string outputFile = Path.Combine(deployments, $"{deployment.Manifest.name}.zip");
                 if (File.Exists(outputFile)) File.Delete(outputFile);
 
-                ZipFile.CreateFromDirectory(outputPath, outputFile);
+                ZipFile.CreateFromDirectory(targetPath, outputFile);
             }
 
             var ror2Executable = Path.Combine(settings.GamePath, settings.GameExecutable);
@@ -230,7 +227,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.ini")))
                     File.Move(Path.Combine(settings.GamePath, "doorstop_config.ini"), Path.Combine(settings.GamePath, "doorstop_config.bak.ini"));
 
-                CopyAllReferences(bepinexDir, deployment);
                 Debug.Log($"Launching {Path.GetFileNameWithoutExtension(settings.GameExecutable)}");
                 var arguments = new List<string>
                 {
@@ -246,9 +242,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
                 {
                     WorkingDirectory = bepinexDir,
                     Arguments = args,
-
-                    //Standard output redirection doesn't currently work with bepinex, appears to be considered a bepinex bug
-                    //RedirectStandardOutput = true,
                     UseShellExecute = true
                 };
 
