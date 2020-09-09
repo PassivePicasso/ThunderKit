@@ -126,7 +126,10 @@ namespace PassivePicasso.ThunderKit.Config.Editor
                     stream.Seek(e_lfanew + 0x4, SeekOrigin.Begin);
                     var cpuType = binStream.ReadUInt16();
                     if (cpuType == 0x8664)
+                    {
                         settings.Is64Bit = true;
+                        return;
+                    }
                 }
             }
             settings.Is64Bit = false;
