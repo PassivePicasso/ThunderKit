@@ -113,14 +113,14 @@ namespace PassivePicasso.ThunderKit.Config.Editor
 
                 var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(assembly));
 
-                var destinationMetaData = Path.Combine(currentDir, "Assets", "Assemblies", $"{assembly}.meta");
+                var destinationMetaData = Path.Combine(currentDir, "Assets", "Assemblies", $"{Path.GetFileName(assembly)}.meta");
 
                 if (File.Exists(destinationFile)) File.Delete(destinationFile);
                 File.Copy(assembly, destinationFile);
 
                 var metaData = metaDataFiles.FirstOrDefault(md => md.Contains(filenameWithoutExtension));
                 if (!string.IsNullOrEmpty(metaData))
-                    File.WriteAllText(destinationMetaData, metaData);
+                    File.WriteAllText(destinationMetaData, File.ReadAllText(metaData));
                 else
                     File.WriteAllText(destinationMetaData, MetaData);
             }
