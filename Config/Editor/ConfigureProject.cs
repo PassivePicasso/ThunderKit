@@ -91,22 +91,24 @@ namespace PassivePicasso.ThunderKit.Config.Editor
         {
             Debug.Log("Acquiring references");
             var locations = AppDomain.CurrentDomain.GetAssemblies().Where(asm => !asm.IsDynamic).Select(asm => asm.Location).ToArray();
-            
+
             var managedPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
             var pluginsPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
 
             var managedAssemblies = Directory.EnumerateFiles(managedPath, "*.dll");
             var plugins = Directory.EnumerateFiles(pluginsPath, "*.dll");
 
-            GetReferences(currentDir, Path.Combine(currentDir, "Assets", "Assemblies"), managedAssemblies, settings.additional_assemblies, locations.Union(settings.excluded_assemblies).ToArray());
-            GetReferences(currentDir, Path.Combine(currentDir, "Assets", "plugins"), plugins, settings.additional_plugins, settings.excluded_assemblies);
+            GetReferences(currentDir, Path.Combine(currentDir, "Assets", "Assemblies"), managedAssemblies, settings.additional_assemblies, locations.Union(settings.excluded_assemblies).ToArray(), settings.assembly_metadata);
+            GetReferences(currentDir, Path.Combine(currentDir, "Assets", "plugins"), plugins, settings.additional_plugins, settings.excluded_assemblies, settings.assembly_metadata);
         }
 
-        private static void GetReferences(string currentDir, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> whiteList, IEnumerable<string> blackList)
+        private static void GetReferences(string currentDir, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> whiteList, IEnumerable<string> blackList, IEnumerable<string> metaDataLocations)
         {
+            var metaDataFiles = metaDataLocations.SelectMany(location => Directory.EnumerateFiles(location, "*.meta", SearchOption.TopDirectoryOnly)).ToArray();
             foreach (var assembly in assemblies)
             {
-                Func<string, bool> matchingAssembly = enumerableAsm => enumerableAsm.Contains(Path.GetFileNameWithoutExtension(assembly));
+                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(assembly);
+                Func<string, bool> matchingAssembly = enumerableAsm => enumerableAsm.Contains(filenameWithoutExtension);
                 if (!whiteList.Any(matchingAssembly) && blackList.Any(matchingAssembly)) continue;
 
                 var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(assembly));
@@ -116,7 +118,11 @@ namespace PassivePicasso.ThunderKit.Config.Editor
                 if (File.Exists(destinationFile)) File.Delete(destinationFile);
                 File.Copy(assembly, destinationFile);
 
-                File.WriteAllText(destinationMetaData, MetaData);
+                var metaData = metaDataFiles.FirstOrDefault(md => md.Contains(filenameWithoutExtension));
+                if (!string.IsNullOrEmpty(metaData))
+                    File.WriteAllText(destinationMetaData, metaData);
+                else
+                    File.WriteAllText(destinationMetaData, MetaData);
             }
         }
 
