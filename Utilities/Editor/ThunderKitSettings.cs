@@ -25,6 +25,9 @@ namespace PassivePicasso.ThunderKit.Utilities
         public string GamePath;
 
         [SerializeField]
+        public string[] assembly_metadata;
+
+        [SerializeField]
         public string[] additional_plugins;
 
         [SerializeField]
