@@ -25,7 +25,17 @@ namespace PassivePicasso.ThunderKit.Utilities
         public string GamePath;
 
         [SerializeField]
+        public string[] additional_plugins;
+
+        [SerializeField]
+        public string[] additional_assemblies;
+
+        [SerializeField]
+        public string[] excluded_assemblies;
+
+        [SerializeField]
         public string[] deployment_exclusions;
+
 
         [SerializeField]
         public bool Is64Bit;
