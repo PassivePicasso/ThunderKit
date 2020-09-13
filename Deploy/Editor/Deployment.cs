@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditorInternal;
@@ -92,7 +91,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
         [OnOpenAsset]
         public static bool DoubleClickDeploy(int instanceID, int line)
         {
-            var instance = (Deployment)EditorUtility.InstanceIDToObject(instanceID);
+            if (!(EditorUtility.InstanceIDToObject(instanceID) is Deployment instance)) return false;
+
             if (instance.ExecuteOnDoubleClick) Deploy(instance);
 
             return instance.ExecuteOnDoubleClick;
