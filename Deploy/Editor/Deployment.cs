@@ -298,7 +298,9 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 
             manifestJson = manifestJson.Substring(1);
             manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
-            File.WriteAllText(Path.Combine(outputRoot, "manifest.json"), manifestJson);
+            File.WriteAllText(Path.Combine(pluginPath, "manifest.json"), manifestJson);
+            if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
+                File.WriteAllText(Path.Combine(outputRoot, "manifest.json"), manifestJson);
 
             var settings = ThunderKitSettings.GetOrCreateSettings();
             if (settings?.deployment_exclusions?.Any() ?? false)
