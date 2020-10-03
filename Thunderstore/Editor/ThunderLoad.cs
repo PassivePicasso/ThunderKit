@@ -13,10 +13,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
     public class ThunderLoad
     {
         const string ThunderstoreIO = "https://thunderstore.io";
-        const string PackageListApi = ThunderstoreIO + "/api/v2/package";
-        const string PackageApi = ThunderstoreIO + "/package/download";
+        const string PackageListApi = ThunderstoreIO + "/api/v1/package";
 
-        internal static List<Page> loadedPages = new List<Page>();
         internal static List<Package> loadedPackages = new List<Package>();
 
         [MenuItem("ThunderKit/Refresh Thunderstore")]
@@ -24,34 +22,13 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
         public static async void LoadPages()
         {
             loadedPackages.Clear();
-            loadedPages.Clear();
             using (WebClient client = new WebClient())
             {
-                Page page;
-                int pageIndex = 0;
-                do
-                {
-                    try
-                    {
-                        pageIndex++;
-                        Uri address = new Uri($"{PackageListApi}/?page={pageIndex}");
-                        var response = await client.DownloadStringTaskAsync(address);
-                        page = JsonUtility.FromJson<Page>(response);
-                        if (page == null || page.count == 0)
-                        {
-                            Debug.Log("No Thunderstore results found");
-                            return;
-                        }
-                        loadedPages.Add(page);
-                        loadedPackages.AddRange(page.results);
-                    }
-                    catch (Exception e)
-                    {
-                        break;
-                    }
-                } while (true);
+                var address = new Uri(PackageListApi);
+                var response = await client.DownloadStringTaskAsync(address);
+                var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
+                loadedPackages.AddRange(resultSet.results);
             }
-            //Debug.Log(loadedPackages.Select(pkg => pkg.latest.full_name).Aggregate((a, b) => $"{a}{Environment.NewLine}{b}"));
         }
 
         public static IEnumerable<Package> LookupPackage(string name, int pageIndex = 1, bool logStart = true) => loadedPackages.Where(package => IsMatch(package, name)).ToArray();
@@ -62,7 +39,9 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
             var compareOptions = CompareOptions.IgnoreCase;
             var nameMatch = comparer.IndexOf(package.name, name, compareOptions) >= 0;
             var fullNameMatch = comparer.IndexOf(package.full_name, name, compareOptions) >= 0;
-            var latestFullNameMatch = comparer.IndexOf(package.latest.full_name, name, compareOptions) >= 0;
+
+            var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
+            var latestFullNameMatch = comparer.IndexOf(latest.full_name, name, compareOptions) >= 0;
             return nameMatch || fullNameMatch || latestFullNameMatch;
         }
 
@@ -70,10 +49,9 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
         {
             using (WebClient client = new WebClient())
             {
-                var latest = package.latest;
-                var url = $"{PackageApi}/{package.owner}/{package.name}/{latest.version_number}/";
+                var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
 
-                return client.DownloadFileTaskAsync(url, filePath).ContinueWith(t => filePath);
+                return client.DownloadFileTaskAsync(latest.download_url, filePath).ContinueWith(t => filePath);
             }
         }
     }

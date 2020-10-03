@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+
 namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 {
     [Serializable]
@@ -7,13 +9,28 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
         public string name;
         public string full_name;
         public string owner;
+        public string version_number;
         public Uri package_url;
         public DateTimeOffset date_created;
         public DateTimeOffset date_updated;
         public long rating_score;
         public bool is_pinned;
         public bool is_deprecated;
-        public long total_downloads;
-        public LatestPackage latest;
+        public bool has_nsfw_content;
+        public string[] categories;
+        public string uuid4;
+        public VersionedPackage[] versions;
+        public VersionedPackage latest
+        {
+            get
+            {
+                if (latestPackage != null) return latestPackage;
+                latestPackage = versions.OrderByDescending(v => v.version_number).First();
+                return latestPackage;
+            }
+        }
+
+        public VersionedPackage latestPackage { get; private set; }
     }
+
 }
