@@ -10,9 +10,9 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
         public string full_name;
         public string owner;
         public string version_number;
-        public Uri package_url;
-        public DateTimeOffset date_created;
-        public DateTimeOffset date_updated;
+        public string package_url;
+        public DateTime date_created;
+        public DateTime date_updated;
         public long rating_score;
         public bool is_pinned;
         public bool is_deprecated;
