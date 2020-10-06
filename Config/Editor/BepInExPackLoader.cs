@@ -31,7 +31,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
             Debug.Log("Acquiring latest BepInExPack");
 
             var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
-            var bepinex = bepinexPacks.FirstOrDefault();
+            var bepinex = bepinexPacks.Where(package => !package.is_deprecated).FirstOrDefault();
 
             if (bepinex == null)
             {
