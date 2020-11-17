@@ -45,13 +45,16 @@ namespace PassivePicasso.ThunderKit.Utilities
         [SerializeField]
         public bool Is64Bit;
 
-        private void Awake()
+modi
+        [InitializeOnLoadMethod]
+        static void SetupPostCompilationAssemblyCopy()
         {
             CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
             CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
+            CopyAssemblyCSharp(null, null);
         }
 
-        private void CopyAssemblyCSharp(string arg1, CompilerMessage[] arg2)
+        static void CopyAssemblyCSharp(string arg1, CompilerMessage[] arg2)
         {
             string currentDir = Directory.GetCurrentDirectory();
             var assemblycsharp = Path.Combine(currentDir, "Assets", "Assemblies", "Assembly-CSharp.dll");
