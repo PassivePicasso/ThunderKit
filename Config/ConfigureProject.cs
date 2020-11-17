@@ -57,7 +57,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
             string currentDir = Directory.GetCurrentDirectory();
             var foundExecutable = string.IsNullOrEmpty(settings.GamePath)
                                 ? false
-                                : Directory.EnumerateFiles(settings.GamePath ?? currentDir, settings.GameExecutable).Any();
+                                : Directory.EnumerateFiles(settings.GamePath ?? currentDir, Path.GetFileName(settings.GameExecutable)).Any();
 
             while (!foundExecutable)
             {
