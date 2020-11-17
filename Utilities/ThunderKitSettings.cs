@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEditor.Compilation;
+using System.IO;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -42,6 +44,21 @@ namespace PassivePicasso.ThunderKit.Utilities
 
         [SerializeField]
         public bool Is64Bit;
+
+        private void Awake()
+        {
+            CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
+            CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
+        }
+
+        private void CopyAssemblyCSharp(string arg1, CompilerMessage[] arg2)
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+            var assemblycsharp = Path.Combine(currentDir, "Assets", "Assemblies", "Assembly-CSharp.dll");
+            var outputPath = Path.Combine(currentDir, "Library", "ScriptAssemblies", "Assembly-CSharp.dll");
+            if (File.Exists(assemblycsharp))
+                File.Copy(assemblycsharp, outputPath, true);
+        }
 
         public static ThunderKitSettings GetOrCreateSettings()
         {
