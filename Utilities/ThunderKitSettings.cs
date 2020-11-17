@@ -45,7 +45,6 @@ namespace PassivePicasso.ThunderKit.Utilities
         [SerializeField]
         public bool Is64Bit;
 
-modi
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
