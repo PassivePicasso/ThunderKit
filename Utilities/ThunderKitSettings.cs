@@ -55,9 +55,15 @@ namespace PassivePicasso.ThunderKit.Utilities
 
         static void CopyAssemblyCSharp(string arg1, CompilerMessage[] arg2)
         {
+            CopyAssembly("Assembly-CSharp-firstpass.dll");
+            CopyAssembly("Assembly-CSharp.dll");
+        }
+
+        private static void CopyAssembly(string assemblyName)
+        {
             string currentDir = Directory.GetCurrentDirectory();
-            var assemblycsharp = Path.Combine(currentDir, "Assets", "Assemblies", "Assembly-CSharp.dll");
-            var outputPath = Path.Combine(currentDir, "Library", "ScriptAssemblies", "Assembly-CSharp.dll");
+            var assemblycsharp = Path.Combine(currentDir, "Assets", "Assemblies", assemblyName);
+            var outputPath = Path.Combine(currentDir, "Library", "ScriptAssemblies", assemblyName);
             if (File.Exists(assemblycsharp))
                 File.Copy(assemblycsharp, outputPath, true);
         }
