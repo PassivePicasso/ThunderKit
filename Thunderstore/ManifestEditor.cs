@@ -27,7 +27,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 
         private string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Dependencies");
 
-        private SerializedProperty versionNumberField, websiteUrlField, descriptionField, dependencies;
+        private SerializedProperty authorField, versionNumberField, websiteUrlField, descriptionField, dependencies;
 
         /// <summary>
         /// False array element indicates an active installation
@@ -37,6 +37,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
         private bool[] activeInstallations;
         private void OnEnable()
         {
+            authorField = serializedObject.FindProperty("author");
             versionNumberField = serializedObject.FindProperty("version_number");
             websiteUrlField = serializedObject.FindProperty("website_url");
             descriptionField = serializedObject.FindProperty("description");
@@ -54,6 +55,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
             if (manifest.dependencies == null)
                 manifest.dependencies = new List<string>();
 
+            AddField(authorField);
             AddField(versionNumberField);
             AddField(websiteUrlField);
             AddField(descriptionField);
@@ -69,6 +71,39 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 
             GUI.Box(rect, "Manifest Dependencies");
             var boxRect = rect;
+            if (Event.current.type == EventType.DragUpdated
+                && rect.Contains(Event.current.mousePosition)
+                && DragAndDrop.objectReferences.OfType<Manifest>().Any())
+            {
+                //Debug.Log("Dragging Manifests");
+                foreach (var dependence in DragAndDrop.objectReferences.OfType<Manifest>())
+                {
+                    if (manifest.dependencies.Any(dp => dp.StartsWith($"{dependence.author}-{dependence.name}")))
+                    {
+                        DragAndDrop.visualMode = DragAndDropVisualMode.None;
+                        break;
+                    }
+                    else
+                        DragAndDrop.visualMode = DragAndDropVisualMode.Link;
+                }
+            }
+
+            if (Event.current.type == EventType.DragPerform && DragAndDrop.objectReferences.OfType<Manifest>().Any())
+            {
+                //Debug.Log("Dropping Manifests");
+                foreach (var dependence in DragAndDrop.objectReferences.OfType<Manifest>())
+                {
+                    string dependency = $"{dependence.author}-{dependence.name}-{dependence.version_number}";
+                    if (manifest.dependencies.Any(dp => dp.StartsWith($"{dependence.author}-{dependence.name}")))
+                        manifest.dependencies.RemoveAll(dp => dp.StartsWith($"{dependence.author}-{dependence.name}"));
+
+                    manifest.dependencies.Add(dependency);
+                    DragAndDrop.AcceptDrag();
+                }
+
+                return;
+            }
+
 
             for (int i = 0; i < manifest.dependencies.Count; i++)
             {
