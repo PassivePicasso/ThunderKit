@@ -106,11 +106,16 @@ namespace PassivePicasso.ThunderKit.Config.Editor
 
         private static void GetReferences(string currentDir, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> whiteList, IEnumerable<string> blackList, IEnumerable<string> metaDataLocations)
         {
-            var metaDataFiles = metaDataLocations?.SelectMany(location =>
+            if (whiteList == null) whiteList = Enumerable.Empty<string>();
+            if (assemblies == null) assemblies = Enumerable.Empty<string>();
+            if (blackList == null) blackList = Enumerable.Empty<string>();
+            if (metaDataLocations == null) metaDataLocations = Enumerable.Empty<string>();
+
+            var metaDataFiles = metaDataLocations.SelectMany(location =>
             {
                 IEnumerable<string> enumerable = Directory.EnumerateFiles(location, "*.meta", SearchOption.TopDirectoryOnly);
                 return enumerable;
-            }).ToArray() ?? Enumerable.Empty<string>();
+            }).ToArray();
 
             foreach (var assembly in assemblies)
             {
