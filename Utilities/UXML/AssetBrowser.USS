@@ -1,0 +1,52 @@
+#AssetBrowserRoot{
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+
+#asset-list-box {
+	position: relative;
+	margin-left: -1;
+	margin-top: 1;
+	margin-right: 1;
+	margin-bottom: 1;
+	flex-grow: 1;
+	flex-shrink: 0;
+}
+
+#bundle-list-box {
+	position: relative;
+	margin-left: 1;
+	margin-top: 1;
+	margin-right: 0;
+	margin-bottom: 1;
+	min-width: 150;
+	flex-grow: 0;
+	flex-shrink: 1;
+}
+
+.section-label {
+	color: #fff;
+}
+
+.title-area {
+	background-image: none;
+	background-color: #888;
+	border-color: #444;
+	margin-left: 1;
+	margin-top: 1;
+	margin-right: 1;
+	margin-bottom: 1;
+}
+
+.layout-column {
+	background-image: none;
+	position: absolute;
+	left: 2;
+	top: 2;
+	right: 2;
+	bottom: 2;
+	flex-direction: row;
+}
