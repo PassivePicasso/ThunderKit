@@ -14,7 +14,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
 {
     public class ConfigureProject
     {
-        [MenuItem("ThunderKit/Configure ThunderKit")]
+        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Configure ThunderKit")]
         private static void Configure()
         {
             string currentDir = Directory.GetCurrentDirectory();

@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,7 +18,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 
         internal static List<Package> loadedPackages = new List<Package>();
 
-        [MenuItem("ThunderKit/Refresh Thunderstore")]
+        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Refresh Thunderstore")]
         [InitializeOnLoadMethod]
         public static async void LoadPages()
         {
