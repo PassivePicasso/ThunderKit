@@ -68,26 +68,19 @@ namespace PassivePicasso.ThunderKit.Utilities
                 File.Copy(assemblycsharp, outputPath, true);
         }
 
-        public static ThunderKitSettings GetOrCreateSettings()
-        {
-            var settings = AssetDatabase.LoadAssetAtPath<ThunderKitSettings>(SettingsPath);
-            if (settings == null)
+        public static ThunderKitSettings GetOrCreateSettings() =>
+            ScriptableHelper.EnsureAsset<ThunderKitSettings>(SettingsPath, settings =>
             {
-                settings = CreateInstance<ThunderKitSettings>();
                 settings.GamePath = "";
                 settings.deployment_exclusions = new string[0];
-                AssetDatabase.CreateAsset(settings, SettingsPath);
-                AssetDatabase.SaveAssets();
-            }
-            return settings;
-        }
+            });
 
         public static SerializedObject GetSerializedSettings()
         {
             return new SerializedObject(GetOrCreateSettings());
         }
 
-        [MenuItem("ThunderKit/Create Settings")]
+        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Create Settings")]
         public static void CreateSettings()
         {
             GetOrCreateSettings();

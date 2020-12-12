@@ -25,7 +25,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
     {
         private const string playerConnectionDebug1 = "player-connection-debug=1";
 
-        [MenuItem("ThunderKit/Setup Debug Build")]
+        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Setup Debug Build")]
         public static void Execute()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings();
