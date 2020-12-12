@@ -90,7 +90,9 @@ namespace PassivePicasso.ThunderKit.Config.Editor
         private static void GetReferences(string currentDir, ThunderKitSettings settings)
         {
             Debug.Log("Acquiring references");
-            var locations = AppDomain.CurrentDomain.GetAssemblies().Where(asm => !asm.IsDynamic).Select(asm => asm.Location).ToArray();
+            var blackList = AppDomain.CurrentDomain.GetAssemblies().Where(asm => !asm.IsDynamic).Select(asm => asm.Location);
+            if (settings?.excluded_assemblies != null)
+                blackList = blackList.Union(settings?.excluded_assemblies).ToArray();
 
             var managedPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
             var pluginsPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
@@ -98,7 +100,7 @@ namespace PassivePicasso.ThunderKit.Config.Editor
             var managedAssemblies = Directory.EnumerateFiles(managedPath, "*.dll");
             var plugins = Directory.EnumerateFiles(pluginsPath, "*.dll");
 
-            GetReferences(currentDir, Path.Combine(currentDir, "Assets", "Assemblies"), managedAssemblies, settings.additional_assemblies, locations.Union(settings.excluded_assemblies).ToArray(), settings.assembly_metadata);
+            GetReferences(currentDir, Path.Combine(currentDir, "Assets", "Assemblies"), managedAssemblies, settings.additional_assemblies, blackList, settings.assembly_metadata);
             GetReferences(currentDir, Path.Combine(currentDir, "Assets", "plugins"), plugins, settings.additional_plugins, settings.excluded_assemblies, settings.assembly_metadata);
         }
 
