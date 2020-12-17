@@ -11,7 +11,7 @@ namespace PassivePicasso.ThunderKit.Utilities
         public const string ThunderKitContextRoot = "Assets/ThunderKit/";
         public const string ThunderKitMenuRoot = "ThunderKit/";
 
-        public static void CreateAsset<T>(Func<string> overrideName = null) where T : ScriptableObject
+        public static void SelectNewAsset<T>(Func<string> overrideName = null) where T : ScriptableObject
         {
             T asset = ScriptableObject.CreateInstance<T>();
 

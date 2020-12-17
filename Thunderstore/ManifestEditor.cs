@@ -71,9 +71,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 
             GUI.Box(rect, "Manifest Dependencies");
             var boxRect = rect;
-            if (Event.current.type == EventType.DragUpdated
-                && rect.Contains(Event.current.mousePosition)
-                && DragAndDrop.objectReferences.OfType<Manifest>().Any())
+            if (Event.current.type == EventType.DragUpdated && rect.Contains(Event.current.mousePosition) && DragAndDrop.objectReferences.OfType<Manifest>().Any())
             {
                 //Debug.Log("Dragging Manifests");
                 foreach (var dependence in DragAndDrop.objectReferences.OfType<Manifest>())

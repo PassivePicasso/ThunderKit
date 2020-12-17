@@ -25,10 +25,10 @@ namespace PassivePicasso.ThunderKit.Utilities
         [InitializeOnLoadMethod]
         private static void AssertFileWatcher()
         {
-            if (fileSystemWatcher == null)
+            var (templateRoot, assetPath, sheetPath) = GetPaths();
+            if (Directory.Exists(templateRoot) && fileSystemWatcher == null)
             {
                 fileSystemWatcher = new FileSystemWatcher();
-                var (templateRoot, assetPath, sheetPath) = GetPaths();
                 fileSystemWatcher.Path = templateRoot;
                 fileSystemWatcher.Filter = $"{AssetBrowserTemplateName}.*";
                 fileSystemWatcher.Changed += FileSystemWatcher_Changed;

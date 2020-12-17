@@ -15,7 +15,7 @@ namespace PassivePicasso.ThunderKit.Utilities
         [MenuItem(ThunderKitContextRoot + nameof(BundleAsset), false)]
         public static void Create()
         {
-            CreateAsset<BundleAsset>(() => Selection.activeObject.name);
+            SelectNewAsset<BundleAsset>(() => Selection.activeObject.name);
             var path = AssetDatabase.GetAssetPath(Selection.activeObject);
             var directoryPath = Path.GetDirectoryName(path);
             var outputDirName = $"{Selection.activeObject.name}-Assets";
