@@ -7,7 +7,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
     public class CreateAsset
     {
         [MenuItem(ThunderKitContextRoot + nameof(Deployment))]
-        public static void Create() => CreateAsset<Deployment>();
+        public static void Create() => SelectNewAsset<Deployment>();
     }
 }
 #endif

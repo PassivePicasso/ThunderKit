@@ -294,10 +294,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
             CopyReferences(deployment.Patchers, patcherPath, deployment);
             CopyReferences(deployment.Monomod, monomodPath, deployment);
 
-            var manifestJson = JsonUtility.ToJson(deployment.Manifest);
-
-            manifestJson = manifestJson.Substring(1);
-            manifestJson = $"{{\"name\":\"{deployment.Manifest.name}\",{manifestJson}";
+            var manifestJson = deployment.Manifest.RenderJson();
             File.WriteAllText(Path.Combine(pluginPath, "manifest.json"), manifestJson);
             if (deployment.DeploymentOptions.HasFlag(DeploymentOptions.Package))
                 File.WriteAllText(Path.Combine(outputRoot, "manifest.json"), manifestJson);
