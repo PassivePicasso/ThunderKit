@@ -1,4 +1,6 @@
-﻿using PassivePicasso.ThunderKit.Deploy.Editor;
+﻿#if UNITY_EDITOR
+
+using PassivePicasso.ThunderKit.Deploy.Editor;
 using PassivePicasso.ThunderKit.Deploy.Pipelines;
 using PassivePicasso.ThunderKit.Utilities;
 using System;
@@ -132,3 +134,5 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         }
     }
 }
+
+#endif

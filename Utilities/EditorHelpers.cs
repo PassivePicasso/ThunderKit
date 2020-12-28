@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 
 
 namespace PassivePicasso.ThunderKit.Utilities
@@ -17,3 +18,4 @@ namespace PassivePicasso.ThunderKit.Utilities
         }
     }
 }
+#endif

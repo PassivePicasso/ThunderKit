@@ -1,4 +1,5 @@
-﻿using PassivePicasso.ThunderKit.Utilities;
+﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.Utilities;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -37,3 +38,4 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
         }
     }
 }
+#endif
