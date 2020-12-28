@@ -1,4 +1,5 @@
-﻿using PassivePicasso.ThunderKit.Deploy.Gui;
+﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.Deploy.Gui;
 
 namespace PassivePicasso.ThunderKit.Thunderstore
 {
@@ -6,3 +7,4 @@ namespace PassivePicasso.ThunderKit.Thunderstore
     {
     }
 }
+#endif
