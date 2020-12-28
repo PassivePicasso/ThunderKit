@@ -35,6 +35,32 @@ namespace PassivePicasso.ThunderKit.Utilities
             Selection.activeObject = asset;
         }
 
+        public static void SelectNewAsset(Type t, Func<string> overrideName = null)
+        {
+            if (!typeof(ScriptableObject).IsAssignableFrom(t)) return;
+
+            var asset = ScriptableObject.CreateInstance(t);
+
+            string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            if (path == "")
+            {
+                path = "Assets";
+            }
+            else if (Path.GetExtension(path) != "")
+            {
+                path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
+            }
+            var name = overrideName == null ? t.Name : overrideName();
+            string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath($"{path}/{name}.asset");
+
+            AssetDatabase.CreateAsset(asset, assetPathAndName);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            EditorUtility.FocusProjectWindow();
+            Selection.activeObject = asset;
+        }
+
         public static T EnsureAsset<T>(string assetPath, Action<T> initializer) where T : ScriptableObject
         {
             var settings = AssetDatabase.LoadAssetAtPath<T>(assetPath);

@@ -1,33 +1,28 @@
 ﻿#if UNITY_EDITOR
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEditor;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using EGL = UnityEditor.EditorGUILayout;
 using EGU = UnityEditor.EditorGUIUtility;
 using GL = UnityEngine.GUILayout;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Editor
+namespace PassivePicasso.ThunderKit.Thunderstore
 {
     [CustomEditor(typeof(Manifest))]
     public class ManifestEditor : UnityEditor.Editor
     {
         private const string ROS_Temp = "ros_temp";
         readonly static string TempDir = Path.Combine(Directory.GetCurrentDirectory(), ROS_Temp);
-        SearchField searchField;
-        string searchString;
-        List<Package> searchResults;
 
-        private volatile bool searching = false, installing = false;
+        PackageSearchSuggest suggestor;
 
         private string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Dependencies");
 
-        private SerializedProperty authorField, versionNumberField, websiteUrlField, descriptionField, dependencies;
+        private SerializedProperty authorField, versionNumberField, websiteUrlField, descriptionField, dependenciesField,
+                                   redistributablesField, patchersField, pluginsField, monomodField, readmeField, iconField;
 
         /// <summary>
         /// False array element indicates an active installation
@@ -37,37 +32,72 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
         private bool[] activeInstallations;
         private void OnEnable()
         {
-            authorField = serializedObject.FindProperty("author");
-            versionNumberField = serializedObject.FindProperty("version_number");
-            websiteUrlField = serializedObject.FindProperty("website_url");
-            descriptionField = serializedObject.FindProperty("description");
-            dependencies = serializedObject.FindProperty("dependencies");
+            authorField = serializedObject.FindProperty(nameof(Manifest.author));
+            versionNumberField = serializedObject.FindProperty(nameof(Manifest.version_number));
+            websiteUrlField = serializedObject.FindProperty(nameof(Manifest.website_url));
+            descriptionField = serializedObject.FindProperty(nameof(Manifest.description));
+            redistributablesField = serializedObject.FindProperty(nameof(Manifest.redistributables));
+            dependenciesField = serializedObject.FindProperty(nameof(Manifest.dependencies));
+            patchersField = serializedObject.FindProperty(nameof(Manifest.patchers));
+            pluginsField = serializedObject.FindProperty(nameof(Manifest.plugins));
+            monomodField = serializedObject.FindProperty(nameof(Manifest.monomod));
+            readmeField = serializedObject.FindProperty(nameof(Manifest.readme));
+            iconField = serializedObject.FindProperty(nameof(Manifest.icon));
+            suggestor = CreateInstance<PackageSearchSuggest>();
+            suggestor.Evaluate = EvaluateSuggestion;
+            suggestor.OnSuggestionGUI = RenderSuggestion;
         }
+        private void OnDisable()
+        {
+            DestroyImmediate(suggestor);
+        }
+
+        private bool RenderSuggestion(int arg1, Package package)
+        {
+            var manifest = target as Manifest;
+
+            if (manifest.dependencies.Contains(package.latest.full_name))
+                return false;
+
+            if (GL.Button(package.name))
+            {
+                var dependencySlot = dependenciesField.GetArrayElementAtIndex(dependenciesField.arraySize++);
+                dependencySlot.stringValue = package.latest.full_name;
+                dependencySlot.serializedObject.SetIsDifferentCacheDirty();
+                dependencySlot.serializedObject.ApplyModifiedProperties();
+                suggestor.Cleanup();
+                return true;
+            }
+
+            return false;
+        }
+
+        private IEnumerable<Package> EvaluateSuggestion(string searchString) => ThunderLoad.LookupPackage(searchString);
 
         public override void OnInspectorGUI()
         {
-            if (searchField == null)
-                searchField = new SearchField { autoSetFocusOnFindCommand = true };
-
             var manifest = target as Manifest;
             serializedObject.Update();
 
             if (manifest.dependencies == null)
                 manifest.dependencies = new List<string>();
 
+            AddField(iconField);
             AddField(authorField);
             AddField(versionNumberField);
             AddField(websiteUrlField);
             AddField(descriptionField);
+            AddField(readmeField);
+            AddField(redistributablesField);
+            AddField(patchersField);
+            AddField(pluginsField);
+            AddField(monomodField);
 
             serializedObject.SetIsDifferentCacheDirty();
             serializedObject.ApplyModifiedProperties();
 
-            var rect = EGL.GetControlRect(true, EGU.singleLineHeight);
-            GUI.Label(rect, "Manifest Dependencies");
-
             var depCount = manifest.dependencies.Count;
-            rect = EGL.GetControlRect(true, (manifest.dependencies.Count + 1) * EGU.singleLineHeight * 1.5f);
+            var rect = EGL.GetControlRect(true, (manifest.dependencies.Count + 1) * EGU.singleLineHeight * 1.5f);
 
             GUI.Box(rect, "Manifest Dependencies");
             var boxRect = rect;
@@ -105,7 +135,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 
             for (int i = 0; i < manifest.dependencies.Count; i++)
             {
-                var dependencySlot = dependencies.GetArrayElementAtIndex(i);
+                var dependencySlot = dependenciesField.GetArrayElementAtIndex(i);
 
                 var size = new Vector2(boxRect.size.x - EGU.singleLineHeight * 2, EGU.singleLineHeight);
                 size = new Vector2(size.x * 1.5f, size.y * 1.5f);
@@ -122,11 +152,11 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
 
                     if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
 
-                    dependencies.DeleteArrayElementAtIndex(i);
+                    dependenciesField.DeleteArrayElementAtIndex(i);
 
-                    dependencies.serializedObject.SetIsDifferentCacheDirty();
+                    dependenciesField.serializedObject.SetIsDifferentCacheDirty();
 
-                    dependencies.serializedObject.ApplyModifiedProperties();
+                    dependenciesField.serializedObject.ApplyModifiedProperties();
 
                     AssetDatabase.Refresh();
                 }
@@ -168,7 +198,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
                         using (var archive = new ZipArchive(fileStream))
                             archive.ExtractToDirectory(Path.Combine(dependencyPath));
                     }
-                    installing = true;
                     for (int i = 0; i < packages.Count; i++)
                         Install(packages[i], i);
                 }
@@ -177,60 +206,25 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Editor
             {
                 AssetDatabase.Refresh();
                 activeInstallations = null;
-                installing = false;
-                Directory.Delete(TempDir, true);
+                if (Directory.Exists(TempDir))
+                    Directory.Delete(TempDir, true);
             }
 
-            rect = EGL.GetControlRect(true, EGU.singleLineHeight);
-
-            var labelRect = new Rect(rect.position,
-                            new Vector2(EGU.labelWidth, EGU.singleLineHeight));
-
-            var fieldRect = new Rect(rect.position + Vector2.right * EGU.labelWidth,
-                            rect.size - Vector2.right * EGU.labelWidth);
-
-            GUI.Label(labelRect, "Dependency Search");
-
-
-            searchString = searchField.OnGUI(fieldRect, searchString);
-
-            if (Event.current.isKey && Event.current.keyCode == KeyCode.Return && searchField.HasFocus())
-            {
-                searchResults = ThunderLoad.LookupPackage(searchString).ToList();
-                searching = true;
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(searchString)) searchResults = null;
-
-                if (searchResults != null)
-                {
-                    EGL.BeginVertical();
-
-                    foreach (var result in searchResults)
-                    {
-                        if (manifest.dependencies.Contains(result.latest.full_name))
-                            continue;
-                        if (GL.Button(result.name))
-                        {
-                            var dependencySlot = dependencies.GetArrayElementAtIndex(dependencies.arraySize++);
-                            dependencySlot.stringValue = result.latest.full_name;
-                            dependencySlot.serializedObject.SetIsDifferentCacheDirty();
-                            dependencySlot.serializedObject.ApplyModifiedProperties();
-                        }
-                    }
-                    searching = false;
-                    EGL.EndVertical();
-                }
-            }
+            var alignment = GUI.skin.button.alignment;
+            var margin = GUI.skin.button.margin;
+            GUI.skin.button.alignment = TextAnchor.MiddleLeft;
+            GUI.skin.button.margin = new RectOffset(1, 1, 1, 0);
+            suggestor.OnSuggestGUI("Dependency Search");
+            GUI.skin.button.alignment = alignment;
+            GUI.skin.button.margin = margin;
         }
-
-        public override bool RequiresConstantRepaint() => searching || installing;
 
         private void AddField(SerializedProperty property)
         {
             var rect = EGL.GetControlRect(true, EGU.singleLineHeight);
-            EditorGUI.PropertyField(rect, property);
+            EditorGUI.PropertyField(rect, property, property.isArray);
+            if (property.isExpanded)
+                EGL.GetControlRect(true, EGU.singleLineHeight * (property.arraySize + 1));
         }
 
         private static string GetZipFileName(Package package) => GetZipFileName(package.latest.full_name);

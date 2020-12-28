@@ -5,7 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Editor
+namespace PassivePicasso.ThunderKit.Thunderstore
 {
     using static ScriptableHelper;
     public class CreateManifest

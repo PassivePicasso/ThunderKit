@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Deploy.Editor
+namespace PassivePicasso.ThunderKit.Utilities
 {
 	public class EnumFlagAttribute : PropertyAttribute
 	{

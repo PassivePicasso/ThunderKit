@@ -1,7 +1,8 @@
 {
     "name": "ThunderKit.Thunderstore",
     "references": [
-        "ThunderKit.Utilities"
+        "ThunderKit.Utilities",
+        "ThunderKit.Deploy"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

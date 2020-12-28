@@ -8,11 +8,12 @@ namespace PassivePicasso.ThunderKit.Utilities
     using static ScriptableHelper;
     public class BundleAsset : ScriptableObject
     {
+        private const string BundleAssetMenuPath = ThunderKitContextRoot + nameof(BundleAsset);
 
-        [MenuItem(ThunderKitContextRoot + nameof(BundleAsset), true)]
+        [MenuItem(BundleAssetMenuPath, true)]
         public static bool CanCreate() => ".manifest".Equals(Path.GetExtension(AssetDatabase.GetAssetPath(Selection.activeObject)));
 
-        [MenuItem(ThunderKitContextRoot + nameof(BundleAsset), false)]
+        [MenuItem(BundleAssetMenuPath, false)]
         public static void Create()
         {
             SelectNewAsset<BundleAsset>(() => Selection.activeObject.name);

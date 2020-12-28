@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Editor
+namespace PassivePicasso.ThunderKit.Thunderstore
 {
     [Serializable]
     public partial class Package

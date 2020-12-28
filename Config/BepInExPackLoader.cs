@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Thunderstore.Editor;
+using PassivePicasso.ThunderKit.Thunderstore;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -10,7 +10,7 @@ using UnityEngine;
 using Directory = System.IO.Directory;
 using Path = System.IO.Path;
 
-namespace PassivePicasso.ThunderKit.Config.Editor
+namespace PassivePicasso.ThunderKit.Config
 {
     public class BepInExPackLoader
     {
