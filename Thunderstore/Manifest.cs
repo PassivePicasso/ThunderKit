@@ -1,4 +1,5 @@
-﻿using PassivePicasso.ThunderKit.Utilities;
+﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.Utilities;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
@@ -35,3 +36,4 @@ namespace PassivePicasso.ThunderKit.Thunderstore
 
     }
 }
+#endif

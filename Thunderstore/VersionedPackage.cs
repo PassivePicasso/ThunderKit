@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 namespace PassivePicasso.ThunderKit.Thunderstore
 {
 
@@ -19,3 +20,4 @@ namespace PassivePicasso.ThunderKit.Thunderstore
         public string uuid4;
     }
 }
+#endif
