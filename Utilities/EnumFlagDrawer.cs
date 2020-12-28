@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-namespace PassivePicasso.ThunderKit.Deploy.Editor
+namespace PassivePicasso.ThunderKit.Utilities
 {
 	using System;
 	using System.Reflection;
@@ -21,7 +21,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Editor
 			EditorGUI.BeginChangeCheck();
 			EditorGUI.BeginProperty(position, label, property);
 
-			Enum enumNew = EditorGUI.EnumFlagsField(position, propName, targetEnum);
+			Enum enumNew = EditorGUI.EnumFlagsField(position, ObjectNames.NicifyVariableName(propName), targetEnum);
 
 			EditorGUI.EndProperty();
             if (EditorGUI.EndChangeCheck())

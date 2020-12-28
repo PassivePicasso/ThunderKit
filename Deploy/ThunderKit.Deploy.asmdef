@@ -1,7 +1,6 @@
 {
     "name": "ThunderKit.Deploy",
     "references": [
-        "ThunderKit.Thunderstore",
         "ThunderKit.Utilities"
     ],
     "optionalUnityReferences": [],

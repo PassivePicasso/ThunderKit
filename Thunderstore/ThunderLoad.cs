@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Editor
+namespace PassivePicasso.ThunderKit.Thunderstore
 {
     public class ThunderLoad
     {
