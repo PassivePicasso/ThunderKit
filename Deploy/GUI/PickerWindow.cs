@@ -83,12 +83,12 @@ namespace PassivePicasso.ThunderKit.Deploy.Gui
                 else
                     offset--;
 
-                offset = Mathf.Clamp(offset, 0, options.Count - (visibleItemCount) - 1);
+                offset = Mathf.Clamp(offset, 0, (options.Count - visibleItemCount) - 1);
                 Repaint();
             }
 
             if (options == null || !options.Any()) return;
-            for (int i = offset; i < offset + visibleItemCount; i++)
+            for (int i = offset; i < Mathf.Clamp(offset + visibleItemCount, 0, options.Count); i++)
             {
                 var result = options[i];
                 if (OnItemGUI?.Invoke(i, result) == true) break;
