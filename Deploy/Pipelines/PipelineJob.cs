@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 
 namespace PassivePicasso.ThunderKit.Deploy.Pipelines
 {
@@ -9,3 +10,4 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
         public abstract void Execute(Pipeline pipeline);
     }
 }
+#endif

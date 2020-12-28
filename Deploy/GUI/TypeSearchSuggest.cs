@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 
 namespace PassivePicasso.ThunderKit.Deploy.Gui
 {
@@ -7,3 +8,4 @@ namespace PassivePicasso.ThunderKit.Deploy.Gui
        
     }
 }
+#endif
