@@ -21,6 +21,7 @@ namespace PassivePicasso.ThunderKit.Config
         readonly static string ReferencesPath = Path.Combine(TempDir, Referenced);
         readonly static string PluginsPath = Path.Combine("Assets", "plugins");
         readonly static string BepInExPath = Path.Combine(PluginsPath, "BepInEx.dll");
+        readonly static string BepInExPreloaderPath = Path.Combine(PluginsPath, "BepInEx.Preloader.dll");
         readonly static string HarmonyPath = Path.Combine(PluginsPath, "0Harmony.dll");
         readonly static string RuntimeDetourPath = Path.Combine(PluginsPath, "MonoMod.RuntimeDetour.dll");
         readonly static string UtilsPath = Path.Combine(PluginsPath, "MonoMod.Utils.dll");
@@ -67,12 +68,14 @@ namespace PassivePicasso.ThunderKit.Config
                 archive.ExtractToDirectory(extractedDir);
 
                 var bepinexDll = Directory.GetFiles(extractedDir, "BepInEx.dll", SearchOption.AllDirectories).First();
+                var bepInExPreloaderDll = Directory.GetFiles(extractedDir, "BepInEx.Preloader.dll", SearchOption.AllDirectories).First();
                 var harmonyDll = Directory.GetFiles(extractedDir, "0Harmony.dll", SearchOption.AllDirectories).First();
                 var RuntimeDetourDll = Directory.GetFiles(extractedDir, "MonoMod.RuntimeDetour.dll", SearchOption.AllDirectories).First();
                 var UtilsDll = Directory.GetFiles(extractedDir, "MonoMod.Utils.dll", SearchOption.AllDirectories).First();
                 var cecilDll = Directory.GetFiles(extractedDir, "Mono.Cecil.dll", SearchOption.AllDirectories).First();
 
                 File.Copy(bepinexDll, BepInExPath, true);
+                File.Copy(bepInExPreloaderDll, BepInExPreloaderPath, true);
                 File.Copy(harmonyDll, HarmonyPath, true);
                 File.Copy(RuntimeDetourDll, RuntimeDetourPath, true);
                 File.Copy(UtilsDll, UtilsPath, true);

@@ -46,13 +46,10 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             var manifest = (pipeline as ManifestPipeline).Manifest;
             var outputRoot/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
             var bepinexPackDir/* */= Path.Combine(outputRoot, "BepInExPack");
-            var bepinexDir/*     */= Path.Combine(outputRoot, "BepInExPack", "BepInEx");
-            
+            var bepinexDir/*     */= Path.Combine(bepinexPackDir, "BepInEx");
+
             if (CleanInstall || !Directory.Exists(bepinexPackDir))
             {
-                if (Directory.Exists(bepinexPackDir)) Directory.Delete(bepinexPackDir, true);
-                if (!Directory.Exists(bepinexPackDir)) Directory.CreateDirectory(bepinexPackDir);
-
                 var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
                 var bepinex = bepinexPacks.FirstOrDefault();
 
@@ -61,7 +58,11 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 
                 using (var fileStream = File.OpenRead(filePath))
                 using (var archive = new ZipArchive(fileStream))
-                    archive.ExtractToDirectory(Path.Combine(outputRoot, "BepInExPack"));
+                    archive.ExtractToDirectory(outputRoot);
+
+                if (File.Exists(Path.Combine(outputRoot, "icon.png"))) File.Delete(Path.Combine(outputRoot, "icon.png"));
+                if (File.Exists(Path.Combine(outputRoot, "manifest.json"))) File.Delete(Path.Combine(outputRoot, "manifest.json"));
+                if (File.Exists(Path.Combine(outputRoot, "README.md"))) File.Delete(Path.Combine(outputRoot, "README.md"));
 
                 Debug.Log("Rebuilt Bepinex dir");
             }
