@@ -37,7 +37,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             versionNumberField = serializedObject.FindProperty(nameof(Manifest.version_number));
             websiteUrlField = serializedObject.FindProperty(nameof(Manifest.website_url));
             descriptionField = serializedObject.FindProperty(nameof(Manifest.description));
-            redistributablesField = serializedObject.FindProperty(nameof(Manifest.redistributables));
+            redistributablesField = serializedObject.FindProperty(nameof(Manifest.unityPackages));
             assetBundlesField = serializedObject.FindProperty(nameof(Manifest.assetBundles));
             dependenciesField = serializedObject.FindProperty(nameof(Manifest.dependencies));
             patchersField = serializedObject.FindProperty(nameof(Manifest.patchers));

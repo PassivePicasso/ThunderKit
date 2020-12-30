@@ -15,7 +15,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
         public string website_url;
         public string description;
         public List<string> dependencies;
-        public UnityPackage[] redistributables;
+        public UnityPackage[] unityPackages;
 
         public AssemblyDefinitionAsset[] plugins;
         public AssemblyDefinitionAsset[] patchers;
