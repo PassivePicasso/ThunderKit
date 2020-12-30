@@ -44,29 +44,31 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 
         private async void ExecuteAsync(Pipeline pipeline)
         {
-            var manifest = (pipeline as ManifestPipeline).Manifest;
             var outputRoot/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
             var bepinexPackDir/* */= Path.Combine(outputRoot, "BepInExPack");
             var bepinexDir/*     */= Path.Combine(bepinexPackDir, "BepInEx");
 
-            if (CleanInstall || !Directory.Exists(bepinexPackDir))
-            {
-                var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
-                var bepinex = bepinexPacks.FirstOrDefault();
+            var bepinexPacks = ThunderLoad.LookupPackage("BepInExPack");
+            var bepinex = bepinexPacks.FirstOrDefault();
 
-                var filePath = $"{bepinex.full_name}.zip";
+            var filePath = Path.Combine(outputRoot, $"{bepinex.full_name}.zip");
+            if (!File.Exists(filePath))
                 await ThunderLoad.DownloadPackageAsync(bepinex, filePath);
 
-                using (var fileStream = File.OpenRead(filePath))
-                using (var archive = new ZipArchive(fileStream))
-                    archive.ExtractToDirectory(outputRoot);
-
-                if (File.Exists(Path.Combine(outputRoot, "icon.png"))) File.Delete(Path.Combine(outputRoot, "icon.png"));
-                if (File.Exists(Path.Combine(outputRoot, "manifest.json"))) File.Delete(Path.Combine(outputRoot, "manifest.json"));
-                if (File.Exists(Path.Combine(outputRoot, "README.md"))) File.Delete(Path.Combine(outputRoot, "README.md"));
-
-                Debug.Log("Rebuilt Bepinex dir");
+            using (var fileStream = File.OpenRead(filePath))
+            using (var archive = new ZipArchive(fileStream))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    string outputFile = Path.Combine(outputRoot, entry.FullName);
+                    if (File.Exists(outputFile)) File.Delete(outputFile);
+                }
+                archive.ExtractToDirectory(outputRoot);
             }
+
+            if (File.Exists(Path.Combine(outputRoot, "icon.png"))) File.Delete(Path.Combine(outputRoot, "icon.png"));
+            if (File.Exists(Path.Combine(outputRoot, "manifest.json"))) File.Delete(Path.Combine(outputRoot, "manifest.json"));
+            if (File.Exists(Path.Combine(outputRoot, "README.md"))) File.Delete(Path.Combine(outputRoot, "README.md"));
 
             string configPath = Path.Combine(bepinexDir, "Config", "BepInEx.cfg");
             if (Directory.Exists(Path.Combine(bepinexDir, "Config")))

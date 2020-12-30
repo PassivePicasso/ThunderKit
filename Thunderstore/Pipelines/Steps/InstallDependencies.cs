@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
-    [PipelineSupport(typeof(ManifestPipeline))]
+    [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
     public class InstallDependencies : PipelineJob
     {
         public override void Execute(Pipeline pipeline)
