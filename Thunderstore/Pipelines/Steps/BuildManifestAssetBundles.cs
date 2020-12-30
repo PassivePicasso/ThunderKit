@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Deploy.Pipelines;
 using PassivePicasso.ThunderKit.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             var dependantManifests = manifest.dependencies
                 .Select(dep => manifestPipeline.manifests.FirstOrDefault(man => IsManifest(dep, man)))
                 .Where(dep => dep != null);
-            var explicitDownstreamAssets = dependantManifests.SelectMany(man => man.assetBundles).SelectMany(mab => mab.assets).Select(asset => AssetDatabase.GetAssetPath(asset)).ToArray();
+            var explicitDownstreamAssets = dependantManifests.SelectMany(man => man.assetBundles ?? Array.Empty<Manifest.AssetBundleDef>()).SelectMany(mab => mab.assets).Select(asset => AssetDatabase.GetAssetPath(asset)).ToArray();
 
 
             var builds = new AssetBundleBuild[manifest.assetBundles.Length];
