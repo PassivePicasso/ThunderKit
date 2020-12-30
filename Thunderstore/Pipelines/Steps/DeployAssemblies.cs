@@ -19,8 +19,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             var outputRoot/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
             var bepinexDir/*     */= Path.Combine(outputRoot, "BepInExPack", "BepInEx");
 
-            foreach (var manifest in (pipeline as ManifestPipeline).manifests)
-                CopyAllReferences(bepinexDir, manifest);
+            CopyAllReferences(bepinexDir, (pipeline as ManifestPipeline).Manifest);
         }
 
         void CopyAllReferences(string outputRoot, Manifest manifest)
