@@ -123,7 +123,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
         private IEnumerable<Type> UpdateSearch(string searchString) => AvailablePipelineJobs.Where(t => t.Name.ToLower().Contains(searchString.ToLower()));
         private bool RenderOption(int index, Type option)
         {
-            if (GL.Button(option.Name))
+            if (GL.Button(ObjectNames.NicifyVariableName(option.Name)))
             {
                 var stepInstance = CreateInstance(option);
                 stepInstance.name = option.Name;
