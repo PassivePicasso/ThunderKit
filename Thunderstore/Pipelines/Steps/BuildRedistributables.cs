@@ -4,7 +4,7 @@ using PassivePicasso.ThunderKit.Utilities;
 
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
-    [PipelineSupport(typeof(ManifestPipeline))]
+    [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
     public class BuildRedistributables : PipelineJob
     {
         public string RedistributablesOutputPath;

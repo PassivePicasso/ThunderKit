@@ -3,48 +3,24 @@ using PassivePicasso.ThunderKit.Deploy.Editor;
 using PassivePicasso.ThunderKit.Deploy.Pipelines;
 using PassivePicasso.ThunderKit.Utilities;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
-    [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
-    public class PackageManifest : PipelineJob
-    {
 
+    [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
+    public class DeployAssemblies : PipelineJob
+    {
+        public bool deployMdbs;
         public override void Execute(Pipeline pipeline)
         {
-            var manifest = (pipeline as ManifestPipeline).Manifest;
-            var output/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
-            var bepinexDir/*     */= Path.Combine(output, "BepInExPack", "BepInEx");
-            var deployments/*    */= "Deployments";
-            var outputPath/*     */= Path.Combine(deployments, manifest.name);
+            var outputRoot/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
+            var bepinexDir/*     */= Path.Combine(outputRoot, "BepInExPack", "BepInEx");
 
-            CopyAllReferences(outputPath, manifest);
-
-            if (manifest.readme)
-            {
-                var readmePath = AssetDatabase.GetAssetPath(manifest.readme);
-                File.Copy(readmePath, Path.Combine(outputPath, "README.md"), true);
-            }
-            else File.WriteAllText(Path.Combine(outputPath, "README.md"), $"# {manifest.name}");
-
-
-            if (manifest.icon)
-                File.WriteAllBytes(Path.Combine(outputPath, "icon.png"), manifest.icon.EncodeToPNG());
-
-            string outputFile = Path.Combine(deployments, $"{manifest.name}.zip");
-            if (File.Exists(outputFile)) File.Delete(outputFile);
-
-            ZipFile.CreateFromDirectory(outputPath, outputFile);
-        }
-
-        void SimpleCopy(string outputRoot, Manifest manifest)
-        {
-
+            foreach (var manifest in (pipeline as ManifestPipeline).manifests)
+                CopyAllReferences(bepinexDir, manifest);
         }
 
         void CopyAllReferences(string outputRoot, Manifest manifest)
@@ -64,8 +40,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             var manifestJson = manifest.RenderJson();
             if (Directory.Exists(pluginPath)) File.WriteAllText(Path.Combine(pluginPath, "manifest.json"), manifestJson);
 
-            File.WriteAllText(Path.Combine(outputRoot, "manifest.json"), manifestJson);
-
             var settings = ThunderKitSettings.GetOrCreateSettings();
             if (settings?.deployment_exclusions?.Any() ?? false)
                 foreach (var deployment_exclusion in settings.deployment_exclusions)
@@ -82,9 +56,29 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             {
                 var assemblyDef = JsonUtility.FromJson<AssemblyDef>(plugin.text);
                 var fileOutputBase = Path.Combine(assemblyOutputPath, assemblyDef.name);
+                var fileName = Path.GetFileName(fileOutputBase);
 
                 if (File.Exists($"{fileOutputBase}.dll")) File.Delete($"{fileOutputBase}.dll");
                 File.Copy(Path.Combine(scriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll");
+
+                if (deployMdbs)
+                {
+                    string monodatabase = $"{Path.Combine(scriptAssemblies, fileName)}.dll.mdb";
+                    if (File.Exists(monodatabase))
+                    {
+                        if (File.Exists($"{fileOutputBase}.dll.mdb")) File.Delete($"{fileOutputBase}.dll.mdb");
+
+                        File.Copy(monodatabase, $"{fileOutputBase}.dll.mdb");
+                    }
+
+                    string programdatabase = Path.Combine(scriptAssemblies, $"{fileName}.pdb");
+                    if (File.Exists(programdatabase))
+                    {
+                        if (File.Exists($"{fileOutputBase}.pdb")) File.Delete($"{fileOutputBase}.pdb");
+
+                        File.Copy(programdatabase, $"{fileOutputBase}.pdb");
+                    }
+                }
             }
         }
     }

@@ -7,7 +7,7 @@ using UnityEditor;
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(ManifestPipeline))]
-    public class BuildAssetBundles : PipelineJob
+    public class BuildDefinedAssetBundles : PipelineJob
     {
         [EnumFlag]
         public BuildAssetBundleOptions AssetBundleBuildOptions;

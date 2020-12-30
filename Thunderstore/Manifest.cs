@@ -1,6 +1,8 @@
 ﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Utilities;
+using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -18,7 +20,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
         public AssemblyDefinitionAsset[] plugins;
         public AssemblyDefinitionAsset[] patchers;
         public AssemblyDefinitionAsset[] monomod;
-        public AssetBundleManifest assetBundleManifest;
+        public AssetBundleDef[] assetBundles;
 
         public TextAsset readme;
         public Texture2D icon;
@@ -33,6 +35,12 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             return manifestJson;
         }
 
+        [Serializable]
+        public struct AssetBundleDef
+        {
+            public string assetBundleName;
+            public UnityEngine.Object[] assets;
+        }
 
     }
 }

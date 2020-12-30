@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.Utilities;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -21,7 +22,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
 
         private string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Dependencies");
 
-        private SerializedProperty authorField, versionNumberField, websiteUrlField, descriptionField, dependenciesField,
+        private SerializedProperty authorField, versionNumberField, websiteUrlField, descriptionField, dependenciesField, assetBundlesField,
                                    redistributablesField, patchersField, pluginsField, monomodField, readmeField, iconField;
 
         /// <summary>
@@ -37,6 +38,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             websiteUrlField = serializedObject.FindProperty(nameof(Manifest.website_url));
             descriptionField = serializedObject.FindProperty(nameof(Manifest.description));
             redistributablesField = serializedObject.FindProperty(nameof(Manifest.redistributables));
+            assetBundlesField = serializedObject.FindProperty(nameof(Manifest.assetBundles));
             dependenciesField = serializedObject.FindProperty(nameof(Manifest.dependencies));
             patchersField = serializedObject.FindProperty(nameof(Manifest.patchers));
             pluginsField = serializedObject.FindProperty(nameof(Manifest.plugins));
@@ -82,16 +84,17 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             if (manifest.dependencies == null)
                 manifest.dependencies = new List<string>();
 
-            AddField(iconField);
-            AddField(authorField);
-            AddField(versionNumberField);
-            AddField(websiteUrlField);
-            AddField(descriptionField);
-            AddField(readmeField);
-            AddField(redistributablesField);
-            AddField(patchersField);
-            AddField(pluginsField);
-            AddField(monomodField);
+            EditorHelpers.AddField(iconField);
+            EditorHelpers.AddField(authorField);
+            EditorHelpers.AddField(versionNumberField);
+            EditorHelpers.AddField(websiteUrlField);
+            EditorHelpers.AddField(descriptionField);
+            EditorHelpers.AddField(readmeField);
+            EditorHelpers.AddField(assetBundlesField);
+            EditorHelpers.AddField(patchersField);
+            EditorHelpers.AddField(pluginsField);
+            EditorHelpers.AddField(monomodField);
+            EditorHelpers.AddField(redistributablesField);
 
             serializedObject.SetIsDifferentCacheDirty();
             serializedObject.ApplyModifiedProperties();
@@ -217,14 +220,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             suggestor.OnSuggestGUI("Dependency Search");
             GUI.skin.button.alignment = alignment;
             GUI.skin.button.margin = margin;
-        }
-
-        private void AddField(SerializedProperty property)
-        {
-            var rect = EGL.GetControlRect(true, EGU.singleLineHeight);
-            EditorGUI.PropertyField(rect, property, property.isArray);
-            if (property.isExpanded)
-                EGL.GetControlRect(true, EGU.singleLineHeight * (property.arraySize + 1));
         }
 
         private static string GetZipFileName(Package package) => GetZipFileName(package.latest.full_name);
