@@ -11,14 +11,15 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
 
     [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
-    public class DeployAssemblies : PipelineJob
+    public class StageAssemblies: PipelineJob
     {
         public bool deployMdbs;
         public override void Execute(Pipeline pipeline)
         {
+            var manifest = (pipeline as ManifestPipeline).Manifest;
             var bepinexDir/*     */= Path.Combine(pipeline.OutputRoot, "BepInExPack", "BepInEx");
 
-            CopyAllReferences(bepinexDir, (pipeline as ManifestPipeline).Manifest);
+            CopyAllReferences(bepinexDir, manifest);
         }
 
         void CopyAllReferences(string outputRoot, Manifest manifest)
