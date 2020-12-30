@@ -16,8 +16,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         public bool deployMdbs;
         public override void Execute(Pipeline pipeline)
         {
-            var outputRoot/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
-            var bepinexDir/*     */= Path.Combine(outputRoot, "BepInExPack", "BepInEx");
+            var bepinexDir/*     */= Path.Combine(pipeline.OutputRoot, "BepInExPack", "BepInEx");
 
             CopyAllReferences(bepinexDir, (pipeline as ManifestPipeline).Manifest);
         }
