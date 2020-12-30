@@ -20,7 +20,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
             for (int stepIndex = 0; stepIndex < runSteps.Length; stepIndex++)
                 if (runSteps[stepIndex].GetType().GetCustomAttributes<ManifestProcessorAttribute>().Any())
                     for (Index = 0; Index < manifests.Length; Index++)
-                        runSteps[stepIndex].Execute(this);
+                        if (manifests[Index])
+                            runSteps[stepIndex].Execute(this);
                 else
                     runSteps[stepIndex].Execute(this);
         }
