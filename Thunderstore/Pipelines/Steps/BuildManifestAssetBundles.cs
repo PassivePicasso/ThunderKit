@@ -22,6 +22,10 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 
         public override void Execute(Pipeline pipeline)
         {
+            var manifestPipeline = pipeline as ManifestPipeline;
+            var manifest = manifestPipeline.Manifest;
+            if (manifest?.assetBundles?.Any() != true) return;
+
             AssetDatabase.SaveAssets();
 
             var playerAssemblies = CompilationPipeline.GetAssemblies();
@@ -29,8 +33,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
             var excludedExtensions = new[] { ".dll" };
 
-            var manifestPipeline = (pipeline as ManifestPipeline);
-            var manifest = manifestPipeline.Manifest;
 
             bool IsManifest(string dependency, Manifest man) => $"{man.author}-{man.name}-{man.version_number}".Equals(dependency);
             var dependantManifests = manifest.dependencies
