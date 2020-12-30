@@ -61,53 +61,56 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
                 var build = builds[i];
                 var assets = new List<string>();
                 logBuilder.AppendLine($"Building bundle: {def.assetBundleName}");
-                foreach (var asset in def.assets)
-                {
-                    var assetPath = AssetDatabase.GetAssetPath(asset);
-                    bool isFolder = AssetDatabase.IsValidFolder(assetPath);
-                    
-                    logBuilder.AppendLine($"Asset: {asset.name} is a {(isFolder ? "Folder" : "File")}");
-                    if (isFolder)
+                if (def.assets.OfType<SceneAsset>().Any())
+                    assets.Add(AssetDatabase.GetAssetPath(def.assets.OfType<SceneAsset>().First()));
+                else
+                    foreach (var asset in def.assets)
                     {
-                        var bundleAssets = AssetDatabase.GetAllAssetPaths()
-                            .Where(ap => !AssetDatabase.IsValidFolder(ap))
-                            .Where(ap => ap.StartsWith(assetPath))
-                            .Where(ap => !assets.Contains(ap))
-                            .Where(ap => !sourceFiles.Contains(ap))
-                            .Where(ap => !assemblyFiles.Contains(ap))
-                            .Where(ap => recurseDirectories || Path.GetDirectoryName(ap).Replace('\\', '/').Equals(assetPath))
-                            .SelectMany(ap => AssetDatabase.GetDependencies(ap)
-                                                           .Where(dap => !explicitAssets.Contains(dap))
-                                                           .Where(dap => !explicitDownstreamAssets.Contains(dap))
-                                        )
-                            .Where(ap =>
-                            {
-                                var extension = Path.GetExtension(ap);
-                                return !excludedExtensions.Contains(extension);
-                            })
+                        var assetPath = AssetDatabase.GetAssetPath(asset);
+                        bool isFolder = AssetDatabase.IsValidFolder(assetPath);
 
-                            .Where(ap => !assets.Contains(ap))
-                            ;
-                        assets.AddRange(bundleAssets);
+                        logBuilder.AppendLine($"Asset: {asset.name} is a {(isFolder ? "Folder" : "File")}");
+                        if (isFolder)
+                        {
+                            var bundleAssets = AssetDatabase.GetAllAssetPaths()
+                                .Where(ap => !AssetDatabase.IsValidFolder(ap))
+                                .Where(ap => ap.StartsWith(assetPath))
+                                .Where(ap => !assets.Contains(ap))
+                                .Where(ap => !sourceFiles.Contains(ap))
+                                .Where(ap => !assemblyFiles.Contains(ap))
+                                .Where(ap => recurseDirectories || Path.GetDirectoryName(ap).Replace('\\', '/').Equals(assetPath))
+                                .SelectMany(ap => AssetDatabase.GetDependencies(ap)
+                                                               .Where(dap => !explicitAssets.Contains(dap))
+                                                               .Where(dap => !explicitDownstreamAssets.Contains(dap))
+                                            )
+                                .Where(ap =>
+                                {
+                                    var extension = Path.GetExtension(ap);
+                                    return !excludedExtensions.Contains(extension);
+                                })
+
+                                .Where(ap => !assets.Contains(ap))
+                                ;
+                            assets.AddRange(bundleAssets);
+                        }
+                        else
+                        {
+                            var validAssets = AssetDatabase.GetDependencies(assetPath)
+                                .Where(dap => !explicitDownstreamAssets.Contains(dap))
+                                .Where(dap => !explicitAssets.Contains(dap))
+                                .Where(ap => !assets.Contains(ap))
+                                .Where(ap =>
+                                {
+                                    var extension = Path.GetExtension(ap);
+                                    return !excludedExtensions.Contains(extension);
+                                })
+                                .Where(ap => !sourceFiles.Contains(ap))
+                                .Where(ap => !assemblyFiles.Contains(ap))
+                                .Where(ap => AssetDatabase.GetMainAssetTypeAtPath(ap) != typeof(UnityPackage))
+                                ;
+                            assets.AddRange(validAssets);
+                        }
                     }
-                    else
-                    {
-                        var validAssets = AssetDatabase.GetDependencies(assetPath)
-                            .Where(dap => !explicitDownstreamAssets.Contains(dap))
-                            .Where(dap => !explicitAssets.Contains(dap))
-                            .Where(ap => !assets.Contains(ap))
-                            .Where(ap =>
-                            {
-                                var extension = Path.GetExtension(ap);
-                                return !excludedExtensions.Contains(extension);
-                            })
-                            .Where(ap => !sourceFiles.Contains(ap))
-                            .Where(ap => !assemblyFiles.Contains(ap))
-                            .Where(ap => AssetDatabase.GetMainAssetTypeAtPath(ap) != typeof(UnityPackage))
-                            ;
-                        assets.AddRange(validAssets);
-                    }
-                }
                 build.assetNames = assets.ToArray();
                 build.assetBundleName = def.assetBundleName;
                 builds[i] = build;
