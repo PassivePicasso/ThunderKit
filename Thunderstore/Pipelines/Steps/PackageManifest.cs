@@ -18,10 +18,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         public override void Execute(Pipeline pipeline)
         {
             var manifest = (pipeline as ManifestPipeline).Manifest;
-            var output/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
-            var bepinexDir/*     */= Path.Combine(output, "BepInExPack", "BepInEx");
-            var deployments/*    */= "Deployments";
-            var outputPath/*     */= Path.Combine(deployments, manifest.name);
+            var outputRoot = Path.Combine(pipeline.OutputRoot, pipeline.name);
+            var outputPath = Path.Combine(outputRoot, manifest.name);
 
             CopyAllReferences(outputPath, manifest);
 
@@ -36,15 +34,10 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             if (manifest.icon)
                 File.WriteAllBytes(Path.Combine(outputPath, "icon.png"), manifest.icon.EncodeToPNG());
 
-            string outputFile = Path.Combine(deployments, $"{manifest.name}.zip");
+            string outputFile = Path.Combine(outputRoot, $"{manifest.name}.zip");
             if (File.Exists(outputFile)) File.Delete(outputFile);
 
             ZipFile.CreateFromDirectory(outputPath, outputFile);
-        }
-
-        void SimpleCopy(string outputRoot, Manifest manifest)
-        {
-
         }
 
         void CopyAllReferences(string outputRoot, Manifest manifest)
