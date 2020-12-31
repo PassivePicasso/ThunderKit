@@ -116,6 +116,14 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
                     RenderStep(new SerializedObject(step.objectReferenceValue));
             }
 
+            GL.Space(2);
+            if (GL.Button("Execute"))
+            {
+                var pipeline = target as Pipeline;
+                pipeline?.Execute();
+            }
+
+
             if (suggestor.OnSuggestGUI("Add Pipeline Job"))
                 Repaint();
         }
