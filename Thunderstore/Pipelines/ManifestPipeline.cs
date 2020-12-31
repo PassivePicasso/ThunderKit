@@ -13,7 +13,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
         [MenuItem(ScriptableHelper.ThunderKitContextRoot + nameof(ManifestPipeline), false)]
         public static void CreateManifestPipeline() => ScriptableHelper.SelectNewAsset<ManifestPipeline>();
 
-        public bool CleanStaging;
         public Manifest[] manifests;
         public int StepIndex { get; private set; }
         public int ManifestIndex { get; private set; }
@@ -28,12 +27,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
             for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
                 if (manifests[ManifestIndex])
                 {
-                    if (CleanStaging)
-                    {
-                        if (Directory.Exists(PluginStagingPath)) Directory.Delete(PluginStagingPath, true);
-                        if (Directory.Exists(PatchersStagingPath)) Directory.Delete(PatchersStagingPath, true);
-                        if (Directory.Exists(MonoModStagingPath)) Directory.Delete(MonoModStagingPath, true);
-                    }
                     if (Manifest.plugins.Any() && !Directory.Exists(PluginStagingPath)) Directory.CreateDirectory(PluginStagingPath);
                     if (Manifest.patchers.Any() && !Directory.Exists(PatchersStagingPath)) Directory.CreateDirectory(PatchersStagingPath);
                     if (Manifest.monomod.Any() && !Directory.Exists(MonoModStagingPath)) Directory.CreateDirectory(MonoModStagingPath);
