@@ -20,28 +20,28 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             var manifestPipeline = (pipeline as ManifestPipeline);
             var manifest = manifestPipeline.Manifest;
 
-            CopyReferences(manifest.plugins, manifestPipeline.PluginsPath);
-            CopyReferences(manifest.patchers, manifestPipeline.PatchersPath);
-            CopyReferences(manifest.monomod, manifestPipeline.MonomodPath);
+            CopyReferences(manifest.plugins, manifestPipeline.PluginStagingPath);
+            CopyReferences(manifest.patchers, manifestPipeline.PatchersStagingPath);
+            CopyReferences(manifest.monomod, manifestPipeline.MonoModStagingPath);
 
             var manifestJson = manifest.RenderJson();
-            if (Directory.Exists(manifestPipeline.PluginsPath)) File.WriteAllText(Path.Combine(manifestPipeline.PluginsPath, "manifest.json"), manifestJson);
+            if (Directory.Exists(manifestPipeline.PluginStagingPath)) File.WriteAllText(Path.Combine(manifestPipeline.PluginStagingPath, "manifest.json"), manifestJson);
 
             var settings = ThunderKitSettings.GetOrCreateSettings();
             if (settings?.deployment_exclusions?.Any() ?? false)
                 foreach (var deployment_exclusion in settings.deployment_exclusions)
-                    foreach (var file in Directory.EnumerateFiles(manifestPipeline.PluginsPath, deployment_exclusion, SearchOption.AllDirectories).ToArray())
+                    foreach (var file in Directory.EnumerateFiles(manifestPipeline.PluginStagingPath, deployment_exclusion, SearchOption.AllDirectories).ToArray())
                         File.Delete(file);
         }
 
-        void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string assemblyOutputPath)
+        void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string ouptputPath)
         {
             var scriptAssemblies = Path.Combine("Library", "ScriptAssemblies");
 
             foreach (var plugin in assemblyDefs)
             {
                 var assemblyDef = JsonUtility.FromJson<AssemblyDef>(plugin.text);
-                var fileOutputBase = Path.Combine(assemblyOutputPath, assemblyDef.name);
+                var fileOutputBase = Path.Combine(ouptputPath, assemblyDef.name);
                 var fileName = Path.GetFileName(fileOutputBase);
 
                 if (File.Exists($"{fileOutputBase}.dll")) File.Delete($"{fileOutputBase}.dll");
