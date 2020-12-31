@@ -116,17 +116,15 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
                     RenderStep(new SerializedObject(step.objectReferenceValue));
             }
 
+            if (suggestor.OnSuggestGUI("Add Pipeline Job"))
+                Repaint();
+
             GL.Space(2);
-            if (GL.Button("Execute"))
+            if (GL.Button("Execute Pipeline"))
             {
                 var pipeline = target as Pipeline;
                 pipeline?.Execute();
-
             }
-
-
-            if (suggestor.OnSuggestGUI("Add Pipeline Job"))
-                Repaint();
         }
 
         private IEnumerable<Type> UpdateSearch(string searchString) => AvailablePipelineJobs.Where(t => t.Name.ToLower().Contains(searchString.ToLower()));
