@@ -27,9 +27,9 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
             for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
                 if (manifests[ManifestIndex])
                 {
-                    if (Manifest.plugins.Any() && !Directory.Exists(PluginStagingPath)) Directory.CreateDirectory(PluginStagingPath);
-                    if (Manifest.patchers.Any() && !Directory.Exists(PatchersStagingPath)) Directory.CreateDirectory(PatchersStagingPath);
-                    if (Manifest.monomod.Any() && !Directory.Exists(MonoModStagingPath)) Directory.CreateDirectory(MonoModStagingPath);
+                    if (!Directory.Exists(PluginStagingPath)) Directory.CreateDirectory(PluginStagingPath);
+                    if (!Directory.Exists(PatchersStagingPath)) Directory.CreateDirectory(PatchersStagingPath);
+                    if (!Directory.Exists(MonoModStagingPath)) Directory.CreateDirectory(MonoModStagingPath);
                 }
 
             for (StepIndex = 0; StepIndex < runSteps.Length; StepIndex++)
