@@ -14,7 +14,8 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
         public static void CreatePipeline() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
         public PipelineJob[] runSteps;
-        public string OutputRoot;
+
+        public string OutputRoot => System.IO.Path.Combine("ThunderKit", name);
 
         public virtual void Execute()
         {

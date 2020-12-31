@@ -18,8 +18,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         public override void Execute(Pipeline pipeline)
         {
             var manifest = (pipeline as ManifestPipeline).Manifest;
-            var output/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
-            var bepinexDir/*     */= Path.Combine(output, "BepInExPack", "BepInEx");
+            var bepinexDir/*     */= Path.Combine(pipeline.OutputRoot, "BepInExPack", "BepInEx");
 
             var targetPath = OverrideOutputPath ? Path.Combine(AssetBundlePath, "plugins", manifest.name)
                                                 : Path.Combine(bepinexDir, "plugins", manifest.name);
