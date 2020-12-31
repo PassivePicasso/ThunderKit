@@ -19,17 +19,20 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
         public Manifest Manifest => manifests[ManifestIndex];
         public string StagingPath => Path.Combine(OutputRoot, "Staging");
         public string ManifestPath => Path.Combine(StagingPath, Manifest.name);
-        public string PluginsPath => Path.Combine(ManifestPath, "plugins", Manifest.name);
-        public string PatchersPath => Path.Combine(ManifestPath, "patchers", Manifest.name);
-        public string MonomodPath => Path.Combine(ManifestPath, "monomod", Manifest.name);
+        public string PluginStagingPath => Path.Combine(ManifestPath, "plugins", Manifest.name);
+        public string PatchersStagingPath => Path.Combine(ManifestPath, "patchers", Manifest.name);
+        public string MonoModStagingPath => Path.Combine(ManifestPath, "monomod", Manifest.name);
         public override void Execute()
         {
             for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
                 if (manifests[ManifestIndex])
                 {
-                    if (Manifest.plugins.Any() && !Directory.Exists(PluginsPath)) Directory.CreateDirectory(PluginsPath);
-                    if (Manifest.patchers.Any() && !Directory.Exists(PatchersPath)) Directory.CreateDirectory(PatchersPath);
-                    if (Manifest.monomod.Any() && !Directory.Exists(MonomodPath)) Directory.CreateDirectory(MonomodPath);
+                    if (Directory.Exists(PluginStagingPath)) Directory.Delete(PluginStagingPath);
+                    if (Directory.Exists(PatchersStagingPath)) Directory.Delete(PatchersStagingPath);
+                    if (Directory.Exists(MonoModStagingPath)) Directory.Delete(MonoModStagingPath);
+                    if (Manifest.plugins.Any()) Directory.CreateDirectory(PluginStagingPath);
+                    if (Manifest.patchers.Any()) Directory.CreateDirectory(PatchersStagingPath);
+                    if (Manifest.monomod.Any()) Directory.CreateDirectory(MonoModStagingPath);
                 }
 
             for (StepIndex = 0; StepIndex < runSteps.Length; StepIndex++)

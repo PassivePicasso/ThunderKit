@@ -115,7 +115,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 
             logBuilder.AppendLine($"Constructed {builds.Length} AssetBundleBuilds with {fileCount} files.");
 
-            if (!simulate) BuildPipeline.BuildAssetBundles(manifestPipeline.PluginsPath, builds, AssetBundleBuildOptions, buildTarget);
+            if (!simulate) BuildPipeline.BuildAssetBundles(manifestPipeline.PluginStagingPath, builds, AssetBundleBuildOptions, buildTarget);
 
             Debug.Log(logBuilder.ToString());
         }

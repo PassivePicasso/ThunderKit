@@ -38,7 +38,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         public LogLevel LogLevel;
 
         public bool ShowConsole;
-        public bool CleanInstall;
 
         public override void Execute(Pipeline pipeline) => ExecuteAsync(pipeline);
 
