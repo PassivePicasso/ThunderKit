@@ -11,7 +11,7 @@ using System.Linq;
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(ManifestPipeline))]
-    public class RunGame : PipelineJob
+    public class ExecuteGame : PipelineJob
     {
         public string[] extraCommandLineArgs;
 
@@ -19,8 +19,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         {
             var settings/*       */= ThunderKitSettings.GetOrCreateSettings();
             var ror2Executable = Path.Combine(settings.GamePath, settings.GameExecutable);
-            var outputRoot/*   */= Path.Combine(pipeline.OutputRoot, pipeline.name);
-            var bepinexDir/*     */= Path.Combine(outputRoot, "BepInExPack", "BepInEx");
+            var bepinexDir/*     */= Path.Combine(pipeline.OutputRoot, "BepInExPack", "BepInEx");
             var bepinexCoreDir/* */= Path.Combine(bepinexDir, "core");
 
             if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.ini")))

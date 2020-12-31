@@ -13,7 +13,7 @@ using UnityEngine;
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
-    public class BuildManifestAssetBundles : PipelineJob
+    public class StageManifestAssetBundles : PipelineJob
     {
         [EnumFlag]
         public BuildAssetBundleOptions AssetBundleBuildOptions = BuildAssetBundleOptions.UncompressedAssetBundle;
@@ -44,13 +44,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 
             var builds = new AssetBundleBuild[manifest.assetBundles.Length];
             var fileCount = 0;
-
-            var output/**/ = Path.Combine(pipeline.OutputRoot, pipeline.name);
-            var bepinexDir = Path.Combine(output, "BepInExPack", "BepInEx");
-            var targetPath = Path.Combine(bepinexDir, "plugins", manifest.name);
-
-            if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
-
 
             var logBuilder = new StringBuilder();
             logBuilder.AppendLine("Constructing AssetBundles");
@@ -122,7 +115,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 
             logBuilder.AppendLine($"Constructed {builds.Length} AssetBundleBuilds with {fileCount} files.");
 
-            if (!simulate) BuildPipeline.BuildAssetBundles(targetPath, builds, AssetBundleBuildOptions, buildTarget);
+            if (!simulate) BuildPipeline.BuildAssetBundles(manifestPipeline.PluginsPath, builds, AssetBundleBuildOptions, buildTarget);
 
             Debug.Log(logBuilder.ToString());
         }

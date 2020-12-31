@@ -6,21 +6,19 @@ using System.Linq;
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
-    public class DeployDependencies : PipelineJob
+    public class DeployMods : PipelineJob
     {
         public override void Execute(Pipeline pipeline)
         {
-            var manifest = (pipeline as ManifestPipeline).Manifest;
+            var manifestPipeline = pipeline as ManifestPipeline;
             var bepinexDir/*     */= Path.Combine(pipeline.OutputRoot, "BepInExPack", "BepInEx");
-            var dependencies/*   */= Path.Combine("Assets", "Dependencies");
-            if (Directory.Exists(dependencies))
+
+            if (Directory.Exists(manifestPipeline.StagingPath))
             {
-                var dependencyDirs = Directory.EnumerateDirectories(dependencies, "*", searchOption: SearchOption.TopDirectoryOnly).ToArray();
+                var dependencyDirs = Directory.EnumerateDirectories(manifestPipeline.StagingPath, "*", searchOption: SearchOption.TopDirectoryOnly).ToArray();
 
                 foreach (var modDir in dependencyDirs)
                 {
-                    if (!manifest.dependencies.Contains(Path.GetFileName(modDir))) continue;
-
                     string patcher = Path.Combine(modDir, "patchers");
                     string plugins = Path.Combine(modDir, "plugins");
                     string monomod = Path.Combine(modDir, "monomod");
