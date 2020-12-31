@@ -121,6 +121,7 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
             {
                 var pipeline = target as Pipeline;
                 pipeline?.Execute();
+
             }
 
 
