@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Data;
+using PassivePicasso.ThunderKit.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -2,7 +2,7 @@
 using UnityEditor;
 
 
-namespace PassivePicasso.ThunderKit
+namespace PassivePicasso.ThunderKit.Editor
 {
     public static class EditorHelpers
     {

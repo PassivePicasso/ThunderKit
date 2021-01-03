@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Editor;
+using PassivePicasso.ThunderKit.Pipelines;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using EGL = UnityEditor.EditorGUILayout;
 using EGU = UnityEditor.EditorGUIUtility;
 using GL = UnityEngine.GUILayout;
 
-namespace PassivePicasso.ThunderKit.Pipelines
+namespace PassivePicasso.ThunderKit.Editor
 {
     [CustomEditor(typeof(Pipeline), true)]
     public class PipelineEditor : UnityEditor.Editor

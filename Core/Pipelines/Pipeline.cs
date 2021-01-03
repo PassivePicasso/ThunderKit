@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.Editor;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
