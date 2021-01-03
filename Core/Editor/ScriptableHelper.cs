@@ -1,11 +1,10 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Editor;
 using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit
+namespace PassivePicasso.ThunderKit.Editor
 {
     public static class ScriptableHelper
     {
