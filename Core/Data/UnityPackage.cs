@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Editor;
 using System;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -66,7 +67,11 @@ namespace PassivePicasso.ThunderKit.Data
             assetPaths = assetPaths.Concat(additionalAssets);
 
             string[] assetPathNames = assetPaths.ToArray();
-            AssetDatabase.ExportPackage(assetPathNames, System.IO.Path.Combine(path, $"{redist.name}.unityPackage"));
+            string fileName = Path.Combine(path, $"{redist.name}.unityPackage");
+            string metaFileName = Path.Combine(path, $"{redist.name}.unityPackage.meta");
+            if (File.Exists(fileName)) File.Delete(fileName);
+            if (File.Exists(metaFileName)) File.Delete(metaFileName);
+            AssetDatabase.ExportPackage(assetPathNames, fileName);
         }
     }
 }
