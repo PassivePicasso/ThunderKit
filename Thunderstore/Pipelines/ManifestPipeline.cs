@@ -18,6 +18,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
         public int ManifestIndex { get; private set; }
         public Manifest Manifest => manifests[ManifestIndex];
         public string StagingPath => Path.Combine(OutputRoot, "Staging");
+        public string DependenciesPath => Path.Combine("Packages");
         public string ManifestPath => Path.Combine(StagingPath, Manifest.name);
         public string PluginStagingPath => Path.Combine(ManifestPath, "plugins", Manifest.name);
         public string PatchersStagingPath => Path.Combine(ManifestPath, "patchers", Manifest.name);

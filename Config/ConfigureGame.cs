@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using PassivePicasso.ThunderKit.Thunderstore;
 using PassivePicasso.ThunderKit.Utilities;
 using System;
 using System.Collections.Generic;
@@ -12,12 +13,11 @@ using Debug = UnityEngine.Debug;
 
 namespace PassivePicasso.ThunderKit.Config
 {
-    public class ConfigureProject
+    public class ConfigureGame
     {
-        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Configure ThunderKit")]
+        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Configure Game")]
         private static void Configure()
         {
-            string currentDir = Directory.GetCurrentDirectory();
             var settings = ThunderKitSettings.GetOrCreateSettings();
 
             LoadGame(settings);
@@ -29,25 +29,37 @@ namespace PassivePicasso.ThunderKit.Config
 
             if (!CheckUnityVersion(settings)) return;
 
-            AssertDestinations(currentDir);
+            var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
+            AssertDestinations(packageName);
 
-            GetReferences(currentDir, settings);
+            GetReferences(packageName, settings);
             EditorUtility.SetDirty(settings);
 
-            _ = BepInExPackLoader.DownloadBepinex();
+            SetupPackageManifest(settings, packageName);
 
             ScriptingSymbolManager.AddScriptingDefine("THUNDERKIT_CONFIGURED");
 
-            AssetDatabase.ImportAsset("Assets", ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
+            AssetDatabase.ImportAsset("Packages", ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
         }
 
-        private static void AssertDestinations(string currentDir)
+        private static void SetupPackageManifest(ThunderKitSettings settings, string packageName)
         {
-            var destinationFolder = Path.Combine(currentDir, "Assets", "Assemblies");
+            var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
+            var unityVersion = new Version(fileVersionInfo.FileVersion);
+            var gameVersion = new Version(fileVersionInfo.FileVersion);
+            var packageManifest = new PackageManifest(name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
+            var packageManifestJson = JsonUtility.ToJson(packageManifest);
+            File.WriteAllText(Path.Combine("Packages", packageName, "package.json"), packageManifestJson);
+        }
+
+        private static void AssertDestinations(string packageName)
+        {
+            var destinationFolder = Path.Combine("Packages", packageName);
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
 
-            destinationFolder = Path.Combine(currentDir, "Assets", "plugins");
+            destinationFolder = Path.Combine("Packages", packageName, "plugins");
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
         }
@@ -87,7 +99,7 @@ namespace PassivePicasso.ThunderKit.Config
             return versionMatch;
         }
 
-        private static void GetReferences(string currentDir, ThunderKitSettings settings)
+        private static void GetReferences(string packageName, ThunderKitSettings settings)
         {
             Debug.Log("Acquiring references");
             var blackList = AppDomain.CurrentDomain.GetAssemblies().Where(asm => !asm.IsDynamic).Select(asm => asm.Location);
@@ -100,11 +112,11 @@ namespace PassivePicasso.ThunderKit.Config
             var managedAssemblies = Directory.EnumerateFiles(managedPath, "*.dll");
             var plugins = Directory.EnumerateFiles(pluginsPath, "*.dll");
 
-            GetReferences(currentDir, Path.Combine(currentDir, "Assets", "Assemblies"), managedAssemblies, settings.additional_assemblies, blackList, settings.assembly_metadata);
-            GetReferences(currentDir, Path.Combine(currentDir, "Assets", "plugins"), plugins, settings.additional_plugins, settings.excluded_assemblies, settings.assembly_metadata);
+            GetReferences(packageName, Path.Combine("Packages", packageName), managedAssemblies, settings.additional_assemblies, blackList, settings.assembly_metadata);
+            GetReferences(packageName, Path.Combine("Packages", packageName, "plugins"), plugins, settings.additional_plugins, settings.excluded_assemblies, settings.assembly_metadata);
         }
 
-        private static void GetReferences(string currentDir, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> whiteList, IEnumerable<string> blackList, IEnumerable<string> metaDataLocations)
+        private static void GetReferences(string packageName, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> whiteList, IEnumerable<string> blackList, IEnumerable<string> metaDataLocations)
         {
             if (whiteList == null) whiteList = Enumerable.Empty<string>();
             if (assemblies == null) assemblies = Enumerable.Empty<string>();
@@ -125,7 +137,7 @@ namespace PassivePicasso.ThunderKit.Config
 
                 var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(assembly));
 
-                var destinationMetaData = Path.Combine(currentDir, "Assets", "Assemblies", $"{Path.GetFileName(assembly)}.meta");
+                var destinationMetaData = Path.Combine(destinationFolder, $"{Path.GetFileName(assembly)}.meta");
 
                 if (File.Exists(destinationFile)) File.Delete(destinationFile);
                 File.Copy(assembly, destinationFile);

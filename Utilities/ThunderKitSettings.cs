@@ -59,13 +59,14 @@ namespace PassivePicasso.ThunderKit.Utilities
             CopyAssembly("Assembly-CSharp.dll");
         }
 
-        private static void CopyAssembly(string assemblyName)
+        private static void CopyAssembly(string fileName)
         {
-            string currentDir = Directory.GetCurrentDirectory();
-            var assemblycsharp = Path.Combine(currentDir, "Assets", "Assemblies", assemblyName);
-            var outputPath = Path.Combine(currentDir, "Library", "ScriptAssemblies", assemblyName);
-            if (File.Exists(assemblycsharp))
-                File.Copy(assemblycsharp, outputPath, true);
+            var settings = ThunderKitSettings.GetOrCreateSettings();
+            var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
+            var filePath = Path.Combine("Packages", packageName, fileName);
+            var outputPath = Path.Combine("Library", "ScriptAssemblies", fileName);
+            if (File.Exists(filePath))
+                File.Copy(filePath, outputPath, true);
         }
 
         public static ThunderKitSettings GetOrCreateSettings() =>

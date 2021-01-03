@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using EGL = UnityEditor.EditorGUILayout;
@@ -20,17 +21,18 @@ namespace PassivePicasso.ThunderKit.Thunderstore
 
         PackageSearchSuggest suggestor;
 
-        private string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Dependencies");
+        private string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Packages");
 
         private SerializedProperty authorField, versionNumberField, websiteUrlField, descriptionField, dependenciesField, assetBundlesField,
                                    redistributablesField, patchersField, pluginsField, monomodField, readmeField, iconField;
+
+        private readonly static List<Task<(string, Package)>> InstallationTasks = new List<Task<(string, Package)>>();
 
         /// <summary>
         /// False array element indicates an active installation
         /// True array element indicates a completed installation
         /// a null array indicates no installations being processed
         /// </summary>
-        private bool[] activeInstallations;
         private void OnEnable()
         {
             authorField = serializedObject.FindProperty(nameof(Manifest.author));
@@ -180,37 +182,77 @@ namespace PassivePicasso.ThunderKit.Thunderstore
                     }
 
                     var distinctResults = RecurseDeps(manifest.dependencies).GroupBy(dep => dep.latest.full_name).Select(g => g.First());
-                    var packages = distinctResults.Where(dep => !dep.latest.full_name.Contains("BepInEx")).ToList();
-                    activeInstallations = new bool[packages.Count];
+                    var packages = distinctResults/*.Where(dep => !dep.latest.full_name.Contains("BepInEx"))*/.ToList();
 
                     if (!Directory.Exists(TempDir)) Directory.CreateDirectory(TempDir);
 
-                    async void Install(Package package, int i)
+                    async Task<(string, Package)> Install(Package package) =>
+                        (await ThunderLoad.DownloadPackageAsync(package, Path.Combine(TempDir, GetZipFileName(package))),
+                         package);
+
+                    foreach (var package in packages)
+                        InstallationTasks.Add(Install(package));
+                }
+
+            if (InstallationTasks.Any() && InstallationTasks.All(t => t.IsCompleted))
+            {
+                try
+                {
+                    AssetDatabase.StartAssetEditing();
+
+                    var results = InstallationTasks.Select(it => it.Result).ToArray();
+                    InstallationTasks.Clear();
+                    foreach (var (filePath, package) in results)
                     {
-                        string filePath = await ThunderLoad.DownloadPackageAsync(package, Path.Combine(TempDir, GetZipFileName(package)));
-
-                        var dependencyPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Dependencies", package.latest.full_name);
-
+                        var dependencyPath = Path.Combine(dependenciesPath, package.latest.full_name);
                         if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
-
                         if (File.Exists($"{dependencyPath}.meta")) File.Delete($"{dependencyPath}.meta");
 
                         Directory.CreateDirectory(dependencyPath);
 
                         using (var fileStream = File.OpenRead(filePath))
                         using (var archive = new ZipArchive(fileStream))
-                            archive.ExtractToDirectory(Path.Combine(dependencyPath));
-                    }
-                    for (int i = 0; i < packages.Count; i++)
-                        Install(packages[i], i);
-                }
+                            foreach (var entry in archive.Entries)
+                            {
+                                if (entry.FullName.ToLower().StartsWith("monomod\\"))
+                                    continue;
+                                if (entry.FullName.ToLower().StartsWith("monomod/"))
+                                    continue;
+                                if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
+                                    continue;
 
-            if (activeInstallations != null && activeInstallations.All(b => b))
-            {
-                AssetDatabase.Refresh();
-                activeInstallations = null;
-                if (Directory.Exists(TempDir))
-                    Directory.Delete(TempDir, true);
+                                var outputPath = Path.Combine(dependencyPath, entry.FullName);
+                                var outputDir = Path.GetDirectoryName(outputPath);
+                                var fileName = Path.GetFileName(outputPath);
+
+                                if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
+
+                                entry.ExtractToFile(outputPath);
+                                if ("manifest.json".Equals(fileName.ToLower()))
+                                {
+                                    var stubManifest = CreateManifest.LoadStub(outputPath);
+                                    string name = stubManifest.name.ToLower();
+                                    string modVersion = stubManifest.version_number;
+                                    string description = stubManifest.description;
+
+                                    string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
+
+                                    var packageManifest = new PackageManifest(name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
+                                    var packageManifestJson = JsonUtility.ToJson(packageManifest);
+
+                                    File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
+                                }
+                            }
+                    }
+                }
+                finally
+                {
+                    AssetDatabase.StopAssetEditing();
+                    InstallationTasks.Clear();
+                    AssetDatabase.Refresh();
+                    if (Directory.Exists(TempDir))
+                        Directory.Delete(TempDir, true);
+                }
             }
 
             var alignment = GUI.skin.button.alignment;
