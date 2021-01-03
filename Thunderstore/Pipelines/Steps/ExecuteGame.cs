@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 
 using PassivePicasso.ThunderKit.Deploy.Pipelines;
-using PassivePicasso.ThunderKit.Utilities;
+using PassivePicasso.ThunderKit.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

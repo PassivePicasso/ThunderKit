@@ -1,4 +1,4 @@
-﻿namespace PassivePicasso.ThunderKit.Editor
+﻿namespace PassivePicasso.ThunderKit.Core
 {
     public static class ConfigTemplate
     {
