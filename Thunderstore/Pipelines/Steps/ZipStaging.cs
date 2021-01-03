@@ -14,8 +14,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         public override void Execute(Pipeline pipeline)
         {
             var manifestPipeline = pipeline as ManifestPipeline;
-            var packageJsonPath = Path.Combine("Packages", "ZipStaging", "package.json");
-            var outputRoot = Path.Combine("Packages", "ZipStaging", manifestPipeline.Manifest.name);
+            var packageJsonPath = Path.Combine("Packages", nameof(ZipStaging), "package.json");
+            var outputRoot = Path.Combine("Packages", nameof(ZipStaging), manifestPipeline.Manifest.name);
             var outputFile = Path.Combine(outputRoot, $"{manifestPipeline.Manifest.name}.zip");
 
             if (File.Exists(outputFile)) File.Delete(outputFile);
