@@ -13,8 +13,8 @@ namespace PassivePicasso.ThunderKit.Pipelines.Jobs
         public DefaultAsset[] Files;
         public override void Execute(Pipeline pipeline)
         {
-            using (var fileStream = File.OpenRead(AssetDatabase.GetAssetPath(TargetZipFile)))
-            using (var archive = new ZipArchive(fileStream))
+            using (var fileStream = File.Open(AssetDatabase.GetAssetPath(TargetZipFile), FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Update))
                 foreach (var file in Files)
                 {
                     var filePath = AssetDatabase.GetAssetPath(file);
