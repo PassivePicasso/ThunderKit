@@ -1,9 +1,6 @@
 {
-    "name": "ThunderKit.AutoConfig",
-    "references": [
-        "ThunderKit.Thunderstore",
-        "ThunderKit.Utilities"
-    ],
+    "name": "ThunderKit.Core",
+    "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor",
@@ -12,8 +9,8 @@
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": []
 }

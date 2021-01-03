@@ -1,10 +1,10 @@
 ﻿#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Deploy.Pipelines;
+using PassivePicasso.ThunderKit.Core;
 using System.IO;
 using System.IO.Compression;
 using UnityEditor;
 using UnityEngine;
-using UnityEditor.PackageManager;
 
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
@@ -34,11 +34,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
                   )));
 
             }
-            //foreach (var directory in Directory.EnumerateDirectories(outputRoot, "*", SearchOption.AllDirectories))
-            //    AssetDatabase.ImportAsset(directory, ImportAssetOptions.Default);
 
-            //foreach (var file in Directory.EnumerateFiles(outputRoot, "*", SearchOption.AllDirectories))
-            //    AssetDatabase.ImportAsset(file, ImportAssetOptions.Default);
             AssetDatabase.Refresh();
         }
     }

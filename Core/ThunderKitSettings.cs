@@ -12,7 +12,7 @@ using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-namespace PassivePicasso.ThunderKit.Utilities
+namespace PassivePicasso.ThunderKit.Core
 {
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ScriptableObject
