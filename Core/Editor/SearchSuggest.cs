@@ -8,7 +8,7 @@ using UnityEngine;
 using EGL = UnityEditor.EditorGUILayout;
 using EGU = UnityEditor.EditorGUIUtility;
 
-namespace PassivePicasso.ThunderKit.Gui
+namespace PassivePicasso.ThunderKit.Editor
 {
     public class SearchSuggest<T> : ScriptableObject
     {
