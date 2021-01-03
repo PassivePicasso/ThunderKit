@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PassivePicasso.ThunderKit.Core
+namespace PassivePicasso.ThunderKit
 {
     public static class Extensions
     {

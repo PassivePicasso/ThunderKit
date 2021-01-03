@@ -1,6 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Deploy.Pipelines;
-using PassivePicasso.ThunderKit.Core;
+using PassivePicasso.ThunderKit.Pipelines;
 using System.Linq;
 
 namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PassivePicasso.ThunderKit.Core
+namespace PassivePicasso.ThunderKit.Data
 {
     [Serializable]
     public partial class AssemblyDef
