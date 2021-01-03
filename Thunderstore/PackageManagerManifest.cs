@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PassivePicasso.ThunderKit.Thunderstore
 {
-    public struct PackageManifest
+    public struct PackageManagerManifest
     {
         internal readonly static Dictionary<string, string> EmptyDictionary = new Dictionary<string, string>();
 
@@ -14,7 +14,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
         public string description;
         public Dictionary<string, string> dependencies;
 
-        public PackageManifest(string name, string displayName, string version, string unity, string description)
+        public PackageManagerManifest(string name, string displayName, string version, string unity, string description)
         {
             this.name = name;
             this.displayName = displayName;

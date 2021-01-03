@@ -24,7 +24,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
         private string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Packages");
 
         private SerializedProperty authorField, versionNumberField, websiteUrlField, descriptionField, dependenciesField, assetBundlesField,
-                                   redistributablesField, patchersField, pluginsField, monomodField, readmeField, iconField;
+                                   unityPackagesField, patchersField, pluginsField, monomodField, readmeField, iconField, additionalFilesField;
 
         private readonly static List<Task<(string, Package)>> InstallationTasks = new List<Task<(string, Package)>>();
 
@@ -39,7 +39,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             versionNumberField = serializedObject.FindProperty(nameof(Manifest.version_number));
             websiteUrlField = serializedObject.FindProperty(nameof(Manifest.website_url));
             descriptionField = serializedObject.FindProperty(nameof(Manifest.description));
-            redistributablesField = serializedObject.FindProperty(nameof(Manifest.unityPackages));
+            unityPackagesField = serializedObject.FindProperty(nameof(Manifest.unityPackages));
             assetBundlesField = serializedObject.FindProperty(nameof(Manifest.assetBundles));
             dependenciesField = serializedObject.FindProperty(nameof(Manifest.dependencies));
             patchersField = serializedObject.FindProperty(nameof(Manifest.patchers));
@@ -47,6 +47,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             monomodField = serializedObject.FindProperty(nameof(Manifest.monomod));
             readmeField = serializedObject.FindProperty(nameof(Manifest.readme));
             iconField = serializedObject.FindProperty(nameof(Manifest.icon));
+            additionalFilesField = serializedObject.FindProperty(nameof(Manifest.additionalFiles));
             suggestor = CreateInstance<PackageSearchSuggest>();
             suggestor.Evaluate = EvaluateSuggestion;
             suggestor.OnSuggestionGUI = RenderSuggestion;
@@ -96,7 +97,8 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             EditorHelpers.AddField(patchersField);
             EditorHelpers.AddField(pluginsField);
             EditorHelpers.AddField(monomodField);
-            EditorHelpers.AddField(redistributablesField);
+            EditorHelpers.AddField(unityPackagesField);
+            EditorHelpers.AddField(additionalFilesField);
 
             serializedObject.SetIsDifferentCacheDirty();
             serializedObject.ApplyModifiedProperties();
@@ -237,7 +239,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
 
                                     string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
 
-                                    var packageManifest = new PackageManifest(name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
+                                    var packageManifest = new PackageManagerManifest(name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
                                     var packageManifestJson = JsonUtility.ToJson(packageManifest);
 
                                     File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
