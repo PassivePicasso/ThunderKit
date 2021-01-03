@@ -35,6 +35,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
                 UnityPackage.Export(redistributable, outputRoot);
 
             AssetDatabase.Refresh();
+            AssetDatabase.ImportAsset(outputRoot);
         }
     }
 }
