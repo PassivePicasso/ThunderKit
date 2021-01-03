@@ -37,6 +37,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
             }
 
             AssetDatabase.Refresh();
+            AssetDatabase.ImportAsset(outputRoot);
         }
     }
 }
