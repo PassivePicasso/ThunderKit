@@ -11,7 +11,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
     public class CreateManifest
     {
 #pragma warning disable 0649
-        struct ManifestStub
+        public struct ManifestStub
         {
             public string name;
             public string author;
@@ -46,6 +46,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             return true;
         }
 
+
         [MenuItem(ThunderKitContextRoot + nameof(Manifest), false)]
         public static void Create()
         {
@@ -60,6 +61,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
                 //detect whether its a directory or file
                 if ((attr & FileAttributes.Directory) != FileAttributes.Directory)
                 {
+                    LoadStub(assetPath);
                     json = File.ReadAllText(assetPath);
                     var stubManifest = JsonUtility.FromJson<ManifestStub>(json);
                     name = stubManifest.name;
@@ -75,6 +77,9 @@ namespace PassivePicasso.ThunderKit.Thunderstore
                 Debug.Log(e);
             }
         }
+
+        public static ManifestStub LoadStub(string path) => JsonUtility.FromJson<ManifestStub>(File.ReadAllText(path));
+
     }
 }
 #endif

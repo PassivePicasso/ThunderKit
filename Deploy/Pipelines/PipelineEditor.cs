@@ -16,7 +16,6 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
     [CustomEditor(typeof(Pipeline), true)]
     public class PipelineEditor : UnityEditor.Editor
     {
-        internal static List<Type> AllTypes;
 
         List<Type> AvailablePipelineJobs;
         SerializedProperty runSteps;
@@ -24,17 +23,31 @@ namespace PassivePicasso.ThunderKit.Deploy.Pipelines
 
         private void OnEnable()
         {
-            var allGlobalTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(asm => asm.GetTypes()).ToArray();
-            AllTypes = allGlobalTypes.Where(t => typeof(PipelineJob).IsAssignableFrom(t)).ToList();
-
-            AvailablePipelineJobs = AllTypes.Where(t =>
+            try
             {
-                var customAttributes = t.GetCustomAttributes();
-                var pipelineSupportAttributes = customAttributes.OfType<PipelineSupportAttribute>();
-                var supportsThisPipeline = pipelineSupportAttributes.Any(psa => psa.HandlesPipeline(target.GetType()));
-
-                return supportsThisPipeline;
-            }).ToList();
+                List<Type> pipelineJobTypes = new List<Type>();
+                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    try
+                    {
+                        foreach (var type in asm.GetTypes())
+                            if (typeof(PipelineJob).IsAssignableFrom(type))
+                            {
+                                var customAttributes = type.GetCustomAttributes();
+                                var pipelineSupportAttributes = customAttributes.OfType<PipelineSupportAttribute>();
+                                if (pipelineSupportAttributes.Any(psa => psa.HandlesPipeline(target.GetType())))
+                                    pipelineJobTypes.Add(type);
+                            }
+                    }
+                    catch 
+                    {
+                    }
+                }
+                AvailablePipelineJobs = pipelineJobTypes;
+            }
+            catch 
+            {
+            }
             suggestor = CreateInstance<TypeSearchSuggest>();
             suggestor.OnSuggestionGUI = RenderOption;
             suggestor.Evaluate = UpdateSearch;

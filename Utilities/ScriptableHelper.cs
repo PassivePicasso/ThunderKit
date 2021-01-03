@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using UnityEditor;
+using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 
 namespace PassivePicasso.ThunderKit.Utilities
@@ -11,6 +12,7 @@ namespace PassivePicasso.ThunderKit.Utilities
         public const string ThunderKitContextRoot = "Assets/ThunderKit/";
         public const string ThunderKitMenuRoot = "ThunderKit/";
 
+        static object[] findTextureParams = new object[1];
         public static void SelectNewAsset<T>(Func<string> overrideName = null) where T : ScriptableObject
         {
             T asset = ScriptableObject.CreateInstance<T>();
@@ -24,15 +26,33 @@ namespace PassivePicasso.ThunderKit.Utilities
             {
                 path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
             }
-            var name = overrideName == null ? typeof(T).Name : overrideName();
+            var name = typeof(T).Name;
             string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath($"{path}/{name}.asset");
 
-            AssetDatabase.CreateAsset(asset, assetPathAndName);
+            void onCreated(int instanceId, string pathname, string resourceFile)
+            {
+                AssetDatabase.CreateAsset(asset, pathname);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                Selection.activeObject = asset;
+            }
 
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            EditorUtility.FocusProjectWindow();
-            Selection.activeObject = asset;
+            if (overrideName == null)
+            {
+                var endAction = ScriptableObject.CreateInstance<SelfDestructingActionAsset>();
+                endAction.action = onCreated;
+                var findTexture = typeof(EditorGUIUtility).GetMethod(nameof(EditorGUIUtility.FindTexture), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                findTextureParams[0] = typeof(T);
+                var icon = (Texture2D)findTexture.Invoke(null, findTextureParams);
+                ProjectWindowUtil.StartNameEditingIfProjectWindowExists(asset.GetInstanceID(), endAction, assetPathAndName, icon, null);
+            }
+            else
+            {
+                name = overrideName();
+                assetPathAndName = AssetDatabase.GenerateUniqueAssetPath($"{path}/{name}.asset");
+
+                onCreated(asset.GetInstanceID(), assetPathAndName, null);
+            }
         }
 
         public static void SelectNewAsset(Type t, Func<string> overrideName = null)
