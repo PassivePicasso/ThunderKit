@@ -5,14 +5,15 @@
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
-        "Editor",
-        "WindowsStandalone32",
-        "WindowsStandalone64"
+        "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "System.IO.Compression.dll",
+        "System.IO.Compression.FileSystem.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": []
 }
