@@ -1,4 +1,5 @@
-﻿#if UNITY_EDITOR
+﻿#if CompressionInstalled
+#if UNITY_EDITOR
 using PassivePicasso.ThunderKit.Data;
 using PassivePicasso.ThunderKit.Pipelines;
 using System.IO;
@@ -39,4 +40,5 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         }
     }
 }
+#endif
 #endif

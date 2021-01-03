@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if CompressionInstalled
+using UnityEditor;
 using System.IO.Compression;
 using System.IO;
 
@@ -22,3 +23,4 @@ namespace PassivePicasso.ThunderKit.Pipelines.Jobs
         }
     }
 }
+#endif
