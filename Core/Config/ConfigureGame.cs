@@ -1,6 +1,4 @@
 ﻿#if UNITY_EDITOR
-//using PassivePicasso.ThunderKit.Thunderstore;
-using PassivePicasso.ThunderKit.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -48,7 +46,7 @@ namespace PassivePicasso.ThunderKit.Config
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
             var unityVersion = new Version(fileVersionInfo.FileVersion);
             var gameVersion = new Version(fileVersionInfo.FileVersion);
-            var packageManifest = new Core.PackageManagerManifest(name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
+            var packageManifest = new PackageManagerManifest(name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
             File.WriteAllText(Path.Combine("Packages", packageName, "package.json"), packageManifestJson);
         }

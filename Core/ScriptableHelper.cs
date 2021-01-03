@@ -2,10 +2,9 @@
 using System;
 using System.IO;
 using UnityEditor;
-using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core
+namespace PassivePicasso.ThunderKit
 {
     public static class ScriptableHelper
     {

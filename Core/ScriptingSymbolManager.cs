@@ -3,7 +3,7 @@ using System;
 using UnityEditor;
 
 
-namespace PassivePicasso.ThunderKit.Core
+namespace PassivePicasso.ThunderKit
 {
     public static class ScriptingSymbolManager
     {

@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-namespace PassivePicasso.ThunderKit.Core
+namespace PassivePicasso.ThunderKit.Gui
 {
 	using System;
 	using System.Reflection;

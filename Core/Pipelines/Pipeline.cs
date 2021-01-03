@@ -1,12 +1,11 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Deploy.Pipelines
+namespace PassivePicasso.ThunderKit.Pipelines
 {
     public class Pipeline : ScriptableObject
     {

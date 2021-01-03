@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace PassivePicasso.ThunderKit.Core
+namespace PassivePicasso.ThunderKit.Data
 {
     using static ScriptableHelper;
     [Flags]

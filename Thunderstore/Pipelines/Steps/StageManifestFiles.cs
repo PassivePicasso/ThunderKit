@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Deploy.Pipelines;
+using PassivePicasso.ThunderKit.Pipelines;
 using System.IO;
 using System.Linq;
 using UnityEditor;
