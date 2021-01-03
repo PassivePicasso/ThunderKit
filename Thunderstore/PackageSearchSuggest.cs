@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Gui;
+using PassivePicasso.ThunderKit.Editor;
 
 namespace PassivePicasso.ThunderKit.Thunderstore
 {

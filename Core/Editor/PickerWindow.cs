@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using EGU = UnityEditor.EditorGUIUtility;
 
-namespace PassivePicasso.ThunderKit.Gui
+namespace PassivePicasso.ThunderKit.Editor
 {
     public class PickerWindow : EditorWindow
     {
