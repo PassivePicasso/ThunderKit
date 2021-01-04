@@ -50,13 +50,11 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             readmeField = serializedObject.FindProperty(nameof(Manifest.readme));
             iconField = serializedObject.FindProperty(nameof(Manifest.icon));
             additionalFilesField = serializedObject.FindProperty(nameof(Manifest.additionalFiles));
-            suggestor = CreateInstance<PackageSearchSuggest>();
-            suggestor.Evaluate = EvaluateSuggestion;
-            suggestor.OnSuggestionGUI = RenderSuggestion;
-        }
-        private void OnDisable()
-        {
-            DestroyImmediate(suggestor);
+            suggestor = new PackageSearchSuggest
+            {
+                Evaluate = EvaluateSuggestion,
+                OnSuggestionGUI = RenderSuggestion
+            };
         }
 
         private bool RenderSuggestion(int arg1, Package package)

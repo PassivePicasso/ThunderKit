@@ -47,14 +47,11 @@ namespace PassivePicasso.ThunderKit.Editor
             catch 
             {
             }
-            suggestor = CreateInstance<TypeSearchSuggest>();
-            suggestor.OnSuggestionGUI = RenderOption;
-            suggestor.Evaluate = UpdateSearch;
-        }
-
-        private void OnDisable()
-        {
-            DestroyImmediate(suggestor);
+            suggestor = new TypeSearchSuggest
+            {
+                OnSuggestionGUI = RenderOption,
+                Evaluate = UpdateSearch
+            };
         }
 
         public override void OnInspectorGUI()
