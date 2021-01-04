@@ -10,7 +10,7 @@ using EGU = UnityEditor.EditorGUIUtility;
 
 namespace PassivePicasso.ThunderKit.Editor
 {
-    public class SearchSuggest<T> : ScriptableObject
+    public class SearchSuggest<T>
     {
         public Func<string, IEnumerable<T>> Evaluate;
         public Func<int, T, bool> OnSuggestionGUI;
@@ -86,7 +86,7 @@ namespace PassivePicasso.ThunderKit.Editor
             }
             else if (searchField.HasFocus() && options.Any())
             {
-                popupWindow = CreateInstance<PickerWindow>();
+                popupWindow = ScriptableObject.CreateInstance<PickerWindow>();
                 popupWindow.itemHeight = itemHeight;
                 popupWindow.options = options.OfType<object>().ToList();
                 popupWindow.OnItemGUI = (index, obj) => OnSuggestionGUI(index, (T)obj);
@@ -100,7 +100,7 @@ namespace PassivePicasso.ThunderKit.Editor
             if (popupWindow)
             {
                 popupWindow.Close();
-                DestroyImmediate(popupWindow);
+                ScriptableObject.DestroyImmediate(popupWindow);
             }
         }
 
