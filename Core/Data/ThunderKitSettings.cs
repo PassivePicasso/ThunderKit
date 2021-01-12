@@ -49,25 +49,21 @@ namespace PassivePicasso.ThunderKit.Data
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
-            CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
-            CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
-            CopyAssemblyCSharp(null, null);
+            CompilationPipeline.assemblyCompilationFinished -= LoadAllAssemblies;
+            CompilationPipeline.assemblyCompilationFinished += LoadAllAssemblies;
+            LoadAllAssemblies(null, null);
         }
 
-        static void CopyAssemblyCSharp(string arg1, CompilerMessage[] arg2)
+        static void LoadAllAssemblies(string arg1, CompilerMessage[] arg2)
         {
-            CopyAssembly("Assembly-CSharp-firstpass.dll");
-            CopyAssembly("Assembly-CSharp.dll");
-        }
+            foreach (var file in Directory.EnumerateFiles("Packages", "*.dll", SearchOption.AllDirectories))
+            {
+                var fileName = Path.GetFileName(file);
+                var outputPath = Path.Combine("Library", "ScriptAssemblies", fileName);
+                if (File.Exists(outputPath)) File.Delete(outputPath);
 
-        private static void CopyAssembly(string fileName)
-        {
-            var settings = ThunderKitSettings.GetOrCreateSettings();
-            var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
-            var filePath = Path.Combine("Packages", packageName, fileName);
-            var outputPath = Path.Combine("Library", "ScriptAssemblies", fileName);
-            if (File.Exists(filePath))
-                File.Copy(filePath, outputPath, true);
+                File.Copy(file, outputPath, true);
+            }
         }
 
         public static ThunderKitSettings GetOrCreateSettings() =>
