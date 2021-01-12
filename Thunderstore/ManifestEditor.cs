@@ -157,15 +157,17 @@ namespace PassivePicasso.ThunderKit.Thunderstore
                 {
                     var dependencyPath = Path.Combine(dependenciesPath, dependencySlot.stringValue);
 
-                    if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
+                    //if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
+                    if (AssetDatabase.DeleteAsset(dependencyPath))
+                    {
+                        dependenciesField.DeleteArrayElementAtIndex(i);
 
-                    dependenciesField.DeleteArrayElementAtIndex(i);
+                        dependenciesField.serializedObject.SetIsDifferentCacheDirty();
 
-                    dependenciesField.serializedObject.SetIsDifferentCacheDirty();
+                        dependenciesField.serializedObject.ApplyModifiedProperties();
 
-                    dependenciesField.serializedObject.ApplyModifiedProperties();
-
-                    AssetDatabase.Refresh();
+                        AssetDatabase.Refresh();
+                    }
                 }
             }
 
@@ -216,10 +218,6 @@ namespace PassivePicasso.ThunderKit.Thunderstore
                         using (var archive = new ZipArchive(fileStream))
                             foreach (var entry in archive.Entries)
                             {
-                                if (entry.FullName.ToLower().StartsWith("monomod\\"))
-                                    continue;
-                                if (entry.FullName.ToLower().StartsWith("monomod/"))
-                                    continue;
                                 if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
                                     continue;
 
