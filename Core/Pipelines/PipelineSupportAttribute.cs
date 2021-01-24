@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using System.Linq;
 
 namespace ThunderKit.Core.Pipelines
@@ -22,4 +21,3 @@ namespace ThunderKit.Core.Pipelines
         }
     }
 }
-#endif

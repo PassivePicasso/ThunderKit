@@ -1,6 +1,7 @@
 using System.IO;
+using ThunderKit.Core.Paths;
 
-namespace ThunderKit.Core.Pipelines.Composable.Jobs
+namespace ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
     public class DeleteFile : PipelineJob
@@ -9,7 +10,7 @@ namespace ThunderKit.Core.Pipelines.Composable.Jobs
 
         public override void Execute(Pipeline pipeline)
         {
-            var file = PathReference.ResolvePath(FilePath, null, pipeline);
+            var file = PathReference.ResolvePath(FilePath, pipeline);
 
             if (File.Exists(file)) File.Delete(file);
         }

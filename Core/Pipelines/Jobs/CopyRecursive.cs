@@ -1,19 +1,19 @@
 using System.IO;
+using ThunderKit.Core.Paths;
 
-namespace ThunderKit.Core.Pipelines.Composable.Jobs
+namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(ComposableManifestPipeline))]
+    [PipelineSupport(typeof(Pipeline))]
     public class CopyRecursive : PipelineJob
     {
         public string Input;
         public string Output;
         public override void Execute(Pipeline pipeline)
         {
-            var composablePipeline = pipeline as ComposableManifestPipeline;
-            foreach (var manifest in composablePipeline.manifests)
+            foreach (var manifest in pipeline.manifests)
             {
-                string source = PathReference.ResolvePath(Input, manifest, pipeline);
-                string destination = PathReference.ResolvePath(Output, manifest, pipeline);
+                string source = PathReference.ResolvePath(Input, pipeline);
+                string destination = PathReference.ResolvePath(Output, pipeline);
                 Directory.CreateDirectory(destination);
                 CopyFilesRecursively(source, destination);
             }

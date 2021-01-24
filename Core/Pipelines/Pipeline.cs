@@ -1,9 +1,9 @@
-﻿#if UNITY_EDITOR
-using ThunderKit.Core.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Manifests;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
@@ -11,6 +11,12 @@ namespace ThunderKit.Core.Pipelines
 {
     public class Pipeline : ComposableObject
     {
+        [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
+        public static void CreateComposableManifestPipeline() => ScriptableHelper.SelectNewAsset<Pipeline>();
+
+        public Manifest[] manifests;
+        public IEnumerable<ManifestDatum> Datums => manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
+
         public IEnumerable<PipelineJob> RunSteps => Data.Cast<PipelineJob>();
 
         public string OutputRoot => System.IO.Path.Combine("ThunderKit");
@@ -30,14 +36,32 @@ namespace {0}
 }}
 ";
 
+        public int JobIndex { get; protected set; }
+        public int ManifestIndex { get; protected set; }
+        public Manifest Manifest => manifests[ManifestIndex];
+
         public virtual void Execute()
         {
-            PipelineJob[] runnableSteps = RunSteps.Where(step => 
-                                                     step.GetType().GetCustomAttributes()
-                                                         .OfType<PipelineSupportAttribute>()
-                                                         .Any(psa => psa.HandlesPipeline(this.GetType()))).ToArray();
-            foreach (var step in runnableSteps) 
-                    step.Execute(this);
+            PipelineJob[] jobs = RunSteps.Where(SupportsType).ToArray();
+
+            for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
+                if (JobIsManifestProcessor()) 
+                    ExecuteManifestLoop();
+                else
+                    ExecuteJob();
+
+            PipelineJob Job() => jobs[JobIndex];
+
+            void ExecuteJob() => Job().Execute(this);
+
+            bool JobIsManifestProcessor() => Job().GetType().GetCustomAttributes<ManifestProcessorAttribute>().Any();
+
+            void ExecuteManifestLoop()
+            {
+                for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
+                    if (Manifest)
+                        Job().Execute(this);
+            }
         }
 
 
@@ -51,6 +75,7 @@ namespace {0}
             return true;
         }
 
+        public bool SupportsType(PipelineJob job) => SupportsType(job.GetType());
         public override bool SupportsType(Type type)
         {
             if (ElementType.IsAssignableFrom(type))
@@ -66,4 +91,3 @@ namespace {0}
         public override Type ElementType => typeof(PipelineJob);
     }
 }
-#endif

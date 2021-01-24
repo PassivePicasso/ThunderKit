@@ -1,17 +1,17 @@
-﻿#if UNITY_EDITOR
-using ThunderKit.Core.Editor;
-using System;
+﻿using System;
 using System.IO;
+using ThunderKit.Core.Editor;
+using ThunderKit.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.Thunderstore
 {
     using static ScriptableHelper;
-    public class CreateManifest
+    public class CreateThunderstoreManifest
     {
 #pragma warning disable 0649
-        public struct ManifestStub
+        public struct ThunderstoreManifestStub
         {
             public string name;
             public string author;
@@ -22,7 +22,7 @@ namespace ThunderKit.Thunderstore
         }
 #pragma warning restore 0649
 
-        [MenuItem(Constants.ThunderStorePath + nameof(Manifest), true, priority = Core.Constants.ThunderKitMenuPriority)]
+        [MenuItem(Constants.ThunderStorePath + nameof(ThunderstoreManifest), true, priority = Core.Constants.ThunderKitMenuPriority)]
         public static bool CanCreate()
         {
             if (Selection.activeObject is TextAsset)
@@ -33,7 +33,7 @@ namespace ThunderKit.Thunderstore
                 try
                 {
                     var json = File.ReadAllText(assetPath);
-                    var stubManifest = JsonUtility.FromJson<ManifestStub>(json);
+                    var stubManifest = JsonUtility.FromJson<ThunderstoreManifestStub>(json);
                 }
                 catch (Exception e)
                 {
@@ -47,7 +47,7 @@ namespace ThunderKit.Thunderstore
         }
 
 
-        [MenuItem(Constants.ThunderStorePath + nameof(Manifest), false, priority = Core.Constants.ThunderKitMenuPriority)]
+        [MenuItem(Constants.ThunderStorePath + nameof(ThunderstoreManifest), false, priority = Core.Constants.ThunderKitMenuPriority)]
         public static void Create()
         {
             try
@@ -63,12 +63,12 @@ namespace ThunderKit.Thunderstore
                 {
                     LoadStub(assetPath);
                     json = File.ReadAllText(assetPath);
-                    var stubManifest = JsonUtility.FromJson<ManifestStub>(json);
+                    var stubManifest = JsonUtility.FromJson<ThunderstoreManifestStub>(json);
                     name = stubManifest.name;
                 }
 
-                SelectNewAsset<Manifest>(() => name);
-                var instance = Selection.activeObject as Manifest;
+                SelectNewAsset<ThunderstoreManifest>(() => name);
+                var instance = Selection.activeObject as ThunderstoreManifest;
 
                 JsonUtility.FromJsonOverwrite(json, instance);
             }
@@ -78,8 +78,7 @@ namespace ThunderKit.Thunderstore
             }
         }
 
-        public static ManifestStub LoadStub(string path) => JsonUtility.FromJson<ManifestStub>(File.ReadAllText(path));
+        public static ThunderstoreManifestStub LoadStub(string path) => JsonUtility.FromJson<ThunderstoreManifestStub>(File.ReadAllText(path));
 
     }
 }
-#endif

@@ -7,9 +7,6 @@ namespace ThunderKit.Core.Manifests
 {
     public class Manifest : ComposableObject
     {
-        public ManifestDatum[] Datum => base.Data.Cast<ManifestDatum>().ToArray();
-
-
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Manifest), priority = Constants.ThunderKitMenuPriority)]
         public static void CreateManifest()
         {
@@ -27,9 +24,6 @@ namespace {0}
     }}
 }}
 ";
-
         public override bool SupportsType(Type type) => ElementType.IsAssignableFrom(type);
-
-
     }
 }

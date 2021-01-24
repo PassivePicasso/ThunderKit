@@ -1,4 +1,4 @@
-﻿using ThunderKit.Core.Pipelines;
+﻿using ThunderKit.Core.Paths;
 using UnityEditorInternal;
 
 namespace ThunderKit.Core.Manifests.Common
