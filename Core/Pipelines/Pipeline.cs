@@ -50,6 +50,8 @@ namespace {0}
                 else
                     ExecuteJob();
 
+            JobIndex = -1;
+
             PipelineJob Job() => jobs[JobIndex];
 
             void ExecuteJob() => Job().Execute(this);
@@ -61,6 +63,8 @@ namespace {0}
                 for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
                     if (Manifest)
                         Job().Execute(this);
+
+                ManifestIndex = -1;
             }
         }
 
