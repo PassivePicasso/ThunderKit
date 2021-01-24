@@ -62,7 +62,7 @@ namespace {0}
             {
                 for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
                     if (Manifest)
-                        Job().Execute(this);
+                        ExecuteJob();
 
                 ManifestIndex = -1;
             }
