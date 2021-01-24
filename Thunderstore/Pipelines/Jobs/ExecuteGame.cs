@@ -1,14 +1,12 @@
-﻿#if UNITY_EDITOR
-
-using PassivePicasso.ThunderKit.Core.Data;
-using PassivePicasso.ThunderKit.Core.Pipelines;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.Pipelines;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
+namespace ThunderKit.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(ManifestPipeline))]
     public class ExecuteGame : PipelineJob
@@ -59,5 +57,3 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         }
     }
 }
-
-#endif

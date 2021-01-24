@@ -1,9 +1,8 @@
-﻿#if UNITY_EDITOR
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor
 {
-	public class EnumFlagAttribute : PropertyAttribute
+    public class EnumFlagAttribute : PropertyAttribute
 	{
 		public string enumName;
 
@@ -15,4 +14,3 @@ namespace PassivePicasso.ThunderKit.Core.Editor
 		}
 	}
 }
-#endif

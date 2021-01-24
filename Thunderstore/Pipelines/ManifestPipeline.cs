@@ -1,12 +1,12 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Editor;
-using PassivePicasso.ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Pipelines;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
+namespace ThunderKit.Thunderstore.Pipelines
 {
     public class ManifestPipeline : Pipeline
     {

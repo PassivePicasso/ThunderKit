@@ -2,7 +2,7 @@
 using System;
 using UnityEditor.ProjectWindowCallback;
 
-namespace PassivePicasso.ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor
 {
     public class SelfDestructingActionAsset : EndNameEditAction
     {

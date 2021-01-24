@@ -1,6 +1,6 @@
 
-using PassivePicasso.ThunderKit.Core.Pipelines;
-using PassivePicasso.ThunderKit.Core.Manifests;
+using ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Manifests;
 
 namespace ThunderKit.Core.Pipelines.PathComponents
 {

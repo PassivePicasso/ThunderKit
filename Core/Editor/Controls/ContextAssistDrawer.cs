@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core.Editor.Controls
+namespace ThunderKit.Core.Editor.Controls
 {
     [CustomPropertyDrawer(typeof(ContextAssistAttribute))]
     public class ContextAssistDrawer : PropertyDrawer

@@ -1,4 +1,4 @@
-namespace PassivePicasso.ThunderKit.Core.Pipelines.PathComponents
+namespace ThunderKit.Core.Pipelines.PathComponents
 {
     public class Constant : PathComponent
     {

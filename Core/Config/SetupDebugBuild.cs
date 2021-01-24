@@ -1,13 +1,13 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Data;
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
-namespace PassivePicasso.ThunderKit.Core.Config
+namespace ThunderKit.Core.Config
 {
     internal struct SwapPair
     {

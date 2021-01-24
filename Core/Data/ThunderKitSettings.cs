@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.Compilation;
 using System.IO;
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Editor;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -13,7 +13,7 @@ using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-namespace PassivePicasso.ThunderKit.Core.Data
+namespace ThunderKit.Core.Data
 {
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ScriptableObject

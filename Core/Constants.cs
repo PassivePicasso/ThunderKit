@@ -1,4 +1,4 @@
-﻿namespace PassivePicasso.ThunderKit.Core
+﻿namespace ThunderKit.Core
 {
     public static class Constants 
     {

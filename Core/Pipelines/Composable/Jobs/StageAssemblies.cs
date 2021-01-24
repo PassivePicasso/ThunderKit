@@ -1,11 +1,11 @@
-﻿using PassivePicasso.ThunderKit.Core.Data;
-using PassivePicasso.ThunderKit.Core.Manifests.Common;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.Manifests.Common;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core.Pipelines.Jobs
+namespace ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(ComposableManifestPipeline))]
     public class StageAssemblies : PipelineJob

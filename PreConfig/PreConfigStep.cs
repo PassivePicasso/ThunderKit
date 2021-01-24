@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.PreConfig
+namespace ThunderKit.PreConfig
 {
     [InitializeOnLoad]
     public class PreConfigStep

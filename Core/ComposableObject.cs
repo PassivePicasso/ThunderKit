@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace PassivePicasso.ThunderKit.Core
+namespace ThunderKit.Core
 {
     public abstract class ComposableObject : ScriptableObject
     {

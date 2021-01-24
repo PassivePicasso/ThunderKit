@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PassivePicasso.ThunderKit.Core.Manifests.Common
+namespace ThunderKit.Core.Manifests.Common
 {
 
     [Serializable]

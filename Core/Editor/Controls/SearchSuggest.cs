@@ -7,7 +7,7 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 
-namespace PassivePicasso.ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor
 {
     public class SearchSuggest<T>
     {

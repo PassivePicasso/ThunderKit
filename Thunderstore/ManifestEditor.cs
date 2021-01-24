@@ -1,7 +1,7 @@
 ﻿#if CompressionInstalled
 #if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Data;
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -12,9 +12,9 @@ using UnityEngine;
 using static UnityEditor.EditorGUILayout;
 using static UnityEditor.EditorGUIUtility;
 using static UnityEngine.GUILayout;
-using static PassivePicasso.ThunderKit.Thunderstore.Constants;
+using static ThunderKit.Thunderstore.Constants;
 
-namespace PassivePicasso.ThunderKit.Thunderstore
+namespace ThunderKit.Thunderstore
 {
     [CustomEditor(typeof(Manifest))]
     public class ManifestEditor : UnityEditor.Editor

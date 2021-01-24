@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
 
-namespace PassivePicasso.ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor
 {
     public class TypeSearchSuggest : SearchSuggest<Type>
     {

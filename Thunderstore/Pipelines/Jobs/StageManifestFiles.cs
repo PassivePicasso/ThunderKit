@@ -1,11 +1,11 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Pipelines;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
+namespace ThunderKit.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
     public class StageManifestFiles : PipelineJob

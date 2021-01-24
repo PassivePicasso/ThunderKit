@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace PassivePicasso.ThunderKit.Thunderstore
+namespace ThunderKit.Thunderstore
 {
     [Serializable]
     public partial class Package

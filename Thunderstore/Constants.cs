@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace PassivePicasso.ThunderKit.Thunderstore
+namespace ThunderKit.Thunderstore
 {
     internal static class Constants
     {

@@ -1,12 +1,12 @@
 ﻿ #if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Data;
+using ThunderKit.Core.Data;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Thunderstore
+namespace ThunderKit.Thunderstore
 {
     public class Manifest : ScriptableObject
     {

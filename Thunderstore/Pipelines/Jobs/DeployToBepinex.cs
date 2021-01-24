@@ -1,12 +1,11 @@
-﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Config;
-using PassivePicasso.ThunderKit.Core.Editor;
-using PassivePicasso.ThunderKit.Core.Pipelines;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using ThunderKit.Core.Config;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Pipelines;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
+namespace ThunderKit.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
     public class DeployToBepinex : PipelineJob
@@ -96,4 +95,3 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
         }
     }
 }
-#endif

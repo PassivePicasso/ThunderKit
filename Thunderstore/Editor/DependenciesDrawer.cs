@@ -1,4 +1,4 @@
-﻿using PassivePicasso.ThunderKit.Thunderstore.Manifests;
+﻿using ThunderKit.Thunderstore.Manifests;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,9 +6,9 @@ using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 using GL = UnityEngine.GUILayout;
-using static PassivePicasso.ThunderKit.Thunderstore.Constants;
+using static ThunderKit.Thunderstore.Constants;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Editor
+namespace ThunderKit.Thunderstore.Editor
 {
     using Manifest = Core.Manifests.Manifest;
 

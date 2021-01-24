@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
+using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core.Editor.Controls
+namespace ThunderKit.Core.Editor.Controls
 {
     [Serializable]
     class AddScriptWindowBackup : ScriptableObject

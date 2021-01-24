@@ -1,5 +1,3 @@
-
-using PassivePicasso.ThunderKit.Core.Pipelines;
 using System.IO;
 
 namespace ThunderKit.Core.Pipelines.Composable.Jobs

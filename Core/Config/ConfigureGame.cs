@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Data;
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +11,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace PassivePicasso.ThunderKit.Core.Config
+namespace ThunderKit.Core.Config
 {
     public class ConfigureGame
     {

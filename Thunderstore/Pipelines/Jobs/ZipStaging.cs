@@ -1,11 +1,11 @@
 ﻿#if CompressionInstalled
 #if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Pipelines;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
+namespace ThunderKit.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
     public class ZipStaging : PipelineJob

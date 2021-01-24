@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Editor;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,7 +11,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace PassivePicasso.ThunderKit.Thunderstore
+namespace ThunderKit.Thunderstore
 {
     /// <summary>
     /// ThunderstoreAPI provides an interface to the Thunderstore API

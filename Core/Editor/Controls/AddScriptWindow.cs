@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core.Editor.Controls
+namespace ThunderKit.Core.Editor.Controls
 {
     public class AddScriptWindow : EditorWindow
     {

@@ -1,6 +1,4 @@
-
-using PassivePicasso.ThunderKit.Core.Manifests;
-using PassivePicasso.ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Manifests;
 using UnityEditor;
 
 namespace ThunderKit.Core.Pipelines.PathComponents

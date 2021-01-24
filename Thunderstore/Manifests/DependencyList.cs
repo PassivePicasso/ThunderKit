@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Manifests
+namespace ThunderKit.Thunderstore.Manifests
 {
     [Serializable]
     public class DependencyList : List<String>
