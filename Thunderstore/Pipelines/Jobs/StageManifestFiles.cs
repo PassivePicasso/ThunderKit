@@ -1,47 +1,62 @@
-﻿#if UNITY_EDITOR
-using ThunderKit.Core.Pipelines;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using ThunderKit.Core.Paths;
+using ThunderKit.Core.Pipelines;
+using ThunderKit.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.Thunderstore.Pipelines.Steps
 {
-    [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
+    [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
     public class StageManifestFiles : PipelineJob
     {
+        public string[] outputPaths;
         public bool includeReadme;
         public bool includeIcon;
         public bool includeManifestJson;
 
         public override void Execute(Pipeline pipeline)
         {
-            var manifestPipeline = pipeline as ManifestPipeline;
-            var manifest = manifestPipeline.Manifest;
-            var outputPath = Path.Combine(manifestPipeline.ManifestPath);
-
-            if (includeReadme)
-                if (manifest.readme)
-                {
-                    var readmePath = AssetDatabase.GetAssetPath(manifest.readme);
-                    File.Copy(readmePath, Path.Combine(outputPath, "README.md"), true);
-                }
-                else File.WriteAllText(Path.Combine(outputPath, "README.md"), $"# {manifest.name}");
-
-            if (includeManifestJson)
+            foreach (var manifest in pipeline.Manifest.Data.OfType<ThunderstoreManifest>())
             {
-                var manifestJson = manifest.RenderJson();
-                var pluginPath = Path.Combine(outputPath, "plugins", manifest.name);
-                if (manifest.plugins.Any() && !Directory.Exists(pluginPath)) Directory.CreateDirectory(pluginPath);
+                var manifestJson = includeManifestJson ? string.Empty : RenderJson(manifest);
 
-                if (Directory.Exists(pluginPath)) File.WriteAllText(Path.Combine(pluginPath, "manifest.json"), manifestJson);
+                foreach (var outputPath in outputPaths.Select(path => PathReference.ResolvePath(path, pipeline)))
+                {
+                    if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
-                File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
+                    if (includeReadme)
+                        if (manifest.readme)
+                        {
+                            var readmePath = AssetDatabase.GetAssetPath(manifest.readme);
+                            File.Copy(readmePath, Path.Combine(outputPath, "README.md"), true);
+                        }
+                        else File.WriteAllText(Path.Combine(outputPath, "README.md"), $"# {manifest.name}");
+
+                    if (includeManifestJson)
+                    {
+                        manifestJson = RenderJson(manifest);
+                        var pluginPath = Path.Combine(outputPath, "plugins", manifest.name);
+
+                        if (Directory.Exists(pluginPath)) File.WriteAllText(Path.Combine(pluginPath, "manifest.json"), manifestJson);
+
+                        File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
+                    }
+
+                    if (includeIcon && manifest.icon)
+                        File.WriteAllBytes(Path.Combine(outputPath, "icon.png"), manifest.icon.EncodeToPNG());
+                }
             }
+        }
 
-            if (includeIcon && manifest.icon)
-                File.WriteAllBytes(Path.Combine(outputPath, "icon.png"), manifest.icon.EncodeToPNG());
+        public string RenderJson(ThunderstoreManifest manifest)
+        {
+            var manifestJson = JsonUtility.ToJson(manifest);
+
+            manifestJson = manifestJson.Substring(1);
+            manifestJson = $"{{\"name\":\"{name}\",{manifestJson}";
+            return manifestJson;
         }
     }
 }
-#endif

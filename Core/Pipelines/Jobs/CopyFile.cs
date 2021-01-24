@@ -1,6 +1,7 @@
 using System.IO;
+using ThunderKit.Core.Paths;
 
-namespace ThunderKit.Core.Pipelines.Composable.Jobs
+namespace ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
     public class CopyFile : PipelineJob
@@ -10,8 +11,8 @@ namespace ThunderKit.Core.Pipelines.Composable.Jobs
 
         public override void Execute(Pipeline pipeline)
         {
-            var sourceFile = PathReference.ResolvePath(SourceFile, null, pipeline);
-            var destinationFile = PathReference.ResolvePath(DestinationFile, null, pipeline);
+            var sourceFile = PathReference.ResolvePath(SourceFile, pipeline);
+            var destinationFile = PathReference.ResolvePath(DestinationFile, pipeline);
 
             File.Copy(sourceFile, destinationFile, true);
         }

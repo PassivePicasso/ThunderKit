@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ThunderKit.Thunderstore.Pipelines
+namespace ThunderKit.Core.Pipelines
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class ManifestProcessorAttribute : Attribute

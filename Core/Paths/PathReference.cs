@@ -1,15 +1,16 @@
-﻿using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
-using ThunderKit.Core.Manifests;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Pipelines;
 using UnityEditor;
 using UnityEngine;
 using static System.IO.Path;
 
-namespace ThunderKit.Core.Pipelines
+namespace ThunderKit.Core.Paths
 {
     public class PathReference : ComposableObject
     {
@@ -17,7 +18,7 @@ namespace ThunderKit.Core.Pipelines
         public static void CreateOutput() => ScriptableHelper.SelectNewAsset<PathReference>();
 
         private static Regex referenceIdentifier = new Regex("\\%(.*?)\\%");
-        public static string ResolvePath(string input, Manifest manifest, Pipeline pipeline)
+        public static string ResolvePath(string input, Pipeline pipeline)
         {
             var pathReferences = FindObjectsOfType<PathReference>()
                                  .Union(Resources.FindObjectsOfTypeAll<PathReference>())
@@ -40,7 +41,7 @@ namespace ThunderKit.Core.Pipelines
                         replacement = Directory.GetCurrentDirectory();
                         break;
                     default:
-                        replacement = pathReferences[matchValue].GetPath(manifest, pipeline);
+                        replacement = pathReferences[matchValue].GetPath(pipeline);
                         break;
                 }
                 input = input.Replace(match.Value, replacement);
@@ -55,9 +56,9 @@ namespace ThunderKit.Core.Pipelines
 
         public override bool SupportsType(Type type) => ElementType.IsAssignableFrom(type);
 
-        public string GetPath(Manifests.Manifest manifest, Pipeline pipeline)
+        public string GetPath(Pipeline pipeline)
         {
-            return Data.OfType<PathComponent>().Select(d => d.GetPath(this, manifest, pipeline)).Aggregate(Combine);
+            return Data.OfType<PathComponent>().Select(d => d.GetPath(this, pipeline)).Aggregate(Combine);
         }
 
         public override string ElementTemplate => $@"

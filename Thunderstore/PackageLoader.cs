@@ -60,7 +60,7 @@ namespace ThunderKit.Thunderstore
                             entry.ExtractToFile(outputPath);
                             if ("manifest.json".Equals(fileName.ToLower()))
                             {
-                                var stubManifest = CreateManifest.LoadStub(outputPath);
+                                var stubManifest = CreateThunderstoreManifest.LoadStub(outputPath);
                                 string name = stubManifest.name.ToLower();
                                 string modVersion = stubManifest.version_number;
                                 string description = stubManifest.description;

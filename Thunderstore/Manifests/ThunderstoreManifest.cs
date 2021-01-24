@@ -12,5 +12,6 @@ namespace ThunderKit.Thunderstore.Manifests
         public TextAsset readme;
         public Texture2D icon;
         public DependencyList dependencies;
+
     }
 }

@@ -7,18 +7,17 @@ using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(ComposableManifestPipeline))]
+    [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
     public class StageAssemblies : PipelineJob
     {
         public bool stageDebugDatabases;
 
         public override void Execute(Pipeline pipeline)
         {
-            var manifestPipeline = (pipeline as ComposableManifestPipeline);
-            foreach (var manifest in manifestPipeline.manifests)
-                foreach (var asmDefs in manifestPipeline.Datums.OfType<AssemblyDefinitions>())
+            foreach (var manifest in pipeline.manifests)
+                foreach (var asmDefs in pipeline.Datums.OfType<AssemblyDefinitions>())
                 {
-                    var outputPath = asmDefs.output.GetPath(manifest, pipeline);
+                    var outputPath = asmDefs.output.GetPath(pipeline);
                     CopyReferences(asmDefs.definitions, outputPath);
                 }
         }
