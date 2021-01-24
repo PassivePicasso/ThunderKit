@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Data;
-using PassivePicasso.ThunderKit.Editor;
+using PassivePicasso.ThunderKit.Core.Data;
+using PassivePicasso.ThunderKit.Core.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,11 +11,11 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace PassivePicasso.ThunderKit.Config
+namespace PassivePicasso.ThunderKit.Core.Config
 {
     public class ConfigureGame
     {
-        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Configure Game")]
+        [MenuItem(Constants.ThunderKitMenuRoot + "Configure Game", priority = Constants.ThunderKitMenuPriority)]
         private static void Configure()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings();

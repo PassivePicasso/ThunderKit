@@ -1,25 +1,38 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Editor;
+using PassivePicasso.ThunderKit.Core.Editor;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Pipelines
+namespace PassivePicasso.ThunderKit.Core.Pipelines
 {
-    public class Pipeline : ScriptableObject
+    public class Pipeline : ComposableObject
     {
-        [MenuItem(ScriptableHelper.ThunderKitContextRoot + nameof(Pipeline), false)]
-        public static void CreatePipeline() => ScriptableHelper.SelectNewAsset<Pipeline>();
-
-        public PipelineJob[] runSteps;
+        public IEnumerable<PipelineJob> RunSteps => Data.Cast<PipelineJob>();
 
         public string OutputRoot => System.IO.Path.Combine("ThunderKit");
 
+        public override string ElementTemplate => @"
+using PassivePicasso.ThunderKit.Core.Pipelines;
+
+namespace {0}
+{{
+    [PipelineSupport(typeof(Pipeline))]
+    public class {1} : PipelineJob
+    {{
+        public override void Execute(Pipeline pipeline)
+        {{
+        }}
+    }}
+}}
+";
+
         public virtual void Execute()
         {
-            PipelineJob[] runnableSteps = runSteps.Where(step => 
+            PipelineJob[] runnableSteps = RunSteps.Where(step => 
                                                      step.GetType().GetCustomAttributes()
                                                          .OfType<PipelineSupportAttribute>()
                                                          .Any(psa => psa.HandlesPipeline(this.GetType()))).ToArray();
@@ -37,6 +50,20 @@ namespace PassivePicasso.ThunderKit.Pipelines
 
             return true;
         }
+
+        public override bool SupportsType(Type type)
+        {
+            if (ElementType.IsAssignableFrom(type))
+            {
+                var customAttributes = type.GetCustomAttributes();
+                var pipelineSupportAttributes = customAttributes.OfType<PipelineSupportAttribute>();
+                if (pipelineSupportAttributes.Any(psa => psa.HandlesPipeline(GetType())))
+                    return true;
+            }
+            return false;
+        }
+
+        public override Type ElementType => typeof(PipelineJob);
     }
 }
 #endif

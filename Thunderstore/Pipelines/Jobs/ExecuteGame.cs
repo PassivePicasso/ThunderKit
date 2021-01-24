@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 
-using PassivePicasso.ThunderKit.Data;
-using PassivePicasso.ThunderKit.Pipelines;
+using PassivePicasso.ThunderKit.Core.Data;
+using PassivePicasso.ThunderKit.Core.Pipelines;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,13 +13,14 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
     [PipelineSupport(typeof(ManifestPipeline))]
     public class ExecuteGame : PipelineJob
     {
+        public PathReference BepinexReference;
         public string[] extraCommandLineArgs;
 
         public override void Execute(Pipeline pipeline)
         {
             var settings/*       */= ThunderKitSettings.GetOrCreateSettings();
             var ror2Executable = Path.Combine(settings.GamePath, settings.GameExecutable);
-            var bepinexDir/*     */= Path.Combine(pipeline.OutputRoot, "BepInExPack", "BepInEx");
+            var bepinexDir/*     */= BepinexReference.GetPath(null, pipeline);
             var bepinexCoreDir/* */= Path.Combine(bepinexDir, "core");
 
             if (File.Exists(Path.Combine(settings.GamePath, "doorstop_config.ini")))

@@ -4,13 +4,10 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Editor
+namespace PassivePicasso.ThunderKit.Core.Editor
 {
     public static class ScriptableHelper
     {
-        public const string ThunderKitContextRoot = "Assets/ThunderKit/";
-        public const string ThunderKitMenuRoot = "ThunderKit/";
-
         static object[] findTextureParams = new object[1];
         public static void SelectNewAsset<T>(Func<string> overrideName = null) where T : ScriptableObject
         {

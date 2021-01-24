@@ -1,8 +1,8 @@
 ﻿#if UNITY_EDITOR
 using UnityEditor;
+using UnityEngine;
 
-
-namespace PassivePicasso.ThunderKit.Editor
+namespace PassivePicasso.ThunderKit.Core.Editor
 {
     public static class EditorHelpers
     {
@@ -10,6 +10,16 @@ namespace PassivePicasso.ThunderKit.Editor
         {
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(property, true);
+            if (EditorGUI.EndChangeCheck())
+            {
+                property.serializedObject.SetIsDifferentCacheDirty();
+                property.serializedObject.ApplyModifiedProperties();
+            }
+        }
+        public static void AddField(Rect rect, SerializedProperty property)
+        {
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.PropertyField(rect, property, true);
             if (EditorGUI.EndChangeCheck())
             {
                 property.serializedObject.SetIsDifferentCacheDirty();

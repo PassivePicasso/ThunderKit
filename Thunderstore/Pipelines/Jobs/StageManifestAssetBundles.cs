@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Data;
-using PassivePicasso.ThunderKit.Editor;
-using PassivePicasso.ThunderKit.Pipelines;
+using PassivePicasso.ThunderKit.Core.Data;
+using PassivePicasso.ThunderKit.Core.Editor;
+using PassivePicasso.ThunderKit.Core.Pipelines;
 using System;
 using System.Collections.Generic;
 using System.IO;

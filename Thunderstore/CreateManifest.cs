@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Editor;
+using PassivePicasso.ThunderKit.Core.Editor;
 using System;
 using System.IO;
 using UnityEditor;
@@ -22,7 +22,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
         }
 #pragma warning restore 0649
 
-        [MenuItem(ThunderKitContextRoot + nameof(Manifest), true)]
+        [MenuItem(Constants.ThunderStorePath + nameof(Manifest), true, priority = Core.Constants.ThunderKitMenuPriority)]
         public static bool CanCreate()
         {
             if (Selection.activeObject is TextAsset)
@@ -47,7 +47,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
         }
 
 
-        [MenuItem(ThunderKitContextRoot + nameof(Manifest), false)]
+        [MenuItem(Constants.ThunderStorePath + nameof(Manifest), false, priority = Core.Constants.ThunderKitMenuPriority)]
         public static void Create()
         {
             try

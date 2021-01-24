@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace PassivePicasso.ThunderKit.Pipelines
+namespace PassivePicasso.ThunderKit.Core.Pipelines
 {
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]

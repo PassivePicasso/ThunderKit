@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Editor;
-using PassivePicasso.ThunderKit.Pipelines;
+using PassivePicasso.ThunderKit.Core.Editor;
+using PassivePicasso.ThunderKit.Core.Pipelines;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,7 +10,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
 {
     public class ManifestPipeline : Pipeline
     {
-        [MenuItem(ScriptableHelper.ThunderKitContextRoot + nameof(ManifestPipeline), false)]
+        [MenuItem(Constants.ThunderStorePath + nameof(ManifestPipeline), false, priority = Core.Constants.ThunderKitMenuPriority)]
         public static void CreateManifestPipeline() => ScriptableHelper.SelectNewAsset<ManifestPipeline>();
 
         public Manifest[] manifests;
@@ -33,15 +33,16 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines
                     if (!Directory.Exists(MonoModStagingPath)) Directory.CreateDirectory(MonoModStagingPath);
                 }
 
-            for (StepIndex = 0; StepIndex < runSteps.Length; StepIndex++)
-                if (runSteps[StepIndex].GetType().GetCustomAttributes<ManifestProcessorAttribute>().Any())
+            var jobs = RunSteps.ToArray();
+            for (StepIndex = 0; StepIndex < jobs.Length; StepIndex++)
+                if (jobs[StepIndex].GetType().GetCustomAttributes<ManifestProcessorAttribute>().Any())
                 {
                     for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
                         if (manifests[ManifestIndex])
-                            runSteps[StepIndex].Execute(this);
+                            jobs[StepIndex].Execute(this);
                 }
                 else
-                    runSteps[StepIndex].Execute(this);
+                    jobs[StepIndex].Execute(this);
         }
     }
 }

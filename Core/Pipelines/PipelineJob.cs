@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Pipelines
+namespace PassivePicasso.ThunderKit.Core.Pipelines
 {
     public abstract class PipelineJob : ScriptableObject
     {
