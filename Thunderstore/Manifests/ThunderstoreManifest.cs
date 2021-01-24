@@ -1,7 +1,7 @@
-﻿using PassivePicasso.ThunderKit.Core.Manifests;
+﻿using ThunderKit.Core.Manifests;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Thunderstore.Manifests
+namespace ThunderKit.Thunderstore.Manifests
 {
     public class ThunderstoreManifest : ManifestDatum
     {

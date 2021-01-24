@@ -1,6 +1,4 @@
 using System.IO;
-using PassivePicasso.ThunderKit.Core.Pipelines;
-using UnityEditor;
 
 namespace ThunderKit.Core.Pipelines.Composable.Jobs
 {

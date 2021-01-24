@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Editor;
 
-namespace PassivePicasso.ThunderKit.Thunderstore
+namespace ThunderKit.Thunderstore
 {
     public class PackageSearchSuggest : SearchSuggest<Package>
     {

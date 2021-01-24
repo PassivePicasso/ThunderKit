@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using UnityEditor;
 
-namespace PassivePicasso.ThunderKit.Core.Pipelines.Jobs
+namespace ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
     public class AddFilesToZip : PipelineJob

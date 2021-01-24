@@ -1,15 +1,15 @@
-﻿using PassivePicasso.ThunderKit.Core.Editor.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ThunderKit.Core.Editor.Controls;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using static UnityEditor.EditorGUILayout;
 using static UnityEditor.EditorGUIUtility;
 
-namespace PassivePicasso.ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor
 {
     [CustomEditor(typeof(ComposableObject), true)]
     public class ComposableObjectEditor : UnityEditor.Editor

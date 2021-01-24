@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 
-namespace PassivePicasso.ThunderKit.Core.Data
+namespace ThunderKit.Core.Data
 {
     public struct PackageManagerManifest
     {

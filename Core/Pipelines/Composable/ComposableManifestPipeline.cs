@@ -1,10 +1,10 @@
-﻿using PassivePicasso.ThunderKit.Core.Editor;
-using PassivePicasso.ThunderKit.Core.Manifests;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Manifests;
 using UnityEditor;
 
-namespace PassivePicasso.ThunderKit.Core.Pipelines
+namespace ThunderKit.Core.Pipelines
 {
     public class ComposableManifestPipeline : Pipeline
     {

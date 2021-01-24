@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Editor;
 using System;
 using System.IO;
 using System.Linq;
@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace PassivePicasso.ThunderKit.Core.Data
+namespace ThunderKit.Core.Data
 {
     using static ScriptableHelper;
     [Flags]

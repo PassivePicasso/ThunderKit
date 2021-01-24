@@ -1,10 +1,10 @@
-﻿using PassivePicasso.ThunderKit.Core.Data;
+﻿using ThunderKit.Core.Data;
 using System.IO;
 using System.IO.Compression;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Thunderstore
+namespace ThunderKit.Thunderstore
 {
     public class PackageLoader
     {

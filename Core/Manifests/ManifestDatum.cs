@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core.Manifests
+namespace ThunderKit.Core.Manifests
 {
     public class ManifestDatum : ScriptableObject
     {

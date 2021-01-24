@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core.Editor.Controls
+namespace ThunderKit.Core.Editor.Controls
 {
     public class ContextAssistAttribute : PropertyAttribute
     {

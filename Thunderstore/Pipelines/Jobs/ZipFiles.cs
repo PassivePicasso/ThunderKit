@@ -1,12 +1,12 @@
 ﻿#if CompressionInstalled
-using PassivePicasso.ThunderKit.Core.Data;
-using PassivePicasso.ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.Pipelines;
 using System.IO;
 using System.IO.Compression;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Pipelines.Jobs
+namespace ThunderKit.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
     public class ZipFiles : PipelineJob

@@ -1,6 +1,6 @@
-﻿using PassivePicasso.ThunderKit.Core.Data;
+﻿using ThunderKit.Core.Data;
 
-namespace PassivePicasso.ThunderKit.Core.Manifests.Common
+namespace ThunderKit.Core.Manifests.Common
 {
     public class UnityPackages : ManifestDatum
     {

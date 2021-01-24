@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Core.Pipelines
+namespace ThunderKit.Core.Pipelines
 {
     public class PathComponent : ScriptableObject
     {

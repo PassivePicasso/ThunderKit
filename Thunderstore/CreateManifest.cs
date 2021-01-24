@@ -1,11 +1,11 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Editor;
 using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Thunderstore
+namespace ThunderKit.Thunderstore
 {
     using static ScriptableHelper;
     public class CreateManifest

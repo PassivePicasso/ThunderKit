@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using UnityEditor;
-using static PassivePicasso.ThunderKit.Core.Editor.ScriptableHelper;
+using static ThunderKit.Core.Editor.ScriptableHelper;
 
-namespace PassivePicasso.ThunderKit.Core.Manifests
+namespace ThunderKit.Core.Manifests
 {
     public class Manifest : ComposableObject
     {
@@ -18,7 +18,7 @@ namespace PassivePicasso.ThunderKit.Core.Manifests
         public override Type ElementType => typeof(ManifestDatum);
 
         public override string ElementTemplate => @"
-using PassivePicasso.ThunderKit.Core.Manifests;
+using ThunderKit.Core.Manifests;
 
 namespace {0}
 {{

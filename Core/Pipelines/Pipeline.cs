@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Editor;
+using ThunderKit.Core.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
-namespace PassivePicasso.ThunderKit.Core.Pipelines
+namespace ThunderKit.Core.Pipelines
 {
     public class Pipeline : ComposableObject
     {
@@ -16,7 +16,7 @@ namespace PassivePicasso.ThunderKit.Core.Pipelines
         public string OutputRoot => System.IO.Path.Combine("ThunderKit");
 
         public override string ElementTemplate => @"
-using PassivePicasso.ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Pipelines;
 
 namespace {0}
 {{

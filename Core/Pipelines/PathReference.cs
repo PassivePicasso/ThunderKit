@@ -1,6 +1,6 @@
-﻿using PassivePicasso.ThunderKit.Core.Data;
-using PassivePicasso.ThunderKit.Core.Editor;
-using PassivePicasso.ThunderKit.Core.Manifests;
+﻿using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Manifests;
 using System;
 using System.IO;
 using System.Linq;
@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using static System.IO.Path;
 
-namespace PassivePicasso.ThunderKit.Core.Pipelines
+namespace ThunderKit.Core.Pipelines
 {
     public class PathReference : ComposableObject
     {
@@ -61,8 +61,8 @@ namespace PassivePicasso.ThunderKit.Core.Pipelines
         }
 
         public override string ElementTemplate => $@"
-using PassivePicasso.ThunderKit.Core.Pipelines;
-using PassivePicasso.ThunderKit.Core.Manifests;
+using ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Manifests;
 
 namespace {{0}}
 {{{{

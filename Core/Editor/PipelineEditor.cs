@@ -1,10 +1,10 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Pipelines;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 
-namespace PassivePicasso.ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor
 {
     [CustomEditor(typeof(Pipeline), true)]
     public class PipelineEditor : ComposableObjectEditor
