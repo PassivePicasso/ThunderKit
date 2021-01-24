@@ -1,9 +1,9 @@
 ﻿#if CompressionInstalled
-using UnityEditor;
-using System.IO.Compression;
 using System.IO;
+using System.IO.Compression;
+using UnityEditor;
 
-namespace PassivePicasso.ThunderKit.Pipelines.Jobs
+namespace PassivePicasso.ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
     public class AddFilesToZip : PipelineJob

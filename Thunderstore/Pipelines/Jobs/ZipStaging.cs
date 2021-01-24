@@ -1,6 +1,6 @@
 ﻿#if CompressionInstalled
 #if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Pipelines;
+using PassivePicasso.ThunderKit.Core.Pipelines;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;

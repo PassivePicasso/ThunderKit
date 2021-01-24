@@ -1,7 +1,7 @@
 ﻿#if CompressionInstalled
 #if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Data;
-using PassivePicasso.ThunderKit.Editor;
+using PassivePicasso.ThunderKit.Core.Data;
+using PassivePicasso.ThunderKit.Core.Editor;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -9,21 +9,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using EGL = UnityEditor.EditorGUILayout;
-using EGU = UnityEditor.EditorGUIUtility;
-using GL = UnityEngine.GUILayout;
+using static UnityEditor.EditorGUILayout;
+using static UnityEditor.EditorGUIUtility;
+using static UnityEngine.GUILayout;
+using static PassivePicasso.ThunderKit.Thunderstore.Constants;
 
 namespace PassivePicasso.ThunderKit.Thunderstore
 {
     [CustomEditor(typeof(Manifest))]
     public class ManifestEditor : UnityEditor.Editor
     {
-        private const string ROS_Temp = "ros_temp";
-        readonly static string TempDir = Path.Combine(Directory.GetCurrentDirectory(), ROS_Temp);
-
         PackageSearchSuggest suggestor;
-
-        private string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Packages");
 
         private SerializedProperty authorField, versionNumberField, websiteUrlField, descriptionField, dependenciesField, assetBundlesField,
                                    unityPackagesField, patchersField, pluginsField, monomodField, readmeField, iconField, additionalFilesField;
@@ -64,7 +60,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             if (manifest.dependencies.Contains(package.latest.full_name))
                 return false;
 
-            if (GL.Button(package.name))
+            if (Button(package.name))
             {
                 var dependencySlot = dependenciesField.GetArrayElementAtIndex(dependenciesField.arraySize++);
                 dependencySlot.stringValue = package.latest.full_name;
@@ -77,7 +73,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             return false;
         }
 
-        private IEnumerable<Package> EvaluateSuggestion(string searchString) => ThunderLoad.LookupPackage(searchString);
+        private IEnumerable<Package> EvaluateSuggestion(string searchString) => ThunderstoreAPI.LookupPackage(searchString);
 
         public override void OnInspectorGUI()
         {
@@ -104,7 +100,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             serializedObject.ApplyModifiedProperties();
 
             var depCount = manifest.dependencies.Count;
-            var rect = EGL.GetControlRect(true, (manifest.dependencies.Count + 1) * EGU.singleLineHeight * 1.5f);
+            var rect = GetControlRect(true, (manifest.dependencies.Count + 1) * singleLineHeight * 1.5f);
 
             GUI.Box(rect, "Manifest Dependencies");
             var boxRect = rect;
@@ -144,15 +140,15 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             {
                 var dependencySlot = dependenciesField.GetArrayElementAtIndex(i);
 
-                var size = new Vector2(boxRect.size.x - EGU.singleLineHeight * 2, EGU.singleLineHeight);
+                var size = new Vector2(boxRect.size.x - singleLineHeight * 2, singleLineHeight);
                 size = new Vector2(size.x * 1.5f, size.y * 1.5f);
-                rect = new Rect(rect.position + Vector2.up * EGU.singleLineHeight, size);
+                rect = new Rect(rect.position + Vector2.up * singleLineHeight, size);
 
                 GUI.Label(rect, dependencySlot.stringValue);
 
-                var buttonSize = new Vector2(EGU.singleLineHeight * 2, EGU.singleLineHeight);
+                var buttonSize = new Vector2(singleLineHeight * 2, singleLineHeight);
                 var buttonPosition = new Rect(boxRect.position.x + boxRect.size.x - buttonSize.x,
-                                              rect.position.y, 25, EGU.singleLineHeight);
+                                              rect.position.y, 25, singleLineHeight);
                 if (GUI.Button(buttonPosition, "x"))
                 {
                     var dependencyPath = Path.Combine(dependenciesPath, dependencySlot.stringValue);
@@ -172,11 +168,11 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             }
 
             if (manifest.dependencies.Any())
-                if (GL.Button("Download & Install Dependencies"))
+                if (Button("Download & Install Dependencies"))
                 {
                     IEnumerable<Package> RecurseDeps(IEnumerable<string> dependencies)
                     {
-                        var deps = dependencies.SelectMany(dep => ThunderLoad.LookupPackage(dep));
+                        var deps = dependencies.SelectMany(dep => ThunderstoreAPI.LookupPackage(dep));
                         var subDeps = deps.SelectMany(idep => idep.latest.dependencies).Distinct();
 
                         if (subDeps.Any())
@@ -191,7 +187,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore
                     if (!Directory.Exists(TempDir)) Directory.CreateDirectory(TempDir);
 
                     async Task<(string, Package)> Install(Package package) =>
-                        (await ThunderLoad.DownloadPackageAsync(package, Path.Combine(TempDir, GetZipFileName(package))),
+                        (await ThunderstoreAPI.DownloadPackageAsync(package, Path.Combine(TempDir, GetZipFileName(package))),
                          package);
 
                     foreach (var package in packages)
@@ -259,16 +255,14 @@ namespace PassivePicasso.ThunderKit.Thunderstore
             var margin = GUI.skin.button.margin;
             GUI.skin.button.alignment = TextAnchor.MiddleLeft;
             GUI.skin.button.margin = new RectOffset(1, 1, 1, 0);
-            suggestor.OnSuggestGUI("Dependency Search");
+            var suggestRect = GetControlRect(true, singleLineHeight);
+            suggestor.OnSuggestGUI(ref suggestRect, "Dependency Search");
             GUI.skin.button.alignment = alignment;
             GUI.skin.button.margin = margin;
         }
 
         private static string GetZipFileName(Package package) => GetZipFileName(package.latest.full_name);
-        private static string GetZipFileName(string package)
-        {
-            return $"{package}.zip";
-        }
+        private static string GetZipFileName(string package) => $"{package}.zip";
     }
 }
 #endif

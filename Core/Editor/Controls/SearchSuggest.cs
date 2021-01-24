@@ -5,16 +5,15 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using EGL = UnityEditor.EditorGUILayout;
-using EGU = UnityEditor.EditorGUIUtility;
+using static UnityEditor.EditorGUIUtility;
 
-namespace PassivePicasso.ThunderKit.Editor
+namespace PassivePicasso.ThunderKit.Core.Editor
 {
     public class SearchSuggest<T>
     {
         public Func<string, IEnumerable<T>> Evaluate;
         public Func<int, T, bool> OnSuggestionGUI;
-        public float itemHeight = EGU.singleLineHeight;
+        public float itemHeight = singleLineHeight;
 
         PickerWindow popupWindow;
         SearchField searchField;
@@ -28,46 +27,38 @@ namespace PassivePicasso.ThunderKit.Editor
             Selection.selectionChanged += SelectionChanged;
         }
 
-        private void SelectionChanged()
-        {
-            Cleanup();
-        }
+        private void SelectionChanged() => Cleanup();
 
-        private void OnDestroy()
-        {
-            Cleanup();
-        }
+        private void OnDestroy() => Cleanup();
 
         /// <summary>
         /// Render SearchSuggest
         /// </summary>
         /// <returns>true if EditorWindow should Repaint, otherwise false</returns>
-        public bool OnSuggestGUI(string label)
+        public bool OnSuggestGUI(ref Rect rect, string label)
         {
             if (searchField == null)
                 searchField = new SearchField { autoSetFocusOnFindCommand = true };
 
-            var rect = EGL.GetControlRect(true, EGU.singleLineHeight - 1);
-
             var labelRect = new Rect(rect.position,
-                            new Vector2(EGU.labelWidth, EGU.singleLineHeight + 4));
+                            new Vector2(labelWidth, singleLineHeight + 4));
 
-            var fieldRect = new Rect(rect.position + Vector2.right * EGU.labelWidth,
-                            rect.size - Vector2.right * EGU.labelWidth);
+            var offset = Vector2.right * labelWidth;
+            var fieldRect = new Rect(rect.position + offset, rect.size - offset);
 
             GUI.Label(labelRect, label);
 
+            EditorGUI.BeginChangeCheck();
             searchString = searchField.OnGUI(fieldRect, searchString);
-
-            searchEnumeration = Evaluate(searchString);
-
-            if (Event.current.type == EventType.KeyUp && searchField.HasFocus())
+            if (EditorGUI.EndChangeCheck())
             {
+                searchEnumeration = Evaluate(searchString);
                 if (popupWindow) popupWindow.Repaint();
-
                 return true;
             }
             ShowOptions(fieldRect, searchEnumeration);
+
+            rect = new Rect(rect.x, rect.y + (singleLineHeight + standardVerticalSpacing), rect.width, rect.height);
 
             return false;
         }
@@ -100,7 +91,7 @@ namespace PassivePicasso.ThunderKit.Editor
             if (popupWindow)
             {
                 popupWindow.Close();
-                ScriptableObject.DestroyImmediate(popupWindow);
+                UnityEngine.Object.DestroyImmediate(popupWindow);
             }
         }
 

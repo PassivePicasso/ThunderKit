@@ -1,9 +1,10 @@
 ﻿#if CompressionInstalled
-using UnityEditor;
-using System.IO.Compression;
+using PassivePicasso.ThunderKit.Core.Data;
+using PassivePicasso.ThunderKit.Core.Pipelines;
 using System.IO;
+using System.IO.Compression;
+using UnityEditor;
 using UnityEngine;
-using PassivePicasso.ThunderKit.Data;
 
 namespace PassivePicasso.ThunderKit.Pipelines.Jobs
 {

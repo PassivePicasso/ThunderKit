@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Data;
-using PassivePicasso.ThunderKit.Pipelines;
+using PassivePicasso.ThunderKit.Core.Data;
+using PassivePicasso.ThunderKit.Core.Pipelines;
 using System.IO;
 using System.Linq;
 using UnityEditorInternal;
@@ -10,7 +10,7 @@ namespace PassivePicasso.ThunderKit.Thunderstore.Pipelines.Steps
 {
 
     [PipelineSupport(typeof(ManifestPipeline)), ManifestProcessor]
-    public class StageAssemblies: PipelineJob
+    public class StageAssemblies : PipelineJob
     {
         public bool stageDebugDatabases;
 

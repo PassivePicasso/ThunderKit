@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.Compilation;
 using System.IO;
-using PassivePicasso.ThunderKit.Editor;
+using PassivePicasso.ThunderKit.Core.Editor;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -13,7 +13,7 @@ using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-namespace PassivePicasso.ThunderKit.Data
+namespace PassivePicasso.ThunderKit.Core.Data
 {
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ScriptableObject
@@ -78,7 +78,7 @@ namespace PassivePicasso.ThunderKit.Data
             return new SerializedObject(GetOrCreateSettings());
         }
 
-        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Create Settings")]
+        [MenuItem(Constants.ThunderKitMenuRoot + "Create Settings", priority = Constants.ThunderKitMenuPriority)]
         public static void CreateSettings()
         {
             GetOrCreateSettings();

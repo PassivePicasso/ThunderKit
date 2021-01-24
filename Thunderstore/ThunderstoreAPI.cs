@@ -1,24 +1,30 @@
 ﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Editor;
+using PassivePicasso.ThunderKit.Core.Editor;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace PassivePicasso.ThunderKit.Thunderstore
 {
-    public class ThunderLoad
+    /// <summary>
+    /// ThunderstoreAPI provides an interface to the Thunderstore API
+    /// Currently supports Listing, Downloading, and Searching for packages.
+    /// </summary>
+    public class ThunderstoreAPI
     {
         const string ThunderstoreIO = "https://thunderstore.io";
         const string PackageListApi = ThunderstoreIO + "/api/v1/package";
 
         internal static List<Package> loadedPackages = new List<Package>();
 
-        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Refresh Thunderstore")]
+        [MenuItem(Core.Constants.ThunderKitMenuRoot + "Refresh Thunderstore", priority = Core.Constants.ThunderKitMenuPriority)]
         [InitializeOnLoadMethod]
         public static async void LoadPages()
         {
@@ -48,12 +54,30 @@ namespace PassivePicasso.ThunderKit.Thunderstore
 
         public static Task<string> DownloadPackageAsync(Package package, string filePath)
         {
-            using (WebClient client = new WebClient())
+            using (WebClient WebClient = new WebClient())
             {
                 var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
 
-                return client.DownloadFileTaskAsync(latest.download_url, filePath).ContinueWith(t => filePath);
+                return WebClient.DownloadFileTaskAsync(latest.download_url, filePath).ContinueWith(t => filePath);
             }
+        }
+
+        public static void DownloadPackage(Package package, string filePath)
+        {
+            var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
+            var webRequest = UnityWebRequest.Get(latest.download_url);
+            var asyncOpRequest = webRequest.SendWebRequest();
+            void Request_completed(AsyncOperation obj)
+            {
+                if (webRequest.isNetworkError || webRequest.isHttpError)
+                    Debug.Log(webRequest.error);
+                else
+                    System.IO.File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);
+
+                if (File.Exists(filePath)) File.Delete(filePath);
+                File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
+            }
+            asyncOpRequest.completed += Request_completed;
         }
     }
 }
