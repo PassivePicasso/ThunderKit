@@ -1,13 +1,13 @@
-﻿#if UNITY_EDITOR
-namespace ThunderKit.Core.Editor
+﻿namespace ThunderKit.Core.Editor
 {
-	using System;
-	using System.Reflection;
-	using System.Text.RegularExpressions;
-	using UnityEditor;
-	using UnityEngine;
+    using System;
+    using System.Reflection;
+    using System.Text.RegularExpressions;
+    using ThunderKit.Core.Attributes;
+    using UnityEditor;
+    using UnityEngine;
 
-	[CustomPropertyDrawer(typeof(EnumFlagAttribute))]
+    [CustomPropertyDrawer(typeof(EnumFlagAttribute))]
 	public class EnumFlagDrawer : PropertyDrawer
 	{
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -49,4 +49,3 @@ namespace ThunderKit.Core.Editor
 		}
 	}
 }
-#endif

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor;
 using ThunderKit.Core.Pipelines;
 using UnityEditor;
@@ -11,43 +10,35 @@ using static System.IO.Path;
 
 namespace ThunderKit.Core.Paths
 {
-    public class PathReference : ComposableObject
+    public class PathReference : ComposableObject, ISerializationCallbackReceiver
     {
         [MenuItem(Constants.ThunderKitContextRoot + nameof(PathReference), false, priority = Constants.ThunderKitMenuPriority)]
         public static void CreateOutput() => ScriptableHelper.SelectNewAsset<PathReference>();
 
         private static Regex referenceIdentifier = new Regex("\\%(.*?)\\%");
-        public static string ResolvePath(string input, Pipeline pipeline)
+        public static string ResolvePath(string input, Pipeline pipeline, UnityEngine.Object caller)
         {
-            var pathReferences = FindObjectsOfType<PathReference>()
-                                 .Union(Resources.FindObjectsOfTypeAll<PathReference>())
-                                 .ToDictionary(k => k.name);
+            var result = input;
+            var pathReferenceGuids = AssetDatabase.FindAssets($"t:{nameof(PathReference)}");
+            var pathReferencePaths = pathReferenceGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            var pathReferences = pathReferencePaths.Select(AssetDatabase.LoadAssetAtPath<PathReference>).ToArray();
+            var pathReferenceDictionary = pathReferences.ToDictionary(pr => pr.name);
 
-            Match match = referenceIdentifier.Match(input);
+            Match match = referenceIdentifier.Match(result);
             while (match != null && !string.IsNullOrEmpty(match.Value))
             {
-                string matchValue = match.Value.Trim('%');
-                string replacement = string.Empty;
-                switch (matchValue)
+                var matchValue = match.Value.Trim('%');
+                if (!pathReferenceDictionary.ContainsKey(matchValue))
                 {
-                    case "GamePath":
-                        replacement = ThunderKitSettings.GetOrCreateSettings().GamePath;
-                        break;
-                    case "GameExecutable":
-                        replacement = Combine(ThunderKitSettings.GetOrCreateSettings().GamePath, ThunderKitSettings.GetOrCreateSettings().GameExecutable);
-                        break;
-                    case "PWD":
-                        replacement = Directory.GetCurrentDirectory();
-                        break;
-                    default:
-                        replacement = pathReferences[matchValue].GetPath(pipeline);
-                        break;
+                    EditorGUIUtility.PingObject(caller);
+                    throw new KeyNotFoundException($"No PathReference named \"{matchValue}\" found in AssetDatabase");
                 }
-                input = input.Replace(match.Value, replacement);
+                var replacement = pathReferenceDictionary[matchValue].GetPath(pipeline);
+                result = result.Replace(match.Value, replacement);
                 match = match.NextMatch();
             }
 
-            return input;
+            return result;
         }
 
 
@@ -58,6 +49,32 @@ namespace ThunderKit.Core.Paths
         public string GetPath(Pipeline pipeline)
         {
             return Data.OfType<PathComponent>().Select(d => d.GetPath(this, pipeline)).Aggregate(Combine);
+        }
+
+        [SerializeField, HideInInspector]
+        private string lastName;
+        private bool UpdateReferences;
+
+        void OnEnable()
+        {
+            if (lastName != name)
+            {
+            }
+            lastName = name;
+        }
+        public void OnBeforeSerialize()
+        {
+            if (lastName != name)
+            {
+                Debug.Log($"PathReference: {lastName} changed to {name}");
+                lastName = name;
+                
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+
         }
 
         public override string ElementTemplate => $@"

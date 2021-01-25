@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Linq;
+using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Manifests.Common;
+using ThunderKit.Core.Manifests.Datums;
+using ThunderKit.Core.Paths;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -14,14 +16,11 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         public override void Execute(Pipeline pipeline)
         {
-            foreach (var manifest in pipeline.manifests)
-                foreach (var asmDefs in pipeline.Datums.OfType<AssemblyDefinitions>())
-                {
-                    var outputPath = asmDefs.output.GetPath(pipeline);
+            foreach (var asmDefs in pipeline.Manifest.Data.OfType<AssemblyDefinitions>())
+                foreach (var outputPath in asmDefs.StagingPaths.Select(path => path.Resolve(pipeline, this)))
                     CopyReferences(asmDefs.definitions, outputPath);
-                }
         }
-        
+
         void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string ouptputPath)
         {
             var scriptAssemblies = Path.Combine("Library", "ScriptAssemblies");

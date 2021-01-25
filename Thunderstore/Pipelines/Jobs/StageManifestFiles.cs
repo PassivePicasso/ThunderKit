@@ -1,17 +1,17 @@
 ﻿using System.IO;
 using System.Linq;
+using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
 using ThunderKit.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Thunderstore.Pipelines.Steps
+namespace ThunderKit.Thunderstore.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
+    [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreManifest))]
     public class StageManifestFiles : PipelineJob
     {
-        public string[] outputPaths;
         public bool includeReadme;
         public bool includeIcon;
         public bool includeManifestJson;
@@ -22,7 +22,7 @@ namespace ThunderKit.Thunderstore.Pipelines.Steps
             {
                 var manifestJson = includeManifestJson ? string.Empty : RenderJson(manifest);
 
-                foreach (var outputPath in outputPaths.Select(path => PathReference.ResolvePath(path, pipeline)))
+                foreach (var outputPath in manifest.StagingPaths.Select(path => path.Resolve(pipeline, this)))
                 {
                     if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 

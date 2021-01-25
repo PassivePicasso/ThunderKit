@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Diagnostics;
 using System.Linq;
 using ThunderKit.Core.Editor.Controls;
@@ -8,12 +9,21 @@ using UnityEditorInternal;
 using UnityEngine;
 using static UnityEditor.EditorGUILayout;
 using static UnityEditor.EditorGUIUtility;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Attributes;
 
 namespace ThunderKit.Core.Editor
 {
     [CustomEditor(typeof(ComposableObject), true)]
     public class ComposableObjectEditor : UnityEditor.Editor
     {
+        public class StepData
+        {
+            public SerializedProperty step;
+            public SerializedProperty dataArray;
+            public int index;
+        }
+
         List<Type> SupportedTypes;
         SerializedProperty dataArray;
         bool isFolded;
@@ -42,8 +52,8 @@ namespace ThunderKit.Core.Editor
             if (property != null && property.NextVisible(true))
                 do
                 {
-                    if ("m_script".Equals(property.name, System.StringComparison.OrdinalIgnoreCase)) continue;
-                    if (nameof(ComposableObject.Data).Equals(property.name, System.StringComparison.OrdinalIgnoreCase)) continue;
+                    if ("m_script".Equals(property.name, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (nameof(ComposableObject.Data).Equals(property.name, StringComparison.OrdinalIgnoreCase)) continue;
 
                     EditorHelpers.AddField(property);
                     offset = true;
@@ -72,24 +82,33 @@ namespace ThunderKit.Core.Editor
                 while (step == null);
 
                 var serializedObject = new SerializedObject(step.objectReferenceValue);
-                var title = ObjectNames.NicifyVariableName(serializedObject.targetObject.GetType().Name);
+                var stepType = serializedObject.targetObject.GetType();
+                var title = ObjectNames.NicifyVariableName(stepType.Name);
                 var standardSize = EditorGUI.GetPropertyHeight(step) + standardVerticalSpacing;
                 var foldOutRect = new Rect(stepRect.x + 14, stepRect.y + 1, stepRect.width - (standardSize * 2), stepRect.height);
 
                 var iterator = serializedObject.GetIterator().Copy();
                 standardSize = EditorGUI.GetPropertyHeight(iterator) + standardVerticalSpacing;
-                var stepHeight = EditorGUI.GetPropertyHeight(iterator);
                 int stepFieldCount = 0;
 
-                EvaluateProperty(iterator, sp =>
-                {
-                    stepHeight += EditorGUI.GetPropertyHeight(sp) + standardVerticalSpacing;
-                    stepFieldCount++;
-                });
+                EvaluateProperty(iterator, sp => stepFieldCount++);
+
+                var isSingleLine = stepType.GetCustomAttributes<SingleLineAttribute>().Any() && stepFieldCount == 1;
+
+                stepRect.height += isSingleLine ? 2 : 0;
 
                 GUI.Box(new Rect(stepRect.x, stepRect.y, stepRect.width + 1, stepRect.height), string.Empty);
-                if (stepFieldCount > 0)
+
+                if (stepFieldCount > 0 && !isSingleLine)
                     step.isExpanded = EditorGUI.Foldout(foldOutRect, step.isExpanded, title);
+                else if (isSingleLine)
+                    EvaluateProperty(serializedObject.GetIterator().Copy(), sp =>
+                    {
+                        var propHeight = EditorGUI.GetPropertyHeight(sp) + standardVerticalSpacing;
+                        var stanSize = singleLineHeight + standardVerticalSpacing;
+                        EditorHelpers.AddField(new Rect(stepRect.position.x + 14, stepRect.position.y + 2, stepRect.width - (18 + standardSize), propHeight), sp);
+                        stepRect.y += propHeight - stanSize;
+                    });
                 else
                     EditorGUI.LabelField(foldOutRect, title);
 
@@ -118,7 +137,7 @@ namespace ThunderKit.Core.Editor
                 }
 
                 GUI.backgroundColor = bgc;
-                if (stepFieldCount > 0 && step.isExpanded)
+                if (stepFieldCount > 0 && !isSingleLine && step.isExpanded)
                 {
                     stepRect.y += standardVerticalSpacing;
                     EvaluateProperty(serializedObject.GetIterator().Copy(), sp =>
@@ -134,6 +153,9 @@ namespace ThunderKit.Core.Editor
 
                 GUI.backgroundColor = bgc;
                 stepRect.y += (singleLineHeight + standardVerticalSpacing) - 1;
+
+                stepRect.height -= isSingleLine ? 2 : 0;
+                stepRect.y += isSingleLine ? 2 : 0;
             }
 
             stepRect.y += singleLineHeight / 2;
@@ -143,48 +165,11 @@ namespace ThunderKit.Core.Editor
 
             OnAddElementGui(composableObject);
         }
-
-        class StepData
-        {
-            public SerializedProperty step;
-            public SerializedProperty dataArray;
-            public int index;
-        }
         static void EditScript(object data)
         {
-            var stepData = data as StepData;
-            if (stepData.step.objectReferenceValue is ScriptableObject orv)
-            {
-                var script = MonoScript.FromScriptableObject(orv);
-                var scriptPath = AssetDatabase.GetAssetPath(script);
-                var editorType = ScriptEditorUtility.GetScriptEditorFromPreferences();
-                var editorPath = ScriptEditorUtility.GetExternalScriptEditor();
-                var args = ScriptEditorUtility.GetExternalScriptEditorArgs();
-                switch (editorType)
-                {
-                    case ScriptEditorUtility.ScriptEditor.SystemDefault:
-                    case ScriptEditorUtility.ScriptEditor.MonoDevelop:
-                    case ScriptEditorUtility.ScriptEditor.VisualStudioExpress:
-                    case ScriptEditorUtility.ScriptEditor.Rider:
-                        UnityEngine.Debug.LogError($"Code Editor: {editorType} not supported by ComposableObject Edit Script command");
-                        break;
-                    case ScriptEditorUtility.ScriptEditor.VisualStudio:
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = editorPath,
-                            Arguments = $"{args} /Edit {scriptPath}"
-                        });
-                        break;
-                    case ScriptEditorUtility.ScriptEditor.Other:
-                    case ScriptEditorUtility.ScriptEditor.VisualStudioCode:
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = editorPath,
-                            Arguments = $"{args} {scriptPath}"
-                        });
-                        break;
-                }
-            }
+            if (data is StepData stepData 
+             && stepData.step.objectReferenceValue is ScriptableObject scriptableObject)
+                ScriptEditorHelper.EditScript(scriptableObject);
         }
         static void MoveToTop(object data)
         {
@@ -231,21 +216,23 @@ namespace ThunderKit.Core.Editor
             stepData.dataArray.serializedObject.ApplyModifiedProperties();
         }
 
-        void Create(Type type)
+        ScriptableObject Create(Type type)
         {
-            var optionInstance = CreateInstance(type);
-            optionInstance.name = type.Name;
+            var instance = CreateInstance(type);
+            instance.name = type.Name;
 
-            AssetDatabase.AddObjectToAsset(optionInstance, target);
+            AssetDatabase.AddObjectToAsset(instance, target);
 
             var stepField = dataArray.GetArrayElementAtIndex(dataArray.arraySize++);
 
-            stepField.objectReferenceValue = optionInstance;
+            stepField.objectReferenceValue = instance;
             stepField.serializedObject.SetIsDifferentCacheDirty();
             stepField.serializedObject.ApplyModifiedProperties();
 
-            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(optionInstance));
+            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(instance));
             AssetDatabase.SaveAssets();
+
+            return instance;
         }
 
         private void OnAddElementGui(ComposableObject composableObject)
@@ -259,13 +246,13 @@ namespace ThunderKit.Core.Editor
                 }
                 return !scriptClass.IsAbstract && scriptClass.IsSubclassOf(composableObject.ElementType);
             }
-            void CreateFromScript(MonoScript script)
+            ScriptableObject CreateFromScript(MonoScript script)
             {
                 if (!script || script.GetClass() == null)
                 {
-                    return;
+                    return null;
                 }
-                Create(script.GetClass());
+                return Create(script.GetClass());
             }
 
             AddScriptWindow.Show(stepRect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
