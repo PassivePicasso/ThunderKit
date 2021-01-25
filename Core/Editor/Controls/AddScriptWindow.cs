@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static ThunderKit.Core.Editor.ScriptEditorHelper;
 
 namespace ThunderKit.Core.Editor.Controls
 {
@@ -32,7 +33,7 @@ namespace ThunderKit.Core.Editor.Controls
 
         static AddScriptWindow _instance;
 
-        Action<MonoScript> CreateScriptDelegate;
+        Func<MonoScript, ScriptableObject> CreateScriptDelegate;
         Func<MonoScript, bool> FilerScriptDelegate;
 
         Type elementType;
@@ -48,7 +49,7 @@ namespace ThunderKit.Core.Editor.Controls
             return AddScriptWindowBackup.Instance.addAsset;
         }
 
-        public static void Show(Rect position, Type elementType, Action<MonoScript> onCreateScript, Func<MonoScript, bool> onFilerScript, string template)
+        public static void Show(Rect position, Type elementType, Func<MonoScript, ScriptableObject> onCreateScript, Func<MonoScript, bool> onFilerScript, string template)
         {
             if (_instance == null)
                 _instance = CreateInstance<AddScriptWindow>();
@@ -67,7 +68,7 @@ namespace ThunderKit.Core.Editor.Controls
                 Backup(onCreateScript);
         }
 
-        public static void Backup(Action<MonoScript> onCreateScript)
+        public static void Backup(Func<MonoScript, ScriptableObject> onCreateScript)
         {
             if (_instance == null)
             {
@@ -77,17 +78,15 @@ namespace ThunderKit.Core.Editor.Controls
             if (AddScriptWindowBackup.Instance.addAsset)
             {
                 var script = AssetDatabase.LoadAssetAtPath<MonoScript>(AddScriptWindowBackup.Instance.scriptPath);
-                if (script?.GetClass() == null)
-                {
-                    AddScriptWindowBackup.Instance.addAsset = false;
-                    return;
-                }
-                _instance.CreateScriptDelegate(script);
+                if (script?.GetClass() == null) return;
+
+                var instance = _instance.CreateScriptDelegate(script);
+                EditScript(instance);
                 AddScriptWindowBackup.Instance.Reset();
             }
         }
 
-        private void Init(Rect rect, Action<MonoScript> onCreateScript, Func<MonoScript, bool> onFilerScript, string template)
+        private void Init(Rect rect, Func<MonoScript, ScriptableObject> onCreateScript, Func<MonoScript, bool> onFilerScript, string template)
         {
             var v2 = GUIUtility.GUIToScreenPoint(new Vector2(rect.x, rect.y));
             rect.x = v2.x - 1;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests;
 using UnityEditor;
@@ -14,7 +15,7 @@ namespace ThunderKit.Core.Pipelines
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
         public static void CreateComposableManifestPipeline() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
-        public Manifest[] manifests;
+        public ManifestCollection manifests;
         public IEnumerable<ManifestDatum> Datums => manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
 
         public IEnumerable<PipelineJob> RunSteps => Data.Cast<PipelineJob>();
@@ -37,7 +38,7 @@ namespace {0}
 ";
 
         public int JobIndex { get; protected set; }
-        public int ManifestIndex { get; protected set; }
+        public int ManifestIndex { get; set; }
         public Manifest Manifest => manifests[ManifestIndex];
 
         public virtual void Execute()
@@ -45,7 +46,7 @@ namespace {0}
             PipelineJob[] jobs = RunSteps.Where(SupportsType).ToArray();
 
             for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
-                if (JobIsManifestProcessor()) 
+                if (JobIsManifestProcessor())
                     ExecuteManifestLoop();
                 else
                     ExecuteJob();
@@ -58,10 +59,14 @@ namespace {0}
 
             bool JobIsManifestProcessor() => Job().GetType().GetCustomAttributes<ManifestProcessorAttribute>().Any();
 
+            bool CanProcessManifest(RequiresManifestDatumTypeAttribute attribute) => attribute.CanProcessManifest(Manifest);
+
+            bool JobCanProcessManifest() => Job().GetType().GetCustomAttributes<RequiresManifestDatumTypeAttribute>().All(CanProcessManifest);
+
             void ExecuteManifestLoop()
             {
                 for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
-                    if (Manifest)
+                    if (Manifest && JobCanProcessManifest())
                         ExecuteJob();
 
                 ManifestIndex = -1;

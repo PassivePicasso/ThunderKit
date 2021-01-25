@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 
 namespace ThunderKit.Core.Pipelines.Jobs
@@ -7,8 +8,11 @@ namespace ThunderKit.Core.Pipelines.Jobs
     [PipelineSupport(typeof(Pipeline))]
     public class ExecuteProcess : PipelineJob
     {
+        [PathReferenceResolver]
         public string workingDirectory;
+        [PathReferenceResolver]
         public string executable;
+        [PathReferenceResolver]
         public string[] arguments;
 
         public override void Execute(Pipeline pipeline)
@@ -16,12 +20,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var args = new StringBuilder();
             for (int i = 0; i < arguments.Length; i++)
             {
-                args.Append(PathReference.ResolvePath(arguments[i], pipeline));
+                args.Append(arguments[i].Resolve(pipeline, this));
                 args.Append(" ");
             }
 
-            var exe = PathReference.ResolvePath(executable, pipeline);
-            var pwd = PathReference.ResolvePath(workingDirectory, pipeline);
+            var exe = executable.Resolve(pipeline, this);
+            var pwd = workingDirectory.Resolve(pipeline, this);
             var rorPsi = new ProcessStartInfo(exe)
             {
                 WorkingDirectory = pwd,
