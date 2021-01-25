@@ -34,7 +34,8 @@ namespace ThunderKit.Thunderstore
                 var address = new Uri(PackageListApi);
                 var response = await client.DownloadStringTaskAsync(address);
                 var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
-                loadedPackages.AddRange(resultSet.results);
+                var nonDeprecatedResults = resultSet.results.Where(package => !package.is_deprecated);
+                loadedPackages.AddRange(nonDeprecatedResults);
             }
         }
 
