@@ -19,7 +19,7 @@ namespace ThunderKit.Core.Paths
         public static string ResolvePath(string input, Pipeline pipeline, UnityEngine.Object caller)
         {
             var result = input;
-            var pathReferenceGuids = AssetDatabase.FindAssets($"t:{nameof(PathReference)}");
+            var pathReferenceGuids = AssetDatabase.FindAssets($"t:{nameof(PathReference)}", Constants.AssetDatabaseFindFolders);
             var pathReferencePaths = pathReferenceGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
             var pathReferences = pathReferencePaths.Select(AssetDatabase.LoadAssetAtPath<PathReference>).ToArray();
             var pathReferenceDictionary = pathReferences.ToDictionary(pr => pr.name);

@@ -6,5 +6,7 @@
         public const string ThunderKitContextRoot = "Assets/ThunderKit/";
         public const string ThunderKitMenuRoot = "ThunderKit/";
 
+        public static readonly string[] AssetDatabaseFindFolders = new[] { "Packages", "Assets" };
+
     }
 }
