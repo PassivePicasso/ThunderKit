@@ -250,7 +250,7 @@ namespace ThunderKit.Core.Editor.Controls
             fileName: Path.GetFileNameWithoutExtension(_typeFullName)
         );
 
-        private bool ClassAlreadyExists() => _typeFullName == string.Empty ? false : AssetDatabase.FindAssets($"{GetDetails().fileName}.cs").Any();
+        private bool ClassAlreadyExists() => _typeFullName == string.Empty ? false : AssetDatabase.FindAssets($"{GetDetails().fileName}.cs", Constants.AssetDatabaseFindFolders).Any();
 
         void GenerateAndLoadScript()
         {
