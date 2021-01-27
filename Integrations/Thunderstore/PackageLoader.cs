@@ -38,7 +38,8 @@ namespace ThunderKit.Integrations.Thunderstore
 
                     AssetDatabase.StartAssetEditing();
 
-                    var dependencyPath = Path.Combine(Packages, Path.GetFileNameWithoutExtension(filePath));
+                    string fileNameNoExt = Path.GetFileNameWithoutExtension(filePath);
+                    var dependencyPath = Path.Combine(Packages, fileNameNoExt);
                     if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
                     if (File.Exists($"{dependencyPath}.meta")) File.Delete($"{dependencyPath}.meta");
 
@@ -66,8 +67,13 @@ namespace ThunderKit.Integrations.Thunderstore
                                 string description = stubManifest.description;
 
                                 string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
-
-                                var packageManifest = new PackageManagerManifest(name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
+                                var authorAlias = fileNameNoExt.Substring(0, fileNameNoExt.IndexOf('-'));
+                                var author = new Author
+                                {
+                                    name = authorAlias,
+                                    url = stubManifest.website_url
+                                };
+                                var packageManifest = new PackageManagerManifest(author, name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
                                 var packageManifestJson = JsonUtility.ToJson(packageManifest);
 
                                 File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
