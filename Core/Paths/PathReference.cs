@@ -77,15 +77,15 @@ namespace ThunderKit.Core.Paths
 
         }
 
-        public override string ElementTemplate => $@"
-using ThunderKit.Core.Pipelines;
-using ThunderKit.Core.Manifests;
+        public override string ElementTemplate => 
+$@"using ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Paths;
 
 namespace {{0}}
 {{{{
     public class {{1}} : PathComponent
     {{{{
-        public override string GetPath({nameof(PathReference)} output, Manifest manifest, Pipeline pipeline)
+        public override string GetPath({nameof(PathReference)} output, Pipeline pipeline)
         {{{{
             return base.GetPath(output, manifest, pipeline);
         }}}}
