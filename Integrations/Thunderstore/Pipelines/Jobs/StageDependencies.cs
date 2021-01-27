@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ThunderKit.Core.Attributes;
@@ -15,7 +16,12 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
         public override void Execute(Pipeline pipeline)
         {
             var thunderstoreManifests = pipeline.Datums.OfType<ThunderstoreManifest>();
-            var dependencies = thunderstoreManifests.SelectMany(tm => tm.dependencies).Distinct();
+            var dependencies = thunderstoreManifests.SelectMany(tm => tm.dependencies).Distinct().ToList();
+
+            foreach (var manifest in pipeline.manifests)
+                foreach (var tm in manifest.Data.OfType<ThunderstoreManifest>())
+                    dependencies.RemoveAll(dep => dep.StartsWith($"{tm.author}-{manifest.name}"));
+
             var packages = Path.Combine("Packages");
             var dependencyPaths = dependencies.Select(dep => Path.Combine(packages, dep));
 
