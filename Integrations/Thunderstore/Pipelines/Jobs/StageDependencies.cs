@@ -3,9 +3,9 @@ using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
-using ThunderKit.Thunderstore.Manifests;
+using ThunderKit.Integrations.Thunderstore.Manifests;
 
-namespace ThunderKit.ThunderStore.Pipelines.Jobs
+namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline)), RequiresManifestDatumType(typeof(ThunderstoreManifest))]
     public class StageDependencies : PipelineJob

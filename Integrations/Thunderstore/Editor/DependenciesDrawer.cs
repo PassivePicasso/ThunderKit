@@ -1,4 +1,4 @@
-﻿using ThunderKit.Thunderstore.Manifests;
+﻿using ThunderKit.Integrations.Thunderstore.Manifests;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,9 +6,9 @@ using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 using GL = UnityEngine.GUILayout;
-using static ThunderKit.Thunderstore.Constants;
+using static ThunderKit.Integrations.Thunderstore.Constants;
 
-namespace ThunderKit.Thunderstore.Editor
+namespace ThunderKit.Integrations.Thunderstore.Editor
 {
     using Manifest = Core.Manifests.Manifest;
 

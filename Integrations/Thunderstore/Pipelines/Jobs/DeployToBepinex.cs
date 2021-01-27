@@ -5,7 +5,7 @@
 //using ThunderKit.Core.Editor;
 //using ThunderKit.Core.Pipelines;
 
-//namespace ThunderKit.Thunderstore.Pipelines.Steps
+//namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
 //{
 //    [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
 //    public class DeployToBepinex : PipelineJob

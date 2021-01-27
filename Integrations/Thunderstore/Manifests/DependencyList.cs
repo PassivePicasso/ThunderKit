@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ThunderKit.Thunderstore.Manifests
+namespace ThunderKit.Integrations.Thunderstore.Manifests
 {
     [Serializable]
     public class DependencyList : List<String>
