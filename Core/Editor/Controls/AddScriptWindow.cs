@@ -40,7 +40,7 @@ namespace ThunderKit.Core.Editor.Controls
         Vector2 _scrollPosition;
         private Vector2 s_IconSize = new Vector2(13, 13);
         bool _activeParent = true;
-        string _typeFullName = "NewEquipmentBehaviourScript";
+        string _typeFullName = string.Empty;
         string _searchString = string.Empty;
         string _template;
 
@@ -78,11 +78,12 @@ namespace ThunderKit.Core.Editor.Controls
             if (AddScriptWindowBackup.Instance.addAsset)
             {
                 var script = AssetDatabase.LoadAssetAtPath<MonoScript>(AddScriptWindowBackup.Instance.scriptPath);
-                if (script?.GetClass() == null) return;
-
                 var instance = _instance.CreateScriptDelegate(script);
-                EditScript(instance);
-                AddScriptWindowBackup.Instance.Reset();
+                if (instance)
+                {
+                    EditScript(instance);
+                    AddScriptWindowBackup.Instance.Reset();
+                }
             }
         }
 

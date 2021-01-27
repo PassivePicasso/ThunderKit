@@ -248,10 +248,9 @@ namespace ThunderKit.Core.Editor
             }
             ScriptableObject CreateFromScript(MonoScript script)
             {
-                if (!script || script.GetClass() == null)
-                {
-                    return null;
-                }
+                if (!script) return null;
+                if (script.GetClass() == null) return null;
+
                 return Create(script.GetClass());
             }
 
