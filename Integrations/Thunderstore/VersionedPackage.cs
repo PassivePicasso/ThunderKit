@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 namespace ThunderKit.Integrations.Thunderstore
 {
 
@@ -20,4 +19,3 @@ namespace ThunderKit.Integrations.Thunderstore
         public string uuid4;
     }
 }
-#endif

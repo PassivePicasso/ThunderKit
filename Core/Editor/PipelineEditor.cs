@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using ThunderKit.Core.Pipelines;
+﻿using ThunderKit.Core.Pipelines;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
@@ -21,4 +20,3 @@ namespace ThunderKit.Core.Editor
         }
     }
 }
-#endif

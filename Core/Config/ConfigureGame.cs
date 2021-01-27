@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using ThunderKit.Core.Data;
+﻿using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor;
 using System;
 using System.Collections.Generic;
@@ -269,4 +268,3 @@ PluginImporter:
 ";
     }
 }
-#endif

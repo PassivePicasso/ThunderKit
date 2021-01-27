@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using ThunderKit.Core.Editor;
+﻿using ThunderKit.Core.Editor;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
@@ -7,4 +6,3 @@ namespace ThunderKit.Integrations.Thunderstore
     {
     }
 }
-#endif

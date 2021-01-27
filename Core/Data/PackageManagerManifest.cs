@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ThunderKit.Core.Data
 {
@@ -25,4 +24,3 @@ namespace ThunderKit.Core.Data
         }
     }
 }
-#endif

@@ -1,9 +1,7 @@
-﻿#if UNITY_EDITOR
-using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ThunderKit.Core.Data;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
@@ -120,4 +118,3 @@ namespace ThunderKit.Core.Config
     }
 
 }
-#endif

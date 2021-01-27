@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 
 namespace ThunderKit.Core.Editor
 {
@@ -8,4 +7,3 @@ namespace ThunderKit.Core.Editor
        
     }
 }
-#endif

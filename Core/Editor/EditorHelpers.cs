@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.Core.Editor
@@ -28,4 +27,3 @@ namespace ThunderKit.Core.Editor
         }
     }
 }
-#endif
