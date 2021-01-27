@@ -47,7 +47,11 @@ namespace ThunderKit.Core.Config
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
             var unityVersion = new Version(fileVersionInfo.FileVersion);
             var gameVersion = new Version(fileVersionInfo.FileVersion);
-            var packageManifest = new PackageManagerManifest(name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
+            var author = new Author
+            {
+                name = fileVersionInfo.CompanyName,
+            };
+            var packageManifest = new PackageManagerManifest(author, name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
             File.WriteAllText(Path.Combine("Packages", packageName, "package.json"), packageManifestJson);
         }
