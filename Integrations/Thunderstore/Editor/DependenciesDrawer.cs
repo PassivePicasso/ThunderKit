@@ -37,7 +37,7 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                     property.serializedObject.SetIsDifferentCacheDirty();
                     property.serializedObject.ApplyModifiedProperties();
                     suggestor.Cleanup();
-                    
+
                     if (!Directory.Exists(TempDir)) Directory.CreateDirectory(TempDir);
 
                     var packages = RecurseDependencies(thunderManifest.dependencies)
@@ -59,17 +59,26 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
             {
                 //Debug.Log("Dragging Manifests");
                 var canDrop = false;
-                var manifests = DragAndDrop.objectReferences.OfType<Manifest>();
+                var manifests = DragAndDrop.objectReferences.OfType<Manifest>().ToArray();
 
                 foreach (var droppedManifest in manifests)
-                    foreach (var dependence in droppedManifest.Data.OfType<ThunderstoreManifest>())
-                        if (!dependence.dependencies.Any(dp => dp.StartsWith($"{thunderManifest.author}-{manifest.name}")))
+                    foreach (var depThunderManifest in droppedManifest.Data.OfType<ThunderstoreManifest>())
+                    {
+                        string thisGuid = $"{thunderManifest.author}-{manifest.name}";
+                        if (!depThunderManifest.dependencies.Any(dp => dp.StartsWith(thisGuid)) 
+                         && !thisGuid.StartsWith($"{depThunderManifest.author}-{droppedManifest.name}"))
                         {
                             canDrop = true;
                             break;
                         }
-
-                DragAndDrop.visualMode = canDrop ? DragAndDropVisualMode.Link : DragAndDropVisualMode.None;
+                        if (canDrop) break;
+                    }
+                if (canDrop)
+                {
+                    DragAndDrop.visualMode = DragAndDropVisualMode.Link;
+                    Event.current.Use();
+                    return;
+                }
             }
 
             if (Event.current.type == EventType.DragPerform && DragAndDrop.objectReferences.OfType<Manifest>().Any())
