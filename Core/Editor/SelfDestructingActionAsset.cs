@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using UnityEditor.ProjectWindowCallback;
 
 namespace ThunderKit.Core.Editor
@@ -15,4 +14,3 @@ namespace ThunderKit.Core.Editor
         }
     }
 }
-#endif

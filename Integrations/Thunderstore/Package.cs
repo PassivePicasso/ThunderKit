@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using System.Linq;
 
 namespace ThunderKit.Integrations.Thunderstore
@@ -35,4 +34,3 @@ namespace ThunderKit.Integrations.Thunderstore
     }
 
 }
-#endif

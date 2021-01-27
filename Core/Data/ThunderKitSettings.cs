@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Compilation;
@@ -123,4 +122,3 @@ namespace ThunderKit.Core.Data
 
     }
 }
-#endif

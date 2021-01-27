@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -10,4 +9,3 @@ namespace ThunderKit.Core.Pipelines
         public abstract void Execute(Pipeline pipeline);
     }
 }
-#endif

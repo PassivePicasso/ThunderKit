@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using ThunderKit.Core.Attributes;
@@ -76,4 +75,3 @@ namespace ThunderKit.Core.Data
         }
     }
 }
-#endif
