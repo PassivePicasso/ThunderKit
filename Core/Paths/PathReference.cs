@@ -87,7 +87,7 @@ namespace {{0}}
     {{{{
         public override string GetPath({nameof(PathReference)} output, Pipeline pipeline)
         {{{{
-            return base.GetPath(output, manifest, pipeline);
+            return base.GetPath(output, pipeline);
         }}}}
     }}}}
 }}}}
