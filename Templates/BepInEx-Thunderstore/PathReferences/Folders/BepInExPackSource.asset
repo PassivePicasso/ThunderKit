@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: BepInExPackSource
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114556563142977762}
---- !u!114 &114556563142977762
+  - {fileID: 114283768560503700}
+  - {fileID: 114987795602069300}
+  lastName: BepInExPackSource
+--- !u!114 &114283768560503700
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -23,7 +25,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afeb2a60b1f31d44eaf0361730fb3f93, type: 3}
-  m_Name: FolderAssetReference
+  m_Script: {fileID: 11500000, guid: d4fa9e4f9ff58a344b7da26cb499b387, type: 3}
+  m_Name: BepInExPackSource
   m_EditorClassIdentifier: 
-  Asset: {fileID: 102900000, guid: 74c596e5bb6403f42886b27fcfc24f0c, type: 3}
+--- !u!114 &114987795602069300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
+  m_Name: Constant
+  m_EditorClassIdentifier: 
+  Value: BepInExPack
