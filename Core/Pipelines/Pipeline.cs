@@ -22,8 +22,8 @@ namespace ThunderKit.Core.Pipelines
 
         public string OutputRoot => System.IO.Path.Combine("ThunderKit");
 
-        public override string ElementTemplate => @"
-using ThunderKit.Core.Pipelines;
+        public override string ElementTemplate => 
+@"using ThunderKit.Core.Pipelines;
 
 namespace {0}
 {{
