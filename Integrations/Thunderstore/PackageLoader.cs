@@ -1,10 +1,10 @@
-﻿using ThunderKit.Core.Data;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
+using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Thunderstore
+namespace ThunderKit.Integrations.Thunderstore
 {
     public class PackageLoader
     {

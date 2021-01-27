@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 using System;
 
-namespace ThunderKit.Thunderstore
+namespace ThunderKit.Integrations.Thunderstore
 {
     [Serializable]
     public class PackagesResponse 

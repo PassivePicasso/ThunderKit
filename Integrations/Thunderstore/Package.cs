@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace ThunderKit.Thunderstore
+namespace ThunderKit.Integrations.Thunderstore
 {
     [Serializable]
     public partial class Package

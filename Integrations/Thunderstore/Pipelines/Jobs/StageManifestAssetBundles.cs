@@ -4,16 +4,15 @@ using System.Linq;
 using System.Text;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
-using ThunderKit.Thunderstore.Manifests;
+using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 
-namespace ThunderKit.Thunderstore.Pipelines.Steps
+namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
 {
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreManifest), typeof(AssetBundleDefs))]
     public class StageManifestAssetBundles : PipelineJob

@@ -3,11 +3,11 @@ using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
-using ThunderKit.Thunderstore.Manifests;
+using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Thunderstore.Pipelines.Jobs
+namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreManifest))]
     public class StageManifestFiles : PipelineJob

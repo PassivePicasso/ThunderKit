@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ThunderKit.Thunderstore
+namespace ThunderKit.Integrations.Thunderstore
 {
     [Flags]
     public enum LogLevel

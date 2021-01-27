@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using ThunderKit.Core.Editor;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,7 +10,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace ThunderKit.Thunderstore
+namespace ThunderKit.Integrations.Thunderstore
 {
     /// <summary>
     /// ThunderstoreAPI provides an interface to the Thunderstore API

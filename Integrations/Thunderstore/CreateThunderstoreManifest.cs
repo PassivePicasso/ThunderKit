@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using ThunderKit.Core.Editor;
-using ThunderKit.Thunderstore.Manifests;
+using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Thunderstore
+namespace ThunderKit.Integrations.Thunderstore
 {
     using static ScriptableHelper;
     public class CreateThunderstoreManifest

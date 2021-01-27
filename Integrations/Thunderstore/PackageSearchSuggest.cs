@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 using ThunderKit.Core.Editor;
 
-namespace ThunderKit.Thunderstore
+namespace ThunderKit.Integrations.Thunderstore
 {
     public class PackageSearchSuggest : SearchSuggest<Package>
     {

@@ -1,7 +1,7 @@
 ﻿using ThunderKit.Core.Manifests;
 using UnityEngine;
 
-namespace ThunderKit.Thunderstore.Manifests
+namespace ThunderKit.Integrations.Thunderstore.Manifests
 {
     public class ThunderstoreManifest : ManifestDatum
     {

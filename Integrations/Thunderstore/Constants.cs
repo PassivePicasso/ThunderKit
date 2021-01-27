@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ThunderKit.Thunderstore
+namespace ThunderKit.Integrations.Thunderstore
 {
     internal static class Constants
     {
