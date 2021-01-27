@@ -6,6 +6,7 @@ using ThunderKit.Core.Pipelines;
 using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
+using static ThunderKit.Integrations.Thunderstore.CreateThunderstoreManifest;
 
 namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
 {
@@ -20,7 +21,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
         {
             foreach (var manifest in pipeline.Manifest.Data.OfType<ThunderstoreManifest>())
             {
-                var manifestJson = includeManifestJson ? string.Empty : RenderJson(manifest);
+                var manifestJson = includeManifestJson ? string.Empty : RenderJson(manifest, pipeline.Manifest.name);
 
                 foreach (var outputPath in manifest.StagingPaths.Select(path => path.Resolve(pipeline, this)))
                 {
@@ -36,7 +37,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
 
                     if (includeManifestJson)
                     {
-                        manifestJson = RenderJson(manifest);
+                        manifestJson = RenderJson(manifest, pipeline.Manifest.name);
                         var pluginPath = Path.Combine(outputPath, "plugins", manifest.name);
 
                         if (Directory.Exists(pluginPath)) File.WriteAllText(Path.Combine(pluginPath, "manifest.json"), manifestJson);
@@ -50,13 +51,15 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
             }
         }
 
-        public string RenderJson(ThunderstoreManifest manifest)
-        {
-            var manifestJson = JsonUtility.ToJson(manifest);
-
-            manifestJson = manifestJson.Substring(1);
-            manifestJson = $"{{\"name\":\"{name}\",{manifestJson}";
-            return manifestJson;
-        }
+        public string RenderJson(ThunderstoreManifest manifest, string name) => 
+            JsonUtility.ToJson(new ThunderstoreManifestStub
+            {
+                author = manifest.author,
+                dependencies = manifest.dependencies.ToArray(),
+                description = manifest.description,
+                name = name,
+                version_number = manifest.versionNumber,
+                website_url = manifest.url
+            });
     }
 }
