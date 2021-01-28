@@ -22,7 +22,7 @@ namespace ThunderKit.Integrations.Thunderstore
         }
 #pragma warning restore 0649
 
-        [MenuItem(Constants.ThunderStorePath + nameof(ThunderstoreManifest), true, priority = Core.Constants.ThunderKitMenuPriority)]
+        //[MenuItem(Constants.ThunderStorePath + nameof(ThunderstoreManifest), true, priority = Core.Constants.ThunderKitMenuPriority)]
         public static bool CanCreate()
         {
             if (Selection.activeObject is TextAsset)
@@ -47,7 +47,7 @@ namespace ThunderKit.Integrations.Thunderstore
         }
 
 
-        [MenuItem(Constants.ThunderStorePath + nameof(ThunderstoreManifest), false, priority = Core.Constants.ThunderKitMenuPriority)]
+        //[MenuItem(Constants.ThunderStorePath + nameof(ThunderstoreManifest), false, priority = Core.Constants.ThunderKitMenuPriority)]
         public static void Create()
         {
             try
