@@ -143,7 +143,7 @@ namespace ThunderKit.Core.Editor.Controls
             rect = GUILayoutUtility.GetRect(10f, 25f);
             GUI.Label(rect, _searchString == string.Empty ? ObjectNames.NicifyVariableName(elementType.Name) : "Search", Styles.header);
             _scrollPosition = GUILayout.BeginScrollView(_scrollPosition);
-            var scripts = Resources.FindObjectsOfTypeAll<MonoScript>();
+            var scripts = Resources.FindObjectsOfTypeAll<MonoScript>().OrderBy(ms => ms.name);
             var searchString = _searchString.ToLower();
             foreach (var script in scripts)
             {
