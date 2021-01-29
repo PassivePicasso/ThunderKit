@@ -15,12 +15,12 @@ namespace PassivePicasso.RainOfStages.Installer
             var listRequest = Client.List(true);
             if (listRequest != null && listRequest.Result != null)
                 foreach (var package in listRequest.Result)
-                    if (package.packageId == "com.passivepicasso.thunderkit@https://github.com/PassivePicasso/ThunderKit.git#development")
+                    if (package.packageId == "com.passivepicasso.thunderkit@https://github.com/PassivePicasso/ThunderKit.git")
                     {
                         return;
                     }
 
-            Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
+            Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
             if (Directory.Exists("Assets/ThunderKit/Installer"))
             {
                 Directory.Delete("Assets/ThunderKit/Installer", true);
