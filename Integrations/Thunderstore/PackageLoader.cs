@@ -9,7 +9,7 @@ namespace ThunderKit.Integrations.Thunderstore
     public class PackageLoader
     {
         private static string Packages = Path.Combine("Packages");
-        private const string ROS_Temp = "ros_temp";
+        private const string ThunderKitTemp = nameof(ThunderKitTemp);
 
         static FileSystemWatcher PackagesWatcher;
         [InitializeOnLoadMethod]
@@ -17,7 +17,8 @@ namespace ThunderKit.Integrations.Thunderstore
         {
             if (PackagesWatcher == null)
             {
-                PackagesWatcher = new FileSystemWatcher(ROS_Temp, "*.zip");
+                Directory.CreateDirectory(ThunderKitTemp);
+                PackagesWatcher = new FileSystemWatcher(ThunderKitTemp, "*.zip");
 
                 PackagesWatcher.Created += PackagesWatcher_Created;
                 PackagesWatcher.Changed += PackagesWatcher_Created;
