@@ -11,6 +11,8 @@ namespace ThunderKit.PreConfig
     {
         static PreConfigStep()
         {
+            ScriptingSymbolManager.AddScriptingDefine("ThunderKitInstalled");
+
             var compression = "Compression";
             var siocfs = "System.IO.Compression.FileSystem.dll";
             var sioc = "System.IO.Compression.dll";
