@@ -1,13 +1,13 @@
-﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Editor;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using ThunderKit.Core.Attributes;
+using ThunderKit.Core.Editor;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace PassivePicasso.ThunderKit.Data
+namespace ThunderKit.Core.Data
 {
     using static ScriptableHelper;
     [Flags]
@@ -35,23 +35,23 @@ namespace PassivePicasso.ThunderKit.Data
 
     public class UnityPackage : ScriptableObject
     {
-        const string ExportMenuPath = ThunderKitContextRoot + "Compile " + nameof(UnityPackage);
+        const string ExportMenuPath = Constants.ThunderKitContextRoot + "Compile " + nameof(UnityPackage);
 
         [EnumFlag]
         public IncludedSettings IncludedSettings;
 
         public Object[] AssetFiles;
 
-        [MenuItem(ThunderKitContextRoot + nameof(UnityPackage), false)]
+        [MenuItem(Constants.ThunderKitContextRoot + nameof(UnityPackage), false, priority = Constants.ThunderKitMenuPriority)]
         public static void Create()
         {
             SelectNewAsset<UnityPackage>();
         }
 
-        [MenuItem(ExportMenuPath, true)]
+        [MenuItem(ExportMenuPath, true, priority = Constants.ThunderKitMenuPriority)]
         public static bool CanExport() => Selection.activeObject is UnityPackage;
 
-        [MenuItem(ExportMenuPath, false)]
+        [MenuItem(ExportMenuPath, false, priority = Constants.ThunderKitMenuPriority)]
         public static void Export()
         {
             if (!(Selection.activeObject is UnityPackage redist)) return;
@@ -75,4 +75,3 @@ namespace PassivePicasso.ThunderKit.Data
         }
     }
 }
-#endif

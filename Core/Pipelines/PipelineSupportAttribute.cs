@@ -1,8 +1,7 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using System.Linq;
 
-namespace PassivePicasso.ThunderKit.Pipelines
+namespace ThunderKit.Core.Pipelines
 {
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
@@ -22,4 +21,3 @@ namespace PassivePicasso.ThunderKit.Pipelines
         }
     }
 }
-#endif

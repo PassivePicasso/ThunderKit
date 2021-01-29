@@ -1,30 +1,76 @@
-﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Editor;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ThunderKit.Core.Attributes;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Manifests;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Pipelines
+namespace ThunderKit.Core.Pipelines
 {
-    public class Pipeline : ScriptableObject
+    public class Pipeline : ComposableObject
     {
-        [MenuItem(ScriptableHelper.ThunderKitContextRoot + nameof(Pipeline), false)]
-        public static void CreatePipeline() => ScriptableHelper.SelectNewAsset<Pipeline>();
+        [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
+        public static void CreateComposableManifestPipeline() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
-        public PipelineJob[] runSteps;
+        public ManifestCollection manifests;
+        public IEnumerable<ManifestDatum> Datums => manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
+
+        public IEnumerable<PipelineJob> RunSteps => Data.Cast<PipelineJob>();
 
         public string OutputRoot => System.IO.Path.Combine("ThunderKit");
 
+        public override string ElementTemplate => 
+@"using ThunderKit.Core.Pipelines;
+
+namespace {0}
+{{
+    [PipelineSupport(typeof(Pipeline))]
+    public class {1} : PipelineJob
+    {{
+        public override void Execute(Pipeline pipeline)
+        {{
+        }}
+    }}
+}}
+";
+
+        public int JobIndex { get; protected set; }
+        public int ManifestIndex { get; set; }
+        public Manifest Manifest => manifests[ManifestIndex];
+
         public virtual void Execute()
         {
-            PipelineJob[] runnableSteps = runSteps.Where(step => 
-                                                     step.GetType().GetCustomAttributes()
-                                                         .OfType<PipelineSupportAttribute>()
-                                                         .Any(psa => psa.HandlesPipeline(this.GetType()))).ToArray();
-            foreach (var step in runnableSteps) 
-                    step.Execute(this);
+            PipelineJob[] jobs = RunSteps.Where(SupportsType).ToArray();
+
+            for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
+                if (JobIsManifestProcessor())
+                    ExecuteManifestLoop();
+                else
+                    ExecuteJob();
+
+            JobIndex = -1;
+
+            PipelineJob Job() => jobs[JobIndex];
+
+            void ExecuteJob() => Job().Execute(this);
+
+            bool JobIsManifestProcessor() => Job().GetType().GetCustomAttributes<ManifestProcessorAttribute>().Any();
+
+            bool CanProcessManifest(RequiresManifestDatumTypeAttribute attribute) => attribute.CanProcessManifest(Manifest);
+
+            bool JobCanProcessManifest() => Job().GetType().GetCustomAttributes<RequiresManifestDatumTypeAttribute>().All(CanProcessManifest);
+
+            void ExecuteManifestLoop()
+            {
+                for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
+                    if (Manifest && JobCanProcessManifest())
+                        ExecuteJob();
+
+                ManifestIndex = -1;
+            }
         }
 
 
@@ -37,6 +83,20 @@ namespace PassivePicasso.ThunderKit.Pipelines
 
             return true;
         }
+
+        public bool SupportsType(PipelineJob job) => SupportsType(job.GetType());
+        public override bool SupportsType(Type type)
+        {
+            if (ElementType.IsAssignableFrom(type))
+            {
+                var customAttributes = type.GetCustomAttributes();
+                var pipelineSupportAttributes = customAttributes.OfType<PipelineSupportAttribute>();
+                if (pipelineSupportAttributes.Any(psa => psa.HandlesPipeline(GetType())))
+                    return true;
+            }
+            return false;
+        }
+
+        public override Type ElementType => typeof(PipelineJob);
     }
 }
-#endif

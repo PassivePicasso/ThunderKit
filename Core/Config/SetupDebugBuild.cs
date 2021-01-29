@@ -1,13 +1,11 @@
-﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Data;
-using PassivePicasso.ThunderKit.Editor;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ThunderKit.Core.Data;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
-namespace PassivePicasso.ThunderKit.Config
+namespace ThunderKit.Core.Config
 {
     internal struct SwapPair
     {
@@ -25,7 +23,7 @@ namespace PassivePicasso.ThunderKit.Config
     {
         private const string playerConnectionDebug1 = "player-connection-debug=1";
 
-        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Setup Debug Build")]
+        [MenuItem(Constants.ThunderKitMenuRoot + "Setup Debug Build", priority = Constants.ThunderKitMenuPriority)]
         public static void Execute()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings();
@@ -120,4 +118,3 @@ namespace PassivePicasso.ThunderKit.Config
     }
 
 }
-#endif

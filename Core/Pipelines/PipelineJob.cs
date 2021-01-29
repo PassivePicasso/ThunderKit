@@ -1,7 +1,6 @@
-﻿#if UNITY_EDITOR
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.Pipelines
+namespace ThunderKit.Core.Pipelines
 {
     public abstract class PipelineJob : ScriptableObject
     {
@@ -10,4 +9,3 @@ namespace PassivePicasso.ThunderKit.Pipelines
         public abstract void Execute(Pipeline pipeline);
     }
 }
-#endif

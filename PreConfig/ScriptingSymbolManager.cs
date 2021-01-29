@@ -1,9 +1,8 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using UnityEditor;
 
 
-namespace PassivePicasso.ThunderKit.PreConfig
+namespace ThunderKit.PreConfig
 {
     public static class ScriptingSymbolManager
     {
@@ -80,4 +79,3 @@ namespace PassivePicasso.ThunderKit.PreConfig
         }
     }
 }
-#endif

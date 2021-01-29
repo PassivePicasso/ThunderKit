@@ -1,8 +1,7 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using UnityEditor.ProjectWindowCallback;
 
-namespace PassivePicasso.ThunderKit.Editor
+namespace ThunderKit.Core.Editor
 {
     public class SelfDestructingActionAsset : EndNameEditAction
     {
@@ -15,4 +14,3 @@ namespace PassivePicasso.ThunderKit.Editor
         }
     }
 }
-#endif
