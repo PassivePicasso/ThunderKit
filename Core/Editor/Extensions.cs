@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PassivePicasso.ThunderKit.Editor
+namespace ThunderKit.Core.Editor
 {
     public static class Extensions
     {

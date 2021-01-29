@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
+  m_Name: Thunderstore-BepInEx-Plugin (Default)
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: 114054479563486030}
+  - {fileID: 114336787334979722}
+  - {fileID: 114112754497116756}
+  - {fileID: 114421828934955826}
+--- !u!114 &114054479563486030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d4b1be9b930e945be74735783a28f6, type: 3}
+  m_Name: ThunderstoreManifest
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - '<ManifestPluginStaging>'
+  - '<ManifestStagingRoot>'
+  author: 
+  versionNumber: 0.0.1
+  url: 
+  description: 
+  readme: {fileID: 0}
+  icon: {fileID: 0}
+--- !u!114 &114112754497116756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17d1008b78cb6e846889b7778282fbef, type: 3}
+  m_Name: AssetBundleDefs
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - '<ManifestPluginStaging>'
+  assetBundles: []
+--- !u!114 &114336787334979722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7e13dda513544419a89926bd12ad8a, type: 3}
+  m_Name: AssemblyDefinitions
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - '<ManifestPluginStaging>'
+  definitions: []
+--- !u!114 &114421828934955826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dda4ac7962f04724eacfeb26af5e2b75, type: 3}
+  m_Name: UnityPackages
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - '<StagingRoot>'
+  unityPackages: []

@@ -1,17 +1,18 @@
-﻿#if UNITY_EDITOR
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace PassivePicasso.ThunderKit.PreConfig
+namespace ThunderKit.PreConfig
 {
     [InitializeOnLoad]
     public class PreConfigStep
     {
         static PreConfigStep()
         {
+            ScriptingSymbolManager.AddScriptingDefine("ThunderKitInstalled");
+
             var compression = "Compression";
             var siocfs = "System.IO.Compression.FileSystem.dll";
             var sioc = "System.IO.Compression.dll";
@@ -80,4 +81,3 @@ namespace PassivePicasso.ThunderKit.PreConfig
         }
     }
 }
-#endif

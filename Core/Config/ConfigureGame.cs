@@ -1,6 +1,5 @@
-﻿#if UNITY_EDITOR
-using PassivePicasso.ThunderKit.Data;
-using PassivePicasso.ThunderKit.Editor;
+﻿using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,11 +10,11 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace PassivePicasso.ThunderKit.Config
+namespace ThunderKit.Core.Config
 {
     public class ConfigureGame
     {
-        [MenuItem(ScriptableHelper.ThunderKitMenuRoot + "Configure Game")]
+        [MenuItem(Constants.ThunderKitMenuRoot + "Configure Game", priority = Constants.ThunderKitMenuPriority)]
         private static void Configure()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings();
@@ -48,7 +47,11 @@ namespace PassivePicasso.ThunderKit.Config
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
             var unityVersion = new Version(fileVersionInfo.FileVersion);
             var gameVersion = new Version(fileVersionInfo.FileVersion);
-            var packageManifest = new PackageManagerManifest(name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
+            var author = new Author
+            {
+                name = fileVersionInfo.CompanyName,
+            };
+            var packageManifest = new PackageManagerManifest(author, name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
             File.WriteAllText(Path.Combine("Packages", packageName, "package.json"), packageManifestJson);
         }
@@ -269,4 +272,3 @@ PluginImporter:
 ";
     }
 }
-#endif

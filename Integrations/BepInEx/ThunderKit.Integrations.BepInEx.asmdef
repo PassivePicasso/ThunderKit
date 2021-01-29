@@ -1,0 +1,16 @@
+{
+    "name": "ThunderKit.Integrations.BepInEx",
+    "references": [
+        "ThunderKit.Core"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
