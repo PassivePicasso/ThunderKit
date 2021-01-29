@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: WinHttpFile
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114455515840858478}
---- !u!114 &114455515840858478
+  - {fileID: 114393845805921568}
+  lastName: WinHttpFile
+--- !u!114 &114393845805921568
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -23,7 +24,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afeb2a60b1f31d44eaf0361730fb3f93, type: 3}
-  m_Name: AssetFolderReference
+  m_Script: {fileID: 11500000, guid: 6bfead62a54d1b04d9ce0a82f51655a1, type: 3}
+  m_Name: Resolver
   m_EditorClassIdentifier: 
-  Asset: {fileID: -1121539586, guid: a87faf1726f138940a4ca7d3554c52d1, type: 3}
+  value: <BepInExPackSource>/winhttp.dll

@@ -15,7 +15,9 @@ namespace ThunderKit.Core.Paths
         [MenuItem(Constants.ThunderKitContextRoot + nameof(PathReference), false, priority = Constants.ThunderKitMenuPriority)]
         public static void CreateOutput() => ScriptableHelper.SelectNewAsset<PathReference>();
 
-        private static Regex referenceIdentifier = new Regex("\\%(.*?)\\%");
+        const char opo = '<';
+        const char opc = '>';
+        private static Regex referenceIdentifier = new Regex($"\\{opo}(.*?)\\{opc}");
         public static string ResolvePath(string input, Pipeline pipeline, UnityEngine.Object caller)
         {
             var result = input;
@@ -27,7 +29,7 @@ namespace ThunderKit.Core.Paths
             Match match = referenceIdentifier.Match(result);
             while (match != null && !string.IsNullOrEmpty(match.Value))
             {
-                var matchValue = match.Value.Trim('%');
+                var matchValue = match.Value.Trim(opo, opc);
                 if (!pathReferenceDictionary.ContainsKey(matchValue))
                 {
                     EditorGUIUtility.PingObject(caller);
@@ -68,7 +70,7 @@ namespace ThunderKit.Core.Paths
             {
                 Debug.Log($"PathReference: {lastName} changed to {name}");
                 lastName = name;
-                
+
             }
         }
 
@@ -77,7 +79,7 @@ namespace ThunderKit.Core.Paths
 
         }
 
-        public override string ElementTemplate => 
+        public override string ElementTemplate =>
 $@"using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Paths;
 
