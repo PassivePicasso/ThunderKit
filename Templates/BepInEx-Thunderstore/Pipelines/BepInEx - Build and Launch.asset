@@ -43,11 +43,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77f65d4371163fb4695da79ab8df0e84, type: 3}
   m_Name: ExecuteProcess
   m_EditorClassIdentifier: 
-  workingDirectory: '%BepInExPackDestination%'
-  executable: '%GamePath%/%GameExecutable%'
+  workingDirectory: '<BepInExPackDestination>'
+  executable: '<GameExecutable>'
   arguments:
   - --doorstop-enable true
-  - --doorstop-target "%PWD%/%BepInExDestination%/core/BepInEx.Preloader.dll"
+  - --doorstop-target <PreLoader.dll>
 --- !u!114 &114567788167467414
 MonoBehaviour:
   m_ObjectHideFlags: 0

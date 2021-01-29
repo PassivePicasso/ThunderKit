@@ -17,7 +17,7 @@ MonoBehaviour:
   - {fileID: 114008643423130304}
   - {fileID: 114396699906877458}
   - {fileID: 114123187685585606}
-  manifests: {fileID: 0}
+  manifests: {fileID: 11400000, guid: f4ca7449390132e4f88778a5f62ab2de, type: 2}
 --- !u!114 &114008643423130304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34,7 +34,7 @@ MonoBehaviour:
   buildTarget: 5
   recurseDirectories: 1
   simulate: 0
-  BundleArtifactPath: '%AssetBundleStaging%'
+  BundleArtifactPath: <AssetBundleStaging>
 --- !u!114 &114123187685585606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b4f4581088b47744a114c282abc085d, type: 3}
   m_Name: StageDependencies
   m_EditorClassIdentifier: 
-  StagingPath: '%ManifestStagingRoot%'
+  StagingPath: <StagingRoot>
 --- !u!114 &114138423003587250
 MonoBehaviour:
   m_ObjectHideFlags: 0

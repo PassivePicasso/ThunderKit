@@ -15,6 +15,7 @@ MonoBehaviour:
   Data:
   - {fileID: 114251987859640764}
   - {fileID: 114359962904401728}
+  lastName: BepInExPlugins
 --- !u!114 &114251987859640764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27,7 +28,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bfead62a54d1b04d9ce0a82f51655a1, type: 3}
   m_Name: Resolver
   m_EditorClassIdentifier: 
-  value: '%BepInExDestination%/plugins'
+  value: <BepInExDestination>/plugins
 --- !u!114 &114359962904401728
 MonoBehaviour:
   m_ObjectHideFlags: 0
