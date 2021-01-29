@@ -1,18 +1,37 @@
-﻿#if !THUNDERKIT_CONFIGURED
+﻿#if !ThunderKitInstalled
 #if !IsThunderKitProject
-using System.Reflection;
+using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.PackageManager;
-using UnityEngine;
 
 namespace PassivePicasso.RainOfStages.Installer
 {
-    [InitializeOnLoad]
     public class InstallThunderKit
     {
-        static InstallThunderKit()
+        [InitializeOnLoadMethod]
+        static void InstallThunderKitNow()
         {
-            Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
+            var listRequest = Client.List(true);
+            if (listRequest != null && listRequest.Result != null)
+                foreach (var package in listRequest.Result)
+                    if (package.packageId == "com.passivepicasso.thunderkit@https://github.com/PassivePicasso/ThunderKit.git#development")
+                    {
+                        return;
+                    }
+
+            Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
+            if (Directory.Exists("Assets/ThunderKit/Installer"))
+            {
+                Directory.Delete("Assets/ThunderKit/Installer", true);
+                File.Delete("Assets/ThunderKit/Installer.meta");
+
+                if (!Directory.EnumerateFiles("Assets/ThunderKit", "*", SearchOption.AllDirectories).Any())
+                    Directory.Delete("Assets/ThunderKit", true);
+
+                AssetDatabase.Refresh();
+            }
+            AssetDatabase.Refresh();
         }
     }
 }
