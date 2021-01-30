@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114731456067044302}
-  - {fileID: 114019385326708514}
+  - {fileID: 114552280237323176}
   - {fileID: 114692544495574790}
---- !u!114 &114019385326708514
+  lastName: AssetBundleStaging
+--- !u!114 &114552280237323176
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -25,9 +26,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 315fa01105ee5e1438ec483458dc96d8, type: 3}
-  m_Name: MainAssetName
+  m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
+  m_Name: Constant
   m_EditorClassIdentifier: 
+  Value: AssetBundleStaging
 --- !u!114 &114692544495574790
 MonoBehaviour:
   m_ObjectHideFlags: 0
