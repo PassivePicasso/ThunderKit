@@ -73,19 +73,7 @@ namespace ThunderKit.Core.Editor
                         GUIStyle.none.Draw(deleteRect, popupIcon, false, false, false, false);
 
                     if (Event.current.type == EventType.MouseUp && deleteRect.Contains(Event.current.mousePosition))
-                    {
-                        var menu = new GenericMenu();
-                        var stepData = new StepData { step = step, index = i, dataArray = dataArray };
-                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))), false, Remove, stepData);
-                        menu.AddSeparator("");
-                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToTop))), false, MoveToTop, stepData);
-                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveUp))), false, MoveUp, stepData);
-                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveDown))), false, MoveDown, stepData);
-                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToBottom))), false, MoveToBottom, stepData);
-                        menu.AddSeparator("");
-                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(EditScript))), false, EditScript, stepData);
-                        menu.ShowAsContext();
-                    }
+                        ShowContextMenu(i, step);
 
                     if (isSingleLine)
                     {
@@ -141,6 +129,36 @@ namespace ThunderKit.Core.Editor
             Repaint();
             serializedObject.ApplyModifiedProperties();
         }
+
+        private void ShowContextMenu(int i, SerializedProperty step)
+        {
+            var menu = new GenericMenu();
+            var stepData = new StepData { step = step, index = i, dataArray = dataArray };
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))), false, Remove, stepData);
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Duplicate))), false, Duplicate, stepData);
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Copy))), false, Copy, stepData);
+
+            var currentroot = step.serializedObject.targetObject as ComposableObject;
+            
+            if (ClipboardItem && currentroot.ElementType.IsAssignableFrom(ClipboardItem.GetType()))
+            {
+                menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem?.name)} above"), false, PasteNewAbove, stepData);
+                menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem?.name)}"), false, PasteNew, stepData);
+            }
+            else
+                menu.AddDisabledItem(new GUIContent($"Paste"));
+
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToTop))), false, MoveToTop, stepData);
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveUp))), false, MoveUp, stepData);
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveDown))), false, MoveDown, stepData);
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToBottom))), false, MoveToBottom, stepData);
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(EditScript))), false, EditScript, stepData);
+            menu.ShowAsContext();
+        }
+
         private void CleanDataArray()
         {
             for (int i = 0; i < dataArray.arraySize; i++)
@@ -163,6 +181,53 @@ namespace ThunderKit.Core.Editor
             if (data is StepData stepData
              && stepData.step.objectReferenceValue is ScriptableObject scriptableObject)
                 ScriptEditorHelper.EditScript(scriptableObject);
+        }
+        static void Duplicate(object data)
+        {
+            var stepData = data as StepData;
+            if (stepData.index == 0) return;
+
+            var instance = (ComposableElement)Instantiate(stepData.step.objectReferenceValue);
+
+            var dataArray = stepData.step.serializedObject.FindProperty(nameof(ComposableObject.Data));
+            dataArray.InsertArrayElementAtIndex(stepData.index);
+            var property = dataArray.GetArrayElementAtIndex(stepData.index);
+            var target = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(stepData.step.serializedObject.targetObject));
+            AddSubAsset(instance, property, target);
+        }
+
+        static ComposableElement ClipboardItem;
+        static void PasteNewAbove(object data)
+        {
+            var stepData = data as StepData;
+
+            if (ClipboardItem)
+                InsertClipboard(stepData, -1);
+        }
+
+        static void PasteNew(object data)
+        {
+            var stepData = data as StepData;
+
+            if (ClipboardItem)
+                InsertClipboard(stepData, 0);
+        }
+        private static void InsertClipboard(StepData stepData, int offset)
+        {
+            var dataArray = stepData.step.serializedObject.FindProperty(nameof(ComposableObject.Data));
+            dataArray.InsertArrayElementAtIndex(stepData.index + offset);
+            var property = dataArray.GetArrayElementAtIndex(stepData.index + offset);
+            var target = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(stepData.step.serializedObject.targetObject));
+            AddSubAsset(ClipboardItem, property, target);
+            ClipboardItem = null;
+        }
+
+        static void Copy(object data)
+        {
+            var stepData = data as StepData;
+            if (ClipboardItem) DestroyImmediate(ClipboardItem);
+            ClipboardItem = (ComposableElement)Instantiate(stepData.step.objectReferenceValue);
+            ClipboardItem.name = ClipboardItem.name.Replace("(Clone)", "");
         }
         static void MoveToTop(object data)
         {
@@ -208,14 +273,10 @@ namespace ThunderKit.Core.Editor
             stepData.dataArray.serializedObject.SetIsDifferentCacheDirty();
             stepData.dataArray.serializedObject.ApplyModifiedProperties();
         }
-        ScriptableObject Create(Type type)
+
+        private static void AddSubAsset(ComposableElement instance, SerializedProperty stepField, UnityEngine.Object target)
         {
-            var instance = CreateInstance(type);
-            instance.name = type.Name;
-
             AssetDatabase.AddObjectToAsset(instance, target);
-
-            var stepField = dataArray.GetArrayElementAtIndex(dataArray.arraySize++);
 
             stepField.objectReferenceValue = instance;
             stepField.serializedObject.SetIsDifferentCacheDirty();
@@ -223,9 +284,8 @@ namespace ThunderKit.Core.Editor
 
             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(instance));
             AssetDatabase.SaveAssets();
-
-            return instance;
         }
+
         void OnAddElementGUI(Rect rect, ComposableObject composableObject)
         {
             bool Filter(MonoScript script)
@@ -242,7 +302,11 @@ namespace ThunderKit.Core.Editor
                 if (!script) return null;
                 if (script.GetClass() == null) return null;
 
-                return Create(script.GetClass());
+                var instance = (ComposableElement)CreateInstance(script.GetClass());
+                instance.name = script.GetClass().Name;
+                var prop = dataArray.GetArrayElementAtIndex(dataArray.arraySize++);
+                AddSubAsset(instance, prop, target);
+                return instance;
             }
 
             AddScriptWindow.Show(rect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
