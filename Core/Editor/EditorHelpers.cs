@@ -5,20 +5,27 @@ namespace ThunderKit.Core.Editor
 {
     public static class EditorHelpers
     {
-        public static void AddField(SerializedProperty property)
+        public static void AddField(SerializedProperty property, string label = null)
         {
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(property, true);
+            if (string.IsNullOrEmpty(label))
+                EditorGUILayout.PropertyField(property, true);
+            else
+                EditorGUILayout.PropertyField(property, new GUIContent(label), true);
+
             if (EditorGUI.EndChangeCheck())
             {
                 property.serializedObject.SetIsDifferentCacheDirty();
                 property.serializedObject.ApplyModifiedProperties();
             }
         }
-        public static void AddField(Rect rect, SerializedProperty property)
+        public static void AddField(Rect rect, SerializedProperty property, string label = null)
         {
             EditorGUI.BeginChangeCheck();
-            EditorGUI.PropertyField(rect, property, true);
+            if (string.IsNullOrEmpty(label))
+                EditorGUI.PropertyField(rect, property, true);
+            else
+                EditorGUI.PropertyField(rect, property, new GUIContent(label), true);
             if (EditorGUI.EndChangeCheck())
             {
                 property.serializedObject.SetIsDifferentCacheDirty();

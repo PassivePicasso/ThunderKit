@@ -34,7 +34,7 @@ namespace ThunderKit.Core.Editor
         /// Render SearchSuggest
         /// </summary>
         /// <returns>true if EditorWindow should Repaint, otherwise false</returns>
-        public bool OnSuggestGUI(ref Rect rect, string label)
+        public bool OnSuggestGUI(Rect rect, string label)
         {
             if (searchField == null)
                 searchField = new SearchField { autoSetFocusOnFindCommand = true };
@@ -56,8 +56,6 @@ namespace ThunderKit.Core.Editor
                 return true;
             }
             ShowOptions(fieldRect, searchEnumeration);
-
-            rect = new Rect(rect.x, rect.y + (singleLineHeight + standardVerticalSpacing), rect.width, rect.height);
 
             return false;
         }

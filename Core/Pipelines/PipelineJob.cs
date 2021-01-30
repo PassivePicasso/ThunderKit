@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-
-namespace ThunderKit.Core.Pipelines
+﻿namespace ThunderKit.Core.Pipelines
 {
-    public abstract class PipelineJob : ScriptableObject
+    public abstract class PipelineJob : ComposableElement
     {
         public const string RunStepsMenu = "Run Steps/";
 

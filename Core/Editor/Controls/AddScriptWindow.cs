@@ -10,7 +10,7 @@ namespace ThunderKit.Core.Editor.Controls
 {
     public class AddScriptWindow : EditorWindow
     {
-        private class Styles
+        public class Styles
         {
             public static GUIStyle header = "DD HeaderStyle";
             public static GUIStyle itemStyle = "DD ItemStyle";
