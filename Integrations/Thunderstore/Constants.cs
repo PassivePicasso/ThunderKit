@@ -11,7 +11,6 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public static readonly string TempDir = Path.Combine(Directory.GetCurrentDirectory(), "Temp", ThunderKit);
         public static readonly string Packages = Path.Combine("Packages");
-        public static readonly string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Packages");
 
         [InitializeOnLoadMethod]
         static void SetupTempDir()

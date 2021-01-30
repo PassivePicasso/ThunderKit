@@ -3,13 +3,11 @@ using System.IO.Compression;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
-
 namespace ThunderKit.Integrations.Thunderstore
 {
+    using static Constants;
     public class PackageLoader
     {
-        private static string Packages = Path.Combine("Packages");
-        private const string ThunderKitTemp = nameof(ThunderKitTemp);
 
         static FileSystemWatcher PackagesWatcher;
         [InitializeOnLoadMethod]
@@ -17,8 +15,8 @@ namespace ThunderKit.Integrations.Thunderstore
         {
             if (PackagesWatcher == null)
             {
-                Directory.CreateDirectory(ThunderKitTemp);
-                PackagesWatcher = new FileSystemWatcher(ThunderKitTemp, "*.zip");
+                Directory.CreateDirectory(TempDir);
+                PackagesWatcher = new FileSystemWatcher(TempDir, "*.zip");
 
                 PackagesWatcher.Created += PackagesWatcher_Created;
                 PackagesWatcher.Changed += PackagesWatcher_Created;
