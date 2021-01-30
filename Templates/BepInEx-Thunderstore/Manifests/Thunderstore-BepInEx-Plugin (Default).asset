@@ -30,14 +30,15 @@ MonoBehaviour:
   m_Name: ThunderstoreManifest
   m_EditorClassIdentifier: 
   StagingPaths:
-  - '<ManifestPluginStaging>'
-  - '<ManifestStagingRoot>'
+  - <ManifestPluginStaging>
+  - <ManifestStagingRoot>
   author: 
   versionNumber: 0.0.1
   url: 
   description: 
   readme: {fileID: 0}
   icon: {fileID: 0}
+  dependencies: []
 --- !u!114 &114112754497116756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51,8 +52,9 @@ MonoBehaviour:
   m_Name: AssetBundleDefs
   m_EditorClassIdentifier: 
   StagingPaths:
-  - '<ManifestPluginStaging>'
+  - <ManifestPluginStaging>
   assetBundles: []
+  excludedBundles: []
 --- !u!114 &114336787334979722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,7 +68,7 @@ MonoBehaviour:
   m_Name: AssemblyDefinitions
   m_EditorClassIdentifier: 
   StagingPaths:
-  - '<ManifestPluginStaging>'
+  - <ManifestPluginStaging>
   definitions: []
 --- !u!114 &114421828934955826
 MonoBehaviour:
@@ -81,5 +83,5 @@ MonoBehaviour:
   m_Name: UnityPackages
   m_EditorClassIdentifier: 
   StagingPaths:
-  - '<StagingRoot>'
+  - <StagingRoot>
   unityPackages: []

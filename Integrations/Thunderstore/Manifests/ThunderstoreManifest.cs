@@ -1,4 +1,5 @@
-﻿using ThunderKit.Core.Manifests;
+﻿using System.Collections.Generic;
+using ThunderKit.Core.Manifests;
 using UnityEngine;
 
 namespace ThunderKit.Integrations.Thunderstore.Manifests
@@ -11,7 +12,6 @@ namespace ThunderKit.Integrations.Thunderstore.Manifests
         public string description;
         public TextAsset readme;
         public Texture2D icon;
-        public DependencyList dependencies;
-
+        public List<string> dependencies;
     }
 }

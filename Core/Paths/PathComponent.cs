@@ -1,9 +1,8 @@
 ﻿using ThunderKit.Core.Pipelines;
-using UnityEngine;
 
 namespace ThunderKit.Core.Paths
 {
-    public class PathComponent : ScriptableObject
+    public class PathComponent : ComposableElement
     {
         public virtual string GetPath(PathReference output, Pipeline pipeline) => "";
     }
