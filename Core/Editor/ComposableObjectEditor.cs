@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Editor.Controls;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
-using static UnityEditor.EditorGUILayout;
 using static UnityEditor.EditorGUIUtility;
-using ThunderKit.Core.Editor;
-using ThunderKit.Core.Attributes;
+using Debug = UnityEngine.Debug;
 
 namespace ThunderKit.Core.Editor
 {
@@ -24,17 +21,15 @@ namespace ThunderKit.Core.Editor
             public int index;
         }
 
-        List<Type> SupportedTypes;
+        Dictionary<UnityEngine.Object, UnityEditor.Editor> Editors;
         SerializedProperty dataArray;
-        bool isFolded;
-        protected Rect stepRect;
+
         private void OnEnable()
         {
             try
             {
                 var targetObject = target as ComposableObject;
-
-                SupportedTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(asm => asm.GetTypes()).Where(targetObject.SupportsType).ToList();
+                Editors = new Dictionary<UnityEngine.Object, UnityEditor.Editor>();
             }
             catch
             {
@@ -43,30 +38,97 @@ namespace ThunderKit.Core.Editor
 
         public override void OnInspectorGUI()
         {
-            var composableObject = target as ComposableObject;
+            DrawPropertiesExcluding(serializedObject, "m_Script", "Data");
+            GUILayout.Space(2);
+
             dataArray = serializedObject.FindProperty(nameof(ComposableObject.Data));
+            CleanDataArray();
+            for (int i = 0; i < dataArray.arraySize; i++)
+            {
+                var step = dataArray.GetArrayElementAtIndex(i);
+                var stepSo = new SerializedObject(step.objectReferenceValue);
+                var stepType = step.objectReferenceValue.GetType();
+                var isSingleLine = stepType.GetCustomAttributes<SingleLineAttribute>().Any();
 
-            int fieldCount = 0;
-            var property = serializedObject.GetIterator();
-            bool offset = false;
-            if (property != null && property.NextVisible(true))
-                do
+                UnityEditor.Editor editor;
+                if (Editors.ContainsKey(step.objectReferenceValue))
+                    editor = Editors[step.objectReferenceValue];
+                else
+                    Editors[step.objectReferenceValue] = editor = CreateEditor(step.objectReferenceValue);
+
+                EditorGUI.BeginChangeCheck();
+                try
                 {
-                    if ("m_script".Equals(property.name, StringComparison.OrdinalIgnoreCase)) continue;
-                    if (nameof(ComposableObject.Data).Equals(property.name, StringComparison.OrdinalIgnoreCase)) continue;
+                    var title = ObjectNames.NicifyVariableName(stepType.Name);
+                    var foldoutRect = GUILayoutUtility.GetRect(currentViewWidth, singleLineHeight + 3);
 
-                    EditorHelpers.AddField(property);
-                    offset = true;
-                    fieldCount++;
+                    GUI.Box(new Rect(foldoutRect.x - 14, foldoutRect.y - 1, foldoutRect.width + 20, foldoutRect.height + 1), string.Empty);
+
+                    var standardSize = singleLineHeight + standardVerticalSpacing;
+
+                    Rect deleteRect = new Rect(foldoutRect.x + 1 + foldoutRect.width - standardSize, foldoutRect.y + 1, standardSize, standardSize);
+
+                    var popupIcon = IconContent("_Popup");
+                    if (Event.current.type == EventType.Repaint)
+                        GUIStyle.none.Draw(deleteRect, popupIcon, false, false, false, false);
+
+                    if (Event.current.type == EventType.MouseUp && deleteRect.Contains(Event.current.mousePosition))
+                    {
+                        var menu = new GenericMenu();
+                        var stepData = new StepData { step = step, index = i, dataArray = dataArray };
+                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))), false, Remove, stepData);
+                        menu.AddSeparator("");
+                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToTop))), false, MoveToTop, stepData);
+                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveUp))), false, MoveUp, stepData);
+                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveDown))), false, MoveDown, stepData);
+                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToBottom))), false, MoveToBottom, stepData);
+                        menu.AddSeparator("");
+                        menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(EditScript))), false, EditScript, stepData);
+                        menu.ShowAsContext();
+                    }
+
+                    if (isSingleLine)
+                    {
+                        var so = new SerializedObject(step.objectReferenceValue);
+                        var iter = so.GetIterator().Copy();
+                        iter.NextVisible(true);
+                        if ("m_script".Equals(iter.name, System.StringComparison.OrdinalIgnoreCase))
+                            iter.NextVisible(false);
+
+                        EditorHelpers.AddField(new Rect(foldoutRect.x, foldoutRect.y + 1, foldoutRect.width - 20, foldoutRect.height - 1),
+                                                 iter,
+                                                 ObjectNames.NicifyVariableName(stepType.Name));
+                    }
+                    else
+                    {
+                        step.isExpanded = EditorGUI.Foldout(foldoutRect, step.isExpanded, title);
+                        if (step.isExpanded)
+                            editor.OnInspectorGUI();
+                    }
+
                 }
-                while (property.NextVisible(false));
-            var bgc = GUI.backgroundColor;
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
 
-            stepRect = GetControlRect(true, singleLineHeight + standardVerticalSpacing);
-            stepRect.x -= 14;
-            stepRect.y -= (offset ? 0 : 7);
-            stepRect.width += 18;
+                if (EditorGUI.EndChangeCheck())
+                {
+                    EditorUtility.SetDirty(stepSo.targetObject);
+                    EditorUtility.SetDirty(serializedObject.targetObject);
+                }
+            }
 
+            var composableObject = target as ComposableObject;
+            var size = AddScriptWindow.Styles.addButtonStyle.CalcSize(new GUIContent($"Add {ObjectNames.NicifyVariableName(composableObject.ElementType.Name)}"));
+            var rect = GUILayoutUtility.GetRect(size.x, size.y);
+            rect.width = size.x;
+            rect.y += standardVerticalSpacing;
+            rect.x = (currentViewWidth / 2) - (rect.width / 2);
+            OnAddElementGUI(rect, composableObject);
+        }
+        private void CleanDataArray()
+        {
             for (int i = 0; i < dataArray.arraySize; i++)
             {
                 SerializedProperty step = null;
@@ -80,94 +142,11 @@ namespace ThunderKit.Core.Editor
                     }
                 }
                 while (step == null);
-
-                var serializedObject = new SerializedObject(step.objectReferenceValue);
-                var stepType = serializedObject.targetObject.GetType();
-                var title = ObjectNames.NicifyVariableName(stepType.Name);
-                var standardSize = EditorGUI.GetPropertyHeight(step) + standardVerticalSpacing;
-                var foldOutRect = new Rect(stepRect.x + 14, stepRect.y + 1, stepRect.width - (standardSize * 2), stepRect.height);
-
-                var iterator = serializedObject.GetIterator().Copy();
-                standardSize = EditorGUI.GetPropertyHeight(iterator) + standardVerticalSpacing;
-                int stepFieldCount = 0;
-
-                EvaluateProperty(iterator, sp => stepFieldCount++);
-
-                var isSingleLine = stepType.GetCustomAttributes<SingleLineAttribute>().Any() && stepFieldCount == 1;
-
-                stepRect.height += isSingleLine ? 2 : 0;
-
-                GUI.Box(new Rect(stepRect.x, stepRect.y, stepRect.width + 1, stepRect.height), string.Empty);
-
-                if (stepFieldCount > 0 && !isSingleLine)
-                    step.isExpanded = EditorGUI.Foldout(foldOutRect, step.isExpanded, title);
-                else if (isSingleLine)
-                    EvaluateProperty(serializedObject.GetIterator().Copy(), sp =>
-                    {
-                        var propHeight = EditorGUI.GetPropertyHeight(sp) + standardVerticalSpacing;
-                        var stanSize = singleLineHeight + standardVerticalSpacing;
-                        EditorHelpers.AddField(new Rect(stepRect.position.x + 14, stepRect.position.y + 2, stepRect.width - (18 + standardSize), propHeight), sp);
-                        stepRect.y += propHeight - stanSize;
-                    });
-                else
-                    EditorGUI.LabelField(foldOutRect, title);
-
-                GUI.backgroundColor = new Color(0.8f, 0.0f, 0.0f, 1f);
-                Rect deleteRect = new Rect(stepRect.x + 1 + stepRect.width - standardSize, stepRect.y + 3, standardSize, standardSize);
-                Rect upRect = new Rect(deleteRect.x - (standardSize + 2), stepRect.y, standardSize, standardSize);
-                Rect downRect = new Rect(upRect.x - (standardSize + 2), stepRect.y, standardSize, standardSize);
-
-                var popupIcon = EditorGUIUtility.IconContent("_Popup");
-                if (Event.current.type == EventType.Repaint)
-                    GUIStyle.none.Draw(deleteRect, popupIcon, false, false, false, false);
-
-                if (Event.current.type == EventType.MouseUp && deleteRect.Contains(Event.current.mousePosition))
-                {
-                    var menu = new GenericMenu();
-                    var stepData = new StepData { step = step, index = i, dataArray = dataArray };
-                    menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))), false, Remove, stepData);
-                    menu.AddSeparator("");
-                    menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToTop))), false, MoveToTop, stepData);
-                    menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveUp))), false, MoveUp, stepData);
-                    menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveDown))), false, MoveDown, stepData);
-                    menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToBottom))), false, MoveToBottom, stepData);
-                    menu.AddSeparator("");
-                    menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(EditScript))), false, EditScript, stepData);
-                    menu.ShowAsContext();
-                }
-
-                GUI.backgroundColor = bgc;
-                if (stepFieldCount > 0 && !isSingleLine && step.isExpanded)
-                {
-                    stepRect.y += standardVerticalSpacing;
-                    EvaluateProperty(serializedObject.GetIterator().Copy(), sp =>
-                    {
-                        var propHeight = EditorGUI.GetPropertyHeight(sp) + standardVerticalSpacing;
-                        var stanSize = singleLineHeight + standardVerticalSpacing;
-                        stepRect.y += stanSize;
-                        EditorHelpers.AddField(new Rect(stepRect.position.x + 14, stepRect.position.y, stepRect.width - 18, propHeight), sp);
-                        stepRect.y += propHeight - stanSize;
-                    });
-                    stepRect.y += standardVerticalSpacing * 2;
-                }
-
-                GUI.backgroundColor = bgc;
-                stepRect.y += (singleLineHeight + standardVerticalSpacing) - 1;
-
-                stepRect.height -= isSingleLine ? 2 : 0;
-                stepRect.y += isSingleLine ? 2 : 0;
             }
-
-            stepRect.y += singleLineHeight / 2;
-            stepRect.width = 230;
-            stepRect.height = 23;
-            stepRect.x = (currentViewWidth - stepRect.width) / 2;
-
-            OnAddElementGui(composableObject);
         }
         static void EditScript(object data)
         {
-            if (data is StepData stepData 
+            if (data is StepData stepData
              && stepData.step.objectReferenceValue is ScriptableObject scriptableObject)
                 ScriptEditorHelper.EditScript(scriptableObject);
         }
@@ -215,7 +194,6 @@ namespace ThunderKit.Core.Editor
             stepData.dataArray.serializedObject.SetIsDifferentCacheDirty();
             stepData.dataArray.serializedObject.ApplyModifiedProperties();
         }
-
         ScriptableObject Create(Type type)
         {
             var instance = CreateInstance(type);
@@ -234,8 +212,7 @@ namespace ThunderKit.Core.Editor
 
             return instance;
         }
-
-        private void OnAddElementGui(ComposableObject composableObject)
+        void OnAddElementGUI(Rect rect, ComposableObject composableObject)
         {
             bool Filter(MonoScript script)
             {
@@ -254,22 +231,7 @@ namespace ThunderKit.Core.Editor
                 return Create(script.GetClass());
             }
 
-            AddScriptWindow.Show(stepRect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
-        }
-
-        protected virtual IEnumerable<Type> UpdateSearch(string searchString) => SupportedTypes.Where(t => t.Name.ToLower().Contains(searchString.ToLower()));
-
-        private static void EvaluateProperty(SerializedProperty property, Action<SerializedProperty> action)
-        {
-            if (property != null && property.NextVisible(true))
-            {
-                do
-                {
-                    if ("m_script".Equals(property.name, System.StringComparison.OrdinalIgnoreCase)) continue;
-                    action(property);
-                }
-                while (property.NextVisible(false));
-            }
+            AddScriptWindow.Show(rect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
         }
     }
 }
