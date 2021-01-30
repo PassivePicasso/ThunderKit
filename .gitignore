@@ -14,8 +14,6 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
-/docs/**/*.meta
-
 #RainOfStages exclusions
 *NodeGraph.asset
 /Assets/
