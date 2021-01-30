@@ -6,7 +6,7 @@ enableRobotsTXT = true
 theme = ["github.com/onweru/compose"] # edit this if you'ld rather use a fork of this repo
 # theme = "compose"
 enableGitInfo = true
-publishDir = "../docs/"
+publishDir = "../../Assets/ThunderKit/docs/"
 
 disableKinds = ["taxonomy", "taxonomyTerm"]
 
