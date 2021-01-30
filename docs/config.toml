@@ -39,6 +39,7 @@ disableKinds = ["taxonomy", "taxonomyTerm"]
 # Everything below this are Site Params
 
 [params]
+  publishDir = "docs"
 
   repo = "https://github.com/PassivePicasso/ThunderKit"
 
