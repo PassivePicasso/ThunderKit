@@ -38,6 +38,7 @@ namespace ThunderKit.Core.Editor
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
             DrawPropertiesExcluding(serializedObject, "m_Script", "Data");
             GUILayout.Space(2);
 
@@ -56,7 +57,6 @@ namespace ThunderKit.Core.Editor
                 else
                     Editors[step.objectReferenceValue] = editor = CreateEditor(step.objectReferenceValue);
 
-                EditorGUI.BeginChangeCheck();
                 try
                 {
                     var title = ObjectNames.NicifyVariableName(stepType.Name);
@@ -103,19 +103,24 @@ namespace ThunderKit.Core.Editor
                     {
                         step.isExpanded = EditorGUI.Foldout(foldoutRect, step.isExpanded, title);
                         if (step.isExpanded)
+                        {
+                            editor.serializedObject.Update();
                             editor.OnInspectorGUI();
+                            if (GUI.changed)
+                            {
+                                EditorUtility.SetDirty(editor.serializedObject.targetObject);
+                                editor.serializedObject.ApplyModifiedProperties();
+                                Repaint();
+                            }
+                            Repaint();
+                            editor.serializedObject.ApplyModifiedProperties();
+                        }
                     }
 
                 }
                 catch (Exception e)
                 {
                     Debug.LogException(e);
-                }
-
-                if (EditorGUI.EndChangeCheck())
-                {
-                    EditorUtility.SetDirty(stepSo.targetObject);
-                    EditorUtility.SetDirty(serializedObject.targetObject);
                 }
             }
 
@@ -126,6 +131,15 @@ namespace ThunderKit.Core.Editor
             rect.y += standardVerticalSpacing;
             rect.x = (currentViewWidth / 2) - (rect.width / 2);
             OnAddElementGUI(rect, composableObject);
+
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(serializedObject.targetObject);
+                serializedObject.ApplyModifiedProperties();
+                Repaint();
+            }
+            Repaint();
+            serializedObject.ApplyModifiedProperties();
         }
         private void CleanDataArray()
         {
