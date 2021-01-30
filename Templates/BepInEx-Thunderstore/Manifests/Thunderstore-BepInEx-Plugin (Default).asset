@@ -54,7 +54,6 @@ MonoBehaviour:
   StagingPaths:
   - <ManifestPluginStaging>
   assetBundles: []
-  excludedBundles: []
 --- !u!114 &114336787334979722
 MonoBehaviour:
   m_ObjectHideFlags: 0
