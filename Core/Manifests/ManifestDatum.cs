@@ -1,9 +1,8 @@
 ﻿using ThunderKit.Core.Attributes;
-using UnityEngine;
 
 namespace ThunderKit.Core.Manifests
 {
-    public class ManifestDatum : ScriptableObject
+    public class ManifestDatum : ComposableElement
     {
         [PathReferenceResolver]
         public string[] StagingPaths;

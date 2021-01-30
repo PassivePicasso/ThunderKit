@@ -7,7 +7,7 @@ namespace ThunderKit.Core
     public abstract class ComposableObject : ScriptableObject
     {
         [FormerlySerializedAs("runSteps")]
-        public ScriptableObject[] Data;
+        public ComposableElement[] Data;
 
         public abstract bool SupportsType(Type type);
 
