@@ -27,9 +27,9 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
             var property = serializedObject.FindProperty(nameof(ThunderstoreManifest.dependencies));
 
             var thunderManifest = serializedObject.targetObject as ThunderstoreManifest;
+            var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(AssetDatabase.GetAssetPath(thunderManifest));
             if (thunderManifest)
             {
-                var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(AssetDatabase.GetAssetPath(thunderManifest));
 
                 using (new VerticalScope(GUI.skin.box))
                 {
