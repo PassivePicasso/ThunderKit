@@ -27,51 +27,54 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
             var property = serializedObject.FindProperty(nameof(ThunderstoreManifest.dependencies));
 
             var thunderManifest = serializedObject.targetObject as ThunderstoreManifest;
-            var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(AssetDatabase.GetAssetPath(thunderManifest));
-
-            using (new VerticalScope(GUI.skin.box))
+            if (thunderManifest)
             {
-                Label("Dependencies");
-                for (int i = 0; i < thunderManifest.dependencies.Count; i++)
+                var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(AssetDatabase.GetAssetPath(thunderManifest));
+
+                using (new VerticalScope(GUI.skin.box))
                 {
-                    var depName = thunderManifest.dependencies[i];
-
-                    Label(depName);
-
-                    var bp = GUILayoutUtility.GetLastRect();
-                    bp = new Rect(bp.width + 4, bp.y + 1, 13, bp.height - 2);
-                    if (Event.current.type == EventType.Repaint)
+                    Label("Dependencies");
+                    for (int i = 0; i < thunderManifest.dependencies.Count; i++)
                     {
-                        GUI.skin.box.Draw(bp, new GUIContent(""), 0);
-                        GUIContent content = new GUIContent("x");
-                        var contentSize = GUIStyle.none.CalcSize(content);
-                        GUIStyle.none.Draw(new Rect(bp.x + 3, bp.y - 1, bp.width, bp.height), content, 0);
+                        var depName = thunderManifest.dependencies[i];
+
+                        Label(depName);
+
+                        var bp = GUILayoutUtility.GetLastRect();
+                        bp = new Rect(bp.width + 4, bp.y + 1, 13, bp.height - 2);
+                        if (Event.current.type == EventType.Repaint)
+                        {
+                            GUI.skin.box.Draw(bp, new GUIContent(""), 0);
+                            GUIContent content = new GUIContent("x");
+                            var contentSize = GUIStyle.none.CalcSize(content);
+                            GUIStyle.none.Draw(new Rect(bp.x + 3, bp.y - 1, bp.width, bp.height), content, 0);
+                        }
+                        if (Event.current.type == EventType.MouseUp && bp.Contains(Event.current.mousePosition))
+                        {
+                            var dependencyPath = Path.Combine(Packages, depName);
+
+                            if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
+
+                            var listed = thunderManifest.dependencies.ToList();
+                            listed.RemoveAt(i);
+                            thunderManifest.dependencies = new DependencyList(listed);
+
+                            property.serializedObject.SetIsDifferentCacheDirty();
+
+                            property.serializedObject.ApplyModifiedProperties();
+
+                            AssetDatabase.Refresh();
+                        }
                     }
-                    if (Event.current.type == EventType.MouseUp && bp.Contains(Event.current.mousePosition))
-                    {
-                        var dependencyPath = Path.Combine(Packages, depName);
 
-                        if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
+                    var suggestRect = GUILayoutUtility.GetRect(currentViewWidth, singleLineHeight);
+                    suggestRect.x++;
+                    suggestRect.width -= 4;
 
-                        var listed = thunderManifest.dependencies.ToList();
-                        listed.RemoveAt(i);
-                        thunderManifest.dependencies = new DependencyList(listed);
-
-                        property.serializedObject.SetIsDifferentCacheDirty();
-
-                        property.serializedObject.ApplyModifiedProperties();
-
-                        AssetDatabase.Refresh();
-                    }
+                    suggestor.OnSuggestionGUI = RenderSuggestion;
+                    suggestor.OnSuggestGUI(suggestRect, "Dependency Search");
+                    Space(2);
                 }
-
-                var suggestRect = GUILayoutUtility.GetRect(currentViewWidth, singleLineHeight);
-                suggestRect.x++;
-                suggestRect.width -= 4;
-
-                suggestor.OnSuggestionGUI = RenderSuggestion;
-                suggestor.OnSuggestGUI(suggestRect, "Dependency Search");
-                Space(2);
             }
 
             switch (Event.current.type)
