@@ -40,6 +40,8 @@ namespace ThunderKit.Core.Data
         [EnumFlag]
         public IncludedSettings IncludedSettings;
 
+        public bool recurseDirectories;
+
         public Object[] AssetFiles;
 
         [MenuItem(Constants.ThunderKitContextRoot + nameof(UnityPackage), false, priority = Constants.ThunderKitMenuPriority)]
@@ -62,6 +64,14 @@ namespace ThunderKit.Core.Data
         {
 
             var assetPaths = redist.AssetFiles.Select(af => AssetDatabase.GetAssetPath(af));
+            if (redist.recurseDirectories)
+            {
+                var folderPaths = assetPaths.Where(AssetDatabase.IsValidFolder).ToArray();
+                var exceptFolderPaths = assetPaths.Except(folderPaths);
+                var recursedPaths = folderPaths.SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories));
+                assetPaths = exceptFolderPaths.Union(recursedPaths);
+            }
+
             var additionalAssets = redist.IncludedSettings.GetFlags().Select(flag => $"ProjectSettings/{flag}.asset");
 
             assetPaths = assetPaths.Concat(additionalAssets);
