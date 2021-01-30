@@ -139,7 +139,9 @@ namespace ThunderKit.Core.Editor
             menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Duplicate))), false, Duplicate, stepData);
             menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Copy))), false, Copy, stepData);
 
-            if (ClipboardItem)
+            var currentroot = step.serializedObject.targetObject as ComposableObject;
+            
+            if (ClipboardItem && currentroot.ElementType.IsAssignableFrom(ClipboardItem.GetType()))
             {
                 menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem?.name)} above"), false, PasteNewAbove, stepData);
                 menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem?.name)}"), false, PasteNew, stepData);
@@ -198,7 +200,6 @@ namespace ThunderKit.Core.Editor
         static void PasteNewAbove(object data)
         {
             var stepData = data as StepData;
-            if (stepData.index == 0) return;
 
             if (ClipboardItem)
                 InsertClipboard(stepData, -1);
@@ -207,7 +208,6 @@ namespace ThunderKit.Core.Editor
         static void PasteNew(object data)
         {
             var stepData = data as StepData;
-            if (stepData.index == 0) return;
 
             if (ClipboardItem)
                 InsertClipboard(stepData, 0);
@@ -225,8 +225,6 @@ namespace ThunderKit.Core.Editor
         static void Copy(object data)
         {
             var stepData = data as StepData;
-            if (stepData.index == 0) return;
-
             if (ClipboardItem) DestroyImmediate(ClipboardItem);
             ClipboardItem = (ComposableElement)Instantiate(stepData.step.objectReferenceValue);
             ClipboardItem.name = ClipboardItem.name.Replace("(Clone)", "");
