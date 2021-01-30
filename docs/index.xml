@@ -2,15 +2,15 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ThunderKit</title>
-    <link>https://passivepicasso.github.io/ThunderKit/docs/</link>
+    <link>https://passivepicasso.github.io/ThunderKit/</link>
     <description>Recent content on ThunderKit</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://passivepicasso.github.io/ThunderKit/docs/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://passivepicasso.github.io/ThunderKit/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ThunderKit Introduction</title>
-      <link>https://passivepicasso.github.io/ThunderKit/docs/docs/pillars/</link>
+      <link>https://passivepicasso.github.io/ThunderKit/docs/pillars/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://passivepicasso.github.io/ThunderKit/docs/docs/pillars/</guid>
+      <guid>https://passivepicasso.github.io/ThunderKit/docs/pillars/</guid>
       <description>Pillars ThunderKit is built upon a small set of core features that are built around 3 core pillars. Flexibility Provide features that have the ability to fill many needs and roles in a project, so to maximize the utility of its implementation.
 This maximization helps focus the project on having a small amount of code with simple interaction.
  Usability Ensure that each feature is simple, understandable, and has a clear place in the system.</description>
@@ -18,19 +18,19 @@ This maximization helps focus the project on having a small amount of code with 
     
     <item>
       <title>Embedded Integrations</title>
-      <link>https://passivepicasso.github.io/ThunderKit/docs/docs/integrations/</link>
+      <link>https://passivepicasso.github.io/ThunderKit/docs/integrations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://passivepicasso.github.io/ThunderKit/docs/docs/integrations/</guid>
+      <guid>https://passivepicasso.github.io/ThunderKit/docs/integrations/</guid>
       <description>Thunderstore BepInEx </description>
     </item>
     
     <item>
       <title>Custom Integrations</title>
-      <link>https://passivepicasso.github.io/ThunderKit/docs/docs/customintegrations/</link>
+      <link>https://passivepicasso.github.io/ThunderKit/docs/customintegrations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://passivepicasso.github.io/ThunderKit/docs/docs/customintegrations/</guid>
+      <guid>https://passivepicasso.github.io/ThunderKit/docs/customintegrations/</guid>
       <description>One of ThunderKit core features is extensibility, and easy integration with mod storage platforms and modding frameworks is the primary aim of that.
 Many integrations for ThunderKit may not need any new code, and others may want to add a lot to add common functionality.
 You can begin working on your new Integration by examing how your current workflow works.
@@ -39,46 +39,46 @@ Most work involves copying various files or generating new files and packaging t
     
     <item>
       <title>I Just want to...</title>
-      <link>https://passivepicasso.github.io/ThunderKit/docs/docs/ijustwanttomake/</link>
+      <link>https://passivepicasso.github.io/ThunderKit/docs/ijustwanttomake/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://passivepicasso.github.io/ThunderKit/docs/docs/ijustwanttomake/</guid>
+      <guid>https://passivepicasso.github.io/ThunderKit/docs/ijustwanttomake/</guid>
       <description>Make a BepInEx Mod Make a BepInEx Mod for Thunderstore Make a Mod </description>
     </item>
     
     <item>
       <title></title>
-      <link>https://passivepicasso.github.io/ThunderKit/docs/docs/manifestdatums/</link>
+      <link>https://passivepicasso.github.io/ThunderKit/docs/manifestdatums/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://passivepicasso.github.io/ThunderKit/docs/docs/manifestdatums/</guid>
+      <guid>https://passivepicasso.github.io/ThunderKit/docs/manifestdatums/</guid>
       <description></description>
     </item>
     
     <item>
       <title></title>
-      <link>https://passivepicasso.github.io/ThunderKit/docs/docs/pathcomponents/</link>
+      <link>https://passivepicasso.github.io/ThunderKit/docs/pathcomponents/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://passivepicasso.github.io/ThunderKit/docs/docs/pathcomponents/</guid>
+      <guid>https://passivepicasso.github.io/ThunderKit/docs/pathcomponents/</guid>
       <description></description>
     </item>
     
     <item>
       <title></title>
-      <link>https://passivepicasso.github.io/ThunderKit/docs/docs/pipelinejobs/</link>
+      <link>https://passivepicasso.github.io/ThunderKit/docs/pipelinejobs/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://passivepicasso.github.io/ThunderKit/docs/docs/pipelinejobs/</guid>
+      <guid>https://passivepicasso.github.io/ThunderKit/docs/pipelinejobs/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Search</title>
-      <link>https://passivepicasso.github.io/ThunderKit/docs/search/</link>
+      <link>https://passivepicasso.github.io/ThunderKit/search/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://passivepicasso.github.io/ThunderKit/docs/search/</guid>
+      <guid>https://passivepicasso.github.io/ThunderKit/search/</guid>
       <description></description>
     </item>
     
