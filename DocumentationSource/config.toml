@@ -1,20 +1,15 @@
-baseURL = "https://example.com/"
-title = "Compose Docs"
+baseURL = "https://passivepicasso.github.io/ThunderKit/docs/"
+title = "ThunderKit"
 enableRobotsTXT = true
 # this example loads the theme as hugo module
 # comment out line below, and uncomment the line after it if you prefer to load the theme normally
 theme = ["github.com/onweru/compose"] # edit this if you'ld rather use a fork of this repo
 # theme = "compose"
 enableGitInfo = true
-publishDir = "docs"
+publishDir = "../docs/"
 
 disableKinds = ["taxonomy", "taxonomyTerm"]
 
-#  menu items
-[[menu.main]]
-  name = "Docs"
-  weight = 2
-  url = "docs/"
 
 [markup]
   [markup.goldmark]
