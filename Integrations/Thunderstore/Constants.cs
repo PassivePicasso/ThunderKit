@@ -1,16 +1,22 @@
 ﻿using System.IO;
+using UnityEditor;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
     internal static class Constants
     {
-        public const string ROS_Temp = nameof(ROS_Temp);
+        public const string ThunderKit = nameof(ThunderKit);
 
         public const string ThunderStorePath = Core.Constants.ThunderKitContextRoot + "Thunderstore/";
 
-        public static readonly string TempDir = Path.Combine(Directory.GetCurrentDirectory(), ROS_Temp);
+        public static readonly string TempDir = Path.Combine(Directory.GetCurrentDirectory(), "Temp", ThunderKit);
         public static readonly string Packages = Path.Combine("Packages");
         public static readonly string dependenciesPath = Path.Combine(Directory.GetCurrentDirectory(), "Packages");
 
+        [InitializeOnLoadMethod]
+        static void SetupTempDir()
+        {
+            Directory.CreateDirectory(TempDir);
+        }
     }
 }
