@@ -1,7 +1,7 @@
 {
 	"version": 3,
 	"file": "styles.css",
-	"sourceRoot": "F:/Projects/RoR2_Modding/ThunderKitDevelopment/Assets/ThunderKit/docs",
+	"sourceRoot": "F:/Projects/RoR2_Modding/ThunderKitDevelopment/Assets/ThunderKit/DocumentationSource",
 	"sources": [
 		"C:/Users/Tobias/AppData/Local/Temp/hugo_cache/modules/filecache/modules/pkg/mod/github.com/onweru/compose@v0.0.0-20210127153613-7065c3e6448a/assets/sass/main.sass",
 		"C:/Users/Tobias/AppData/Local/Temp/hugo_cache/modules/filecache/modules/pkg/mod/github.com/onweru/compose@v0.0.0-20210127153613-7065c3e6448a/assets/sass/_variables.sass",
