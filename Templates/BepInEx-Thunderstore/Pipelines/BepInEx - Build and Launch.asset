@@ -16,7 +16,7 @@ MonoBehaviour:
   - {fileID: 114201632629626870}
   - {fileID: 114996052519533010}
   - {fileID: 114567788167467414}
-  - {fileID: 114248375144017872}
+  - {fileID: 114653777183018378}
   manifests: {fileID: 0}
 --- !u!114 &114201632629626870
 MonoBehaviour:
@@ -31,7 +31,20 @@ MonoBehaviour:
   m_Name: ExecutePipeline
   m_EditorClassIdentifier: 
   executePipeline: {fileID: 11400000, guid: 6743d3c17d3b43f43ba0337e9b0e34e5, type: 2}
---- !u!114 &114248375144017872
+--- !u!114 &114567788167467414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
+  m_Name: ExecutePipeline
+  m_EditorClassIdentifier: 
+  executePipeline: {fileID: 11400000, guid: ac446c31552912347b0f10d265d61017, type: 2}
+--- !u!114 &114653777183018378
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48,19 +61,6 @@ MonoBehaviour:
   arguments:
   - --doorstop-enable true
   - --doorstop-target <PreLoader.dll>
---- !u!114 &114567788167467414
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
-  m_Name: ExecutePipeline
-  m_EditorClassIdentifier: 
-  executePipeline: {fileID: 11400000, guid: ac446c31552912347b0f10d265d61017, type: 2}
 --- !u!114 &114996052519533010
 MonoBehaviour:
   m_ObjectHideFlags: 0
