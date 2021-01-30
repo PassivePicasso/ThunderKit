@@ -1,4 +1,4 @@
-baseURL = "https://passivepicasso.github.io/ThunderKit/docs/"
+baseURL = "https://passivepicasso.github.io/ThunderKit"
 title = "ThunderKit"
 enableRobotsTXT = true
 # this example loads the theme as hugo module
