@@ -55,7 +55,6 @@ namespace ThunderKit.PreConfig
 
 
             ScriptingSymbolManager.AddScriptingDefine("CompressionInstalled");
-            AssetDatabase.Refresh();
         }
 
         struct PackageManagerManifest
