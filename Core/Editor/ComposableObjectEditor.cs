@@ -21,6 +21,7 @@ namespace ThunderKit.Core.Editor
             public int index;
         }
 
+        static ComposableElement ClipboardItem;
         Dictionary<UnityEngine.Object, UnityEditor.Editor> Editors;
         SerializedProperty dataArray;
 
@@ -35,7 +36,6 @@ namespace ThunderKit.Core.Editor
             {
             }
         }
-
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -129,7 +129,6 @@ namespace ThunderKit.Core.Editor
             Repaint();
             serializedObject.ApplyModifiedProperties();
         }
-
         private void ShowContextMenu(int i, SerializedProperty step)
         {
             var menu = new GenericMenu();
@@ -158,7 +157,6 @@ namespace ThunderKit.Core.Editor
             menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(EditScript))), false, EditScript, stepData);
             menu.ShowAsContext();
         }
-
         private void CleanDataArray()
         {
             for (int i = 0; i < dataArray.arraySize; i++)
@@ -195,8 +193,6 @@ namespace ThunderKit.Core.Editor
             var target = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(stepData.step.serializedObject.targetObject));
             AddSubAsset(instance, property, target);
         }
-
-        static ComposableElement ClipboardItem;
         static void PasteNewAbove(object data)
         {
             var stepData = data as StepData;
@@ -204,7 +200,6 @@ namespace ThunderKit.Core.Editor
             if (ClipboardItem)
                 InsertClipboard(stepData, -1);
         }
-
         static void PasteNew(object data)
         {
             var stepData = data as StepData;
@@ -221,7 +216,6 @@ namespace ThunderKit.Core.Editor
             AddSubAsset(ClipboardItem, property, target);
             ClipboardItem = null;
         }
-
         static void Copy(object data)
         {
             var stepData = data as StepData;
@@ -273,7 +267,6 @@ namespace ThunderKit.Core.Editor
             stepData.dataArray.serializedObject.SetIsDifferentCacheDirty();
             stepData.dataArray.serializedObject.ApplyModifiedProperties();
         }
-
         private static void AddSubAsset(ComposableElement instance, SerializedProperty stepField, UnityEngine.Object target)
         {
             AssetDatabase.AddObjectToAsset(instance, target);
@@ -285,7 +278,6 @@ namespace ThunderKit.Core.Editor
             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(instance));
             AssetDatabase.SaveAssets();
         }
-
         void OnAddElementGUI(Rect rect, ComposableObject composableObject)
         {
             bool Filter(MonoScript script)
@@ -308,7 +300,6 @@ namespace ThunderKit.Core.Editor
                 AddSubAsset(instance, prop, target);
                 return instance;
             }
-
             AddScriptWindow.Show(rect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
         }
     }
