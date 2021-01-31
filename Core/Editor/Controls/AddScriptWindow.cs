@@ -90,7 +90,7 @@ namespace ThunderKit.Core.Editor.Controls
         private void Init(Rect rect, Func<MonoScript, ScriptableObject> onCreateScript, Func<MonoScript, bool> onFilerScript, string template)
         {
             var v2 = GUIUtility.GUIToScreenPoint(new Vector2(rect.x, rect.y));
-            rect.x = v2.x - 1;
+            rect.x = v2.x - (EditorGUIUtility.currentViewWidth % 2 == 0 ? 0 : 1);
             rect.y = v2.y;
 
             //CreateComponentTree();
