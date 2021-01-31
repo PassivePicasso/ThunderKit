@@ -14,7 +14,6 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [
-        "ThunderKitInstalled",
         "CompressionInstalled"
     ]
 }
