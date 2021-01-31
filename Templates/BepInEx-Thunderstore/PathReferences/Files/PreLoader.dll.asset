@@ -27,4 +27,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bfead62a54d1b04d9ce0a82f51655a1, type: 3}
   m_Name: Resolver
   m_EditorClassIdentifier: 
-  value: ./<BepInExDestination>/core/BepInEx.Preloader.dll
+  value: <BepInExDestination>/core/BepInEx.Preloader.dll
