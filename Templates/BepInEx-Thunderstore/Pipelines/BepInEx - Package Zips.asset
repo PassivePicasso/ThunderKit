@@ -42,6 +42,6 @@ MonoBehaviour:
   m_Name: Zip
   m_EditorClassIdentifier: 
   PerManifest: 1
-  SourcePath: '<ManifestStagingRoot>'
-  OutputFile: '<ThunderKitTestZipFile>.zip'
+  SourcePath: <ManifestStagingRoot>
+  OutputFile: <ManifestStagingRoot>.zip
   ShowOutput: 0
