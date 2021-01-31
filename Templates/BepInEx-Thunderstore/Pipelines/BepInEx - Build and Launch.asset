@@ -60,7 +60,7 @@ MonoBehaviour:
   executable: <GameExecutable>
   arguments:
   - --doorstop-enable true
-  - --doorstop-target <PreLoader.dll>
+  - --doorstop-target "<PreLoader.dll>"
 --- !u!114 &114996052519533010
 MonoBehaviour:
   m_ObjectHideFlags: 0
