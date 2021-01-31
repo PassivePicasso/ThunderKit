@@ -1,5 +1,4 @@
-﻿#if CompressionInstalled
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -238,4 +237,3 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
         private static IEnumerable<Package> EvaluateSuggestion(string searchString) => ThunderstoreAPI.LookupPackage(searchString);
     }
 }
-#endif

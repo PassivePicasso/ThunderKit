@@ -1,5 +1,4 @@
-﻿#if CompressionInstalled
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using ThunderKit.Core.Data;
 using UnityEditor;
@@ -94,4 +93,3 @@ namespace ThunderKit.Integrations.Thunderstore
         }
     }
 }
-#endif
