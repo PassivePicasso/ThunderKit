@@ -62,21 +62,8 @@ namespace ThunderKit.Integrations.Thunderstore
                             if ("manifest.json".Equals(fileName.ToLower()))
                             {
                                 var stubManifest = CreateThunderstoreManifest.LoadStub(outputPath);
-                                string name = stubManifest.name.ToLower();
-                                string modVersion = stubManifest.version_number;
-                                string description = stubManifest.description;
-
-                                string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
                                 var authorAlias = fileNameNoExt.Substring(0, fileNameNoExt.IndexOf('-'));
-                                var author = new Author
-                                {
-                                    name = authorAlias,
-                                    url = stubManifest.website_url
-                                };
-                                var packageManifest = new PackageManagerManifest(author, name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
-                                var packageManifestJson = JsonUtility.ToJson(packageManifest);
-
-                                File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
+                                GeneratePackageManifest(stubManifest, authorAlias, stubManifest.name.ToLower(), outputDir);
                             }
                         }
                     File.Delete(filePath);
@@ -87,6 +74,23 @@ namespace ThunderKit.Integrations.Thunderstore
                     AssetDatabase.Refresh();
                 }
             }
+        }
+
+        public static void GeneratePackageManifest(CreateThunderstoreManifest.ThunderstoreManifestStub stubManifest, string authorAlias, string name, string outputDir)
+        {
+            string modVersion = stubManifest.version_number;
+            string description = stubManifest.description;
+
+            string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
+            var author = new Author
+            {
+                name = authorAlias,
+                url = stubManifest.website_url
+            };
+            var packageManifest = new PackageManagerManifest(author, name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
+            var packageManifestJson = JsonUtility.ToJson(packageManifest);
+
+            File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
         }
     }
 }
