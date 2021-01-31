@@ -27,11 +27,12 @@ namespace PassivePicasso.RainOfStages.Installer
                 File.Delete("Assets/ThunderKit/Installer.meta");
 
                 if (!Directory.EnumerateFiles("Assets/ThunderKit", "*", SearchOption.AllDirectories).Any())
+                {
                     Directory.Delete("Assets/ThunderKit", true);
+                    File.Delete("Assets/ThunderKit.meta");
+                }
 
-                AssetDatabase.Refresh();
             }
-            AssetDatabase.Refresh();
         }
     }
 }
