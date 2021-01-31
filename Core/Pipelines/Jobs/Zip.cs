@@ -1,5 +1,4 @@
-﻿#if CompressionInstalled
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using ThunderKit.Core.Attributes;
@@ -42,4 +41,3 @@ namespace ThunderKit.Core.Pipelines.Jops
         }
     }
 }
-#endif
