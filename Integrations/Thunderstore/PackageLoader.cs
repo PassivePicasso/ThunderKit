@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
 using UnityEditor;
 using UnityEngine;
 namespace ThunderKit.Integrations.Thunderstore
@@ -88,7 +89,7 @@ namespace ThunderKit.Integrations.Thunderstore
             };
             var packageManifest = new PackageManagerManifest(author, name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
-
+            ScriptingSymbolManager.AddScriptingDefine(name);
             File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
         }
     }
