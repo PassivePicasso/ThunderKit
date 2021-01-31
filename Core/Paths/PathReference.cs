@@ -40,7 +40,7 @@ namespace ThunderKit.Core.Paths
                 match = match.NextMatch();
             }
 
-            return result;
+            return result.Replace("\\", "/");
         }
 
 
