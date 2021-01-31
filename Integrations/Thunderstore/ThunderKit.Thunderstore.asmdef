@@ -15,5 +15,7 @@
         "System.IO.Compression.FileSystem.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [
+        "CompressionInstalled"
+    ]
 }

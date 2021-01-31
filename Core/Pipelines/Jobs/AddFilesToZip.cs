@@ -1,5 +1,4 @@
-﻿#if CompressionInstalled
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using UnityEditor;
 
@@ -23,4 +22,3 @@ namespace ThunderKit.Core.Pipelines.Jobs
         }
     }
 }
-#endif

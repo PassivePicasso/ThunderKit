@@ -13,5 +13,8 @@
         "System.IO.Compression.FileSystem.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [
+        "ThunderKitInstalled",
+        "CompressionInstalled"
+    ]
 }
