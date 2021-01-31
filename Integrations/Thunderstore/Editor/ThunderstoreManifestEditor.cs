@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
 using static ThunderKit.Integrations.Thunderstore.Constants;
+using static ThunderKit.Integrations.Thunderstore.CreateThunderstoreManifest;
 using static UnityEditor.EditorGUIUtility;
 using static UnityEngine.GUILayout;
 
@@ -83,7 +85,10 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                     dragDropRect = GUILayoutUtility.GetLastRect();
                     break;
                 case EventType.DragUpdated:
-                    if (dragDropRect.Contains(Event.current.mousePosition) && DragAndDrop.objectReferences.OfType<Manifest>().Any())
+                    if (!dragDropRect.Contains(Event.current.mousePosition))
+                        break;
+
+                    if (DragAndDrop.objectReferences.OfType<Manifest>().Any())
                     {
                         var canDrop = false;
                         var manifests = DragAndDrop.objectReferences.OfType<Manifest>().ToArray();
@@ -100,6 +105,29 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                                 }
                                 if (canDrop) break;
                             }
+                        if (canDrop)
+                        {
+                            DragAndDrop.visualMode = DragAndDropVisualMode.Link;
+                            Event.current.Use();
+                            return;
+                        }
+                    }
+                    if (DragAndDrop.paths.Any(path => Path.GetExtension(path).Equals(".zip")))
+                    {
+                        var canDrop = false;
+                        foreach (var path in DragAndDrop.paths.Where(path => Path.GetExtension(path).Equals(".zip")))
+                        {
+                            using (var archive = new ZipArchive(File.OpenRead(path)))
+                            {
+                                foreach (var entry in archive.Entries)
+                                {
+                                    if (!"manifest.json".Equals(Path.GetFileName(entry.FullName), System.StringComparison.OrdinalIgnoreCase)) continue;
+                                    canDrop = true;
+                                    break;
+                                }
+                            }
+                        }
+
                         if (canDrop)
                         {
                             DragAndDrop.visualMode = DragAndDropVisualMode.Link;
@@ -130,6 +158,38 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                                 Event.current.Use();
                                 return;
                             }
+                    }
+                    if (DragAndDrop.paths.Any(path => Path.GetExtension(path).Equals(".zip")))
+                    {
+                        bool refresh = false;
+                        foreach (var path in DragAndDrop.paths.Where(path => Path.GetExtension(path).Equals(".zip")))
+                        {
+
+                            using (var archive = new ZipArchive(File.OpenRead(path)))
+                            {
+                                var entry = archive.Entries.FirstOrDefault(e => "manifest.json".Equals(Path.GetFileName(e.FullName), System.StringComparison.OrdinalIgnoreCase));
+                                if (entry == null) continue;
+
+                                var archiveName = Path.GetFileNameWithoutExtension(path);
+                                var outputDir = Path.Combine("Packages", archiveName);
+                                refresh = true;
+
+                                Directory.CreateDirectory(outputDir);
+                                archive.ExtractToDirectory(outputDir);
+
+                                using (var reader = new StreamReader(entry.Open()))
+                                {
+                                    var stubManifest = JsonUtility.FromJson<ThunderstoreManifestStub>(reader.ReadToEnd());
+                                    string author = stubManifest.author ?? archiveName.Substring(0, archiveName.IndexOf('-'));
+                                    string guid = $"{author}-{stubManifest.name}-{stubManifest.version_number}";
+                                    Debug.Log($"Added {guid} to {manifest.name} dependencies");
+                                    thunderManifest.dependencies.Add(guid);
+                                    PackageLoader.GeneratePackageManifest(stubManifest, author, stubManifest.name.ToLower(), outputDir);
+                                }
+                            }
+                        }
+                        if (refresh) AssetDatabase.Refresh(ImportAssetOptions.ImportRecursive);
+
                     }
                     break;
             }
