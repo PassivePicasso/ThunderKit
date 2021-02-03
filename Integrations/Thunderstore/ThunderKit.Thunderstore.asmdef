@@ -2,7 +2,7 @@
     "name": "ThunderKit.Thunderstore",
     "references": [
         "ThunderKit.Core",
-        "ThunderKit.SymbolManager"
+        "ThunderKit.Common"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
@@ -17,7 +17,7 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [
-        "system.io.compression",
+        "system_io_compression",
         "thunderkit"
     ]
 }

@@ -1,7 +1,4 @@
-﻿using ThunderKit.Common.Configuration;
-using UnityEditor;
-
-namespace ThunderKit.Core
+﻿namespace ThunderKit.Core
 {
     public static class Constants
     {

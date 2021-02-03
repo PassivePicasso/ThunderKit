@@ -1,7 +1,7 @@
 {
     "name": "ThunderKit.Core",
     "references": [
-        "ThunderKit.SymbolManager"
+        "ThunderKit.Common"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
@@ -16,6 +16,6 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [
-        "system.io.compression"
+        "system_io_compression"
     ]
 }
