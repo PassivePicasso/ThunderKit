@@ -1,4 +1,4 @@
-﻿using ThunderKit.Core.Editor;
+﻿using ThunderKit.Common.Configuration;
 using UnityEditor;
 
 namespace ThunderKit.Core

@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using ThunderKit.Common.Package;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
@@ -184,7 +185,12 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                                     string guid = $"{author}-{stubManifest.name}-{stubManifest.version_number}";
                                     Debug.Log($"Added {guid} to {manifest.name} dependencies");
                                     thunderManifest.dependencies.Add(guid);
-                                    PackageLoader.GeneratePackageManifest(stubManifest, author, stubManifest.name.ToLower(), outputDir);
+                                    PackageHelper.GeneratePackageManifest(
+                                        stubManifest.name.ToLower(), outputDir,
+                                        stubManifest.name, author,
+                                        stubManifest.version_number,
+                                        stubManifest.description,
+                                        stubManifest.website_url);
                                 }
                             }
                         }

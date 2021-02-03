@@ -1,10 +1,8 @@
 {
-    "name": "PreConfig",
+    "name": "ThunderKit.SymbolManager",
     "references": [],
     "optionalUnityReferences": [],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
