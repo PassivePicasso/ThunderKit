@@ -45,7 +45,7 @@ namespace ThunderKit.Installer
         {
 #if thunderkit
             return;
-#endif
+#else
             if (AssetDatabase.IsValidFolder("Assets/ThunderKit/Core")) return;
             if (AssetDatabase.LoadAssetAtPath<DefaultAsset>("Assets/ThunderKit/package.json")) return;
 
@@ -70,6 +70,8 @@ namespace ThunderKit.Installer
 #endif
                 AddScriptingDefine("thunderkit");
             }
+#endif
+
         }
 
         /// <summary>
