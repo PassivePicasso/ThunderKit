@@ -37,7 +37,7 @@ namespace ThunderKit.Common.Configuration
             }
 
             PackageHelper.GeneratePackageManifest(
-                "system.io.compression", packageDir,
+                "system_io_compression", packageDir,
                 "System.IO.Compression", "Microsoft",
                 "1.0.0",
                 "System.IO.Compression and System.IO.Compression.FileSystem");

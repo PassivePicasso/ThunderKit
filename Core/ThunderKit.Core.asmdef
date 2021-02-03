@@ -16,6 +16,6 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [
-        "system.io.compression"
+        "system_io_compression"
     ]
 }
