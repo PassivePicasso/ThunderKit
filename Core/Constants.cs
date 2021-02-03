@@ -10,11 +10,5 @@ namespace ThunderKit.Core
         public const string ThunderKitMenuRoot = "ThunderKit/";
 
         public static readonly string[] AssetDatabaseFindFolders = new[] { "Packages", "Assets" };
-
-        [InitializeOnLoadMethod]
-        static void DefineInstalled()
-        {
-            ScriptingSymbolManager.AddScriptingDefine("ThunderKitInstalled");
-        }
     }
 }
