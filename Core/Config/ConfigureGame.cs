@@ -1,19 +1,16 @@
-﻿using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
+using ThunderKit.Common.Package;
+using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
-using ThunderKit.Common.Package;
-using ThunderKit.Common.Configuration;
 
 namespace ThunderKit.Core.Config
 {
@@ -40,8 +37,6 @@ namespace ThunderKit.Core.Config
             EditorUtility.SetDirty(settings);
 
             SetupPackageManifest(settings, packageName);
-
-            ScriptingSymbolManager.AddScriptingDefine("THUNDERKIT_CONFIGURED");
 
             AssetDatabase.ImportAsset("Packages", ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
         }
