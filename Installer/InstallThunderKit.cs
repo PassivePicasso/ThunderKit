@@ -1,10 +1,9 @@
-﻿#if !ThunderKitInstalled
-#if !IsThunderKitProject
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.PackageManager;
+using UnityEngine;
 
 namespace ThunderKit.Installer
 {
@@ -13,6 +12,7 @@ namespace ThunderKit.Installer
         [InitializeOnLoadMethod]
         static void InstallThunderKitNow()
         {
+#if !IsThunderKitProject
             var listRequest = Client.List(true);
             if (listRequest != null && listRequest.Result != null)
                 foreach (var package in listRequest.Result)
@@ -22,17 +22,21 @@ namespace ThunderKit.Installer
                     }
 
             AssetDatabase.StartAssetEditing();
-            if (AssetDatabase.IsValidFolder("Assets/ThunderKit/Installer"))
+            if (AssetDatabase.IsValidFolder("Assets/ThunderKit/Installer")
+             && !AssetDatabase.IsValidFolder("Assets/ThunderKit/Core"))
             {
                 AssetDatabase.DeleteAsset("Assets/ThunderKit/Installer");
                 if (!Directory.EnumerateFiles("Assets/ThunderKit", "*", SearchOption.AllDirectories).Any())
                     AssetDatabase.DeleteAsset("Assets/ThunderKit");
             }
-            AddScriptingDefine("ThunderKitInstalled");
-            Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
             AssetDatabase.StopAssetEditing();
+#endif
+            AddScriptingDefine("thunderkit");
+#if !IsThunderKitProject
+            Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
+#endif
         }
-        
+
         static bool IsObsolete(BuildTargetGroup group)
         {
             var attrs = typeof(BuildTargetGroup).GetField(group.ToString()).GetCustomAttributes(typeof(ObsoleteAttribute), false);
@@ -106,5 +110,3 @@ namespace ThunderKit.Installer
         }
     }
 }
-#endif
-#endif

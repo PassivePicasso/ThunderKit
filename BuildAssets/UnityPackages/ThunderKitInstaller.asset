@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: ThunderKitInstaller
   m_EditorClassIdentifier: 
   IncludedSettings: 0
-  exportPackageOptions: 2
+  exportPackageOptions: 3
   AssetFiles:
-  - {fileID: 102900000, guid: 8b3419e9d760f9d46b61b4a218d7319c, type: 3}
+  - {fileID: 102900000, guid: 9e8aefdb7fc66f14b87b04896eefff3f, type: 3}
