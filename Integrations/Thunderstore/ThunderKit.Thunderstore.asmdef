@@ -2,7 +2,7 @@
     "name": "ThunderKit.Thunderstore",
     "references": [
         "ThunderKit.Core",
-        "ThunderKit.SymbolManager"
+        "ThunderKit.Common"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
