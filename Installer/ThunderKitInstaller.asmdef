@@ -1,5 +1,5 @@
 {
-    "name": "RoSInstall",
+    "name": "ThunderKitInstaller",
     "references": [
         "Unity.PackageManagerUI.Editor"
     ],

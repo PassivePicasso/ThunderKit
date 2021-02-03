@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using System.IO.Compression;
-using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
+using ThunderKit.Common.Package;
 using UnityEditor;
-using UnityEngine;
+
 namespace ThunderKit.Integrations.Thunderstore
 {
     using static Constants;
@@ -63,7 +62,12 @@ namespace ThunderKit.Integrations.Thunderstore
                             {
                                 var stubManifest = CreateThunderstoreManifest.LoadStub(outputPath);
                                 var authorAlias = fileNameNoExt.Substring(0, fileNameNoExt.IndexOf('-'));
-                                GeneratePackageManifest(stubManifest, authorAlias, stubManifest.name.ToLower(), outputDir);
+                                PackageHelper.GeneratePackageManifest(
+                                    stubManifest.name.ToLower(), outputDir,
+                                    stubManifest.name, authorAlias,
+                                    stubManifest.version_number,
+                                    stubManifest.description,
+                                    stubManifest.website_url);
                             }
                         }
                     File.Delete(filePath);
@@ -76,21 +80,5 @@ namespace ThunderKit.Integrations.Thunderstore
             }
         }
 
-        public static void GeneratePackageManifest(CreateThunderstoreManifest.ThunderstoreManifestStub stubManifest, string authorAlias, string name, string outputDir)
-        {
-            string modVersion = stubManifest.version_number;
-            string description = stubManifest.description;
-
-            string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
-            var author = new Author
-            {
-                name = authorAlias,
-                url = stubManifest.website_url
-            };
-            var packageManifest = new PackageManagerManifest(author, name, ObjectNames.NicifyVariableName(stubManifest.name), modVersion, unityVersion, description);
-            var packageManifestJson = JsonUtility.ToJson(packageManifest);
-            ScriptingSymbolManager.AddScriptingDefine(name);
-            File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
-        }
     }
 }

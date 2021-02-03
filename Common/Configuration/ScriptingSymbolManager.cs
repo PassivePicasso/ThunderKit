@@ -1,8 +1,7 @@
 ﻿using System;
 using UnityEditor;
 
-
-namespace ThunderKit.Core.Editor
+namespace ThunderKit.Common.Configuration
 {
     public static class ScriptingSymbolManager
     {
