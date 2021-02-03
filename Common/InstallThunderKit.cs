@@ -50,7 +50,7 @@ namespace ThunderKit.Installer
             var listRequest = Client.List(true);
             if (listRequest != null && listRequest.Result != null)
                 foreach (var package in listRequest.Result)
-                    if (package.packageId.StartsWith("com.passivepicasso.thunderkit@https://github.com/PassivePicasso/ThunderKit.git#development"))
+                    if (package.packageId.StartsWith("com.passivepicasso.thunderkit@https://github.com/PassivePicasso/ThunderKit.git"))
                     {
                         return;
                     }
@@ -65,7 +65,7 @@ namespace ThunderKit.Installer
                 AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
                 AssetDatabase.DeleteAsset("Assets/ThunderKit");
                 AssetDatabase.StopAssetEditing();
-                Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
+                Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
 #endif
             }
         }
