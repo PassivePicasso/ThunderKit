@@ -66,7 +66,7 @@ namespace ThunderKit.Installer
                 AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
                 AssetDatabase.DeleteAsset("Assets/ThunderKit");
                 AssetDatabase.StopAssetEditing();
-                Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
+                Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
 #endif
                 AddScriptingDefine("thunderkit");
             }
@@ -114,7 +114,7 @@ namespace ThunderKit.Installer
 
             if (generatePackage)
                 GeneratePackageManifest(
-                    "system.io.compression", packageDir,
+                    "system_io_compression", packageDir,
                     "System.IO.Compression", "Microsoft",
                     "1.0.0",
                     "System.IO.Compression and System.IO.Compression.FileSystem");
