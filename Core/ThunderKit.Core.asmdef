@@ -1,7 +1,7 @@
 {
     "name": "ThunderKit.Core",
     "references": [
-        "ThunderKit.SymbolManager"
+        "ThunderKit.Common"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
