@@ -55,21 +55,26 @@ namespace ThunderKit.Installer
                         return;
                     }
 
-            AssetDatabase.StartAssetEditing();
-            AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
-            AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
-            AssetDatabase.DeleteAsset("Assets/ThunderKit");
 #endif
             AddScriptingDefine("thunderkit");
-            LoadCompression();
-
+            if (!InstallCompression())
+            {
 #if !IsThunderKitProject
-            AssetDatabase.StopAssetEditing();
-            Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
+                AssetDatabase.StartAssetEditing();
+                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
+                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
+                AssetDatabase.DeleteAsset("Assets/ThunderKit");
+                AssetDatabase.StopAssetEditing();
+                Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
 #endif
+            }
         }
 
-        static void LoadCompression()
+        /// <summary>
+        /// install System.IO.Compression and System.IO.Compression.FileSystem libraries into project as UPM Package
+        /// </summary>
+        /// <returns>true if installation of compression was executed, false if compression libraries are installed</returns>
+        static bool InstallCompression()
         {
             var compression = "Compression";
             var siocfs = "System.IO.Compression.FileSystem.dll";
@@ -109,6 +114,8 @@ namespace ThunderKit.Installer
                     "System.IO.Compression", "Microsoft",
                     "1.0.0",
                     "System.IO.Compression and System.IO.Compression.FileSystem");
+
+            return generatePackage;
         }
 
         static bool IsObsolete(BuildTargetGroup group)
