@@ -61,17 +61,20 @@ namespace ThunderKit.Installer
             if (!InstallCompression())
             {
 #if !IsThunderKitProject
-                AssetDatabase.StartAssetEditing();
-                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
-                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
-                AssetDatabase.DeleteAsset("Assets/ThunderKit");
-                AssetDatabase.StopAssetEditing();
                 Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
 #endif
                 AddScriptingDefine("thunderkit");
             }
 #endif
 
+#if !IsThunderKitProject && thunderkit
+                AssetDatabase.StartAssetEditing();
+                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
+                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
+                AssetDatabase.DeleteAsset("Assets/ThunderKit");
+                AssetDatabase.StopAssetEditing();
+                AssetDatabase.Refresh();
+#endif
         }
 
         /// <summary>
