@@ -57,8 +57,8 @@ namespace ThunderKit.Installer
 
             AssetDatabase.StartAssetEditing();
             AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
-            AssetDatabase.DeleteAsset("Assets/ThunderKit/Common/");
-            AssetDatabase.DeleteAsset("Assets/ThunderKit/");
+            AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
+            AssetDatabase.DeleteAsset("Assets/ThunderKit");
 #endif
             AddScriptingDefine("thunderkit");
             LoadCompression();
