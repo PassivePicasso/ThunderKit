@@ -43,6 +43,9 @@ namespace ThunderKit.Installer
         [InitializeOnLoadMethod]
         static void InstallThunderKitNow()
         {
+#if thunderkit
+            return;
+#endif
             if (AssetDatabase.IsValidFolder("Assets/ThunderKit/Core")) return;
             if (AssetDatabase.LoadAssetAtPath<DefaultAsset>("Assets/ThunderKit/package.json")) return;
 
@@ -54,9 +57,7 @@ namespace ThunderKit.Installer
                     {
                         return;
                     }
-
 #endif
-            AddScriptingDefine("thunderkit");
             if (!InstallCompression())
             {
 #if !IsThunderKitProject
@@ -67,6 +68,7 @@ namespace ThunderKit.Installer
                 AssetDatabase.StopAssetEditing();
                 Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
 #endif
+                AddScriptingDefine("thunderkit");
             }
         }
 
