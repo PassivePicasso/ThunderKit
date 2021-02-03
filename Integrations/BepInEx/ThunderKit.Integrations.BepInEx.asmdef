@@ -13,6 +13,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
-        "ThunderKitInstalled"
+        "thunderkit"
     ]
 }
