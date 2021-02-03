@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ThunderKit.Core.Data
+namespace ThunderKit.Common.Package
 {
     [Serializable]
     public struct Author

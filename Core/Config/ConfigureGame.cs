@@ -12,6 +12,8 @@ using Debug = UnityEngine.Debug;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using ThunderKit.Common.Package;
+using ThunderKit.Common.Configuration;
 
 namespace ThunderKit.Core.Config
 {
