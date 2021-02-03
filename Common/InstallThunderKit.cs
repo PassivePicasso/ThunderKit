@@ -44,6 +44,14 @@ namespace ThunderKit.Installer
         static void InstallThunderKitNow()
         {
 #if thunderkit
+#if !IsThunderKitProject
+                AssetDatabase.StartAssetEditing();
+                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
+                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
+                AssetDatabase.DeleteAsset("Assets/ThunderKit");
+                AssetDatabase.StopAssetEditing();
+                AssetDatabase.Refresh();
+#endif
             return;
 #else
             if (AssetDatabase.IsValidFolder("Assets/ThunderKit/Core")) return;
@@ -67,14 +75,6 @@ namespace ThunderKit.Installer
             }
 #endif
 
-#if !IsThunderKitProject && thunderkit
-                AssetDatabase.StartAssetEditing();
-                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
-                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
-                AssetDatabase.DeleteAsset("Assets/ThunderKit");
-                AssetDatabase.StopAssetEditing();
-                AssetDatabase.Refresh();
-#endif
         }
 
         /// <summary>
