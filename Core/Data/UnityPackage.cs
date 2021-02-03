@@ -39,8 +39,8 @@ namespace ThunderKit.Core.Data
 
         [EnumFlag]
         public IncludedSettings IncludedSettings;
-
-        public bool recurseDirectories;
+        [EnumFlag]
+        public ExportPackageOptions exportPackageOptions;
 
         public Object[] AssetFiles;
 
@@ -62,26 +62,14 @@ namespace ThunderKit.Core.Data
 
         public static void Export(UnityPackage redist, string path)
         {
-
             var assetPaths = redist.AssetFiles.Select(af => AssetDatabase.GetAssetPath(af));
-            if (redist.recurseDirectories)
-            {
-                var folderPaths = assetPaths.Where(AssetDatabase.IsValidFolder).ToArray();
-                var exceptFolderPaths = assetPaths.Except(folderPaths);
-                var recursedPaths = folderPaths.SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories));
-                assetPaths = exceptFolderPaths.Union(recursedPaths);
-            }
-
-            var additionalAssets = redist.IncludedSettings.GetFlags().Select(flag => $"ProjectSettings/{flag}.asset");
-
-            assetPaths = assetPaths.Concat(additionalAssets);
 
             string[] assetPathNames = assetPaths.ToArray();
             string fileName = Path.Combine(path, $"{redist.name}.unityPackage");
             string metaFileName = Path.Combine(path, $"{redist.name}.unityPackage.meta");
             if (File.Exists(fileName)) File.Delete(fileName);
             if (File.Exists(metaFileName)) File.Delete(metaFileName);
-            AssetDatabase.ExportPackage(assetPathNames, fileName);
+            AssetDatabase.ExportPackage(assetPathNames, fileName, redist.exportPackageOptions);
         }
     }
 }
