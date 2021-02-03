@@ -1,16 +1,19 @@
 {
-    "name": "ThunderKitInstaller",
+    "name": "ThunderKit.Installer",
     "references": [
         "Unity.PackageManagerUI.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
-        "Editor"
+        "Editor",
+        "LinuxStandalone64"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [
+        "!thunderkit"
+    ]
 }

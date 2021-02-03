@@ -17,6 +17,7 @@
     ],
     "autoReferenced": true,
     "defineConstraints": [
-        "system.io.compression"
+        "system.io.compression",
+        "thunderkit"
     ]
 }
