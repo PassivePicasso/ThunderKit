@@ -43,6 +43,17 @@ namespace ThunderKit.Installer
         [InitializeOnLoadMethod]
         static void InstallThunderKitNow()
         {
+#if thunderkit
+#if !IsThunderKitProject
+                AssetDatabase.StartAssetEditing();
+                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
+                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
+                AssetDatabase.DeleteAsset("Assets/ThunderKit");
+                AssetDatabase.StopAssetEditing();
+                AssetDatabase.Refresh();
+#endif
+            return;
+#else
             if (AssetDatabase.IsValidFolder("Assets/ThunderKit/Core")) return;
             if (AssetDatabase.LoadAssetAtPath<DefaultAsset>("Assets/ThunderKit/package.json")) return;
 
@@ -54,20 +65,16 @@ namespace ThunderKit.Installer
                     {
                         return;
                     }
-
 #endif
-            AddScriptingDefine("thunderkit");
             if (!InstallCompression())
             {
 #if !IsThunderKitProject
-                AssetDatabase.StartAssetEditing();
-                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
-                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
-                AssetDatabase.DeleteAsset("Assets/ThunderKit");
-                AssetDatabase.StopAssetEditing();
                 Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
 #endif
+                AddScriptingDefine("thunderkit");
             }
+#endif
+
         }
 
         /// <summary>
@@ -110,7 +117,7 @@ namespace ThunderKit.Installer
 
             if (generatePackage)
                 GeneratePackageManifest(
-                    "system.io.compression", packageDir,
+                    "system_io_compression", packageDir,
                     "System.IO.Compression", "Microsoft",
                     "1.0.0",
                     "System.IO.Compression and System.IO.Compression.FileSystem");
