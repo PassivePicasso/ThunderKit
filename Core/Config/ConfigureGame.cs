@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
@@ -150,16 +148,11 @@ namespace ThunderKit.Core.Config
                     File.WriteAllText(destinationMetaData, File.ReadAllText(metaData));
                 else
                 {
-                    using (var md5 = MD5.Create())
-                    {
-                        byte[] hash = md5.ComputeHash(Encoding.Default.GetBytes(Path.GetFileNameWithoutExtension(assembly)));
-                        Guid result = new Guid(hash);
-                        string guid = result.ToString().ToLower().Replace("-", "");
-                        File.WriteAllText(destinationMetaData, MetaData(guid));
-                    }
+                    PackageHelper.WriteAssemblyMetaData(assembly, destinationMetaData);
                 }
             }
         }
+
 
         public static void SetBitness(ThunderKitSettings settings)
         {
@@ -182,102 +175,5 @@ namespace ThunderKit.Core.Config
             }
             settings.Is64Bit = false;
         }
-
-        static string nl => Environment.NewLine;
-        internal static string MetaData(string guid) =>
-"fileFormatVersion: 2"
-+ nl + $"guid: {guid}"
-+ nl + "PluginImporter:"
-+ nl + "  externalObjects: {}"
-+ nl + "  serializedVersion: 2"
-+ nl + "  iconMap: {}"
-+ nl + "  executionOrder: {}"
-+ nl + "  defineConstraints: []"
-+ nl + "  isPreloaded: 0"
-+ nl + "  isOverridable: 0"
-+ nl + "  isExplicitlyReferenced: 1"
-+ nl + "  validateReferences: 1"
-+ nl + "  platformData:"
-+ nl + "  - first:"
-+ nl + "      '': Any"
-+ nl + "    second:"
-+ nl + "      enabled: 0"
-+ nl + "      settings:"
-+ nl + "        Exclude Editor: 0"
-+ nl + "        Exclude Linux: 0"
-+ nl + "        Exclude Linux64: 0"
-+ nl + "        Exclude LinuxUniversal: 0"
-+ nl + "        Exclude OSXUniversal: 0"
-+ nl + "        Exclude Win: 0"
-+ nl + "        Exclude Win64: 0"
-+ nl + "  - first:"
-+ nl + "      Any: "
-+ nl + "    second:"
-+ nl + "      enabled: 1"
-+ nl + "      settings: {}"
-+ nl + "  - first:"
-+ nl + "      Editor: Editor"
-+ nl + "    second:"
-+ nl + "      enabled: 1"
-+ nl + "      settings:"
-+ nl + "        CPU: AnyCPU"
-+ nl + "        DefaultValueInitialized: true"
-+ nl + "        OS: AnyOS"
-+ nl + "  - first:"
-+ nl + "      Facebook: Win"
-+ nl + "    second:"
-+ nl + "      enabled: 0"
-+ nl + "      settings:"
-+ nl + "        CPU: AnyCPU"
-+ nl + "  - first:"
-+ nl + "      Facebook: Win64"
-+ nl + "    second:"
-+ nl + "      enabled: 0"
-+ nl + "      settings:"
-+ nl + "        CPU: AnyCPU"
-+ nl + "  - first:"
-+ nl + "      Standalone: Linux"
-+ nl + "    second:"
-+ nl + "      enabled: 1"
-+ nl + "      settings:"
-+ nl + "        CPU: x86"
-+ nl + "  - first:"
-+ nl + "      Standalone: Linux64"
-+ nl + "    second:"
-+ nl + "      enabled: 1"
-+ nl + "      settings:"
-+ nl + "        CPU: x86_64"
-+ nl + "  - first:"
-+ nl + "      Standalone: LinuxUniversal"
-+ nl + "    second:"
-+ nl + "      enabled: 1"
-+ nl + "      settings: {}"
-+ nl + "  - first:"
-+ nl + "      Standalone: OSXUniversal"
-+ nl + "    second:"
-+ nl + "      enabled: 1"
-+ nl + "      settings:"
-+ nl + "        CPU: AnyCPU"
-+ nl + "  - first:"
-+ nl + "      Standalone: Win"
-+ nl + "    second:"
-+ nl + "      enabled: 1"
-+ nl + "      settings:"
-+ nl + "        CPU: AnyCPU"
-+ nl + "  - first:"
-+ nl + "      Standalone: Win64"
-+ nl + "    second:"
-+ nl + "      enabled: 1"
-+ nl + "      settings:"
-+ nl + "        CPU: AnyCPU"
-+ nl + "  - first:"
-+ nl + "      Windows Store Apps: WindowsStoreApps"
-+ nl + "    second:"
-+ nl + "      enabled: 0"
-+ nl + "      settings:"
-+ nl + "        CPU: AnyCPU"
-+ nl + "  userData: "
-+ nl + "  assetBundleName: "
-+ nl + "  assetBundleVariant: ";
     }
 }
