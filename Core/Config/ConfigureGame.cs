@@ -104,8 +104,6 @@ namespace ThunderKit.Core.Config
         {
             Debug.Log("Acquiring references");
             var blackList = AppDomain.CurrentDomain.GetAssemblies().Where(asm => !asm.IsDynamic).Select(asm => asm.Location);
-            if (settings?.excluded_assemblies != null)
-                blackList = blackList.Union(settings?.excluded_assemblies).ToArray();
 
             var managedPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
             var pluginsPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
@@ -113,22 +111,15 @@ namespace ThunderKit.Core.Config
             var managedAssemblies = Directory.EnumerateFiles(managedPath, "*.dll");
             var plugins = Directory.EnumerateFiles(pluginsPath, "*.dll");
 
-            GetReferences(packageName, Path.Combine("Packages", packageName), managedAssemblies, settings.additional_assemblies, blackList, settings.assembly_metadata);
-            GetReferences(packageName, Path.Combine("Packages", packageName, "plugins"), plugins, settings.additional_plugins, settings.excluded_assemblies, settings.assembly_metadata);
+            GetReferences(packageName, Path.Combine("Packages", packageName), managedAssemblies, Enumerable.Empty<string>(), blackList);
+            GetReferences(packageName, Path.Combine("Packages", packageName, "plugins"), plugins, Enumerable.Empty<string>(), Enumerable.Empty<string>());
         }
 
-        private static void GetReferences(string packageName, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> whiteList, IEnumerable<string> blackList, IEnumerable<string> metaDataLocations)
+        private static void GetReferences(string packageName, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> whiteList, IEnumerable<string> blackList)
         {
             if (whiteList == null) whiteList = Enumerable.Empty<string>();
             if (assemblies == null) assemblies = Enumerable.Empty<string>();
             if (blackList == null) blackList = Enumerable.Empty<string>();
-            if (metaDataLocations == null) metaDataLocations = Enumerable.Empty<string>();
-
-            var metaDataFiles = metaDataLocations.SelectMany(location =>
-            {
-                IEnumerable<string> enumerable = Directory.EnumerateFiles(location, "*.meta", SearchOption.TopDirectoryOnly);
-                return enumerable;
-            }).ToArray();
 
             foreach (var assemblyPath in assemblies)
             {
@@ -143,13 +134,7 @@ namespace ThunderKit.Core.Config
                 if (File.Exists(destinationFile)) File.Delete(destinationFile);
                 File.Copy(assemblyPath, destinationFile);
 
-                var metaData = metaDataFiles.FirstOrDefault(md => md.Contains(filenameWithoutExtension));
-                if (!string.IsNullOrEmpty(metaData))
-                    File.WriteAllText(destinationMetaData, File.ReadAllText(metaData));
-                else
-                {
-                    PackageHelper.WriteAssemblyMetaData(assemblyPath, destinationMetaData);
-                }
+                PackageHelper.WriteAssemblyMetaData(assemblyPath, destinationMetaData);
             }
         }
 

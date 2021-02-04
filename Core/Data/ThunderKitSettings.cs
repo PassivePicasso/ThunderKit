@@ -27,20 +27,7 @@ namespace ThunderKit.Core.Data
         public string GamePath;
 
         [SerializeField]
-        public string[] assembly_metadata;
-
-        [SerializeField]
-        public string[] additional_plugins;
-
-        [SerializeField]
-        public string[] additional_assemblies;
-
-        [SerializeField]
-        public string[] excluded_assemblies;
-
-        [SerializeField]
-        public string[] deployment_exclusions;
-
+        public string ThunderstoreUrl = "https://thunderstore.io";
 
         [SerializeField]
         public bool Is64Bit;
@@ -69,7 +56,6 @@ namespace ThunderKit.Core.Data
             ScriptableHelper.EnsureAsset<ThunderKitSettings>(SettingsPath, settings =>
             {
                 settings.GamePath = "";
-                settings.deployment_exclusions = new string[0];
             });
 
         public static SerializedObject GetSerializedSettings()
@@ -99,15 +85,20 @@ namespace ThunderKit.Core.Data
                     var settingsobject = GetOrCreateSettings();
                     var serializedSettings = GetSerializedSettings();
 
-                    var pathField = new TextField { bindingPath = nameof(GameExecutable) };
-                    rootElement.Add(pathField);
+                    var label = new Label(ObjectNames.NicifyVariableName(nameof(GameExecutable)));
+                    var field = new TextField { bindingPath = nameof(GameExecutable) };
+                    rootElement.Add(label);
+                    rootElement.Add(field);
 
-                    pathField = new TextField { bindingPath = nameof(GamePath) };
-                    rootElement.Add(pathField);
+                    label = new Label(ObjectNames.NicifyVariableName(nameof(GamePath)));
+                    field = new TextField {  bindingPath = nameof(GamePath),  };
+                    rootElement.Add(label);
+                    rootElement.Add(field);
 
-
-                    //pathField = new TextField { bindingPath = nameof(DnSpyPath) };
-                    //rootElement.Add(pathField);
+                    label = new Label(ObjectNames.NicifyVariableName(nameof(ThunderstoreUrl)));
+                    field = new TextField { bindingPath = nameof(ThunderstoreUrl) };
+                    rootElement.Add(label);
+                    rootElement.Add(field);
 
                     rootElement.Bind(serializedSettings);
                 },
