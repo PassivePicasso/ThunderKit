@@ -26,17 +26,17 @@ namespace ThunderKit.Common.Package
             File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
         }
 
-        public static void WriteAssemblyMetaData(string assembly, string destinationMetaData)
+        public static void WriteAssemblyMetaData(string assemblyPath, string destinationMetaData)
         {
-            string guid = PackageHelper.GetAssemblyHash(assembly);
+            string guid = PackageHelper.GetAssemblyHash(assemblyPath);
             File.WriteAllText(destinationMetaData, PackageHelper.DefaultAssemblyMetaData(guid));
         }
 
-        public static string GetAssemblyHash(string assembly)
+        public static string GetAssemblyHash(string assemblyPath)
         {
             using (var md5 = MD5.Create())
             {
-                string shortName = Path.GetFileNameWithoutExtension(assembly);
+                string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
                 byte[] shortNameBytes = Encoding.Default.GetBytes(shortName);
                 var shortNameHash = md5.ComputeHash(shortNameBytes);
                 var guid = new Guid(shortNameHash);
