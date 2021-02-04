@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -17,8 +18,7 @@ namespace ThunderKit.Integrations.Thunderstore
     /// </summary>
     public class ThunderstoreAPI
     {
-        const string ThunderstoreIO = "https://thunderstore.io";
-        const string PackageListApi = ThunderstoreIO + "/api/v1/package";
+        static string PackageListApi => ThunderKitSettings.GetOrCreateSettings().ThunderstoreUrl + "/api/v1/package";
 
         internal static List<Package> loadedPackages = new List<Package>();
 
