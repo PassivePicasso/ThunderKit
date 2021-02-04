@@ -130,25 +130,25 @@ namespace ThunderKit.Core.Config
                 return enumerable;
             }).ToArray();
 
-            foreach (var assembly in assemblies)
+            foreach (var assemblyPath in assemblies)
             {
-                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(assembly);
+                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(assemblyPath);
                 Func<string, bool> matchingAssembly = enumerableAsm => enumerableAsm.Contains(filenameWithoutExtension);
                 if (!whiteList.Any(matchingAssembly) && blackList.Any(matchingAssembly)) continue;
 
-                var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(assembly));
+                var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(assemblyPath));
 
-                var destinationMetaData = Path.Combine(destinationFolder, $"{Path.GetFileName(assembly)}.meta");
+                var destinationMetaData = Path.Combine(destinationFolder, $"{Path.GetFileName(assemblyPath)}.meta");
 
                 if (File.Exists(destinationFile)) File.Delete(destinationFile);
-                File.Copy(assembly, destinationFile);
+                File.Copy(assemblyPath, destinationFile);
 
                 var metaData = metaDataFiles.FirstOrDefault(md => md.Contains(filenameWithoutExtension));
                 if (!string.IsNullOrEmpty(metaData))
                     File.WriteAllText(destinationMetaData, File.ReadAllText(metaData));
                 else
                 {
-                    PackageHelper.WriteAssemblyMetaData(assembly, destinationMetaData);
+                    PackageHelper.WriteAssemblyMetaData(assemblyPath, destinationMetaData);
                 }
             }
         }
