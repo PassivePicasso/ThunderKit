@@ -81,7 +81,7 @@ namespace ThunderKit.Installer
         /// install System.IO.Compression and System.IO.Compression.FileSystem libraries into project as UPM Package
         /// </summary>
         /// <returns>true if installation of compression was executed, false if compression libraries are installed</returns>
-        static bool InstallCompression()
+        public static bool InstallCompression()
         {
             var compression = "Compression";
             var siocfs = "System.IO.Compression.FileSystem.dll";
