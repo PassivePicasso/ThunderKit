@@ -58,6 +58,12 @@ namespace ThunderKit.Integrations.Thunderstore
                             if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
 
                             entry.ExtractToFile(outputPath);
+                            if(fileName.EndsWith("dll"))
+                            {
+                                string assemblyPath = outputPath;
+                                var destinationMetaData = Path.Combine(Path.GetDirectoryName(assemblyPath), $"{Path.GetFileNameWithoutExtension(assemblyPath)}.meta");
+                                PackageHelper.WriteAssemblyMetaData(assemblyPath, destinationMetaData);
+                            }
                             if ("manifest.json".Equals(fileName.ToLower()))
                             {
                                 var stubManifest = CreateThunderstoreManifest.LoadStub(outputPath);

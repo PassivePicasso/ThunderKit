@@ -178,6 +178,12 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                                 Directory.CreateDirectory(outputDir);
                                 archive.ExtractToDirectory(outputDir);
 
+                                foreach(var assemblyPath in Directory.EnumerateFiles(outputDir, "*.dll", SearchOption.AllDirectories))
+                                {
+                                    var destinationMetaData = Path.Combine(Path.GetDirectoryName(assemblyPath), $"{Path.GetFileNameWithoutExtension(assemblyPath)}.meta");
+                                    PackageHelper.WriteAssemblyMetaData(assemblyPath, destinationMetaData);
+                                }
+
                                 using (var reader = new StreamReader(entry.Open()))
                                 {
                                     var stubManifest = JsonUtility.FromJson<ThunderstoreManifestStub>(reader.ReadToEnd());
@@ -218,7 +224,7 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                         .GroupBy(dep => dep.latest.full_name).Select(g => g.First()).ToArray();
 
                     foreach (var pack in packages)
-                        ThunderstoreAPI.DownloadPackage(package, Path.Combine(TempDir, GetZipFileName(package)));
+                        ThunderstoreAPI.DownloadPackage(pack, Path.Combine(TempDir, GetZipFileName(pack)));
 
                     return true;
                 }
