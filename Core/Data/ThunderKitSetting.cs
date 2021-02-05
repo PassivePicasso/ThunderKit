@@ -4,6 +4,7 @@ using System.Linq;
 using ThunderKit.Core.Editor;
 using UnityEditor;
 using UnityEngine;
+using System.IO;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -16,8 +17,13 @@ namespace ThunderKit.Core.Data
 {
     public class ThunderKitSetting : ScriptableObject 
     {
-        public static T GetOrCreateSettings<T>() where T : ThunderKitSetting =>
-            ScriptableHelper.EnsureAsset<T>($"Assets/ThunderKitSettings/{typeof(T).Name}.asset", settings => settings.Initialize());
+        public static T GetOrCreateSettings<T>() where T : ThunderKitSetting
+        {
+
+            string assetPath = $"Assets/ThunderKitSettings/{typeof(T).Name}.asset";
+            Directory.CreateDirectory(Path.GetDirectoryName(assetPath));
+            return ScriptableHelper.EnsureAsset<T>(assetPath, settings => settings.Initialize());
+        }
 
         public virtual void Initialize() { }
         public virtual IEnumerable<string> Keywords() => Enumerable.Empty<string>();

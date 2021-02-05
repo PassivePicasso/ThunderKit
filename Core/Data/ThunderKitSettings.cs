@@ -122,9 +122,16 @@ namespace ThunderKit.Core.Data
                         rootElement.Add(settingContainer);
                     }
 
+                    
                     //var localPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)
-                    var ussPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:stylesheet ThunderKitSettings").First());
+#if UNITY_2018
+                    var ussPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:stylesheet ThunderKitSettings2018").First());
                     rootElement.AddStyleSheetPath(ussPath);
+#elif UNITY_2019
+                    var ussPath = AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:stylesheet ThunderKitSettings2019").First());
+                    var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(ussPath);
+                    rootElement.styleSheets.Add(styleSheet);
+#endif
                 },
 
                 // Populate the search keywords to enable smart search filtering and label highlighting:
@@ -135,5 +142,5 @@ namespace ThunderKit.Core.Data
         }
 #endif
 
-    }
+                }
 }
