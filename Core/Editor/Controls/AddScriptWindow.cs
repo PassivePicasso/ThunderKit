@@ -22,7 +22,7 @@ namespace ThunderKit.Core.Editor.Controls
 
             static Styles()
             {
-                blueTexture = EditorGUIUtility.whiteTexture;
+                blueTexture = new Texture2D(EditorGUIUtility.whiteTexture.width, EditorGUIUtility.whiteTexture.height);
                 blueTexture.SetPixels(EditorGUIUtility.whiteTexture.GetPixels32(0).Select(p => new Color(62f / 255f, 125f / 255f, 231f / 255f, 1f)).ToArray());
                 blueTexture.Apply();
                 addButtonStyle.fontSize = 12;
