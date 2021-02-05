@@ -56,14 +56,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             if (remapFileIds)
             {
-                AssetDatabase.StopAssetEditing();
                 foreach (var map in remappableAssets)
                 {
                     var fileText = File.ReadAllText(map.Path);
                     fileText = fileText.Replace(map.ScriptReference, map.AssemblyReference);
                     File.WriteAllText(map.Path, fileText);
                 }
-                AssetDatabase.StartAssetEditing();
                 AssetDatabase.Refresh();
             }
 
@@ -80,14 +78,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             if (remapFileIds)
             {
-                AssetDatabase.StopAssetEditing();
                 foreach (var map in remappableAssets)
                 {
                     var fileText = File.ReadAllText(map.Path);
                     fileText = fileText.Replace(map.AssemblyReference, map.ScriptReference);
                     File.WriteAllText(map.Path, fileText);
                 }
-                AssetDatabase.StartAssetEditing();
                 AssetDatabase.Refresh();
             }
         }
