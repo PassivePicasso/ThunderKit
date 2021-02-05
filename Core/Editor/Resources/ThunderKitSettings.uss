@@ -1,0 +1,49 @@
+.thunderkit-field {
+	flex-direction: row;
+	flex-grow: 1;
+	align-self: stretch;
+}
+.thunderkit-field-label {
+	width: 150;
+}
+.thunderkit-field-input {
+	flex-grow: 1;
+}
+
+.thunderkit-header {
+	-unity-font-style: bold;
+	font-size: 11;
+	background-color: #cccccc;
+	color: #000000;
+	margin-left: 0;
+	margin-top: 0;
+	margin-right: 0;
+}
+
+.thunderkit-error {
+	opacity: 0.25;
+	background-color: #FF0000;
+	border-color: #FF0000;
+	border-left-width: 1;
+	border-top-width: 1;
+	border-right-width: 1;
+	border-bottom-width: 1;
+	margin-left: 2;
+	margin-top: 3;
+	margin-right: 2;
+	margin-bottom: 1;
+}
+
+.thunderkit-setting {
+	opacity: 0.25;
+	background-color: #aaaaaa;
+	border-color: #000000;
+	border-left-width: 1;
+	border-top-width: 1;
+	border-right-width: 1;
+	border-bottom-width: 1;
+	margin-left: 2;
+	margin-top: 2;
+	margin-right: 2;
+	margin-bottom: 1;
+}
