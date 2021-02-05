@@ -26,7 +26,7 @@ namespace ThunderKit.Core.Config
         [MenuItem(Constants.ThunderKitMenuRoot + "Setup Debug Build", priority = Constants.ThunderKitMenuPriority)]
         public static void Execute()
         {
-            var settings = ThunderKitSettings.GetOrCreateSettings();
+            var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
 
             var gamePath = settings.GamePath;
             var gameDir = new DirectoryInfo(gamePath);
