@@ -27,7 +27,7 @@ namespace ThunderKit.Core.Data
         public override void CreateSettingsUI(VisualElement rootElement)
         {
             var settingsobject = GetOrCreateSettings<ThunderstoreSettings>();
-            var serializedSettings = GetSerializedSettings<ThunderstoreSettings>();
+            var serializedSettings = new SerializedObject(settingsobject);
             var container = new VisualElement();
             var label = new Label(ObjectNames.NicifyVariableName(nameof(ThunderstoreUrl)));
             var field = new TextField { bindingPath = nameof(ThunderstoreUrl) };
@@ -38,6 +38,9 @@ namespace ThunderKit.Core.Data
             });
             container.Add(label);
             container.Add(field);
+            container.AddToClassList("thunderkit-field");
+            field.AddToClassList("thunderkit-field-input");
+            label.AddToClassList("thunderkit-field-label");
             rootElement.Add(container);
 
             container.Bind(serializedSettings);
