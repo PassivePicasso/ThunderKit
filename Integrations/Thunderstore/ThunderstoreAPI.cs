@@ -24,7 +24,33 @@ namespace ThunderKit.Integrations.Thunderstore
 
         [MenuItem(Core.Constants.ThunderKitMenuRoot + "Refresh Thunderstore", priority = Core.Constants.ThunderKitMenuPriority)]
         [InitializeOnLoadMethod]
-        public static async void LoadPages()
+        public static void LoadPages()
+        {
+            ThunderKitSettings.OnThunderstoreUrlChanged -= LoadPages;
+            ThunderKitSettings.OnThunderstoreUrlChanged += LoadPages;
+            ReloadPages();
+        }
+
+        static double timeSinceStartup;
+        
+        public static void LoadPages(object sender, (string newValue, string oldValue) value)
+        {
+            timeSinceStartup = EditorApplication.timeSinceStartup;
+            EditorApplication.update -= WaitUpdate;
+            EditorApplication.update += WaitUpdate;
+        }
+
+        private static void WaitUpdate()
+        {
+            var timeElapsed = EditorApplication.timeSinceStartup - timeSinceStartup;
+            if(timeElapsed > 2)
+            {
+                ReloadPages();
+                EditorApplication.update -= WaitUpdate;
+            }
+        }
+
+        private static async void ReloadPages()
         {
             loadedPackages.Clear();
             using (WebClient client = new WebClient())
@@ -35,6 +61,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 var nonDeprecatedResults = resultSet.results.Where(package => !package.is_deprecated);
                 loadedPackages.AddRange(nonDeprecatedResults);
             }
+            //Debug.Log($"Package listing update: {PackageListApi}");
         }
 
         public static IEnumerable<Package> LookupPackage(string name, int pageIndex = 1, bool logStart = true) => loadedPackages.Where(package => IsMatch(package, name)).ToArray();
