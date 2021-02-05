@@ -18,7 +18,7 @@ namespace ThunderKit.Integrations.Thunderstore
     /// </summary>
     public class ThunderstoreAPI
     {
-        static string PackageListApi => ThunderKitSettings.GetOrCreateSettings().ThunderstoreUrl + "/api/v1/package";
+        static string PackageListApi => ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl + "/api/v1/package";
 
         internal static List<Package> loadedPackages = new List<Package>();
 
@@ -26,8 +26,8 @@ namespace ThunderKit.Integrations.Thunderstore
         [InitializeOnLoadMethod]
         public static void LoadPages()
         {
-            ThunderKitSettings.OnThunderstoreUrlChanged -= LoadPages;
-            ThunderKitSettings.OnThunderstoreUrlChanged += LoadPages;
+            ThunderstoreSettings.OnThunderstoreUrlChanged -= LoadPages;
+            ThunderstoreSettings.OnThunderstoreUrlChanged += LoadPages;
             ReloadPages();
         }
 

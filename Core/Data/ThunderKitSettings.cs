@@ -5,6 +5,8 @@ using UnityEditor.Compilation;
 using System.IO;
 using ThunderKit.Core.Editor;
 using System;
+using System.Linq;
+using System.Reflection;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -16,23 +18,8 @@ using UnityEngine.Experimental.UIElements;
 namespace ThunderKit.Core.Data
 {
     // Create a new type of Settings Asset.
-    public class ThunderKitSettings : ScriptableObject
+    public class ThunderKitSettings : ThunderKitSetting
     {
-        public static string SettingsPath => $"Assets/{nameof(ThunderKitSettings)}.asset";
-        private const string PathLabel = "Game Path";
-
-        [SerializeField]
-        public string GameExecutable;
-
-        [SerializeField]
-        public string GamePath;
-
-        [SerializeField]
-        public string ThunderstoreUrl = "https://thunderstore.io";
-
-        [SerializeField]
-        public bool Is64Bit;
-
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
@@ -53,24 +40,22 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        public static ThunderKitSettings GetOrCreateSettings() =>
-            ScriptableHelper.EnsureAsset<ThunderKitSettings>(SettingsPath, settings =>
-            {
-                settings.GamePath = "";
-            });
-
-        public static SerializedObject GetSerializedSettings()
-        {
-            return new SerializedObject(GetOrCreateSettings());
-        }
-
         [MenuItem(Constants.ThunderKitMenuRoot + "Create Settings", priority = Constants.ThunderKitMenuPriority)]
-        public static void CreateSettings()
-        {
-            GetOrCreateSettings();
-        }
+        public static void CreateSettings() => GetOrCreateSettings<ThunderKitSettings>();
 
-        public static event EventHandler<(string newValue, string previousValue)> OnThunderstoreUrlChanged;
+        private const string PathLabel = "Game Path";
+
+        [SerializeField]
+        public string GameExecutable;
+
+        [SerializeField]
+        public string GamePath;
+
+        [SerializeField]
+        public bool Is64Bit;
+
+        public override void Initialize() => GamePath = "";
+
 
 #if UNITY_2018 || UNITY_2019
         [SettingsProvider]
@@ -85,8 +70,8 @@ namespace ThunderKit.Core.Data
                 // activateHandler is called when the user clicks on the Settings item in the Settings window.
                 activateHandler = (searchContext, rootElement) =>
                 {
-                    var settingsobject = GetOrCreateSettings();
-                    var serializedSettings = GetSerializedSettings();
+                    ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+                    var serializedSettings = GetSerializedSettings<ThunderKitSettings>();
 
                     var label = new Label(ObjectNames.NicifyVariableName(nameof(GameExecutable)));
                     var field = new TextField { bindingPath = nameof(GameExecutable) };
@@ -97,19 +82,31 @@ namespace ThunderKit.Core.Data
                     field = new TextField { bindingPath = nameof(GamePath), };
                     rootElement.Add(label);
                     rootElement.Add(field);
-
-                    label = new Label(ObjectNames.NicifyVariableName(nameof(ThunderstoreUrl)));
-                    field = new TextField { bindingPath = nameof(ThunderstoreUrl) };
-                    field.RegisterCallback<ChangeEvent<string>>(ce =>
-                    {
-                        if (ce.newValue != ce.previousValue)
-                            OnThunderstoreUrlChanged.Invoke(field, (ce.newValue, ce.previousValue));
-                    });
-                    rootElement.Add(label);
-                    rootElement.Add(field);
-
-
                     rootElement.Bind(serializedSettings);
+
+                    var allTypes = AppDomain.CurrentDomain
+                                .GetAssemblies()
+                                .Where(asm => asm.GetReferencedAssemblies().Any(reffed => reffed.Name.Contains("ThunderKit")))
+                                .SelectMany(asm => asm.GetTypes());
+                    var thunderKitSettings = allTypes
+                        .Where(typeof(ThunderKitSetting).IsAssignableFrom)
+                        .Where(t => t != typeof(ThunderKitSettings))
+                        .Where(t => t != typeof(ThunderKitSetting))
+                        .ToArray();
+
+
+                    object[] createSettingsUiParameters = new[] { rootElement };
+                    foreach (var settingType in thunderKitSettings)
+                    {
+                        var getOrCreateSettings = typeof(ThunderKitSetting)
+                                .GetMethod(nameof(GetOrCreateSettings), BindingFlags.Static | BindingFlags.Public)
+                                .MakeGenericMethod(settingType);
+
+                        var createSettingsUi = settingType.GetMethod(nameof(CreateSettingsUI), createSettingsUiParameterTypes);
+
+                        var settings = getOrCreateSettings.Invoke(null, null);
+                        createSettingsUi.Invoke(settings, createSettingsUiParameters);
+                    }
                 },
 
                 // Populate the search keywords to enable smart search filtering and label highlighting:
