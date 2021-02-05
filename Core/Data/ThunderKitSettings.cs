@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor.Compilation;
 using System.IO;
 using ThunderKit.Core.Editor;
+using System;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -69,6 +70,8 @@ namespace ThunderKit.Core.Data
             GetOrCreateSettings();
         }
 
+        public static event EventHandler<(string newValue, string previousValue)> OnThunderstoreUrlChanged;
+
 #if UNITY_2018 || UNITY_2019
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider()
@@ -91,14 +94,20 @@ namespace ThunderKit.Core.Data
                     rootElement.Add(field);
 
                     label = new Label(ObjectNames.NicifyVariableName(nameof(GamePath)));
-                    field = new TextField {  bindingPath = nameof(GamePath),  };
+                    field = new TextField { bindingPath = nameof(GamePath), };
                     rootElement.Add(label);
                     rootElement.Add(field);
 
                     label = new Label(ObjectNames.NicifyVariableName(nameof(ThunderstoreUrl)));
                     field = new TextField { bindingPath = nameof(ThunderstoreUrl) };
+                    field.RegisterCallback<ChangeEvent<string>>(ce =>
+                    {
+                        if (ce.newValue != ce.previousValue)
+                            OnThunderstoreUrlChanged.Invoke(field, (ce.newValue, ce.previousValue));
+                    });
                     rootElement.Add(label);
                     rootElement.Add(field);
+
 
                     rootElement.Bind(serializedSettings);
                 },
