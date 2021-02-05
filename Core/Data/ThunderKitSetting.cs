@@ -4,7 +4,13 @@ using System.Linq;
 using ThunderKit.Core.Editor;
 using UnityEditor;
 using UnityEngine;
+#if UNITY_2019 || UNITY_2020
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+#else
+using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
+#endif
 
 namespace ThunderKit.Core.Data
 {
