@@ -180,8 +180,7 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
 
                                 foreach(var assemblyPath in Directory.EnumerateFiles(outputDir, "*.dll", SearchOption.AllDirectories))
                                 {
-                                    var destinationMetaData = Path.Combine(Path.GetDirectoryName(assemblyPath), $"{Path.GetFileNameWithoutExtension(assemblyPath)}.meta");
-                                    PackageHelper.WriteAssemblyMetaData(assemblyPath, destinationMetaData);
+                                    PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
                                 }
 
                                 using (var reader = new StreamReader(entry.Open()))
