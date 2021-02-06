@@ -45,7 +45,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 {
                     var type = map.monoScript.GetClass();
                     var fileId = FileIdUtil.Compute(type);
-                    var libraryGuid = PackageHelper.GetAssemblyHash(type.Assembly.Location);
+                    var assemblyPath = type.Assembly.Location;
+                    var libraryGuid = PackageHelper.GetAssemblyHash(assemblyPath);
                     AssetDatabase.TryGetGUIDAndLocalFileIdentifier(map.monoScript, out string scriptGuid, out long scriptId);
 
                     return (Path: map.path,
@@ -62,7 +63,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     fileText = fileText.Replace(map.ScriptReference, map.AssemblyReference);
                     File.WriteAllText(map.Path, fileText);
                 }
-                AssetDatabase.Refresh();
+                //AssetDatabase.Refresh();
             }
 
             foreach (var unityPackageDatum in unityPackageData)
@@ -84,7 +85,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     fileText = fileText.Replace(map.AssemblyReference, map.ScriptReference);
                     File.WriteAllText(map.Path, fileText);
                 }
-                AssetDatabase.Refresh();
+                //AssetDatabase.Refresh();
             }
         }
     }
