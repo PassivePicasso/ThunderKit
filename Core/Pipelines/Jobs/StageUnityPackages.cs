@@ -1,15 +1,20 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using UnityEditor;
+using UnityEditor.Presets;
 using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
+    using Object = UnityEngine.Object;
+
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
     public class StageUnityPackages : PipelineJob
     {
@@ -17,7 +22,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         public override void Execute(Pipeline pipeline)
         {
             var unityPackageData = pipeline.Manifest.Data.OfType<UnityPackages>().ToArray();
-            var remappableAssets = unityPackageData
+            var unityObjects = unityPackageData
                 .SelectMany(upd => upd.unityPackages)
                 .SelectMany(up => up.AssetFiles)
                 .Select(AssetDatabase.GetAssetPath)
@@ -29,15 +34,29 @@ namespace ThunderKit.Core.Pipelines.Jobs
                         return Enumerable.Repeat(path, 1);
                 })
                 .Select(path => (path, asset: AssetDatabase.LoadAssetAtPath<Object>(path)))
+                .ToArray();
+            var remappableAssets = unityObjects
                 .SelectMany(map =>
                 {
                     var (path, asset) = map;
+                    if (asset is Preset preset)
+                    {
+                        var presetSo = new SerializedObject(preset);
+                        SerializedProperty m_TargetType, m_ManagedTypePPtr;
+                        m_TargetType = presetSo.FindProperty(nameof(m_TargetType));
+                        m_ManagedTypePPtr = m_TargetType.FindPropertyRelative(nameof(m_ManagedTypePPtr));
+                        var monoScript = m_ManagedTypePPtr.objectReferenceValue as MonoScript;
+
+                        return Enumerable.Repeat((path: path, monoScript: monoScript), 1);
+                    }
+
                     if (asset is GameObject goAsset)
                         return goAsset.GetComponentsInChildren<MonoBehaviour>()
                                          .Select(mb => (path: path, monoScript: MonoScript.FromMonoBehaviour(mb)));
 
                     if (asset is ScriptableObject soAsset)
                         return Enumerable.Repeat((path: path, monoScript: MonoScript.FromScriptableObject(soAsset)), 1);
+
 
                     return Enumerable.Empty<(string path, MonoScript monoScript)>();
                 })
@@ -50,20 +69,22 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     AssetDatabase.TryGetGUIDAndLocalFileIdentifier(map.monoScript, out string scriptGuid, out long scriptId);
 
                     return (Path: map.path,
-                            ScriptReference: $"{{fileID: {scriptId}, guid: {scriptGuid}, type: 3}}",
-                            AssemblyReference: $"{{fileID: {fileId}, guid: {libraryGuid}, type: 3}}");
+                            ToAssemblyReference: new Regex($"(\\{{fileID:)\\s*?{scriptId},(\\s*?guid:)\\s*?{scriptGuid},(\\s*?type:\\s*?\\d+\\s*?\\}})", RegexOptions.Singleline),
+                            ToScriptReference: new Regex($"(\\{{fileID:)\\s*?{fileId},(\\s*?guid:)\\s*?{libraryGuid},(\\s*?type:\\s*?\\d+\\s*?\\}})", RegexOptions.Singleline),
+                                ScriptReference: $"$1 {scriptId},$2 {scriptGuid},$3",
+                                AssemblyReference: $"$1 {fileId},$2 {libraryGuid},$3"
+                                );
                 })
                 .ToArray();
 
             if (remapFileIds)
             {
-                foreach (var map in remappableAssets)
+                foreach (var map in remappableAssets.Skip(2))
                 {
                     var fileText = File.ReadAllText(map.Path);
-                    fileText = fileText.Replace(map.ScriptReference, map.AssemblyReference);
+                    fileText = map.ToAssemblyReference.Replace(fileText, map.AssemblyReference);
                     File.WriteAllText(map.Path, fileText);
                 }
-                //AssetDatabase.Refresh();
             }
 
             foreach (var unityPackageDatum in unityPackageData)
@@ -79,13 +100,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             if (remapFileIds)
             {
-                foreach (var map in remappableAssets)
+                foreach (var map in remappableAssets.Skip(2))
                 {
                     var fileText = File.ReadAllText(map.Path);
-                    fileText = fileText.Replace(map.AssemblyReference, map.ScriptReference);
+                    fileText = map.ToScriptReference.Replace(fileText, map.ScriptReference);
                     File.WriteAllText(map.Path, fileText);
                 }
-                //AssetDatabase.Refresh();
             }
         }
     }
