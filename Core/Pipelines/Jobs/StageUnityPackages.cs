@@ -79,7 +79,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             if (remapFileIds)
             {
-                foreach (var map in remappableAssets.Skip(2))
+                foreach (var map in remappableAssets)
                 {
                     var fileText = File.ReadAllText(map.Path);
                     fileText = map.ToAssemblyReference.Replace(fileText, map.AssemblyReference);
@@ -100,7 +100,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             if (remapFileIds)
             {
-                foreach (var map in remappableAssets.Skip(2))
+                foreach (var map in remappableAssets)
                 {
                     var fileText = File.ReadAllText(map.Path);
                     fileText = map.ToScriptReference.Replace(fileText, map.ScriptReference);
