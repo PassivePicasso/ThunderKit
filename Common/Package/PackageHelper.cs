@@ -26,10 +26,12 @@ namespace ThunderKit.Common.Package
             File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
         }
 
-        public static void WriteAssemblyMetaData(string assemblyPath, string destinationMetaData)
+        public static void WriteAssemblyMetaData(string assemblyPath, string metadataPath)
         {
             string guid = PackageHelper.GetAssemblyHash(assemblyPath);
-            File.WriteAllText(destinationMetaData, PackageHelper.DefaultAssemblyMetaData(guid));
+            string metaData = PackageHelper.DefaultAssemblyMetaData(guid);
+            if (File.Exists(metadataPath)) File.Delete(metadataPath);
+            File.WriteAllText(metadataPath, metaData);
         }
 
         public static string GetAssemblyHash(string assemblyPath)
