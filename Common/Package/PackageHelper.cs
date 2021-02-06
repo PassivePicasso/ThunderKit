@@ -28,6 +28,8 @@ namespace ThunderKit.Common.Package
 
         public static void WriteAssemblyMetaData(string assemblyPath, string destinationMetaData)
         {
+            if (File.Exists(destinationMetaData)) File.Delete(destinationMetaData);
+
             string guid = PackageHelper.GetAssemblyHash(assemblyPath);
             File.WriteAllText(destinationMetaData, PackageHelper.DefaultAssemblyMetaData(guid));
         }
