@@ -24,7 +24,6 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
         public bool simulate;
         [PathReferenceResolver]
         public string BundleArtifactPath = "%AssetBundleStaging%";
-
         public override void Execute(Pipeline pipeline)
         {
             var mani = pipeline.Manifest;
@@ -50,10 +49,21 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
             AssetDatabase.SaveAssets();
             foreach (var assetBundleDef in mani.Data.OfType<AssetBundleDefs>())
             {
+                var forbiddenAssets = new List<string>();
+                foreach (var forbiddenAsset in assetBundleDef.ForbiddenAssets.Select(AssetDatabase.GetAssetPath))
+                    if (AssetDatabase.IsValidFolder(forbiddenAsset))
+                    {
+                        var assets = Directory.EnumerateFiles(forbiddenAsset, "*", SearchOption.AllDirectories);
+                        assets = assets.Select(asset => asset.Replace("\\", "/"));
+                        forbiddenAssets.AddRange(assets);
+                    }
+                    else
+                        forbiddenAssets.Add(forbiddenAsset);
+
                 var playerAssemblies = CompilationPipeline.GetAssemblies();
                 var assemblyFiles = playerAssemblies.Select(pa => pa.outputPath).ToArray();
                 var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
-                var excludedExtensions = new[] { ".dll" };
+                var excludedExtensions = new[] { ".dll", ".cs" };
 
                 var builds = new AssetBundleBuild[assetBundleDef.assetBundles.Length];
                 var fileCount = 0;
@@ -95,7 +105,6 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                                         var extension = Path.GetExtension(ap);
                                         return !excludedExtensions.Contains(extension);
                                     })
-
                                     .Where(ap => !assets.Contains(ap))
                                     ;
                                 assets.AddRange(bundleAssets);
@@ -118,7 +127,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                                 assets.AddRange(validAssets);
                             }
                         }
-                    build.assetNames = assets.ToArray();
+                    build.assetNames = assets.Where(asset => !forbiddenAssets.Contains(asset)).ToArray();
                     build.assetBundleName = def.assetBundleName;
                     builds[i] = build;
                     fileCount += build.assetNames.Length;
