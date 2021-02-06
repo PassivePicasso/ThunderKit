@@ -103,29 +103,28 @@ namespace ThunderKit.Core.Config
         private static void GetReferences(string packageName, ThunderKitSettings settings)
         {
             Debug.Log("Acquiring references");
-            var blackList = AppDomain.CurrentDomain.GetAssemblies().Where(asm => !asm.IsDynamic).Select(asm => asm.Location);
+            var blackList = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(asm => !asm.IsDynamic)
+                .Select(asm => Path.GetFileName(asm.Location))
+                .ToArray();
 
             var managedPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
             var pluginsPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
+            var packagePath = Path.Combine("Packages", packageName);
+            var packagePluginsPath = Path.Combine(packagePath, "plugins");
 
-            var managedAssemblies = Directory.EnumerateFiles(managedPath, "*.dll");
-            var plugins = Directory.EnumerateFiles(pluginsPath, "*.dll");
+            var managedAssemblies = Directory.EnumerateFiles(managedPath, "*.dll").ToArray();
+            var plugins = Directory.EnumerateFiles(pluginsPath, "*.dll").ToArray();
 
-            GetReferences(packageName, Path.Combine("Packages", packageName), managedAssemblies, Enumerable.Empty<string>(), blackList);
-            GetReferences(packageName, Path.Combine("Packages", packageName, "plugins"), plugins, Enumerable.Empty<string>(), Enumerable.Empty<string>());
+            GetReferences(packageName, packagePath, managedAssemblies, blackList);
+            GetReferences(packageName, packagePluginsPath, plugins, Enumerable.Empty<string>());
         }
 
-        private static void GetReferences(string packageName, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> whiteList, IEnumerable<string> blackList)
+        private static void GetReferences(string packageName, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> blackList)
         {
-            if (whiteList == null) whiteList = Enumerable.Empty<string>();
-            if (assemblies == null) assemblies = Enumerable.Empty<string>();
-            if (blackList == null) blackList = Enumerable.Empty<string>();
-
             foreach (var assemblyPath in assemblies)
             {
-                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(assemblyPath);
-                Func<string, bool> matchingAssembly = enumerableAsm => enumerableAsm.Contains(filenameWithoutExtension);
-                if (!whiteList.Any(matchingAssembly) && blackList.Any(matchingAssembly)) continue;
+                if (blackList.Any(asm => asm.Equals(Path.GetFileName(assemblyPath)))) continue;
 
                 var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(assemblyPath));
 
