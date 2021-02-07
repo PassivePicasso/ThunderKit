@@ -2,7 +2,9 @@
     "name": "ThunderKit.Thunderstore",
     "references": [
         "ThunderKit.Core",
-        "ThunderKit.Common"
+        "ThunderKit.Common",
+        "Unity.ScriptableBuildPipeline",
+        "Unity.ScriptableBuildPipeline.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
