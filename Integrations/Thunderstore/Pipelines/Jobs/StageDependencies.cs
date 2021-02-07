@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ThunderKit.Core.Attributes;
@@ -32,10 +31,16 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
         public static void CopyFilesRecursively(string source, string destination)
         {
             foreach (string dirPath in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
-                Directory.CreateDirectory(dirPath.Replace(source, destination));
+                Directory.CreateDirectory(dirPath.Replace("Packages", destination));
 
-            foreach (string newPath in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
-                File.Copy(newPath, newPath.Replace(source, destination), true);
+            foreach (string filePath in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
+            {
+                if (Path.GetExtension(filePath).Equals(".meta")) continue;
+
+                string destFileName = filePath.Replace("Packages", destination);
+                Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
+                File.Copy(filePath, destFileName, true);
+            }
         }
     }
 }
