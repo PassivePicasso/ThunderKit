@@ -67,6 +67,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                 {
                     var assets = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
                         .Select(asset => asset.Replace("\\", "/"))
+                        .Where(path => !AssetDatabase.IsValidFolder(path))
                         .ToArray();
                     forbiddenBundleBuilds.Add(new AssetBundleBuild
                     {
@@ -149,7 +150,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                                 assets.AddRange(validAssets);
                             }
                         }
-                    build.assetNames = assets.Where(asset => !forbiddenAssets.Contains(asset)).ToArray();
+                    build.assetNames = assets.Where(asset => !forbiddenAssets.Contains(asset)).Where(path => !AssetDatabase.IsValidFolder(path)).ToArray();
                     build.assetBundleName = def.assetBundleName;
                     builds[buildsIndex] = build;
                     buildsIndex++;
