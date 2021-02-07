@@ -56,29 +56,25 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
             var forbiddenAssetBundles = AssetDatabase.FindAssets($"t:{nameof(ForbiddenAssetBundle)}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .ToArray();
+            var forbiddenBundleBuilds = new List<AssetBundleBuild>();
+
             foreach (var forbiddenAsset in forbiddenAssetBundles)
             {
-                if (AssetDatabase.IsValidFolder(forbiddenAsset))
+                var directory = Path.GetDirectoryName(forbiddenAsset);
+                if (AssetDatabase.IsValidFolder(directory))
                 {
-                    var assets = Directory.EnumerateFiles(forbiddenAsset, "*", SearchOption.AllDirectories);
-                    assets = assets.Select(asset => asset.Replace("\\", "/"));
+                    var assets = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
+                        .Select(asset => asset.Replace("\\", "/"))
+                        .ToArray();
+                    forbiddenBundleBuilds.Add(new AssetBundleBuild
+                    {
+                        assetBundleName = Path.GetFileNameWithoutExtension(forbiddenAsset),
+                        assetNames = assets
+                    });
                     forbiddenAssets.AddRange(assets);
                 }
-                else
-                    forbiddenAssets.Add(forbiddenAsset);
             }
-            if (!simulate && forbiddenAssets.Any())
-            {
-                var forbiddenBuilds = new[] {
-                    new AssetBundleBuild
-                    {
-                        assetBundleName = $"forbidden",
-                        assetNames = forbiddenAssets.ToArray()
-                    }
-                };
 
-                BuildPipeline.BuildAssetBundles(stablePath, forbiddenBuilds, AssetBundleBuildOptions, buildTarget);
-            }
             var builds = new AssetBundleBuild[assetBundleDefs.Sum(abd => abd.assetBundles.Length)];
             var buildsIndex = 0;
             for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
@@ -165,7 +161,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
 
             if (!simulate)
             {
-                BuildPipeline.BuildAssetBundles(stablePath, builds, AssetBundleBuildOptions, buildTarget);
+                BuildPipeline.BuildAssetBundles(stablePath, builds.Union(forbiddenBundleBuilds).ToArray(), AssetBundleBuildOptions, buildTarget);
 
                 for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
                 {
@@ -173,7 +169,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                     var bundleNames = assetBundleDef.assetBundles.Select(ab => ab.assetBundleName).ToArray();
                     foreach (var outputPath in assetBundleDef.StagingPaths.Select(path => path.Resolve(pipeline, this)))
                     {
-                        
+
                         foreach (string dirPath in Directory.GetDirectories(stablePath, "*", SearchOption.AllDirectories))
                             Directory.CreateDirectory(dirPath.Replace(stablePath, outputPath));
 
