@@ -159,7 +159,6 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
 
             foreach (string newPath in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
             {
-
                 string destFileName = newPath.Replace(source, destination);
                 Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
                 File.Copy(newPath, destFileName, true);
