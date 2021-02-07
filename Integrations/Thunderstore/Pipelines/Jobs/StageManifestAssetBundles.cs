@@ -50,15 +50,16 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
             foreach (var assetBundleDef in mani.Data.OfType<AssetBundleDefs>())
             {
                 var forbiddenAssets = new List<string>();
-                foreach (var forbiddenAsset in assetBundleDef.ForbiddenAssets.Select(AssetDatabase.GetAssetPath))
-                    if (AssetDatabase.IsValidFolder(forbiddenAsset))
-                    {
-                        var assets = Directory.EnumerateFiles(forbiddenAsset, "*", SearchOption.AllDirectories);
-                        assets = assets.Select(asset => asset.Replace("\\", "/"));
-                        forbiddenAssets.AddRange(assets);
-                    }
-                    else
-                        forbiddenAssets.Add(forbiddenAsset);
+                if (assetBundleDef.ForbiddenAssets != null)
+                    foreach (var forbiddenAsset in assetBundleDef.ForbiddenAssets.Select(AssetDatabase.GetAssetPath))
+                        if (AssetDatabase.IsValidFolder(forbiddenAsset))
+                        {
+                            var assets = Directory.EnumerateFiles(forbiddenAsset, "*", SearchOption.AllDirectories);
+                            assets = assets.Select(asset => asset.Replace("\\", "/"));
+                            forbiddenAssets.AddRange(assets);
+                        }
+                        else
+                            forbiddenAssets.Add(forbiddenAsset);
 
                 var playerAssemblies = CompilationPipeline.GetAssemblies();
                 var assemblyFiles = playerAssemblies.Select(pa => pa.outputPath).ToArray();
