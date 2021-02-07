@@ -9,6 +9,8 @@
     "name": "Twiner",
     "url": "https://github.com/PassivePicasso"
   },
-  "dependencies": {}
+  "dependencies": {
+    "com.unity.scriptablebuildpipeline": "1.16.1"
+  }
 }
  

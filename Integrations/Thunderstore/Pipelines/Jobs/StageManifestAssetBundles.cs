@@ -10,6 +10,8 @@ using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
 using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
+using UnityEditor.Build.Content;
+using UnityEditor.Build.Pipeline;
 using UnityEditor.Compilation;
 using UnityEngine;
 
@@ -95,6 +97,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
 
                     var explicitAssets = assetBundleDef.assetBundles.Where((ab, abi) => abi != i).SelectMany(ab => ab.assets).Select(asset => AssetDatabase.GetAssetPath(asset)).ToArray();
                     var build = builds[buildsIndex];
+
                     var assets = new List<string>();
                     logBuilder.AppendLine($"Building bundle: {def.assetBundleName}");
                     if (def.assets.OfType<SceneAsset>().Any())
@@ -150,6 +153,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                     build.assetBundleName = def.assetBundleName;
                     builds[buildsIndex] = build;
                     buildsIndex++;
+
                     fileCount += build.assetNames.Length;
                     foreach (var asset in build.assetNames)
                         logBuilder.AppendLine(asset);
@@ -161,7 +165,8 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
 
             if (!simulate)
             {
-                BuildPipeline.BuildAssetBundles(stablePath, builds.Union(forbiddenBundleBuilds).ToArray(), AssetBundleBuildOptions, buildTarget);
+                var allBuilds = builds.Union(forbiddenBundleBuilds).ToArray();
+                CompatibilityBuildPipeline.BuildAssetBundles(stablePath, allBuilds, AssetBundleBuildOptions, buildTarget);
 
                 for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
                 {
@@ -176,14 +181,23 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                         foreach (string filePath in Directory.GetFiles(stablePath, "*", SearchOption.AllDirectories))
                         {
                             var fileName = Path.GetFileName(filePath);
-                            if (!bundleNames.Any(bundleName => filePath.Contains(bundleName))) continue;
-
+                            bool found = false;
+                            foreach (var bundleName in bundleNames)
+                            {
+                                if (filePath.ToLower().Contains(bundleName.ToLower()))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) continue;
                             string destFileName = filePath.Replace(stablePath, outputPath);
                             Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
                             File.Copy(filePath, destFileName, true);
                         }
                     }
                 }
+
             }
 
         }
