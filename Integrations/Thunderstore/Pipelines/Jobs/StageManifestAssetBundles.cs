@@ -47,8 +47,10 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                 .ToArray();
 
             AssetDatabase.SaveAssets();
-            foreach (var assetBundleDef in mani.Data.OfType<AssetBundleDefs>())
+            var assetBundleDefs = mani.Data.OfType<AssetBundleDefs>().ToArray();
+            for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
             {
+                var assetBundleDef = assetBundleDefs[defIndex];
                 var forbiddenAssets = new List<string>();
                 if (assetBundleDef.ForbiddenAssets != null)
                     foreach (var forbiddenAsset in assetBundleDef.ForbiddenAssets.Select(AssetDatabase.GetAssetPath))
@@ -66,7 +68,8 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                 var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
                 var excludedExtensions = new[] { ".dll", ".cs" };
 
-                var builds = new AssetBundleBuild[assetBundleDef.assetBundles.Length];
+                var forbiddenBundle = forbiddenAssets.Any();
+                var builds = new AssetBundleBuild[assetBundleDef.assetBundles.Length + (forbiddenBundle ? 1 : 0)];
                 var fileCount = 0;
 
                 var logBuilder = new StringBuilder();
@@ -137,6 +140,12 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                 }
 
                 logBuilder.AppendLine($"Constructed {builds.Length} AssetBundleBuilds with {fileCount} files.");
+                if (forbiddenBundle)
+                    builds[builds.Length - 1] = new AssetBundleBuild
+                    {
+                        assetBundleName = $"forbidden_{defIndex}",
+                        assetNames = forbiddenAssets.ToArray()
+                    }; 
 
                 if (!simulate)
                 {
