@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using ThunderKit.Common.Package;
+using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
@@ -192,10 +193,10 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                                     thunderManifest.dependencies.Add(guid);
                                     PackageHelper.GeneratePackageManifest(
                                         stubManifest.name.ToLower(), outputDir,
-                                        stubManifest.name, author,
+                                        stubManifest.name, "Thunderstore",
                                         stubManifest.version_number,
                                         stubManifest.description,
-                                        stubManifest.website_url);
+                                        ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl);
                                 }
                             }
                         }

@@ -6,6 +6,7 @@ using System.IO;
 using ThunderKit.Core.Editor;
 using System;
 using System.Linq;
+using ThunderKit.Core.Data;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -14,7 +15,7 @@ using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-namespace ThunderKit.Core.Data
+namespace ThunderKit.Integrations.Thunderstore
 {
     // Create a new type of Settings Asset.
     public class ThunderstoreSettings : ThunderKitSetting

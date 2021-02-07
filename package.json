@@ -6,8 +6,8 @@
   "unity": "2018.4",
   "release": "12f1",
   "author": {
-    "name": "Twiner",
-    "url": "https://github.com/PassivePicasso"
+    "name": "ThunderKit",
+    "url": "https://github.com/PassivePicasso/ThunderKit"
   },
   "dependencies": {
     "com.unity.scriptablebuildpipeline": "1.16.1"

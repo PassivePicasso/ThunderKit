@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 using ThunderKit.Common.Package;
+using ThunderKit.Core.Data;
 using UnityEditor;
 
 namespace ThunderKit.Integrations.Thunderstore
@@ -69,10 +70,10 @@ namespace ThunderKit.Integrations.Thunderstore
                                 var authorAlias = fileNameNoExt.Substring(0, fileNameNoExt.IndexOf('-'));
                                 PackageHelper.GeneratePackageManifest(
                                     stubManifest.name.ToLower(), outputDir,
-                                    stubManifest.name, authorAlias,
+                                    stubManifest.name, "Thunderstore",
                                     stubManifest.version_number,
                                     stubManifest.description,
-                                    stubManifest.website_url);
+                                    ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl);
                             }
                         }
                     File.Delete(filePath);
