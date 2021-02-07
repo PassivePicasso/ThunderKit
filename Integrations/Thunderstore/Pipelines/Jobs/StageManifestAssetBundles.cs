@@ -92,7 +92,6 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                 for (int i = 0; i < assetBundleDef.assetBundles.Length; i++)
                 {
                     var def = assetBundleDef.assetBundles[i];
-                    buildsIndex++;
 
                     var explicitAssets = assetBundleDef.assetBundles.Where((ab, abi) => abi != i).SelectMany(ab => ab.assets).Select(asset => AssetDatabase.GetAssetPath(asset)).ToArray();
                     var build = builds[buildsIndex];
@@ -150,6 +149,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                     build.assetNames = assets.Where(asset => !forbiddenAssets.Contains(asset)).ToArray();
                     build.assetBundleName = def.assetBundleName;
                     builds[buildsIndex] = build;
+                    buildsIndex++;
                     fileCount += build.assetNames.Length;
                     foreach (var asset in build.assetNames)
                         logBuilder.AppendLine(asset);
