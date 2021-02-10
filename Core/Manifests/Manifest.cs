@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using UnityEditor;
 using static ThunderKit.Core.Editor.ScriptableHelper;
 
@@ -8,7 +7,7 @@ namespace ThunderKit.Core.Manifests
     public class Manifest : ComposableObject
     {
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Manifest), priority = Constants.ThunderKitMenuPriority)]
-        public static void CreateManifest()
+        public static void Create()
         {
             SelectNewAsset<Manifest>();
         }

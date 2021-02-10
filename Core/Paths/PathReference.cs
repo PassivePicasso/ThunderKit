@@ -13,7 +13,7 @@ namespace ThunderKit.Core.Paths
     public class PathReference : ComposableObject, ISerializationCallbackReceiver
     {
         [MenuItem(Constants.ThunderKitContextRoot + nameof(PathReference), false, priority = Constants.ThunderKitMenuPriority)]
-        public static void CreateOutput() => ScriptableHelper.SelectNewAsset<PathReference>();
+        public static void Create() => ScriptableHelper.SelectNewAsset<PathReference>();
 
         const char opo = '<';
         const char opc = '>';
