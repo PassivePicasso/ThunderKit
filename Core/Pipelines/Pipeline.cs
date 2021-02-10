@@ -13,12 +13,12 @@ namespace ThunderKit.Core.Pipelines
     public class Pipeline : ComposableObject
     {
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
-        public static void CreateComposableManifestPipeline() => ScriptableHelper.SelectNewAsset<Pipeline>();
+        public static void Create() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
         public ManifestCollection manifests;
         public IEnumerable<ManifestDatum> Datums => manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
 
-        public IEnumerable<PipelineJob> RunSteps => Data.Cast<PipelineJob>();
+        public IEnumerable<PipelineJob> Jobs => Data.OfType<PipelineJob>();
 
         public string OutputRoot => System.IO.Path.Combine("ThunderKit");
 
@@ -43,7 +43,7 @@ namespace {0}
 
         public virtual void Execute()
         {
-            PipelineJob[] jobs = RunSteps.Where(SupportsType).ToArray();
+            PipelineJob[] jobs = Jobs.Where(SupportsType).ToArray();
 
             for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
                 if (JobIsManifestProcessor())
