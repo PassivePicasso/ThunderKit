@@ -116,11 +116,11 @@ namespace ThunderKit.Core.Config
             var managedAssemblies = Directory.EnumerateFiles(managedPath, "*.dll").ToArray();
             var plugins = Directory.EnumerateFiles(pluginsPath, "*.dll").ToArray();
 
-            GetReferences(packageName, packagePath, managedAssemblies, blackList);
-            GetReferences(packageName, packagePluginsPath, plugins, Enumerable.Empty<string>());
+            GetReferences(packagePath, managedAssemblies, blackList);
+            GetReferences(packagePluginsPath, plugins, Enumerable.Empty<string>());
         }
 
-        private static void GetReferences(string packageName, string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> blackList)
+        private static void GetReferences(string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> blackList)
         {
             foreach (var assemblyPath in assemblies)
             {
