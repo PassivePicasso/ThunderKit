@@ -4,19 +4,19 @@ using UnityEngine;
 namespace ThunderKit.Core.Editor.Controls
 {
     [Serializable]
-    class AddScriptWindowBackup : ScriptableObject
+    class NewScriptInfo : ScriptableObject
     {
         public string scriptPath;
         public bool addAsset;
 
-        public static AddScriptWindowBackup Instance
+        public static NewScriptInfo Instance
         {
             get
             {
-                var objs = Resources.FindObjectsOfTypeAll<AddScriptWindowBackup>();
+                var objs = Resources.FindObjectsOfTypeAll<NewScriptInfo>();
                 if (objs.Length == 0 || objs[0] == null)
                 {
-                    return ScriptableObject.CreateInstance<AddScriptWindowBackup>();
+                    return ScriptableObject.CreateInstance<NewScriptInfo>();
                 }
                 return objs[0];
             }

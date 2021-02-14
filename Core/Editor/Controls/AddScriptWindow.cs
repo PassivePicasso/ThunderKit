@@ -1,6 +1,5 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -40,13 +39,13 @@ namespace ThunderKit.Core.Editor.Controls
         Vector2 _scrollPosition;
         private Vector2 s_IconSize = new Vector2(13, 13);
         bool _activeParent = true;
-        string _typeFullName = string.Empty;
+        string newScriptPath = string.Empty;
         string _searchString = string.Empty;
         string _template;
 
         public static bool HasAssetToAdd()
         {
-            return AddScriptWindowBackup.Instance.addAsset;
+            return NewScriptInfo.Instance.addAsset;
         }
 
         public static void Show(Rect position, Type elementType, Func<MonoScript, ScriptableObject> onCreateScript, Func<MonoScript, bool> onFilerScript, string template)
@@ -75,14 +74,14 @@ namespace ThunderKit.Core.Editor.Controls
                 _instance = ScriptableObject.CreateInstance<AddScriptWindow>();
             }
             _instance.CreateScriptDelegate = onCreateScript;
-            if (AddScriptWindowBackup.Instance.addAsset)
+            if (NewScriptInfo.Instance.addAsset)
             {
-                var script = AssetDatabase.LoadAssetAtPath<MonoScript>(AddScriptWindowBackup.Instance.scriptPath);
+                var script = AssetDatabase.LoadAssetAtPath<MonoScript>(NewScriptInfo.Instance.scriptPath);
                 var instance = _instance.CreateScriptDelegate(script);
                 if (instance)
                 {
                     EditScript(instance);
-                    AddScriptWindowBackup.Instance.Reset();
+                    NewScriptInfo.Instance.Reset();
                 }
             }
         }
@@ -121,7 +120,7 @@ namespace ThunderKit.Core.Editor.Controls
 
             if (_activeParent)
             {
-                _typeFullName = _searchString;
+                newScriptPath = _searchString;
                 ListGUI();
             }
             else
@@ -209,12 +208,12 @@ namespace ThunderKit.Core.Editor.Controls
             GUILayout.Label("Name", EditorStyles.label);
             EditorGUI.FocusTextInControl("NewScriptName");
             GUI.SetNextControlName("NewScriptName");
-            _typeFullName = EditorGUILayout.TextField(_typeFullName);
+            newScriptPath = EditorGUILayout.TextField(newScriptPath);
 
             EditorGUILayout.Space();
             string error;
             bool flag = CanCreate(out error);
-            if (!flag && _typeFullName != string.Empty)
+            if (!flag && newScriptPath != string.Empty)
             {
                 GUILayout.Label(error, EditorStyles.helpBox);
             }
@@ -224,7 +223,9 @@ namespace ThunderKit.Core.Editor.Controls
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Create and Add"))
             {
-                GenerateAndLoadScript();
+                GenerateAndLoadScript(_template, newScriptPath);
+                Close();
+
             }
             EditorGUI.EndDisabledGroup();
             GUILayout.EndArea();
@@ -233,9 +234,9 @@ namespace ThunderKit.Core.Editor.Controls
         private bool CanCreate(out string error)
         {
             error = string.Empty;
-            if (_typeFullName == string.Empty) return false;
+            if (newScriptPath == string.Empty) return false;
             if (ClassAlreadyExists())
-                error = "A class called \"" + _typeFullName + "\" already exists.";
+                error = "A class called \"" + newScriptPath + "\" already exists.";
             else if (ClassNameIsInvalid())
                 error = "The script name may only consist of a-z, A-Z, 0-9, _.";
             else
@@ -243,38 +244,10 @@ namespace ThunderKit.Core.Editor.Controls
             return false;
         }
 
-        private bool ClassNameIsInvalid() => !CodeGenerator.IsValidLanguageIndependentIdentifier(GetDetails().fileName);
+        private bool ClassNameIsInvalid() => !CodeGenerator.IsValidLanguageIndependentIdentifier(GetDetails(newScriptPath).fileName);
 
-        private (string destinationPath, string nameSpace, string fileName) GetDetails() => (
-            destinationPath: Path.Combine("Assets", $"{_typeFullName}.cs").Replace("\\", "/"),
-            nameSpace: Path.GetDirectoryName(_typeFullName).Replace('/', '.').Replace('\\', '.'),
-            fileName: Path.GetFileNameWithoutExtension(_typeFullName)
-        );
+        private bool ClassAlreadyExists() => newScriptPath == string.Empty ? false : AssetDatabase.FindAssets($"{GetDetails(newScriptPath).fileName}.cs", Constants.AssetDatabaseFindFolders).Any();
 
-        private bool ClassAlreadyExists() => _typeFullName == string.Empty ? false : AssetDatabase.FindAssets($"{GetDetails().fileName}.cs", Constants.AssetDatabaseFindFolders).Any();
 
-        void GenerateAndLoadScript()
-        {
-            var (destinationPath, ns, fileName) = GetDetails();
-
-            if (string.IsNullOrEmpty(_template)) return;
-
-            var backup = AddScriptWindowBackup.Instance;
-            backup.addAsset = true;
-            backup.scriptPath = destinationPath;
-            EditorUtility.SetDirty(backup);
-
-            var parentDirectoryPath = Path.GetDirectoryName(destinationPath);
-            Directory.CreateDirectory(parentDirectoryPath);
-
-            ns = string.IsNullOrEmpty(ns) ? "Assets" : ns;
-            var rendered = string.Format(_template, ns, fileName);
-            File.WriteAllText(destinationPath, rendered);
-
-            AssetDatabase.ImportAsset(destinationPath);
-            AssetDatabase.Refresh();
-            Close();
-
-        }
     }
 }
