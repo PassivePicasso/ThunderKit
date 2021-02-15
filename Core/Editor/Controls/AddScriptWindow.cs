@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Linq;
+using ThunderKit.Common;
 using UnityEditor;
 using UnityEngine;
 using static ThunderKit.Core.Editor.ScriptEditorHelper;

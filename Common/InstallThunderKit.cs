@@ -69,7 +69,7 @@ namespace ThunderKit.Installer
             if (!InstallCompression())
             {
 #if !IsThunderKitProject
-                Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
+                Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
 #endif
                 AddScriptingDefine("thunderkit");
             }

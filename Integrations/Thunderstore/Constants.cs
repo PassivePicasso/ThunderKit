@@ -7,7 +7,7 @@ namespace ThunderKit.Integrations.Thunderstore
     {
         public const string ThunderKit = nameof(ThunderKit);
 
-        public const string ThunderStorePath = Core.Constants.ThunderKitContextRoot + "Thunderstore/";
+        public const string ThunderStorePath = Common.Constants.ThunderKitContextRoot + "Thunderstore/";
 
         public static readonly string TempDir = Path.Combine(Directory.GetCurrentDirectory(), "Temp", ThunderKit);
         public static readonly string Packages = Path.Combine("Packages");

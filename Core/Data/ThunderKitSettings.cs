@@ -6,6 +6,7 @@ using System.IO;
 using System;
 using System.Linq;
 using System.Reflection;
+using ThunderKit.Common;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
