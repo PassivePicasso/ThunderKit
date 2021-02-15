@@ -10,14 +10,13 @@ using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
 using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
-using UnityEditor.Build.Content;
 using UnityEditor.Build.Pipeline;
 using UnityEditor.Compilation;
 using UnityEngine;
 
 namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
 {
-    [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreManifest), typeof(AssetBundleDefs))]
+    [PipelineSupport(typeof(Pipeline)), RequiresManifestDatumType(typeof(ThunderstoreManifest), typeof(AssetBundleDefs))]
     public class StageManifestAssetBundles : PipelineJob
     {
         [EnumFlag]
@@ -29,28 +28,11 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
         public string BundleArtifactPath = "%AssetBundleStaging%";
         public override void Execute(Pipeline pipeline)
         {
-            var mani = pipeline.Manifest;
             var allThunderstoreManifests = pipeline.Datums.OfType<ThunderstoreManifest>();
-            var thunderstoreManifest = mani.Data.OfType<ThunderstoreManifest>().First();
-            var dependencies = thunderstoreManifest.dependencies;
-
-            bool IsDependency(string dependency, ThunderstoreManifest man) => $"{man.author}-{man.name}-{man.versionNumber}".Equals(dependency);
-
-            var dependantManifests = pipeline.manifests
-                    .Where(man => man.Data.OfType<ThunderstoreManifest>().Any())
-                    .Select(man => (manifest: man, tsManifest: man.Data.OfType<ThunderstoreManifest>().First()))
-                    .Where(projection => dependencies.Any(dep => IsDependency(dep, projection.tsManifest)))
-                    .Select(projection => projection.manifest);
-
-            var explicitDownstreamAssets = dependantManifests
-                .SelectMany(man => man.Data.OfType<AssetBundleDefs>())
-                .SelectMany(mabd => mabd.assetBundles)
-                .SelectMany(ab => ab.assets)
-                .Select(asset => AssetDatabase.GetAssetPath(asset))
-                .ToArray();
+            var excludedExtensions = new[] { ".dll", ".cs", ".meta" };
 
             AssetDatabase.SaveAssets();
-            var assetBundleDefs = mani.Data.OfType<AssetBundleDefs>().ToArray();
+            var assetBundleDefs = pipeline.Datums.OfType<AssetBundleDefs>().ToArray();
             var stablePath = BundleArtifactPath.Resolve(pipeline, this);
             Directory.CreateDirectory(stablePath);
 
@@ -68,6 +50,9 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                     var assets = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
                         .Select(asset => asset.Replace("\\", "/"))
                         .Where(path => !AssetDatabase.IsValidFolder(path))
+                        .Where(dap => !excludedExtensions.Contains(Path.GetExtension(dap)))
+                        .Where(path => !AssetDatabase.IsValidFolder(path))
+                        .Distinct()
                         .ToArray();
                     forbiddenBundleBuilds.Add(new AssetBundleBuild
                     {
@@ -86,7 +71,6 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                 var playerAssemblies = CompilationPipeline.GetAssemblies();
                 var assemblyFiles = playerAssemblies.Select(pa => pa.outputPath).ToArray();
                 var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
-                var excludedExtensions = new[] { ".dll", ".cs" };
 
                 var fileCount = 0;
 
@@ -100,57 +84,49 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                     var build = builds[buildsIndex];
 
                     var assets = new List<string>();
+                    
                     logBuilder.AppendLine($"Building bundle: {def.assetBundleName}");
-                    if (def.assets.OfType<SceneAsset>().Any())
-                        assets.Add(AssetDatabase.GetAssetPath(def.assets.OfType<SceneAsset>().First()));
+
+                    if (def.assets.OfType<SceneAsset>().Any()) assets.Add(AssetDatabase.GetAssetPath(def.assets.OfType<SceneAsset>().First()));
                     else
                         foreach (var asset in def.assets)
                         {
                             var assetPath = AssetDatabase.GetAssetPath(asset);
-                            bool isFolder = AssetDatabase.IsValidFolder(assetPath);
 
-                            logBuilder.AppendLine($"Asset: {asset.name} is a {(isFolder ? "Folder" : "File")}");
-                            if (isFolder)
+                            if (AssetDatabase.IsValidFolder(assetPath))
+                                assets.AddRange(Directory.EnumerateFiles(assetPath, "*", SearchOption.AllDirectories)
+                                      .SelectMany(ap => AssetDatabase.GetDependencies(ap).Append(ap)));
+
+                            else if (asset is UnityPackage up)
                             {
-                                var bundleAssets = AssetDatabase.GetAllAssetPaths()
-                                    .Where(ap => !AssetDatabase.IsValidFolder(ap))
-                                    .Where(ap => ap.StartsWith(assetPath))
-                                    .Where(ap => !assets.Contains(ap))
-                                    .Where(ap => !sourceFiles.Contains(ap))
-                                    .Where(ap => !assemblyFiles.Contains(ap))
-                                    .Where(ap => recurseDirectories || Path.GetDirectoryName(ap).Replace('\\', '/').Equals(assetPath))
-                                    .SelectMany(ap => AssetDatabase.GetDependencies(ap)
-                                                                   .Where(dap => !explicitAssets.Contains(dap))
-                                                                   .Where(dap => !explicitDownstreamAssets.Contains(dap))
-                                                )
-                                    .Where(ap =>
+                                if (up.exportPackageOptions.HasFlag(ExportPackageOptions.Recurse))
+                                    foreach (var upAsset in up.AssetFiles)
                                     {
-                                        var extension = Path.GetExtension(ap);
-                                        return !excludedExtensions.Contains(extension);
-                                    })
-                                    .Where(ap => !assets.Contains(ap))
-                                    ;
-                                assets.AddRange(bundleAssets);
+                                        var path = AssetDatabase.GetAssetPath(upAsset);
+                                        if (AssetDatabase.IsValidFolder(path))
+                                            assets.AddRange(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+                                                  .SelectMany(ap => AssetDatabase.GetDependencies(ap).Append(ap)));
+                                        else
+                                            assets.Add(path);
+                                    }
                             }
                             else
-                            {
-                                var validAssets = AssetDatabase.GetDependencies(assetPath)
-                                    .Where(dap => !explicitDownstreamAssets.Contains(dap))
-                                    .Where(dap => !explicitAssets.Contains(dap))
-                                    .Where(ap => !assets.Contains(ap))
-                                    .Where(ap =>
-                                    {
-                                        var extension = Path.GetExtension(ap);
-                                        return !excludedExtensions.Contains(extension);
-                                    })
-                                    .Where(ap => !sourceFiles.Contains(ap))
-                                    .Where(ap => !assemblyFiles.Contains(ap))
+                                assets.AddRange(AssetDatabase.GetDependencies(assetPath)
                                     .Where(ap => AssetDatabase.GetMainAssetTypeAtPath(ap) != typeof(UnityPackage))
-                                    ;
-                                assets.AddRange(validAssets);
-                            }
+                                    .Append(assetPath));
                         }
-                    build.assetNames = assets.Where(asset => !forbiddenAssets.Contains(asset)).Where(path => !AssetDatabase.IsValidFolder(path)).ToArray();
+
+                    build.assetNames = assets
+                        //.Where(dap => !explicitDownstreamAssets.Contains(dap))
+                        .Where(dap => !explicitAssets.Contains(dap))
+                        .Where(dap => !excludedExtensions.Contains(Path.GetExtension(dap)))
+                        .Where(ap => !assets.Contains(ap))
+                        .Where(ap => !sourceFiles.Contains(ap))
+                        .Where(ap => !assemblyFiles.Contains(ap))
+                        .Where(asset => !forbiddenAssets.Contains(asset))
+                        .Where(path => !AssetDatabase.IsValidFolder(path))
+                        .Distinct()
+                        .ToArray();
                     build.assetBundleName = def.assetBundleName;
                     builds[buildsIndex] = build;
                     buildsIndex++;
@@ -166,7 +142,7 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
 
             if (!simulate)
             {
-                var allBuilds = builds.Union(forbiddenBundleBuilds).ToArray();
+                var allBuilds = builds/*.Union(forbiddenBundleBuilds)*/.ToArray();
                 CompatibilityBuildPipeline.BuildAssetBundles(stablePath, allBuilds, AssetBundleBuildOptions, buildTarget);
 
                 for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
@@ -175,7 +151,6 @@ namespace ThunderKit.Integrations.Thunderstore.Pipelines.Steps
                     var bundleNames = assetBundleDef.assetBundles.Select(ab => ab.assetBundleName).ToArray();
                     foreach (var outputPath in assetBundleDef.StagingPaths.Select(path => path.Resolve(pipeline, this)))
                     {
-
                         foreach (string dirPath in Directory.GetDirectories(stablePath, "*", SearchOption.AllDirectories))
                             Directory.CreateDirectory(dirPath.Replace(stablePath, outputPath));
 

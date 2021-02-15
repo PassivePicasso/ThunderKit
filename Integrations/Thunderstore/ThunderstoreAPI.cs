@@ -22,7 +22,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         internal static List<Package> loadedPackages = new List<Package>();
 
-        [MenuItem(Core.Constants.ThunderKitMenuRoot + "Refresh Thunderstore", priority = Core.Constants.ThunderKitMenuPriority)]
+        [MenuItem(Common.Constants.ThunderKitMenuRoot + "Refresh Thunderstore", priority = Common.Constants.ThunderKitMenuPriority)]
         [InitializeOnLoadMethod]
         public static void LoadPages()
         {
@@ -32,7 +32,7 @@ namespace ThunderKit.Integrations.Thunderstore
         }
 
         static double timeSinceStartup;
-        
+
         public static void LoadPages(object sender, (string newValue, string oldValue) value)
         {
             timeSinceStartup = EditorApplication.timeSinceStartup;
@@ -43,7 +43,7 @@ namespace ThunderKit.Integrations.Thunderstore
         private static void WaitUpdate()
         {
             var timeElapsed = EditorApplication.timeSinceStartup - timeSinceStartup;
-            if(timeElapsed > 2)
+            if (timeElapsed > 2)
             {
                 ReloadPages();
                 EditorApplication.update -= WaitUpdate;

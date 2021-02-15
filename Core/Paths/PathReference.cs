@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ThunderKit.Common;
 using ThunderKit.Core.Editor;
 using ThunderKit.Core.Pipelines;
 using UnityEditor;

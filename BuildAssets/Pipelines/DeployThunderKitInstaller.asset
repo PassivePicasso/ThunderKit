@@ -27,3 +27,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d087870ea8abaed4ca4c717444be0165, type: 3}
   m_Name: StageUnityPackages
   m_EditorClassIdentifier: 
+  remapFileIds: 0

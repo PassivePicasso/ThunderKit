@@ -1,4 +1,4 @@
-﻿namespace ThunderKit.Core
+﻿namespace ThunderKit.Common
 {
     public static class Constants
     {
