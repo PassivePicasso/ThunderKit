@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
@@ -88,27 +87,15 @@ namespace ThunderKit.Integrations.Thunderstore
             }
         }
 
-        public static void DownloadPackage(PackageListing package, string filePath)
+        public static void DownloadLatestPackage(PackageListing package, string filePath)
         {
-            var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
-            DownloadPackage(latest.download_url, filePath);
+            DownloadPackage(package.versions.OrderByDescending(pck => pck.version_number).First(), filePath);
         }
 
-        public static void DownloadPackage(string url, string filePath)
+        public static void DownloadPackage(PackageVersion package, string filePath)
         {
-            var webRequest = UnityWebRequest.Get(url);
-            var asyncOpRequest = webRequest.SendWebRequest();
-            void Request_completed(AsyncOperation obj)
-            {
-                if (webRequest.isNetworkError || webRequest.isHttpError)
-                    Debug.Log(webRequest.error);
-                else
-                    System.IO.File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);
-
-                if (File.Exists(filePath)) File.Delete(filePath);
-                File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
-            }
-            asyncOpRequest.completed += Request_completed;
+            PackageHelper.DownloadPackage(package.download_url, filePath);
         }
+
     }
 }

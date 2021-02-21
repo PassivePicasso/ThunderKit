@@ -2,15 +2,53 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using ThunderKit.Common.Configuration;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace ThunderKit.Common.Package
 {
     public static class PackageHelper
     {
         public static string nl => Environment.NewLine;
+
+        public static void DownloadPackage(string url, string filePath)
+        {
+            var webRequest = UnityWebRequest.Get(url);
+            var asyncOpRequest = webRequest.SendWebRequest();
+            void Request_completed(AsyncOperation obj)
+            {
+                if (webRequest.isNetworkError || webRequest.isHttpError)
+                    Debug.Log(webRequest.error);
+                else
+                    File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);
+
+                if (File.Exists(filePath)) File.Delete(filePath);
+                File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
+            }
+            asyncOpRequest.completed += Request_completed;
+        }
+
+        public static async Task DownloadPackageAsync(string url, string filePath)
+        {
+            await Task.Run(() => {
+                var webRequest = UnityWebRequest.Get(url);
+                var asyncOpRequest = webRequest.SendWebRequest();
+                asyncOpRequest.completed += Request_completed;
+                void Request_completed(AsyncOperation obj)
+                {
+                    if (webRequest.isNetworkError || webRequest.isHttpError)
+                        Debug.Log(webRequest.error);
+                    else
+                        File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);
+
+                    if (File.Exists(filePath)) File.Delete(filePath);
+                    File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
+                }
+            });
+        }
 
         public static void GeneratePackageManifest(string packageName, string outputDir, string modName, string authorAlias, string modVersion, string description = null, string url = null)
         {
@@ -24,6 +62,14 @@ namespace ThunderKit.Common.Package
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
             ScriptingSymbolManager.AddScriptingDefine(packageName);
             File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
+        }
+
+        public static PackageManagerManifest GetPackageManagerManifest(string directory)
+        {
+            var packageJsonPath = Path.Combine(directory, "package.json");
+            var json = File.ReadAllText(packageJsonPath);
+            var pmm = JsonUtility.FromJson<PackageManagerManifest>(json);
+            return pmm;
         }
 
         public static void WriteAssemblyMetaData(string assemblyPath, string metadataPath)

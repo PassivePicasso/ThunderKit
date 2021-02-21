@@ -3,25 +3,33 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ThunderKit.Common;
+using ThunderKit.Common.Package;
 using ThunderKit.Core.Editor;
+using ThunderKit.PackageManager.Engine;
 using ThunderKit.PackageManager.Model;
 using UnityEditor;
 using UnityEditor.Experimental.UIElements;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
-using VisualTemplates;
+using PackageSource = ThunderKit.PackageManager.Model.PackageSource;
 
 namespace ThunderKit.PackageManager.Editor
 {
     public class ThunderKitPackageManager : EditorWindow
     {
+        Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>();
         static string[] searchpaths = new string[] { "Assets", "Packages" };
         private static ThunderKitPackageManager wnd;
         private static List<PackageSource> packageSources;
         private VisualElement root;
-        private ContentPresenter presenter;
-        private string SearchString, lastSearch;
-        public bool FilterInstalled;
+        private VisualElement packageView;
+        private TextField searchBox;
+        private Button searchBoxCancel;
+
+        [SerializeField] public bool InProject;
+        [SerializeField] private DeletePackage deletePackage;
+        [SerializeField] private string SearchString;
+        private Button filtersButton;
 
         public static void RegisterPackageSource(PackageSource source)
         {
@@ -40,7 +48,25 @@ namespace ThunderKit.PackageManager.Editor
 
         public void OnEnable()
         {
-            if (root == null) Construct();
+            Construct();
+        }
+
+        private void OnInspectorUpdate()
+        {
+            TryDelete();
+        }
+
+        private void TryDelete()
+        {
+            if (deletePackage)
+            {
+                if (deletePackage.TryDelete())
+                {
+                    DestroyImmediate(deletePackage);
+                    deletePackage = null;
+                    AssetDatabase.Refresh();
+                }
+            }
         }
 
         public static PackageManagerData GetOrCreateSettings()
@@ -50,115 +76,135 @@ namespace ThunderKit.PackageManager.Editor
             return ScriptableHelper.EnsureAsset<PackageManagerData>(assetPath, settings => { });
         }
 
-        private void Construct(bool select = true)
+        private void Construct()
         {
-            ContentPresenter.DefaultLoadAsset = LoadTemplate;
             root = this.GetRootVisualContainer();
-            presenter = new ContentPresenter { name = "package-manager-presenter" };
-            presenter.RegisterCallback<AttachToPanelEvent>(OnRootPresenterAttach);
-            root.Add(presenter);
-            root.Bind(new SerializedObject(GetOrCreateSettings()));
+            root.Clear();
 
-            packageView = root.Q<ContentPresenter>("tkpm-package-view");
+            GetTemplateInstance("PackageManagerData", root);
+
+            packageView = root.Q("tkpm-package-view");
             searchBox = root.Q<TextField>("tkpm-search-textfield");
             searchBoxCancel = root.Q<Button>("tkpm-search-cancelbutton");
+            filtersButton = root.Q<Button>("tkpm-filters-selector");
+
             searchBox.RegisterCallback<ChangeEvent<string>>(OnSearchText);
+            searchBox.SetValueWithoutNotify(SearchString);
+
+            filtersButton.clickable.clicked -= FiltersClicked;
+            filtersButton.clickable.clicked += FiltersClicked;
+
+            GetTemplateInstance("PackageView", packageView);
+
+            var packageSourceList = root.Q(name = "tkpm-package-source-list");
+
+            for (int sourceIndex = 0; sourceIndex < packageSources.Count; sourceIndex++)
+            {
+                var source = packageSources[sourceIndex];
+                var sourceList = GetPackageSourceList(source);
+                var packageSource = GetTemplateInstance("PackageSource");
+                var packageList = packageSource.Q<ListView>("tkpm-package-list");
+                var groupName = $"tkpm-package-source-{sourceList.SourceName}";
+
+                packageSource.AddToClassList("tkpm-package-source");
+                packageSource.name = groupName;
+                packageSource.userData = sourceList;
+
+                packageList.selectionType = SelectionType.Single;
+                packageList.onSelectionChanged -= PackageList_onSelectionChanged;
+                packageList.onSelectionChanged += PackageList_onSelectionChanged;
+
+                packageList.makeItem = MakePackage;
+                VisualElement MakePackage()
+                {
+                    var packageInstance = GetTemplateInstance("Package");
+                    packageInstance.userData = packageList;
+                    packageInstance.AddToClassList("tkpm-package-option");
+                    return packageInstance;
+                }
+                packageList.bindItem = BindPackage;
+                
+                packageSourceList.Add(packageSource);
+
+                UpdatePackageList();
+            }
+        }
+
+        private void FiltersClicked()
+        {
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(InProject))), InProject, () =>
+            {
+                InProject = !InProject;
+                UpdatePackageList();
+            });
+            menu.ShowAsContext();
+        }
+
+        private void UpdatePackageSource(PackageSourceList sourceList, PackageSource source)
+        {
+            if (sourceList.packages == null || !sourceList.packages.Any() || (DateTime.Now - sourceList.lastUpdateTime) > TimeSpan.FromSeconds(300))
+            {
+                var packages = source.GetPackages(string.Empty);
+                if (packages != null && packages.Any())
+                {
+                    sourceList.packages = packages.ToList();
+                    sourceList.lastUpdateTime = DateTime.Now;
+                    EditorUtility.SetDirty(sourceList);
+                    AssetDatabase.SaveAssets();
+                }
+            }
         }
 
         private void OnSearchText(ChangeEvent<string> evt)
         {
             SearchString = evt.newValue;
-            foreach (var source in packageSources)
-            {
-                var sourceList = ScriptableHelper.EnsureAsset<PackageSourceList>(
-                                    $"{Constants.ThunderKitSettingsRoot}{source.GetName()}_SourceSettings.asset",
-                                    psl => psl.SourceName = source.GetName());
-
-                var packages = source.GetPackages(SearchString ?? string.Empty);
-                if (FilterInstalled)
-                    packages = packages.Where(PackageInstalled);
-
-                sourceList.packages = packages.ToList();
-                var sourcePresenter = presenter.Q<ContentPresenter>($"tkpm-package-source-{source.GetName()}");
-                var headerLabel = sourcePresenter.Q<Label>("tkpm-package-source-label");
-                headerLabel.text = $"{sourceList.SourceName} ({sourceList.packages.Count} packages)";
-                var packageList = sourcePresenter.Q<ListView>("tkpm-package-list");
-                packageList.itemsSource = sourceList.packages;
-            }
+            UpdatePackageList();
         }
 
-        private void OnRootPresenterAttach(AttachToPanelEvent evt)
+        void UpdatePackageList()
         {
-            presenter.UnregisterCallback<AttachToPanelEvent>(OnRootPresenterAttach);
-
-            var packageSourceList = presenter.Q(name = "tkpm-package-source-list");
-
-            foreach (var source in packageSources)
+            for (int sourceIndex = 0; sourceIndex < packageSources.Count; sourceIndex++)
             {
-                var sourcePresenter = new ContentPresenter { name = $"tkpm-{source.GetName()}-presenter", userData = this, Template = "PackageSource" };
-                packageSourceList.Add(sourcePresenter);
+                var source = packageSources[sourceIndex];
+                var sourceList = GetPackageSourceList(source);
 
-                sourcePresenter.AddToClassList("tkpm-package-source");
+                UpdatePackageSource(sourceList, source);
 
-                var sourceList = ScriptableHelper.EnsureAsset<PackageSourceList>(
-                                    $"{Constants.ThunderKitSettingsRoot}{source.GetName()}_SourceSettings.asset",
-                                    psl => psl.SourceName = source.GetName());
+                var packageSource = root.Q($"tkpm-package-source-{source.GetName()}");
+                var headerLabel = packageSource.Q<Label>("tkpm-package-source-label");
+                var packageList = packageSource.Q<ListView>("tkpm-package-list");
 
-                var packages = source.GetPackages(SearchString ?? string.Empty);
-                if (FilterInstalled)
-                    packages = packages.Where(PackageInstalled);
-                sourceList.packages = packages.ToList();
+                packageList.itemsSource = FilterPackages(sourceList.packages);
 
-                var groupName = $"tkpm-package-source-{sourceList.SourceName}";
-                sourcePresenter.name = groupName;
-                sourcePresenter.userData = sourceList;
-                sourcePresenter.Bind(new SerializedObject(sourceList));
+                if (packageList.selectedIndex < 0 && sourceIndex == 0 && packageList.itemsSource.Count > 0)
+                    packageList.selectedIndex = 0;
 
-                var headerLabel = sourcePresenter.Q<Label>("tkpm-package-source-label");
-                headerLabel.text = $"{sourceList.SourceName} ({sourceList.packages.Count} packages)";
+                packageList.Refresh();
+                
+                headerLabel.text = $"{sourceList.SourceName} ({packageList.itemsSource.Count} packages) ({sourceList.packages.Count - packageList.itemsSource.Count} hidden)";
 
-                var packageList = sourcePresenter.Q<ListView>("tkpm-package-list");
-                if (packageList == null) return;
-                packageList.selectionType = SelectionType.Single;
-                packageList.RegisterCallback<AttachToPanelEvent>(OnPackageListAttached);
-                packageList.onSelectionChanged -= PackageList_onSelectionChanged;
-                packageList.onSelectionChanged += PackageList_onSelectionChanged;
-                //packageList.StretchToParentWidth();
-                void OnPackageListAttached(AttachToPanelEvent et)
-                {
-                    packageList.makeItem = MakePackage;
-                    VisualElement MakePackage()
-                    {
-                        var packageTemplate = LoadTemplate("Package");
-                        var packageInstance = packageTemplate.CloneTree(null);
-                        packageInstance.userData = sourceList;
-                        packageInstance.AddToClassList("tkpm-package-option");
-                        packageInstance.AddStyleSheetPath(AssetDatabase.GetAssetPath(packageTemplate).Replace(".uxml", ".uss"));
-                        packageInstance.AddStyleSheetPath(AssetDatabase.GetAssetPath(packageTemplate).Replace(".uxml", "_Light.uss"));
-                        packageInstance.AddStyleSheetPath(AssetDatabase.GetAssetPath(packageTemplate).Replace(".uxml", "_Dark.uss"));
-                        return packageInstance;
-                    }
-                    packageList.bindItem = BindPackage;
-                    packageList.itemsSource = sourceList.packages;
-                }
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssets();
             }
         }
+
+        List<PackageGroup> FilterPackages(List<PackageGroup> packages) => packages
+                    .Where(pkg => pkg.HasString(SearchString ?? string.Empty))
+                    .Where(pkg => (!InProject || PackageInstalled(pkg, pkg.version)))
+                    .ToList();
 
         void BindPackage(VisualElement packageElement, int packageIndex)
         {
-            var sourceList = packageElement.userData as PackageSourceList;
-            var package = sourceList.packages[packageIndex];
+            var sourceList = packageElement.userData as ListView;
+            var package = sourceList.itemsSource[packageIndex] as PackageGroup;
             packageElement.name = $"tkpm-package-{package.name}-{package.version}";
-            //packageElement.Bind(new SerializedObject(sourceList));
+
             var packageInstalled = packageElement.Q<Image>("tkpm-package-installed");
 
-            if (PackageInstalled(package)) packageInstalled.AddToClassList("installed");
+            if (PackageInstalled(package, package.version)) packageInstalled.AddToClassList("installed");
             else
                 packageInstalled.RemoveFromClassList("installed");
-
-            //if (PackageCanUpdate(package)) packageInstalled.AddToClassList("update");
-            //else
-            //    packageInstalled.RemoveFromClassList("update");
 
             var packageName = packageElement.Q<Label>("tkpm-package-name");
             if (packageName != null)
@@ -173,15 +219,21 @@ namespace ThunderKit.PackageManager.Editor
         {
             var selection = obj.OfType<PackageGroup>().First();
             if (selection == null) return;
+            BindPackageView(selection);
+        }
+
+        private void BindPackageView(PackageGroup selection)
+        {
             var title = packageView.Q<Label>("tkpm-package-title");
             var name = packageView.Q<Label>("tkpm-package-name");
             var description = packageView.Q<Label>("tkpm-package-description");
             var versionLabel = packageView.Q<Label>("tkpm-package-info-version-value");
             var author = packageView.Q<Label>("tkpm-package-author-value");
             var versionButton = packageView.Q<Button>("tkpm-package-version-button");
+            var installButton = packageView.Q<Button>("tkpm-package-install-button");
 
             ConfigureVersionButton(versionButton, selection);
-            ConfigureInstallButton(packageView.Q<Button>("tkpm-package-version-button"), versionButton, selection);
+            ConfigureInstallButton(installButton, versionButton, selection);
 
             title.text = NicifyPackageName(selection.name);
             name.text = selection.dependencyId;
@@ -192,50 +244,119 @@ namespace ThunderKit.PackageManager.Editor
 
         void ConfigureInstallButton(Button installButton, Button versionButton, PackageGroup selection)
         {
-            installButton.clickable.clicked -= InstallVersion;
-            installButton.clickable.clicked += InstallVersion;
-            void InstallVersion() => selection.Source.InstallPackage(selection, versionButton.text, Path.Combine("Temp", "ThunderKit", "PackageStaging"));
+            versionButton.userData = selection;
+            installButton.userData = versionButton;
+            installButton.clickable.clickedWithEventInfo -= InstallVersion;
+            installButton.clickable.clickedWithEventInfo += InstallVersion;
+            installButton.text = PackageInstalled(selection, selection.version) ? "Uninstall" : "Install";
+        }
+
+        void InstallVersion(EventBase obj)
+        {
+            var installButton = obj.currentTarget as Button;
+            var versionButton = installButton.userData as Button;
+            var selection = versionButton.userData as PackageGroup;
+            var packageVersion = selection.versions.First(pv => pv.version.Equals(versionButton.text));
+
+            var packageDirectory = Path.Combine("Packages", selection.name);
+            if (PackageInstalled(selection, selection.version))
+            {
+                deletePackage = CreateInstance<DeletePackage>();
+                deletePackage.directory = packageDirectory;
+                TryDelete();
+                AssetDatabase.Refresh();
+            }
+            else
+                selection.Source.InstallPackage(selection, versionButton.text, packageDirectory);
         }
 
         void ConfigureVersionButton(Button versionButton, PackageGroup selection)
         {
-            versionButton.clickable.clicked -= PickVersion;
-            versionButton.clickable.clicked += PickVersion;
-            void PickVersion()
-            {
-                var menu = new GenericMenu();
-                foreach (var packageVersion in selection.versions)
-                {
-                    void SelectVersion()
-                    {
-                        versionButton.text = packageVersion.version;
-                    }
-                    menu.AddItem(new GUIContent(packageVersion.version), packageVersion.version.Equals(versionButton.text), SelectVersion);
-                }
-                menu.ShowAsContext();
-            }
-            versionButton.text = selection.version;
+            versionButton.clickable.clickedWithEventInfo -= PickVersion;
+            versionButton.clickable.clickedWithEventInfo += PickVersion;
+            versionButton.userData = selection;
+            var directory = PackageDirectory(selection);
+            versionButton.SetEnabled(!PackageInstalled(selection, selection.version));
+
+            if (PackageInstalled(selection, selection.version))
+                versionButton.text = PackageHelper.GetPackageManagerManifest(directory).version;
+            else
+                versionButton.text = selection.version;
         }
 
-        private static bool PackageInstalled(PackageGroup package) => Directory.EnumerateDirectories("Packages", $"{package.dependencyId}*", SearchOption.TopDirectoryOnly).Any();
-        //private static bool PackageCanUpdate(PackageGroup package) => !PackageInstalled(package) && Directory.Exists(Path.Combine("Packages", package.name));
+        void PickVersion(EventBase obj)
+        {
+            var versionButton = obj.currentTarget as Button;
+            var selection = versionButton.userData as PackageGroup;
+            var menu = new GenericMenu();
+            foreach (var packageVersion in selection.versions)
+            {
+                void SelectVersion()
+                {
+                    versionButton.text = packageVersion.version;
+                    BindPackageView(selection);
+                }
+
+                menu.AddItem(new GUIContent(packageVersion.version), packageVersion.version.Equals(versionButton.text), SelectVersion);
+            }
+            menu.ShowAsContext();
+        }
+
+        PackageSourceList GetPackageSourceList(PackageSource source) => ScriptableHelper.EnsureAsset<PackageSourceList>(
+                                    $"{Constants.ThunderKitSettingsRoot}{source.GetName()}_SourceSettings.asset",
+                                    psl => psl.SourceName = source.GetName());
+
+        private static string PackageDirectory(PackageGroup package)
+        {
+            return Directory.EnumerateDirectories("Packages", package.name, SearchOption.TopDirectoryOnly).FirstOrDefault();
+        }
+
+        private static bool PackageInstalled(PackageGroup package, string version)
+        {
+            string directory = PackageDirectory(package);
+            if (string.IsNullOrEmpty(directory)) return false;
+
+            var pmm = PackageHelper.GetPackageManagerManifest(directory);
+            var packageVersion = package[version];
+
+            return pmm.name.Equals(packageVersion.dependencyId, System.StringComparison.OrdinalIgnoreCase);
+        }
 
         private static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");
 
+        VisualElement GetTemplateInstance(string template, VisualElement target = null)
+        {
+            var packageTemplate = LoadTemplate(template);
+            var assetPath = AssetDatabase.GetAssetPath(packageTemplate);
+            VisualElement instance = target;
+            if (instance == null) instance = packageTemplate.CloneTree(null);
+            else
+                packageTemplate.CloneTree(instance, null);
 
-        Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>();
-        private ContentPresenter packageView;
-        private TextField searchBox;
-        private Button searchBoxCancel;
+            instance.AddToClassList("grow");
+            AddSheet(instance, assetPath);
+            if (EditorGUIUtility.isProSkin)
+                AddSheet(instance, assetPath, "_Dark");
+            else
+                AddSheet(instance, assetPath, "_Light");
+
+            return instance;
+        }
+
+        void AddSheet(VisualElement element, string assetPath, string modifier = "")
+        {
+            string sheetPath = assetPath.Replace(".uxml", $"{modifier}.uss");
+            if (File.Exists(sheetPath)) element.AddStyleSheetPath(sheetPath);
+        }
 
         private VisualTreeAsset LoadTemplate(string name)
         {
             if (!templateCache.ContainsKey(name))
             {
-                templateCache[name] = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase
-                   .FindAssets(name, searchpaths)
-                   .Select(AssetDatabase.GUIDToAssetPath)
-                   .FirstOrDefault(path => path.Contains("Templates/") || path.Contains("Templates\\")));
+                var searchResults = AssetDatabase.FindAssets(name, searchpaths);
+                var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath);
+                var templatePath = assetPaths.FirstOrDefault(path => path.Contains("Templates/") || path.Contains("Templates\\"));
+                templateCache[name] = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
             }
             return templateCache[name];
         }
