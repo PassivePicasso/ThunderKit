@@ -19,6 +19,7 @@ namespace ThunderKit.PackageManager.Engine
         public string description;
         public string dependencyId;
         public string[] dependencies;
+        public string[] tags;
         public PackageSource Source;
         public PackageVersion[] versions;
 
@@ -36,6 +37,11 @@ namespace ThunderKit.PackageManager.Engine
             if (descriptionContains) return true;
             var dependencyIdContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(dependencyId, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (dependencyIdContains) return true;
+            foreach (var tag in tags)
+            {
+                var tagContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(tag, value, CompareOptions.OrdinalIgnoreCase) > -1;
+                if (tagContains) return true;
+            }
 
             return false;
         }

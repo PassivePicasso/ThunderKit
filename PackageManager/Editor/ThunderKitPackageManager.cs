@@ -25,7 +25,7 @@ namespace ThunderKit.PackageManager.Editor
         private VisualElement packageView;
         private TextField searchBox;
         private Button searchBoxCancel;
-
+        Dictionary<string, bool> tagEnabled = new Dictionary<string, bool>();
         [SerializeField] public bool InProject;
         [SerializeField] private DeletePackage deletePackage;
         [SerializeField] private string SearchString;
@@ -123,11 +123,16 @@ namespace ThunderKit.PackageManager.Editor
                     return packageInstance;
                 }
                 packageList.bindItem = BindPackage;
-                
+
                 packageSourceList.Add(packageSource);
 
                 UpdatePackageList();
             }
+
+            var tags = packageSources.Select(GetPackageSourceList).SelectMany(psl => psl.packages.SelectMany(pkg => pkg.tags).Distinct()).Distinct();
+            tagEnabled.Clear();
+            foreach (var tag in tags)
+                tagEnabled[tag] = false;
         }
 
         private void FiltersClicked()
@@ -138,6 +143,14 @@ namespace ThunderKit.PackageManager.Editor
                 InProject = !InProject;
                 UpdatePackageList();
             });
+            foreach (var tag in tagEnabled.Keys)
+            {
+                menu.AddItem(new GUIContent($"Tags/{tag}"), tagEnabled[tag], () =>
+                {
+                    tagEnabled[tag] = !tagEnabled[tag];
+                    UpdatePackageList();
+                });
+            }
             menu.ShowAsContext();
         }
 
@@ -181,18 +194,27 @@ namespace ThunderKit.PackageManager.Editor
                     packageList.selectedIndex = 0;
 
                 packageList.Refresh();
-                
+
                 headerLabel.text = $"{sourceList.SourceName} ({packageList.itemsSource.Count} packages) ({sourceList.packages.Count - packageList.itemsSource.Count} hidden)";
 
                 EditorUtility.SetDirty(this);
                 AssetDatabase.SaveAssets();
             }
+
         }
 
-        List<PackageGroup> FilterPackages(List<PackageGroup> packages) => packages
-                    .Where(pkg => pkg.HasString(SearchString ?? string.Empty))
-                    .Where(pkg => (!InProject || PackageInstalled(pkg, pkg.version)))
-                    .ToList();
+        List<PackageGroup> FilterPackages(List<PackageGroup> packages)
+        {
+            var enabledTags = tagEnabled.Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray();
+
+            var hasTags = enabledTags.Any() ? packages.Where(pkg => enabledTags.All(tag => pkg.tags.Contains(tag))) : packages;
+
+            var hasString = hasTags.Where(pkg => pkg.HasString(SearchString ?? string.Empty));
+
+            var filteredByInstall = !InProject ? hasString : hasString.Where(pkg => PackageInstalled(pkg, pkg.version));
+
+            return filteredByInstall.ToList();
+        }
 
         void BindPackage(VisualElement packageElement, int packageIndex)
         {
@@ -231,9 +253,26 @@ namespace ThunderKit.PackageManager.Editor
             var author = packageView.Q<Label>("tkpm-package-author-value");
             var versionButton = packageView.Q<Button>("tkpm-package-version-button");
             var installButton = packageView.Q<Button>("tkpm-package-install-button");
+            var tags = packageView.Q("tkpm-package-tags");
+            var dependencies = packageView.Q("tkpm-package-dependencies");
 
             ConfigureVersionButton(versionButton, selection);
             ConfigureInstallButton(installButton, versionButton, selection);
+
+            tags.Clear();
+            foreach (var tag in selection.tags)
+            {
+                var tagLabel = new Label(tag);
+                tagLabel.AddToClassList("tag");
+                tags.Add(tagLabel);
+            }
+            dependencies.Clear();
+            foreach (var dependency in selection.dependencies)
+            {
+                var dependencyLabel = new Label(dependency);
+                dependencyLabel.AddToClassList("dependency");
+                dependencies.Add(dependencyLabel);
+            }
 
             title.text = NicifyPackageName(selection.name);
             name.text = selection.dependencyId;

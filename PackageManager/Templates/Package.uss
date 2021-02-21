@@ -1,7 +1,10 @@
 ﻿#tkpm-package-version {
+	border-color: rgb(128,128,128);
 	position-type: absolute;
 	position-left: 210px;
+
 	border-left-width: 1px;
+
 	height: 22px;
 	margin-left: 0px;
 	margin-top: -4px;
