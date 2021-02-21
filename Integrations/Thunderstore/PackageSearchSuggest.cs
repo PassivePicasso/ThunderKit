@@ -2,7 +2,7 @@
 
 namespace ThunderKit.Integrations.Thunderstore
 {
-    public class PackageSearchSuggest : SearchSuggest<Package>
+    public class PackageSearchSuggest : SearchSuggest<PackageListing>
     {
     }
 }

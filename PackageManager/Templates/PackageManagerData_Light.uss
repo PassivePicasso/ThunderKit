@@ -1,0 +1,14 @@
+﻿.tkpm-toolbar {
+	background-image: resource("Builtin Skins/LightSkin/Images/Toolbar.png");
+}
+
+.toolbar-button {
+	background-image: resource("Builtin Skins/LightSkin/Images/Toolbar.png");
+}
+#tkpm-search-textfield {
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
+}
+#tkpm-search-cancelbutton {
+	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearchCancelButtonOff.png");
+}
+

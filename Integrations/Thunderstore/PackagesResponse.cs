@@ -5,6 +5,6 @@ namespace ThunderKit.Integrations.Thunderstore
     [Serializable]
     public class PackagesResponse 
     {
-        public Package[] results;
+        public PackageListing[] results;
     }
 }

@@ -22,7 +22,7 @@ namespace ThunderKit.Integrations.Thunderstore
     {
         [SerializeField]
         public string ThunderstoreUrl = "https://thunderstore.io";
-        
+
         public static event EventHandler<(string newValue, string previousValue)> OnThunderstoreUrlChanged;
 
         public override void CreateSettingsUI(VisualElement rootElement)
