@@ -7,6 +7,7 @@
 }
 .package-control-button {
 	height: 18px;
+	border-color: rgb(128,128,128);
 	border-top: 1px;
 	border-left: 1px;
 	border-right: 1px;
@@ -14,6 +15,7 @@
 }
 
 #tkpm-package-view {
+	border-color: rgb(128,128,128);
 	flex-basis: 0;
 	flex-grow: 1;
 	flex-shrink: 0;
@@ -21,4 +23,40 @@
 	margin-top: 2px;
 	margin-right: 2px;
 	margin-bottom: 2px;
+}
+
+#tkpm-package-body {
+	flex-grow: 1;
+}
+#tkpm-package-dependencies-label {
+	font-style: bold;
+}
+
+#tkpm-package-tags-label {
+	font-style: bold;
+}
+
+#tkpm-package-description {
+	-unity-word-wrap: true;
+	flex-basis: 0.5;
+	flex-grow: 0.5;
+	flex-shrink: 0.5;
+}
+
+.tag {
+	border-left-radius: 10px;
+	background-color: #ddd;
+	padding-top: 2px;
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-bottom: 2px;
+	margin-top: 1px;
+	margin-left: 6px;
+	margin-right: -4px;
+	margin-bottom: 1px;
+}
+
+.dependency {
+	font-size: 11px;
+	font-style: italic;
 }

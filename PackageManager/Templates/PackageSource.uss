@@ -12,7 +12,6 @@
 	border-top-width: 0px;
 	border-right-width: 0px;
 	border-bottom-width: 1px;
-	background-color: rgb(224,224,224);
 }
 
 #tkpm-package-source-foldout {

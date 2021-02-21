@@ -28,9 +28,11 @@ namespace ThunderKit.Integrations.Thunderstore
 
         protected override IEnumerable<PackageGroup> GetPackagesInternal(string filter = "")
         {
-            var thunderstorePackages = ThunderstoreAPI.LookupPackage(filter);
+            var thunderstorePackages = ThunderstoreAPI.LookupPackage(filter).ToList();
             var packages = thunderstorePackages
                 .Where(tsp => !tsp.is_deprecated)
+                .Where(tsp => !tsp.categories.Contains("Modpacks"))
+                .Where(tsp => !tsp.categories.Contains("Tools"))
                 .OrderByDescending(tsp => tsp.is_pinned)
                 .ThenBy(tsp => tsp.name)
                             .Select(tsp => new PackageGroup
@@ -42,6 +44,7 @@ namespace ThunderKit.Integrations.Thunderstore
                                 description = tsp.latest.description,
                                 dependencyId = tsp.full_name,
                                 dependencies = tsp.latest.dependencies,
+                                tags = tsp.categories,
                                 versions = tsp.versions.Select(v => new PV { version = v.version_number, dependencyId = v.full_name }).ToArray()
                             });
             return packages;

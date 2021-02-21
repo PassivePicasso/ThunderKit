@@ -1,1 +1,7 @@
-﻿
+﻿#tkpm-package-version {
+	border-color: rgb(80,80,80);
+}
+
+.installed {
+	background-image: resource("Builtin Skins/DarkSkin/Images/MenuItemOn.png");
+}
