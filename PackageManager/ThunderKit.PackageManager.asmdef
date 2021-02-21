@@ -1,7 +1,10 @@
 {
     "name": "ThunderKit.PackageManager",
     "references": [
-        "VisualTemplates"
+        "VisualTemplates",
+        "ThunderKit.Common",
+        "ThunderKit.Core",
+        "Unity.PackageManagerUI.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

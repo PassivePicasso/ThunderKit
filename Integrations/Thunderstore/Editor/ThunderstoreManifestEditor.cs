@@ -2,13 +2,13 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
-using static ThunderKit.Integrations.Thunderstore.Constants;
 using static ThunderKit.Integrations.Thunderstore.CreateThunderstoreManifest;
 using static UnityEditor.EditorGUIUtility;
 using static UnityEngine.GUILayout;
@@ -55,7 +55,7 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                         }
                         if (Event.current.type == EventType.MouseUp && bp.Contains(Event.current.mousePosition))
                         {
-                            var dependencyPath = Path.Combine(Packages, depName);
+                            var dependencyPath = Path.Combine(Constants.Packages, depName);
 
                             if (Directory.Exists(dependencyPath)) Directory.Delete(dependencyPath, true);
 
@@ -206,7 +206,7 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                     break;
             }
 
-            bool RenderSuggestion(int arg1, Package package)
+            bool RenderSuggestion(int arg1, PackageListing package)
             {
                 if (thunderManifest.dependencies.Contains(package.latest.full_name))
                     return false;
@@ -218,13 +218,13 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                     property.serializedObject.ApplyModifiedProperties();
                     suggestor.Cleanup();
 
-                    if (!Directory.Exists(TempDir)) Directory.CreateDirectory(TempDir);
+                    if (!Directory.Exists(Constants.TempDir)) Directory.CreateDirectory(Constants.TempDir);
 
                     var packages = RecurseDependencies(thunderManifest.dependencies)
                         .GroupBy(dep => dep.latest.full_name).Select(g => g.First()).ToArray();
 
                     foreach (var pack in packages)
-                        ThunderstoreAPI.DownloadPackage(pack, Path.Combine(TempDir, GetZipFileName(pack)));
+                        ThunderstoreAPI.DownloadPackage(pack, Path.Combine(Constants.TempDir, GetZipFileName(pack)));
 
                     return true;
                 }
@@ -234,8 +234,8 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
         }
 
         private static string GetZipFileName(string package) => $"{package}.zip";
-        private static string GetZipFileName(Package package) => GetZipFileName(package.latest.full_name);
-        IEnumerable<Package> RecurseDependencies(IEnumerable<string> dependencies)
+        private static string GetZipFileName(PackageListing package) => GetZipFileName(package.latest.full_name);
+        IEnumerable<PackageListing> RecurseDependencies(IEnumerable<string> dependencies)
         {
             var deps = dependencies.SelectMany(dep => ThunderstoreAPI.LookupPackage(dep));
             var subDeps = deps.SelectMany(idep => idep.latest.dependencies).Distinct();
@@ -246,6 +246,6 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
             return deps;
         }
 
-        private static IEnumerable<Package> EvaluateSuggestion(string searchString) => ThunderstoreAPI.LookupPackage(searchString);
+        private static IEnumerable<PackageListing> EvaluateSuggestion(string searchString) => ThunderstoreAPI.LookupPackage(searchString);
     }
 }

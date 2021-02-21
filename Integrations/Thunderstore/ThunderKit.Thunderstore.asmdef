@@ -4,7 +4,8 @@
         "ThunderKit.Core",
         "ThunderKit.Common",
         "Unity.ScriptableBuildPipeline",
-        "Unity.ScriptableBuildPipeline.Editor"
+        "Unity.ScriptableBuildPipeline.Editor",
+        "ThunderKit.PackageManager"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

@@ -1,0 +1,34 @@
+﻿
+#tkpm-package-source-label {
+	margin-top: 1px;
+	margin-left: 20px;
+}
+
+#tkpm-package-source-header {
+	position-type: absolute;
+	position-left: 0px;
+	position-right: 0px;
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 1px;
+	background-color: rgb(224,224,224);
+}
+
+#tkpm-package-source-foldout {
+	flex-grow: 1;
+}
+
+#tkpm-package-list {
+	position-type: absolute;
+	position-left: 0px;
+	position-right: 0px;
+	position-top: 0px;
+	position-bottom: 0px;
+	flex-grow: 1;
+}
+
+.unity-foldout-content {
+	margin-left: 0px;
+	flex-grow: 1;
+}

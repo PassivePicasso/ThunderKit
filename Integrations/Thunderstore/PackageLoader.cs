@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
-    using static Constants;
+    using static ThunderKit.Common.Constants;
     public class PackageLoader
     {
 

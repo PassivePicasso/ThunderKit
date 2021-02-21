@@ -1,0 +1,24 @@
+﻿#tkpm-package-view-controls{
+	position-type: absolute;
+	position-right: 0px;
+}
+#tkpm-package-install-button {
+	border-right: 0px;
+}
+.package-control-button {
+	height: 18px;
+	border-top: 1px;
+	border-left: 1px;
+	border-right: 1px;
+	border-bottom: 1px;
+}
+
+#tkpm-package-view {
+	flex-basis: 0;
+	flex-grow: 1;
+	flex-shrink: 0;
+	margin-left: 2px;
+	margin-top: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
