@@ -10,8 +10,7 @@
     "url": "https://github.com/PassivePicasso/ThunderKit"
   },
   "dependencies": {
-    "com.unity.scriptablebuildpipeline": "1.16.1",
-    "com.passivepicasso.visualtemplates": "https://github.com/PassivePicasso/VisualTemplates.git"
+    "com.unity.scriptablebuildpipeline": "1.16.1"
   }
 }
  

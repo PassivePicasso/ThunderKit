@@ -10,7 +10,6 @@ xsi:schemaLocation="
                         UnityEngine.Experimental.UIElements ../../../../UIElementsSchema/UnityEngine.Experimental.UIElements.xsd
                         UnityEditor.Experimental.UIElements ../../../../UIElementsSchema/UnityEditor.Experimental.UIElements.xsd
                         UnityEditor.PackageManager.UI ../../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd
-                        VisualTemplates ../../../../UIElementsSchema/VisualTemplates.xsd
 "
 >
   <engine:VisualElement class="horizontal-stack" custom-data="AlphaBeta">

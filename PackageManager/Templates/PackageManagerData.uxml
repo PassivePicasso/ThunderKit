@@ -4,14 +4,12 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:engine="UnityEngine.Experimental.UIElements"
     xmlns:editor="UnityEditor.Experimental.UIElements"
     xmlns:upm="UnityEditor.PackageManager.UI"
-    xmlns:vt="VisualTemplates"
 
 xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
 xsi:schemaLocation="
                         UnityEngine.Experimental.UIElements ../../../../UIElementsSchema/UnityEngine.Experimental.UIElements.xsd
                         UnityEditor.Experimental.UIElements ../../../../UIElementsSchema/UnityEditor.Experimental.UIElements.xsd
                         UnityEditor.PackageManager.UI ../../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd
-                        VisualTemplates ../../../../UIElementsSchema/VisualTemplates.xsd
 "
 >
   <engine:VisualElement name="tkpm-root" >
@@ -20,8 +18,7 @@ xsi:schemaLocation="
     <engine:VisualElement class="tkpm-toolbar horizontal-stack" >
       <engine:VisualElement class="tkpm-sidebar-width horizontal-stack">
         <!--<engine:Button text="Packages" />-->
-        <engine:Button name="tkpm-registry-selector" text="Registries" class="toolbar-button noMargin" />
-        <engine:Label name="active-registry-title" text="Thunderstore" class="tkpm-toolbar"/>
+        <engine:Button name="tkpm-filters-selector" text="Filters" class="toolbar-button noMargin" />
       </engine:VisualElement>
       <engine:VisualElement class="horizontal-stack justifyend grow">
         <engine:Label name="search-label" text="Search" class="tkpm-toolbar noMargin"/>
@@ -36,7 +33,7 @@ xsi:schemaLocation="
         <engine:VisualElement name="tkpm-package-source-list" class="tkpm-sidebar-width"/>
       </engine:VisualElement>
 
-      <vt:ContentPresenter name="tkpm-package-view" template="PackageView" />
+      <engine:VisualElement name="tkpm-package-view" template="PackageView" />
 
     </engine:VisualElement>
 

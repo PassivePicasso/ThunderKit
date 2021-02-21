@@ -224,7 +224,7 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                         .GroupBy(dep => dep.latest.full_name).Select(g => g.First()).ToArray();
 
                     foreach (var pack in packages)
-                        ThunderstoreAPI.DownloadPackage(pack, Path.Combine(Constants.TempDir, GetZipFileName(pack)));
+                        ThunderstoreAPI.DownloadLatestPackage(pack, Path.Combine(Constants.TempDir, GetZipFileName(pack)));
 
                     return true;
                 }

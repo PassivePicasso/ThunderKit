@@ -1,16 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
+using ThunderKit.Common.Package;
 using ThunderKit.Core.Editor;
 using ThunderKit.PackageManager.Editor;
+using ThunderKit.PackageManager.Engine;
 using ThunderKit.PackageManager.Model;
 using UnityEditor;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
-    using PV = PackageManager.Model.PackageVersion;
+    using PV = PackageManager.Engine.PackageVersion;
     public class ThunderstoreSource : PackageSource
     {
+
         [InitializeOnLoadMethod]
         public static void Initialize()
         {
@@ -21,7 +26,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public override string GetName() => "Thunderstore";
 
-        public override IEnumerable<PackageGroup> GetPackages(string filter = "")
+        protected override IEnumerable<PackageGroup> GetPackagesInternal(string filter = "")
         {
             var thunderstorePackages = ThunderstoreAPI.LookupPackage(filter);
             var packages = thunderstorePackages
@@ -42,13 +47,38 @@ namespace ThunderKit.Integrations.Thunderstore
             return packages;
         }
 
-        public override void InstallPackage(PackageGroup package, string version, string packageDirectory)
+        protected override async Task InstallPackageFiles(PackageGroup package, PV version, string packageDirectory)
         {
-            var tsPackageVersion = ThunderstoreAPI.LookupPackage(package.dependencyId).First();
-            var packageVesion = package.versions.First(pv => pv.version.Equals(version));
-            var targetPackage = tsPackageVersion.versions.First(tspv => tspv.version_number.Equals(version));
-            var filePath = Path.Combine(packageDirectory, $"{targetPackage.full_name}.zip");
-            ThunderstoreAPI.DownloadPackage(targetPackage.download_url, filePath);
+            var tsPackage = ThunderstoreAPI.LookupPackage(package.dependencyId).First();
+            var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
+            var filePath = Path.Combine(packageDirectory, $"{tsPackageVersion.full_name}.zip");
+
+            ThunderstoreAPI.DownloadPackage(tsPackageVersion, filePath);
+
+            while (!File.Exists(filePath))
+                await Task.Delay(1);
+
+            using (var fileStream = File.OpenRead(filePath))
+            using (var archive = new ZipArchive(fileStream))
+                foreach (var entry in archive.Entries)
+                {
+                    if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
+                        continue;
+
+                    var outputPath = Path.Combine(packageDirectory, entry.FullName);
+                    var outputDir = Path.GetDirectoryName(outputPath);
+                    var fileName = Path.GetFileName(outputPath);
+                    if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
+
+                    entry.ExtractToFile(outputPath);
+                    if (Path.GetExtension(fileName).Equals(".dll"))
+                    {
+                        string assemblyPath = outputPath;
+                        PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
+                    }
+                }
+
+            File.Delete(filePath);
         }
     }
 }
