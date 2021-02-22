@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Core.PackageManager
+namespace ThunderKit.Core.Editor.Actions
 {
     public class DeletePackage : ScriptableObject
     {

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Editor;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.PackageManager;
 using UnityEditor;
 
 namespace ThunderKit.Integrations.Thunderstore
@@ -19,7 +18,7 @@ namespace ThunderKit.Integrations.Thunderstore
         {
             var assetPath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
             var source = ScriptableHelper.EnsureAsset<ThunderstoreSource>(assetPath, so => { });
-            ThunderKitPackageManager.RegisterPackageSource(source);
+            PackageManager.RegisterPackageSource(source);
         }
 
         public override string Name => "Thunderstore";
