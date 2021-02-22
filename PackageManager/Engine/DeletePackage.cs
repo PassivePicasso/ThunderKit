@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.PackageManager.Engine
@@ -11,6 +12,7 @@ namespace ThunderKit.PackageManager.Engine
         {
             try
             {
+                if (EditorApplication.isCompiling) return false;
                 if (Directory.Exists(directory))
                 {
                     foreach (var metaFile in Directory.EnumerateFiles(directory, "*.meta", SearchOption.AllDirectories))
