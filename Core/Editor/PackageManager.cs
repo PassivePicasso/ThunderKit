@@ -5,20 +5,20 @@ using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.PackageManager;
+using ThunderKit.Core.Editor.Actions;
 using UnityEditor;
 using UnityEditor.Experimental.UIElements;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
-using PackageSource = ThunderKit.Core.PackageManager.PackageSource;
+using PackageSource = ThunderKit.Core.Data.PackageSource;
 
 namespace ThunderKit.Core.Editor
 {
-    public class ThunderKitPackageManager : EditorWindow
+    public class PackageManager : EditorWindow
     {
         Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>();
         static string[] searchpaths = new string[] { "Assets", "Packages" };
-        private static ThunderKitPackageManager wnd;
+        private static PackageManager wnd;
         private static List<PackageSource> packageSources;
         private VisualElement root;
         private VisualElement packageView;
@@ -41,7 +41,7 @@ namespace ThunderKit.Core.Editor
         [MenuItem(Constants.ThunderKitMenuRoot + "Package Manager")]
         public static void ShowExample()
         {
-            wnd = GetWindow<ThunderKitPackageManager>();
+            wnd = GetWindow<PackageManager>();
             wnd.titleContent = new GUIContent("ThunderKit Packages");
         }
 
@@ -75,7 +75,7 @@ namespace ThunderKit.Core.Editor
             for (int sourceIndex = 0; sourceIndex < packageSources.Count; sourceIndex++)
             {
                 var source = packageSources[sourceIndex];
-                var sourceList = GetPackageSourceList(source);
+                var sourceList = PackageSourceList.GetPackageSourceList(source);
                 var packageSource = GetTemplateInstance("PackageSource");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
                 var groupName = $"tkpm-package-source-{sourceList.SourceName}";
@@ -150,7 +150,7 @@ namespace ThunderKit.Core.Editor
             for (int sourceIndex = 0; sourceIndex < packageSources.Count; sourceIndex++)
             {
                 var source = packageSources[sourceIndex];
-                var sourceList = GetPackageSourceList(source);
+                var sourceList = PackageSourceList.GetPackageSourceList(source);
 
                 UpdatePackageSource(sourceList, source);
 
@@ -335,11 +335,6 @@ namespace ThunderKit.Core.Editor
         }
 
         #endregion
-
-
-        PackageSourceList GetPackageSourceList(PackageSource source) => ScriptableHelper.EnsureAsset<PackageSourceList>(
-                                    $"{Constants.ThunderKitSettingsRoot}{source.Name}_SourceSettings.asset",
-                                    psl => psl.SourceName = source.Name);
 
         private static string PackageDirectory(PackageGroup package)
         {
