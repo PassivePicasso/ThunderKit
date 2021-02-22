@@ -24,7 +24,9 @@ namespace ThunderKit.Integrations.Thunderstore
             ThunderKitPackageManager.RegisterPackageSource(source);
         }
 
-        public override string GetName() => "Thunderstore";
+        public override string Name => "Thunderstore";
+
+        public override string SourceGroup => "Thunderstore";
 
         protected override IEnumerable<PackageGroup> GetPackagesInternal(string filter = "")
         {
@@ -43,14 +45,13 @@ namespace ThunderKit.Integrations.Thunderstore
                                 version = tsp.latest.version_number,
                                 description = tsp.latest.description,
                                 dependencyId = tsp.full_name,
-                                dependencies = tsp.latest.dependencies,
                                 tags = tsp.categories,
-                                versions = tsp.versions.Select(v => new PV { version = v.version_number, dependencyId = v.full_name }).ToArray()
+                                versions = tsp.versions.Select(v => new PV { version = v.version_number, dependencyId = v.full_name, dependencies = v.dependencies }).ToArray()
                             });
             return packages;
         }
 
-        protected override async Task InstallPackageFiles(PackageGroup package, PV version, string packageDirectory)
+        public override async Task InstallPackageFiles(PackageGroup package, PV version, string packageDirectory)
         {
             var tsPackage = ThunderstoreAPI.LookupPackage(package.dependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));

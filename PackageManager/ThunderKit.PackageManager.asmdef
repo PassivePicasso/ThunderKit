@@ -1,8 +1,8 @@
 {
     "name": "ThunderKit.PackageManager",
     "references": [
-        "ThunderKit.Common",
         "ThunderKit.Core",
+        "ThunderKit.Common",
         "Unity.PackageManagerUI.Editor"
     ],
     "optionalUnityReferences": [],
