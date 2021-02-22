@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using ThunderKit.PackageManager.Model;
+using ThunderKit.Core.PackageManager;
 using UnityEngine;
 
-namespace ThunderKit.PackageManager.Engine
+namespace ThunderKit.Core.Data
 {
     [Serializable]
     public class PackageGroup : IEquatable<PackageGroup>

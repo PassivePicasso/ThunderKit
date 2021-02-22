@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ThunderKit.PackageManager.Engine
+namespace ThunderKit.Core.Data
 {
     [Serializable]
     public class PackageVersion

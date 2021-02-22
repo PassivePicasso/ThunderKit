@@ -4,16 +4,15 @@ using System.IO;
 using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Common.Package;
-using ThunderKit.Core.Editor;
-using ThunderKit.PackageManager.Engine;
-using ThunderKit.PackageManager.Model;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.PackageManager;
 using UnityEditor;
 using UnityEditor.Experimental.UIElements;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
-using PackageSource = ThunderKit.PackageManager.Model.PackageSource;
+using PackageSource = ThunderKit.Core.PackageManager.PackageSource;
 
-namespace ThunderKit.PackageManager.Editor
+namespace ThunderKit.Core.Editor
 {
     public class ThunderKitPackageManager : EditorWindow
     {
@@ -49,14 +48,6 @@ namespace ThunderKit.PackageManager.Editor
         public void OnEnable()
         {
             Construct();
-        }
-
-
-        public static PackageManagerData GetOrCreateSettings()
-        {
-            string assetPath = $"{Constants.ThunderKitSettingsRoot}{typeof(PackageManagerData).Name}.asset";
-            Directory.CreateDirectory(Path.GetDirectoryName(assetPath));
-            return ScriptableHelper.EnsureAsset<PackageManagerData>(assetPath, settings => { });
         }
 
         private void Construct()

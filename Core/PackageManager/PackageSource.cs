@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ThunderKit.Common.Package;
-using ThunderKit.PackageManager.Engine;
+using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.PackageManager.Model
+namespace ThunderKit.Core.PackageManager
 {
     public abstract class PackageSource : ScriptableObject, IEquatable<PackageSource>
     {
