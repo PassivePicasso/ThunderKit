@@ -43,3 +43,9 @@ ListView .selected {
 .installed {
 	background-image: resource("Builtin Skins/LightSkin/Images/MenuItemOn.png");
 }
+ListView :selected {
+	background-color: #888;
+}
+ListView :selected .textElement {
+	color: #eee;
+}

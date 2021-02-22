@@ -51,23 +51,6 @@ namespace ThunderKit.PackageManager.Editor
             Construct();
         }
 
-        private void OnInspectorUpdate()
-        {
-            TryDelete();
-        }
-
-        private void TryDelete()
-        {
-            if (deletePackage)
-            {
-                if (deletePackage.TryDelete())
-                {
-                    DestroyImmediate(deletePackage);
-                    deletePackage = null;
-                    AssetDatabase.Refresh();
-                }
-            }
-        }
 
         public static PackageManagerData GetOrCreateSettings()
         {
@@ -129,10 +112,6 @@ namespace ThunderKit.PackageManager.Editor
                 UpdatePackageList();
             }
 
-            var tags = packageSources.Select(GetPackageSourceList).SelectMany(psl => psl.packages.SelectMany(pkg => pkg.tags).Distinct()).Distinct();
-            tagEnabled.Clear();
-            foreach (var tag in tags)
-                tagEnabled[tag] = false;
         }
 
         private void FiltersClicked()
@@ -184,7 +163,7 @@ namespace ThunderKit.PackageManager.Editor
 
                 UpdatePackageSource(sourceList, source);
 
-                var packageSource = root.Q($"tkpm-package-source-{source.GetName()}");
+                var packageSource = root.Q($"tkpm-package-source-{source.Name}");
                 var headerLabel = packageSource.Q<Label>("tkpm-package-source-label");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
 
@@ -194,6 +173,12 @@ namespace ThunderKit.PackageManager.Editor
                     packageList.selectedIndex = 0;
 
                 packageList.Refresh();
+
+                var tags = sourceList.packages.SelectMany(pkg => pkg.tags).Distinct().Select(tag => $"{sourceList.SourceName}/{tag}");
+                foreach (var tag in tags)
+                    if (tagEnabled.ContainsKey(tag)) tagEnabled[tag] = tagEnabled[tag];
+                    else
+                        tagEnabled[tag] = false;
 
                 headerLabel.text = $"{sourceList.SourceName} ({packageList.itemsSource.Count} packages) ({sourceList.packages.Count - packageList.itemsSource.Count} hidden)";
 
@@ -205,7 +190,9 @@ namespace ThunderKit.PackageManager.Editor
 
         List<PackageGroup> FilterPackages(List<PackageGroup> packages)
         {
-            var enabledTags = tagEnabled.Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray();
+            var enabledTags = tagEnabled.Where(kvp => kvp.Value)
+                .Select(kvp => kvp.Key.Substring(kvp.Key.LastIndexOf('/') + 1))
+                .ToArray();
 
             var hasTags = enabledTags.Any() ? packages.Where(pkg => enabledTags.All(tag => pkg.tags.Contains(tag))) : packages;
 
@@ -267,7 +254,7 @@ namespace ThunderKit.PackageManager.Editor
                 tags.Add(tagLabel);
             }
             dependencies.Clear();
-            foreach (var dependency in selection.dependencies)
+            foreach (var dependency in selection[versionButton.text].dependencies)
             {
                 var dependencyLabel = new Label(dependency);
                 dependencyLabel.AddToClassList("dependency");
@@ -281,6 +268,7 @@ namespace ThunderKit.PackageManager.Editor
             description.text = selection.description;
         }
 
+        #region Installation
         void ConfigureInstallButton(Button installButton, Button versionButton, PackageGroup selection)
         {
             versionButton.userData = selection;
@@ -297,16 +285,30 @@ namespace ThunderKit.PackageManager.Editor
             var selection = versionButton.userData as PackageGroup;
             var packageVersion = selection.versions.First(pv => pv.version.Equals(versionButton.text));
 
-            var packageDirectory = Path.Combine("Packages", selection.name);
             if (PackageInstalled(selection, selection.version))
             {
                 deletePackage = CreateInstance<DeletePackage>();
-                deletePackage.directory = packageDirectory;
+                deletePackage.directory = selection.PackageDirectory;
                 TryDelete();
                 AssetDatabase.Refresh();
             }
             else
-                selection.Source.InstallPackage(selection, versionButton.text, packageDirectory);
+                _ = selection.Source.InstallPackage(selection, versionButton.text);
+        }
+        private void OnInspectorUpdate()
+        {
+            TryDelete();
+        }
+
+        private void TryDelete()
+        {
+            if (deletePackage && deletePackage.TryDelete())
+            {
+                var deletePackage = this.deletePackage;
+                this.deletePackage = null;
+                DestroyImmediate(deletePackage);
+                AssetDatabase.Refresh();
+            }
         }
 
         void ConfigureVersionButton(Button versionButton, PackageGroup selection)
@@ -341,9 +343,12 @@ namespace ThunderKit.PackageManager.Editor
             menu.ShowAsContext();
         }
 
+        #endregion
+
+
         PackageSourceList GetPackageSourceList(PackageSource source) => ScriptableHelper.EnsureAsset<PackageSourceList>(
-                                    $"{Constants.ThunderKitSettingsRoot}{source.GetName()}_SourceSettings.asset",
-                                    psl => psl.SourceName = source.GetName());
+                                    $"{Constants.ThunderKitSettingsRoot}{source.Name}_SourceSettings.asset",
+                                    psl => psl.SourceName = source.Name);
 
         private static string PackageDirectory(PackageGroup package)
         {
