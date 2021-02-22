@@ -5,17 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Editor;
-using ThunderKit.PackageManager.Editor;
-using ThunderKit.PackageManager.Engine;
-using ThunderKit.PackageManager.Model;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.PackageManager;
 using UnityEditor;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
-    using PV = PackageManager.Engine.PackageVersion;
+    using PV = Core.Data.PackageVersion;
     public class ThunderstoreSource : PackageSource
     {
-
         [InitializeOnLoadMethod]
         public static void Initialize()
         {

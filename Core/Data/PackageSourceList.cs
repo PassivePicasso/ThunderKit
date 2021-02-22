@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ThunderKit.PackageManager.Engine
+namespace ThunderKit.Core.Data
 {
     public class PackageSourceList : ScriptableObject
     {
