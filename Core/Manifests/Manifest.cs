@@ -1,5 +1,6 @@
 ﻿using System;
 using ThunderKit.Common;
+using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using static ThunderKit.Core.Editor.ScriptableHelper;
 
@@ -10,8 +11,14 @@ namespace ThunderKit.Core.Manifests
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Manifest), priority = Constants.ThunderKitMenuPriority)]
         public static void Create()
         {
-            SelectNewAsset<Manifest>();
+            SelectNewAsset(afterCreated: (Action<Manifest>)(manifest =>
+            {
+                var identity = CreateInstance<ManifestIdentity>();
+                identity.name = nameof(identity);
+                manifest.InsertElement(identity, 0);
+            }));
         }
+
         public override Type ElementType => typeof(ManifestDatum);
 
         public override string ElementTemplate => @"

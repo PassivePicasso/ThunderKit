@@ -39,7 +39,6 @@ namespace ThunderKit.Integrations.Thunderstore
                                 author = tsp.owner,
                                 name = tsp.name,
                                 package_url = tsp.package_url,
-                                version = tsp.latest.version_number,
                                 description = tsp.latest.description,
                                 dependencyId = tsp.full_name,
                                 tags = tsp.categories,

@@ -29,6 +29,7 @@ namespace ThunderKit.Core.Editor
         [SerializeField] private DeletePackage deletePackage;
         [SerializeField] private string SearchString;
         private Button filtersButton;
+        private string targetVersion;
 
         public static void RegisterPackageSource(PackageSource source)
         {
@@ -102,7 +103,8 @@ namespace ThunderKit.Core.Editor
 
                 UpdatePackageList();
             }
-
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
         }
 
         private void FiltersClicked()
@@ -124,25 +126,12 @@ namespace ThunderKit.Core.Editor
             menu.ShowAsContext();
         }
 
-        private void UpdatePackageSource(PackageSourceList sourceList, PackageSource source)
-        {
-            if (sourceList.packages == null || !sourceList.packages.Any() || (DateTime.Now - sourceList.lastUpdateTime) > TimeSpan.FromSeconds(300))
-            {
-                var packages = source.GetPackages(string.Empty);
-                if (packages != null && packages.Any())
-                {
-                    sourceList.packages = packages.ToList();
-                    sourceList.lastUpdateTime = DateTime.Now;
-                    EditorUtility.SetDirty(sourceList);
-                    AssetDatabase.SaveAssets();
-                }
-            }
-        }
-
         private void OnSearchText(ChangeEvent<string> evt)
         {
             SearchString = evt.newValue;
             UpdatePackageList();
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
         }
 
         void UpdatePackageList()
@@ -152,7 +141,18 @@ namespace ThunderKit.Core.Editor
                 var source = packageSources[sourceIndex];
                 var sourceList = PackageSourceList.GetPackageSourceList(source);
 
-                UpdatePackageSource(sourceList, source);
+                if (sourceList.packages == null || !sourceList.packages.Any() || (DateTime.Now - sourceList.lastUpdateTime) > TimeSpan.FromSeconds(300))
+                {
+                    var packages = source.GetPackages(string.Empty);
+                    if (packages != null && packages.Any())
+                    {
+                        sourceList.packages = packages.ToList();
+                        sourceList.lastUpdateTime = DateTime.Now;
+                        EditorUtility.SetDirty(this);
+                        EditorUtility.SetDirty(sourceList);
+                        AssetDatabase.SaveAssets();
+                    }
+                }
 
                 var packageSource = root.Q($"tkpm-package-source-{source.Name}");
                 var headerLabel = packageSource.Q<Label>("tkpm-package-source-label");
@@ -160,10 +160,13 @@ namespace ThunderKit.Core.Editor
 
                 packageList.itemsSource = FilterPackages(sourceList.packages);
 
-                if (packageList.selectedIndex < 0 && sourceIndex == 0 && packageList.itemsSource.Count > 0)
-                    packageList.selectedIndex = 0;
-
                 packageList.Refresh();
+
+                if (sourceIndex == 0 && packageList.itemsSource.Count > 0)
+                {
+                    packageList.selectedIndex = 0;
+                    BindPackageView(packageList.selectedItem as PackageGroup);
+                }
 
                 var tags = sourceList.packages.SelectMany(pkg => pkg.tags).Distinct().Select(tag => $"{sourceList.SourceName}/{tag}");
                 foreach (var tag in tags)
@@ -173,10 +176,7 @@ namespace ThunderKit.Core.Editor
 
                 headerLabel.text = $"{sourceList.SourceName} ({packageList.itemsSource.Count} packages) ({sourceList.packages.Count - packageList.itemsSource.Count} hidden)";
 
-                EditorUtility.SetDirty(this);
-                AssetDatabase.SaveAssets();
             }
-
         }
 
         List<PackageGroup> FilterPackages(List<PackageGroup> packages)
@@ -189,7 +189,7 @@ namespace ThunderKit.Core.Editor
 
             var hasString = hasTags.Where(pkg => pkg.HasString(SearchString ?? string.Empty));
 
-            var filteredByInstall = !InProject ? hasString : hasString.Where(pkg => PackageInstalled(pkg, pkg.version));
+            var filteredByInstall = !InProject ? hasString : hasString.Where(pkg => PackageInstalled(pkg));
 
             return filteredByInstall.ToList();
         }
@@ -198,11 +198,11 @@ namespace ThunderKit.Core.Editor
         {
             var sourceList = packageElement.userData as ListView;
             var package = sourceList.itemsSource[packageIndex] as PackageGroup;
-            packageElement.name = $"tkpm-package-{package.name}-{package.version}";
+            packageElement.name = $"tkpm-package-{package.name}-{package["latest"].version}";
 
             var packageInstalled = packageElement.Q<Image>("tkpm-package-installed");
 
-            if (PackageInstalled(package, package.version)) packageInstalled.AddToClassList("installed");
+            if (PackageInstalled(package)) packageInstalled.AddToClassList("installed");
             else
                 packageInstalled.RemoveFromClassList("installed");
 
@@ -213,7 +213,7 @@ namespace ThunderKit.Core.Editor
                     NicifyPackageName(package.name);
 
             var packageVersion = packageElement.Q<Label>("tkpm-package-version");
-            if (packageVersion != null) packageVersion.text = package.version;
+            if (packageVersion != null) packageVersion.text = package["latest"].version;
         }
         private void PackageList_onSelectionChanged(List<object> obj)
         {
@@ -234,8 +234,13 @@ namespace ThunderKit.Core.Editor
             var tags = packageView.Q("tkpm-package-tags");
             var dependencies = packageView.Q("tkpm-package-dependencies");
 
+            if (PackageInstalled(selection))
+                targetVersion = PackageHelper.GetPackageManagerManifest(PackageDirectory(selection)).version;
+            else
+                targetVersion = selection["latest"].version;
+
             ConfigureVersionButton(versionButton, selection);
-            ConfigureInstallButton(installButton, versionButton, selection);
+            ConfigureInstallButton(installButton, selection);
 
             tags.Clear();
             foreach (var tag in selection.tags)
@@ -245,7 +250,7 @@ namespace ThunderKit.Core.Editor
                 tags.Add(tagLabel);
             }
             dependencies.Clear();
-            foreach (var dependency in selection[versionButton.text].dependencies)
+            foreach (var dependency in selection[targetVersion].dependencies)
             {
                 var dependencyLabel = new Label(dependency);
                 dependencyLabel.AddToClassList("dependency");
@@ -254,29 +259,31 @@ namespace ThunderKit.Core.Editor
 
             title.text = NicifyPackageName(selection.name);
             name.text = selection.dependencyId;
-            versionLabel.text = selection.version;
+            if (PackageInstalled(selection))
+                versionLabel.text = InstalledPackageVersion(selection);
+            else
+                versionLabel.text = selection["latest"].version;
+
             author.text = selection.author;
             description.text = selection.description;
         }
 
         #region Installation
-        void ConfigureInstallButton(Button installButton, Button versionButton, PackageGroup selection)
+        void ConfigureInstallButton(Button installButton, PackageGroup selection)
         {
-            versionButton.userData = selection;
-            installButton.userData = versionButton;
+            installButton.userData = selection;
             installButton.clickable.clickedWithEventInfo -= InstallVersion;
             installButton.clickable.clickedWithEventInfo += InstallVersion;
-            installButton.text = PackageInstalled(selection, selection.version) ? "Uninstall" : "Install";
+            installButton.text = PackageInstalled(selection) ? "Uninstall" : "Install";
         }
 
         void InstallVersion(EventBase obj)
         {
             var installButton = obj.currentTarget as Button;
-            var versionButton = installButton.userData as Button;
-            var selection = versionButton.userData as PackageGroup;
-            var packageVersion = selection.versions.First(pv => pv.version.Equals(versionButton.text));
+            var selection = installButton.userData as PackageGroup;
+            var packageVersion = selection.versions.First(pv => pv.version.Equals(targetVersion));
 
-            if (PackageInstalled(selection, selection.version))
+            if (PackageInstalled(selection))
             {
                 deletePackage = CreateInstance<DeletePackage>();
                 deletePackage.directory = selection.PackageDirectory;
@@ -284,7 +291,7 @@ namespace ThunderKit.Core.Editor
                 AssetDatabase.Refresh();
             }
             else
-                _ = selection.Source.InstallPackage(selection, versionButton.text);
+                _ = selection.Source.InstallPackage(selection, targetVersion);
         }
         private void OnInspectorUpdate()
         {
@@ -307,13 +314,8 @@ namespace ThunderKit.Core.Editor
             versionButton.clickable.clickedWithEventInfo -= PickVersion;
             versionButton.clickable.clickedWithEventInfo += PickVersion;
             versionButton.userData = selection;
-            var directory = PackageDirectory(selection);
-            versionButton.SetEnabled(!PackageInstalled(selection, selection.version));
-
-            if (PackageInstalled(selection, selection.version))
-                versionButton.text = PackageHelper.GetPackageManagerManifest(directory).version;
-            else
-                versionButton.text = selection.version;
+            versionButton.text = targetVersion;
+            versionButton.SetEnabled(!PackageInstalled(selection));
         }
 
         void PickVersion(EventBase obj)
@@ -323,17 +325,17 @@ namespace ThunderKit.Core.Editor
             var menu = new GenericMenu();
             foreach (var packageVersion in selection.versions)
             {
-                void SelectVersion()
-                {
-                    versionButton.text = packageVersion.version;
-                    BindPackageView(selection);
-                }
-
-                menu.AddItem(new GUIContent(packageVersion.version), packageVersion.version.Equals(versionButton.text), SelectVersion);
+                menu.AddItem(new GUIContent(packageVersion.version), packageVersion.version.Equals(targetVersion), SelectVersion, (packageVersion, versionButton));
             }
             menu.ShowAsContext();
         }
 
+        void SelectVersion(object userData)
+        {
+            var (packageVersion, versionButton) = ((PackageVersion, Button))userData;
+
+            versionButton.text = targetVersion = packageVersion.version;
+        }
         #endregion
 
         private static string PackageDirectory(PackageGroup package)
@@ -341,15 +343,23 @@ namespace ThunderKit.Core.Editor
             return Directory.EnumerateDirectories("Packages", package.name, SearchOption.TopDirectoryOnly).FirstOrDefault();
         }
 
-        private static bool PackageInstalled(PackageGroup package, string version)
+        private static string InstalledPackageVersion(PackageGroup package)
+        {
+            string directory = PackageDirectory(package);
+            var pmm = PackageHelper.GetPackageManagerManifest(directory);
+            return pmm.version;
+        }
+
+        private static bool PackageInstalled(PackageGroup package)
         {
             string directory = PackageDirectory(package);
             if (string.IsNullOrEmpty(directory)) return false;
+            if (!File.Exists(Path.Combine(directory, "package.json"))) return false;
 
             var pmm = PackageHelper.GetPackageManagerManifest(directory);
-            var packageVersion = package[version];
+            var packageVersion = package[pmm.version];
 
-            return pmm.name.Equals(packageVersion.dependencyId, System.StringComparison.OrdinalIgnoreCase);
+            return pmm.name.Equals(packageVersion.dependencyId, StringComparison.OrdinalIgnoreCase);
         }
 
         private static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");

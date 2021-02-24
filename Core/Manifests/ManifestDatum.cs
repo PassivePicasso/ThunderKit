@@ -2,6 +2,7 @@
 
 namespace ThunderKit.Core.Manifests
 {
+    [HideFromScriptWindow]
     public class ManifestDatum : ComposableElement
     {
         [PathReferenceResolver]

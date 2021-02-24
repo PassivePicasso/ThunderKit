@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ThunderKit.Common.Package;
+using ThunderKit.Core.Editor;
+using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
 
@@ -78,10 +81,12 @@ namespace ThunderKit.Core.Data
                             }
                     }
                 }
+
                 var builder = new StringBuilder();
                 builder.AppendLine($"Found {finalDependencies.Count} dependencies");
                 foreach (var (pg, pv) in finalDependencies)
                     builder.AppendLine(pv.dependencyId);
+
                 Debug.Log(builder.ToString());
 
                 foreach (var (pg, pv) in finalDependencies)
@@ -93,25 +98,46 @@ namespace ThunderKit.Core.Data
 
                     await pg.Source.InstallPackageFiles(pg, pv, pg.PackageDirectory);
 
-                    PackageHelper.GeneratePackageManifest(
-                        pv.dependencyId.ToLower(), pg.PackageDirectory,
-                        pg.name, pg.author,
-                        pv.version,
-                        pg.description,
-                        pg.package_url);
+                    EstablishPackage(pg, pv);
+
                 }
             }
 
             await InstallPackageFiles(group, package, group.PackageDirectory);
 
-            PackageHelper.GeneratePackageManifest(
-                package.dependencyId.ToLower(), group.PackageDirectory,
-                group.name, group.author,
-                package.version,
-                group.description,
-                group.package_url);
+            EstablishPackage(group, package);
 
             AssetDatabase.Refresh();
+        }
+
+        private static void EstablishPackage(PackageGroup pg, PackageVersion pv)
+        {
+            var identity = CreateInstance<ManifestIdentity>();
+            identity.Author = pg.author;
+            identity.Description = pg.description;
+            identity.Name = pg.name;
+            identity.Version = pv.version;
+
+            var assetTempPath = Path.Combine("Assets", $"{pg.name}.asset");
+            var assetMetaTempPath = Path.Combine("Assets", $"{pg.name}.asset.meta");
+            var assetFinalPath = Path.Combine(pg.PackageDirectory, $"{pg.name}.asset");
+            var assetMetaFinalPath = Path.Combine(pg.PackageDirectory, $"{pg.name}.asset.meta");
+            var manifest = ScriptableHelper.EnsureAsset<Manifest>(assetTempPath);
+            manifest.InsertElement(identity, 0);
+
+            var fileData = File.ReadAllText(assetTempPath);
+            var metafileData = File.ReadAllText(assetMetaTempPath);
+            AssetDatabase.DeleteAsset(assetTempPath);
+
+            File.WriteAllText(assetFinalPath, fileData);
+            File.WriteAllText(assetMetaFinalPath, metafileData);
+
+            PackageHelper.GeneratePackageManifest(
+                pv.dependencyId.ToLower(), pg.PackageDirectory,
+                pg.name, pg.author,
+                pv.version,
+                pg.description,
+                pg.package_url);
         }
 
         public abstract Task InstallPackageFiles(PackageGroup package, PackageVersion version, string packageDirectory);
