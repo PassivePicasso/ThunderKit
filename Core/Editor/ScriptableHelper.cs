@@ -8,7 +8,7 @@ namespace ThunderKit.Core.Editor
     public static class ScriptableHelper
     {
         static object[] findTextureParams = new object[1];
-        public static void SelectNewAsset<T>(Func<string> overrideName = null) where T : ScriptableObject
+        public static void SelectNewAsset<T>(Func<string> overrideName = null, Action<T> afterCreated = null) where T : ScriptableObject
         {
             T asset = ScriptableObject.CreateInstance<T>();
 
@@ -30,6 +30,7 @@ namespace ThunderKit.Core.Editor
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
                 Selection.activeObject = asset;
+                afterCreated(asset);
             }
 
             if (overrideName == null)
@@ -76,13 +77,13 @@ namespace ThunderKit.Core.Editor
             Selection.activeObject = asset;
         }
 
-        public static T EnsureAsset<T>(string assetPath, Action<T> initializer) where T : ScriptableObject
+        public static T EnsureAsset<T>(string assetPath, Action<T> initializer = null) where T : ScriptableObject
         {
             var settings = AssetDatabase.LoadAssetAtPath<T>(assetPath);
             if (settings == null)
             {
                 settings = ScriptableObject.CreateInstance<T>();
-                initializer(settings);
+                initializer?.Invoke(settings);
                 AssetDatabase.CreateAsset(settings, assetPath);
                 AssetDatabase.SaveAssets();
             }

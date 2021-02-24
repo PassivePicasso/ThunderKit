@@ -10,14 +10,26 @@ namespace ThunderKit.Core.Data
     [Serializable]
     public class PackageGroup : IEquatable<PackageGroup>
     {
-        public PackageVersion this[string version] => versions.FirstOrDefault(pv=> pv.version.Equals(version));
+        public PackageVersion this[string version]
+        {
+            get
+            {
+                switch (version)
+                {
+                    case "latest": return versions.FirstOrDefault();
+
+                    default: return versions.FirstOrDefault(pv => pv.version.Equals(version));
+                }
+            }
+        }
 
         public string author;
         public string name;
-        public string version;
+        [HideInInspector]
         public string package_url;
         public Texture2D icon;
         public string description;
+        [HideInInspector]
         public string dependencyId;
         public string[] tags;
         public PackageSource Source;
@@ -29,10 +41,6 @@ namespace ThunderKit.Core.Data
             if (authorContains) return true;
             var nameContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(name, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (nameContains) return true;
-            var versionContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(version, value, CompareOptions.OrdinalIgnoreCase) > -1;
-            if (versionContains) return true;
-            var package_urlContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(package_url, value, CompareOptions.OrdinalIgnoreCase) > -1;
-            if (package_urlContains) return true;
             var descriptionContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(description, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (descriptionContains) return true;
             var dependencyIdContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(dependencyId, value, CompareOptions.OrdinalIgnoreCase) > -1;

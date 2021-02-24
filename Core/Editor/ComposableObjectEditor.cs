@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Editor.Controls;
+using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
@@ -133,13 +134,18 @@ namespace ThunderKit.Core.Editor
         {
             var menu = new GenericMenu();
             var stepData = new StepData { step = step, index = i, dataArray = dataArray };
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))), false, Remove, stepData);
+
+            if (step.objectReferenceValue is ManifestIdentity)
+                menu.AddDisabledItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))));
+            else
+                menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))), false, Remove, stepData);
+
             menu.AddSeparator("");
             menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Duplicate))), false, Duplicate, stepData);
             menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Copy))), false, Copy, stepData);
 
             var currentroot = step.serializedObject.targetObject as ComposableObject;
-            
+
             if (ClipboardItem && currentroot.ElementType.IsAssignableFrom(ClipboardItem.GetType()))
             {
                 menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem?.name)} above"), false, PasteNewAbove, stepData);
@@ -187,11 +193,8 @@ namespace ThunderKit.Core.Editor
 
             var instance = (ComposableElement)Instantiate(stepData.step.objectReferenceValue);
 
-            var dataArray = stepData.step.serializedObject.FindProperty(nameof(ComposableObject.Data));
-            dataArray.InsertArrayElementAtIndex(stepData.index);
-            var property = dataArray.GetArrayElementAtIndex(stepData.index);
-            var target = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(stepData.step.serializedObject.targetObject));
-            AddSubAsset(instance, property, target);
+            var target = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(stepData.step.serializedObject.targetObject)) as ComposableObject;
+            target.InsertElement(instance, stepData.index);
         }
         static void PasteNewAbove(object data)
         {
@@ -209,11 +212,8 @@ namespace ThunderKit.Core.Editor
         }
         private static void InsertClipboard(StepData stepData, int offset)
         {
-            var dataArray = stepData.step.serializedObject.FindProperty(nameof(ComposableObject.Data));
-            dataArray.InsertArrayElementAtIndex(stepData.index + offset);
-            var property = dataArray.GetArrayElementAtIndex(stepData.index + offset);
-            var target = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(stepData.step.serializedObject.targetObject));
-            AddSubAsset(ClipboardItem, property, target);
+            var target = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(stepData.step.serializedObject.targetObject)) as ComposableObject;
+            target.InsertElement(ClipboardItem, stepData.index + offset);
             ClipboardItem = null;
         }
         static void Copy(object data)
@@ -258,36 +258,22 @@ namespace ThunderKit.Core.Editor
         static void Remove(object data)
         {
             var stepData = data as StepData;
-            AssetDatabase.RemoveObjectFromAsset(stepData.step.objectReferenceValue);
-            stepData.dataArray.DeleteArrayElementAtIndex(stepData.index);
-            for (int x = stepData.index; x < stepData.dataArray.arraySize; x++)
-                stepData.dataArray.MoveArrayElement(x + 1, x);
-            stepData.dataArray.arraySize--;
-
-            stepData.dataArray.serializedObject.SetIsDifferentCacheDirty();
-            stepData.dataArray.serializedObject.ApplyModifiedProperties();
+            var target = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(stepData.step.serializedObject.targetObject)) as ComposableObject;
+            var composableElement = stepData.step.objectReferenceValue as ComposableElement;
+            target.RemoveElement(composableElement, stepData.index);
         }
-        private static void AddSubAsset(ComposableElement instance, SerializedProperty stepField, UnityEngine.Object target)
-        {
-            AssetDatabase.AddObjectToAsset(instance, target);
 
-            stepField.objectReferenceValue = instance;
-            stepField.serializedObject.SetIsDifferentCacheDirty();
-            stepField.serializedObject.ApplyModifiedProperties();
-
-            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(instance));
-            AssetDatabase.SaveAssets();
-        }
         void OnAddElementGUI(Rect rect, ComposableObject composableObject)
         {
             bool Filter(MonoScript script)
             {
                 var scriptClass = script.GetClass();
-                if (scriptClass == null)
-                {
-                    return false;
-                }
-                return !scriptClass.IsAbstract && scriptClass.IsSubclassOf(composableObject.ElementType);
+                if (scriptClass == null) return false;
+                if (scriptClass.IsAbstract) return false;
+                if (scriptClass.GetCustomAttributes<HideFromScriptWindow>().Any()) return false;
+                if (!composableObject.SupportsType(scriptClass)) return false;
+
+                return true;
             }
             ScriptableObject CreateFromScript(MonoScript script)
             {
@@ -296,8 +282,7 @@ namespace ThunderKit.Core.Editor
 
                 var instance = (ComposableElement)CreateInstance(script.GetClass());
                 instance.name = script.GetClass().Name;
-                var prop = dataArray.GetArrayElementAtIndex(dataArray.arraySize++);
-                AddSubAsset(instance, prop, target);
+                composableObject.InsertElement(instance, dataArray.arraySize);
                 return instance;
             }
             AddScriptWindow.Show(rect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
