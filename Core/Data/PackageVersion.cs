@@ -9,6 +9,7 @@ namespace ThunderKit.Core.Data
         public string version;
         [HideInInspector]
         public string dependencyId;
+        public PackageGroup group;
         public PackageVersion[] dependencies;
         public override bool Equals(object obj)
         {

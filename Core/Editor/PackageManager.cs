@@ -208,48 +208,55 @@ namespace ThunderKit.Core.Editor
 
         private void BindPackageView(PackageGroup selection)
         {
-            var title = packageView.Q<Label>("tkpm-package-title");
-            var name = packageView.Q<Label>("tkpm-package-name");
-            var description = packageView.Q<Label>("tkpm-package-description");
-            var versionLabel = packageView.Q<Label>("tkpm-package-info-version-value");
-            var author = packageView.Q<Label>("tkpm-package-author-value");
-            var versionButton = packageView.Q<Button>("tkpm-package-version-button");
-            var installButton = packageView.Q<Button>("tkpm-package-install-button");
-            var tags = packageView.Q("tkpm-package-tags");
-            var dependencies = packageView.Q("tkpm-package-dependencies");
-
             if (selection.Installed)
                 targetVersion = PackageHelper.GetPackageManagerManifest(selection.PackageDirectory).version;
             else
                 targetVersion = selection["latest"].version;
 
-            ConfigureVersionButton(versionButton, selection);
-            ConfigureInstallButton(installButton, selection);
+            ConfigureVersionButton(packageView.Q<Button>("tkpm-package-version-button"), selection);
+            ConfigureInstallButton(packageView.Q<Button>("tkpm-package-install-button"), selection);
 
-            tags.Clear();
-            foreach (var tag in selection.Tags)
-            {
-                var tagLabel = new Label(tag);
-                tagLabel.AddToClassList("tag");
-                tags.Add(tagLabel);
-            }
-            dependencies.Clear();
-            foreach (var dependency in selection[targetVersion].dependencies)
-            {
-                var dependencyLabel = new Label(dependency?.dependencyId);
-                dependencyLabel.AddToClassList("dependency");
-                dependencies.Add(dependencyLabel);
-            }
+            RepopulateLabels(packageView.Q("tkpm-package-tags"), selection.Tags, "tag");
 
-            title.text = NicifyPackageName(selection.PackageName);
-            name.text = selection.DependencyId;
+            var selectedVersion = selection[targetVersion];
+            var pvDependencies = selectedVersion.dependencies;
+            var dependencyIds = new List<string>();
+            foreach (var pvd in pvDependencies)
+            {
+                dependencyIds.Add(pvd.dependencyId);
+            }
+            var texts = dependencyIds ?? Enumerable.Empty<string>();
+            RepopulateLabels(packageView.Q("tkpm-package-dependencies"), texts, "dependency");
+
+            SetLabel(packageView, "tkpm-package-title", NicifyPackageName(selection.PackageName));
+            SetLabel(packageView, "tkpm-package-name", selection.DependencyId);
             if (selection.Installed)
-                versionLabel.text = selection.InstalledVersion;
+                SetLabel(packageView, "tkpm-package-info-version-value", selection.InstalledVersion);
             else
-                versionLabel.text = selection["latest"].version;
+                SetLabel(packageView, "tkpm-package-info-version-value", selection["latest"].version);
 
-            author.text = selection.Author;
-            description.text = selection.Description;
+            SetLabel(packageView, "tkpm-package-author-value", selection.Author);
+            SetLabel(packageView, "tkpm-package-description", selection.Description);
+        }
+
+        void SetLabel(VisualElement root, string name, string text)
+        {
+            var label = root.Q<Label>(name);
+            if (label != null) label.text = text;
+        }
+
+        void RepopulateLabels(VisualElement container, IEnumerable<string> texts, params string[] classes)
+        {
+            container.Clear();
+            foreach (var text in texts)
+            {
+                if (string.IsNullOrEmpty(text)) continue;
+                var label = new Label(text);
+                foreach (var clss in classes)
+                    if (!string.IsNullOrEmpty(clss))
+                        label.AddToClassList(clss);
+                container.Add(label);
+            }
         }
 
         #region Installation
