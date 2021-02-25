@@ -64,7 +64,10 @@ namespace ThunderKit.Core.Editor
             GetTemplateInstance("PackageView", packageView);
 
             var packageSourceList = root.Q(name = "tkpm-package-source-list");
-            var packageSources = Resources.FindObjectsOfTypeAll<PackageSource>();
+            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
+                                              .Select(AssetDatabase.GUIDToAssetPath)
+                                              .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
+                                              .ToArray();
 
             for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
             {
@@ -128,7 +131,10 @@ namespace ThunderKit.Core.Editor
 
         void UpdatePackageList()
         {
-            var packageSources = Resources.FindObjectsOfTypeAll<PackageSource>();
+            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
+                                              .Select(AssetDatabase.GUIDToAssetPath)
+                                              .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
+                                              .ToArray();
             for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
             {
                 var source = packageSources[sourceIndex];
