@@ -58,6 +58,7 @@ namespace ThunderKit.Core.Data
             group.Description = description;
             group.DependencyId = dependencyId;
             group.Tags = tags;
+            group.Source = this;
 
             group.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
             AssetDatabase.AddObjectToAsset(group, this);
@@ -70,16 +71,17 @@ namespace ThunderKit.Core.Data
 
                 var packageVersion = CreateInstance<PackageVersion>();
                 packageVersion.name = packageVersion.dependencyId = versionDependencyId;
+                packageVersion.group = group;
                 packageVersion.version = version;
                 packageVersion.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
                 AssetDatabase.AddObjectToAsset(packageVersion, group);
                 group.Versions[i] = packageVersion;
 
-                if (!dependencyMap.ContainsKey(packageVersion.dependencyId.ToLower()))
-                    dependencyMap[packageVersion.dependencyId.ToLower()] = new HashSet<string>();
+                if (!dependencyMap.ContainsKey(packageVersion.dependencyId))
+                    dependencyMap[packageVersion.dependencyId] = new HashSet<string>();
 
                 foreach (var depDepId in dependencies)
-                    dependencyMap[packageVersion.dependencyId.ToLower()].Add(depDepId.ToLower());
+                    dependencyMap[packageVersion.dependencyId].Add(depDepId);
             }
 
             Packages.Add(group);
@@ -89,21 +91,23 @@ namespace ThunderKit.Core.Data
         public void LoadPackages()
         {
             LoadPackagesInternal();
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
             var allVersions = Packages.Where(pkgGrp => pkgGrp?.Versions != null).SelectMany(pkgGrp => pkgGrp.Versions).ToArray();
-            var versionMap = allVersions.ToDictionary(ver => ver.dependencyId.ToLower());
+            var versionMap = allVersions.ToDictionary(ver => ver.dependencyId);
             foreach (var packageGroup in Packages)
             {
                 foreach (var version in packageGroup.Versions)
                 {
-                    var dependencies = dependencyMap[version.dependencyId.ToLower()].ToArray();
+                    var dependencies = dependencyMap[version.dependencyId].ToArray();
                     version.dependencies = new PackageVersion[dependencies.Length];
                     for (int i = 0; i < dependencies.Length; i++)
-                        if (versionMap.ContainsKey(dependencies[i].ToLower()))
-                            version.dependencies[i] = versionMap[dependencies[i].ToLower()];
+                        if (versionMap.ContainsKey(dependencies[i]))
+                            version.dependencies[i] = versionMap[dependencies[i]];
                 }
-                packageGroup.Source = this;
-
             }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
 
