@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using ThunderKit.Common.Package;
 using UnityEngine;
 
 namespace ThunderKit.Core.Data
 {
     [Serializable]
-    public class PackageGroup : IEquatable<PackageGroup>
+    public class PackageGroup : ScriptableObject, IEquatable<PackageGroup>
     {
         public PackageVersion this[string version]
         {
@@ -16,36 +17,34 @@ namespace ThunderKit.Core.Data
             {
                 switch (version)
                 {
-                    case "latest": return versions.FirstOrDefault();
+                    case "latest": return Versions.FirstOrDefault();
 
-                    default: return versions.FirstOrDefault(pv => pv.version.Equals(version));
+                    default: return Versions.FirstOrDefault(pv => pv.version.Equals(version));
                 }
             }
         }
 
-        public string author;
-        public string name;
+        public string PackageName;
+        public string Author;
+        public string Description;
         [HideInInspector]
-        public string package_url;
-        public Texture2D icon;
-        public string description;
-        [HideInInspector]
-        public string dependencyId;
-        public string[] tags;
+        public string DependencyId;
+        public string[] Tags;
         public PackageSource Source;
-        public PackageVersion[] versions;
-        public string PackageDirectory => Path.Combine("Packages", name);
+        public PackageVersion[] Versions;
+        public IEnumerable<string> VersionIds => Versions.Select(pv => pv.dependencyId);
+        public string PackageDirectory => Path.Combine("Packages", PackageName);
         public bool HasString(string value)
         {
-            var authorContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(author, value, CompareOptions.OrdinalIgnoreCase) > -1;
+            var authorContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(Author, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (authorContains) return true;
-            var nameContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(name, value, CompareOptions.OrdinalIgnoreCase) > -1;
+            var nameContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(PackageName, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (nameContains) return true;
-            var descriptionContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(description, value, CompareOptions.OrdinalIgnoreCase) > -1;
+            var descriptionContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(Description, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (descriptionContains) return true;
-            var dependencyIdContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(dependencyId, value, CompareOptions.OrdinalIgnoreCase) > -1;
+            var dependencyIdContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(DependencyId, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (dependencyIdContains) return true;
-            foreach (var tag in tags)
+            foreach (var tag in Tags)
             {
                 var tagContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(tag, value, CompareOptions.OrdinalIgnoreCase) > -1;
                 if (tagContains) return true;
@@ -53,6 +52,31 @@ namespace ThunderKit.Core.Data
 
             return false;
         }
+
+        public string InstalledVersion
+        {
+            get
+            {
+                if (!File.Exists(Path.Combine(PackageDirectory, "package.json"))) return null;
+
+                var pmm = PackageHelper.GetPackageManagerManifest(PackageDirectory);
+                return pmm.version;
+            }
+        }
+
+        public bool Installed
+        {
+            get
+            {
+                if (!File.Exists(Path.Combine(PackageDirectory, "package.json"))) return false;
+
+                var pmm = PackageHelper.GetPackageManagerManifest(PackageDirectory);
+                var packageVersion = this[pmm.version];
+
+                return pmm.name.Equals(packageVersion.dependencyId, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
 
         public override bool Equals(object obj)
         {
@@ -62,12 +86,12 @@ namespace ThunderKit.Core.Data
         public bool Equals(PackageGroup other)
         {
             return other != null &&
-                   dependencyId == other.dependencyId;
+                   DependencyId == other.DependencyId;
         }
 
         public override int GetHashCode()
         {
-            return 996503521 + EqualityComparer<string>.Default.GetHashCode(dependencyId);
+            return 996503521 + EqualityComparer<string>.Default.GetHashCode(DependencyId);
         }
 
         public static bool operator ==(PackageGroup left, PackageGroup right)

@@ -195,8 +195,7 @@ namespace ThunderKit.Integrations.Thunderstore.Editor
                                         stubManifest.name.ToLower(), outputDir,
                                         stubManifest.name, "Thunderstore",
                                         stubManifest.version_number,
-                                        stubManifest.description,
-                                        ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl);
+                                        stubManifest.description);
                                 }
                             }
                         }
