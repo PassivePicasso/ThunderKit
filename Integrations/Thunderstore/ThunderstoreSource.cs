@@ -14,42 +14,47 @@ namespace ThunderKit.Integrations.Thunderstore
     public class ThunderstoreSource : PackageSource
     {
         [InitializeOnLoadMethod]
-        public static void Initialize()
+        public static async void Initialize()
         {
+            await ThunderstoreAPI.ReloadPages();
             var assetPath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
-            var source = ScriptableHelper.EnsureAsset<ThunderstoreSource>(assetPath, so => { });
-            PackageManager.RegisterPackageSource(source);
+
+            var isNew = false;
+            var source = ScriptableHelper.EnsureAsset<ThunderstoreSource>(assetPath, so =>
+            {
+                isNew = true;
+            });
+            if (isNew)
+            {
+                source.LoadPackages();
+                source.hideFlags = UnityEngine.HideFlags.NotEditable;
+                EditorUtility.SetDirty(source);
+                AssetDatabase.SaveAssets();
+            }
         }
 
         public override string Name => "Thunderstore";
 
         public override string SourceGroup => "Thunderstore";
 
-        protected override IEnumerable<PackageGroup> GetPackagesInternal(string filter = "")
+        protected override void LoadPackagesInternal()
         {
-            var thunderstorePackages = ThunderstoreAPI.LookupPackage(filter).ToList();
-            var packages = thunderstorePackages
-                .Where(tsp => !tsp.is_deprecated)
-                .Where(tsp => !tsp.categories.Contains("Modpacks"))
-                .Where(tsp => !tsp.categories.Contains("Tools"))
-                .OrderByDescending(tsp => tsp.is_pinned)
-                .ThenBy(tsp => tsp.name)
-                            .Select(tsp => new PackageGroup
-                            {
-                                author = tsp.owner,
-                                name = tsp.name,
-                                package_url = tsp.package_url,
-                                description = tsp.latest.description,
-                                dependencyId = tsp.full_name,
-                                tags = tsp.categories,
-                                versions = tsp.versions.Select(v => new PV { version = v.version_number, dependencyId = v.full_name, dependencies = v.dependencies }).ToArray()
-                            });
-            return packages;
+            var loadedPackages = ThunderstoreAPI.LookupPackage(string.Empty).ToArray();
+            var activePackages = loadedPackages.Where(tsp => !tsp.is_deprecated).ToArray();
+            var realMods = activePackages.Where(tsp => !tsp.categories.Contains("Modpacks")).ToArray();
+            var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name).ToArray();
+            foreach (var tsp in orderByPinThenName)
+            {
+                AddPackageGroup(tsp.owner, tsp.name, tsp.latest.description, tsp.full_name, tsp.categories, () =>
+                {
+                    return tsp.versions.Select(v => (v.version_number, v.full_name, v.dependencies));
+                });
+            }
         }
 
         public override async Task InstallPackageFiles(PackageGroup package, PV version, string packageDirectory)
         {
-            var tsPackage = ThunderstoreAPI.LookupPackage(package.dependencyId).First();
+            var tsPackage = ThunderstoreAPI.LookupPackage(package.DependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
             var filePath = Path.Combine(packageDirectory, $"{tsPackageVersion.full_name}.zip");
 
@@ -80,5 +85,6 @@ namespace ThunderKit.Integrations.Thunderstore
 
             File.Delete(filePath);
         }
+
     }
 }

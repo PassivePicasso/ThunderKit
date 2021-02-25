@@ -19,7 +19,7 @@ namespace ThunderKit.Integrations.Thunderstore
     {
         static string PackageListApi => ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl + "/api/v1/package";
 
-        internal static List<PackageListing> loadedPackages = new List<PackageListing>();
+        internal static List<PackageListing> loadedPackages;
 
         [MenuItem(Common.Constants.ThunderKitMenuRoot + "Refresh Thunderstore", priority = Common.Constants.ThunderKitMenuPriority)]
         [InitializeOnLoadMethod]
@@ -27,7 +27,7 @@ namespace ThunderKit.Integrations.Thunderstore
         {
             ThunderstoreSettings.OnThunderstoreUrlChanged -= LoadPages;
             ThunderstoreSettings.OnThunderstoreUrlChanged += LoadPages;
-            ReloadPages();
+            _ = ReloadPages();
         }
 
         static double timeSinceStartup;
@@ -44,22 +44,23 @@ namespace ThunderKit.Integrations.Thunderstore
             var timeElapsed = EditorApplication.timeSinceStartup - timeSinceStartup;
             if (timeElapsed > 2)
             {
-                ReloadPages();
                 EditorApplication.update -= WaitUpdate;
+                _ = ReloadPages();
             }
         }
 
-        private static async void ReloadPages()
+        public static async Task ReloadPages()
         {
-            loadedPackages.Clear();
+            var packages = new List<PackageListing>();
             using (WebClient client = new WebClient())
             {
                 var address = new Uri(PackageListApi);
                 var response = await client.DownloadStringTaskAsync(address);
                 var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
                 var nonDeprecatedResults = resultSet.results.Where(package => !package.is_deprecated);
-                loadedPackages.AddRange(nonDeprecatedResults);
+                packages.AddRange(nonDeprecatedResults);
             }
+            loadedPackages = packages;
             //Debug.Log($"Package listing update: {PackageListApi}");
         }
 

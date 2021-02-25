@@ -4,13 +4,12 @@ using UnityEngine;
 
 namespace ThunderKit.Core.Data
 {
-    [Serializable]
-    public class PackageVersion
+    public class PackageVersion : ScriptableObject
     {
         public string version;
         [HideInInspector]
         public string dependencyId;
-        public string[] dependencies;
+        public PackageVersion[] dependencies;
         public override bool Equals(object obj)
         {
             return obj is PackageVersion version &&
