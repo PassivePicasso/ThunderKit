@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Common.Package;
-using ThunderKit.Core.Editor;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
 using UnityEditor;
 
 namespace ThunderKit.Integrations.Thunderstore
@@ -13,14 +12,14 @@ namespace ThunderKit.Integrations.Thunderstore
     using PV = Core.Data.PackageVersion;
     public class ThunderstoreSource : PackageSource
     {
+        private static string CachePath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
         [InitializeOnLoadMethod]
-        public static async void Initialize()
+        public static async Task Initialize()
         {
             await ThunderstoreAPI.ReloadPages();
-            var assetPath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
 
             var isNew = false;
-            var source = ScriptableHelper.EnsureAsset<ThunderstoreSource>(assetPath, so =>
+            var source = ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath, so =>
             {
                 isNew = true;
             });
@@ -33,26 +32,31 @@ namespace ThunderKit.Integrations.Thunderstore
             }
         }
 
+        [MenuItem("Tools/ThunderKit/Regenerate Thunderstore PackageSource")]
+        public static async Task Regenerate()
+        {
+            AssetDatabase.DeleteAsset(CachePath);
+            await Initialize();
+        }
+
         public override string Name => "Thunderstore";
 
         public override string SourceGroup => "Thunderstore";
+        protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
 
-        protected override void LoadPackagesInternal()
+        protected override void OnLoadPackages()
         {
             var loadedPackages = ThunderstoreAPI.LookupPackage(string.Empty).ToArray();
-            var activePackages = loadedPackages.Where(tsp => !tsp.is_deprecated).ToArray();
-            var realMods = activePackages.Where(tsp => !tsp.categories.Contains("Modpacks")).ToArray();
+            var realMods = loadedPackages.Where(tsp => !tsp.categories.Contains("Modpacks")).ToArray();
             var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name).ToArray();
             foreach (var tsp in orderByPinThenName)
             {
-                AddPackageGroup(tsp.owner, tsp.name, tsp.latest.description, tsp.full_name, tsp.categories, () =>
-                {
-                    return tsp.versions.Select(v => (v.version_number, v.full_name, v.dependencies));
-                });
+                var versions = tsp.versions.Select(v => (v.version_number, v.full_name, v.dependencies));
+                AddPackageGroup(tsp.owner, tsp.name, tsp.latest.description, tsp.full_name, tsp.categories, versions);
             }
         }
 
-        public override async Task InstallPackageFiles(PackageGroup package, PV version, string packageDirectory)
+        public override async Task OnInstallPackageFiles(PackageGroup package, PV version, string packageDirectory)
         {
             var tsPackage = ThunderstoreAPI.LookupPackage(package.DependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));

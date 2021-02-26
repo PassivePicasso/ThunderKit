@@ -57,8 +57,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 var address = new Uri(PackageListApi);
                 var response = await client.DownloadStringTaskAsync(address);
                 var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
-                var nonDeprecatedResults = resultSet.results.Where(package => !package.is_deprecated);
-                packages.AddRange(nonDeprecatedResults);
+                packages.AddRange(resultSet.results);
             }
             loadedPackages = packages;
             //Debug.Log($"Package listing update: {PackageListApi}");
