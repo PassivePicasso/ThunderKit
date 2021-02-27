@@ -25,7 +25,7 @@ namespace ThunderKit.Pipelines.Jobs
         public bool recurseDirectories;
         public bool simulate;
         [PathReferenceResolver]
-        public string BundleArtifactPath = "%AssetBundleStaging%";
+        public string BundleArtifactPath = "<AssetBundleStaging>";
         public override void Execute(Pipeline pipeline)
         {
             var excludedExtensions = new[] { ".dll", ".cs", ".meta" };
