@@ -23,7 +23,7 @@ namespace ThunderKit.Core
             if (!SupportsType(instance.GetType())) return;
 
             AssetDatabase.AddObjectToAsset(instance, this);
-            //instance.hideFlags = HideFlags.HideInHierarchy;
+            instance.hideFlags = HideFlags.HideInHierarchy;
 
             var so = new SerializedObject(this);
             var dataArray = so.FindProperty(nameof(Data));
