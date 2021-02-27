@@ -14,10 +14,8 @@ namespace ThunderKit.Core.Paths.Components
         public override string GetPath(PathReference output, Pipeline pipeline)
         {
             string resolvedPath = PathReference.ResolvePath(path, pipeline, this);
-            string first = Directory.EnumerateDirectories(resolvedPath, searchPattern, searchOption)
-                .FirstOrDefault() ?? string.Empty;
+            string first = Directory.EnumerateDirectories(resolvedPath, searchPattern, searchOption).First();
             return first;
-            //return Directory.EnumerateDirectories("Packages", "bbepis-BepInExPack*", SearchOption.TopDirectoryOnly).First();
         }
     }
 }
