@@ -2,7 +2,9 @@
     "name": "ThunderKit.Core",
     "references": [
         "ThunderKit.Common",
-        "Unity.PackageManagerUI.Editor"
+        "Unity.PackageManagerUI.Editor",
+        "Unity.ScriptableBuildPipeline",
+        "Unity.ScriptableBuildPipeline.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
