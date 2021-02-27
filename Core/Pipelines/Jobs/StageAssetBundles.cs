@@ -31,9 +31,10 @@ namespace ThunderKit.Pipelines.Jobs
             var excludedExtensions = new[] { ".dll", ".cs", ".meta" };
 
             AssetDatabase.SaveAssets();
+            //pipeline.manifests;
             var assetBundleDefs = pipeline.Datums.OfType<AssetBundleDefs>().ToArray();
-            var stablePath = BundleArtifactPath.Resolve(pipeline, this);
-            Directory.CreateDirectory(stablePath);
+            var bundleArtifactPath = BundleArtifactPath.Resolve(pipeline, this);
+            Directory.CreateDirectory(bundleArtifactPath);
 
             var forbiddenAssets = new List<string>();
             var forbiddenAssetBundles = AssetDatabase.FindAssets($"t:{nameof(ForbiddenAssetBundle)}")
@@ -142,39 +143,39 @@ namespace ThunderKit.Pipelines.Jobs
             if (!simulate)
             {
                 var allBuilds = builds/*.Union(forbiddenBundleBuilds)*/.ToArray();
-                CompatibilityBuildPipeline.BuildAssetBundles(stablePath, allBuilds, AssetBundleBuildOptions, buildTarget);
-
-                for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
+                CompatibilityBuildPipeline.BuildAssetBundles(bundleArtifactPath, allBuilds, AssetBundleBuildOptions, buildTarget);
+                for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
                 {
-                    var assetBundleDef = assetBundleDefs[defIndex];
-                    var bundleNames = assetBundleDef.assetBundles.Select(ab => ab.assetBundleName).ToArray();
-                    foreach (var outputPath in assetBundleDef.StagingPaths.Select(path => path.Resolve(pipeline, this)))
+                    var manifest = pipeline.Manifest;
+                    foreach(var assetBundleDef in manifest.Data.OfType<AssetBundleDefs>())
                     {
-                        foreach (string dirPath in Directory.GetDirectories(stablePath, "*", SearchOption.AllDirectories))
-                            Directory.CreateDirectory(dirPath.Replace(stablePath, outputPath));
-
-                        foreach (string filePath in Directory.GetFiles(stablePath, "*", SearchOption.AllDirectories))
+                        var bundleNames = assetBundleDef.assetBundles.Select(ab => ab.assetBundleName).ToArray();
+                        foreach (var outputPath in assetBundleDef.StagingPaths.Select(path => path.Resolve(pipeline, this)))
                         {
-                            var fileName = Path.GetFileName(filePath);
-                            bool found = false;
-                            foreach (var bundleName in bundleNames)
+                            foreach (string dirPath in Directory.GetDirectories(bundleArtifactPath, "*", SearchOption.AllDirectories))
+                                Directory.CreateDirectory(dirPath.Replace(bundleArtifactPath, outputPath));
+
+                            foreach (string filePath in Directory.GetFiles(bundleArtifactPath, "*", SearchOption.AllDirectories))
                             {
-                                if (filePath.ToLower().Contains(bundleName.ToLower()))
+                                var fileName = Path.GetFileName(filePath);
+                                bool found = false;
+                                foreach (var bundleName in bundleNames)
                                 {
-                                    found = true;
-                                    break;
+                                    if (filePath.ToLower().Contains(bundleName.ToLower()))
+                                    {
+                                        found = true;
+                                        break;
+                                    }
                                 }
+                                if (!found) continue;
+                                string destFileName = filePath.Replace(bundleArtifactPath, outputPath);
+                                Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
+                                File.Copy(filePath, destFileName, true);
                             }
-                            if (!found) continue;
-                            string destFileName = filePath.Replace(stablePath, outputPath);
-                            Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
-                            File.Copy(filePath, destFileName, true);
                         }
                     }
                 }
-
             }
-
         }
     }
 }
