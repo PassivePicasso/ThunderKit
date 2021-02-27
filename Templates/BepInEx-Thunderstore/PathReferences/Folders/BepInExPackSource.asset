@@ -29,7 +29,7 @@ MonoBehaviour:
   m_Name: BepInExPackSource
   m_EditorClassIdentifier: 
   searchOption: 0
-  searchPattern: bbepis-BepInExPack*
+  searchPattern: '*BepInExPack*'
   path: Packages
 --- !u!114 &114987795602069300
 MonoBehaviour:

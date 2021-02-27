@@ -15,7 +15,7 @@ MonoBehaviour:
   Data:
   - {fileID: 114733639264749674}
   - {fileID: 114106899255855902}
-  manifests: {fileID: 0}
+  manifest: {fileID: 0}
 --- !u!114 &114106899255855902
 MonoBehaviour:
   m_ObjectHideFlags: 0
