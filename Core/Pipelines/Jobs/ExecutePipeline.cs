@@ -10,12 +10,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
         {
             if (!executePipeline) return;
 
-            if (pipeline.manifests)
+            if (pipeline.manifest)
             {
-                var currManifests = executePipeline.manifests;
-                executePipeline.manifests = pipeline.manifests;
+                var manifest = executePipeline.manifest;
+                executePipeline.manifest = pipeline.manifest;
                 executePipeline.Execute();
-                executePipeline.manifests = currManifests;
+                executePipeline.manifest = manifest;
             }
             else
                 executePipeline.Execute();

@@ -4,22 +4,20 @@ using ThunderKit.Core.Paths;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(Pipeline))]
+    [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
     public class CopyRecursive : PipelineJob
     {
         [PathReferenceResolver]
         public string Input;
         [PathReferenceResolver]
         public string Output;
+
         public override void Execute(Pipeline pipeline)
         {
-            foreach (var manifest in pipeline.manifests)
-            {
-                string source = Input.Resolve(pipeline, this);
-                string destination = Output.Resolve(pipeline, this);
-                Directory.CreateDirectory(destination);
-                CopyFilesRecursively(source, destination);
-            }
+            string source = Input.Resolve(pipeline, this);
+            string destination = Output.Resolve(pipeline, this);
+            Directory.CreateDirectory(destination);
+            CopyFilesRecursively(source, destination);
         }
 
         public static void CopyFilesRecursively(string source, string destination)

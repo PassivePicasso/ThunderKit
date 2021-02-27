@@ -6,6 +6,7 @@ using ThunderKit.Common;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
@@ -16,14 +17,16 @@ namespace ThunderKit.Core.Pipelines
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
         public static void Create() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
-        public ManifestCollection manifests;
+        public Manifest manifest;
+
+        public Manifest[] manifests { get; private set; }
         public IEnumerable<ManifestDatum> Datums => manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
 
         public IEnumerable<PipelineJob> Jobs => Data.OfType<PipelineJob>();
 
         public string OutputRoot => System.IO.Path.Combine("ThunderKit");
 
-        public override string ElementTemplate => 
+        public override string ElementTemplate =>
 @"using ThunderKit.Core.Pipelines;
 
 namespace {0}
@@ -44,6 +47,7 @@ namespace {0}
 
         public virtual void Execute()
         {
+            manifests = manifest.EnumerateManifests().ToArray();
             PipelineJob[] jobs = Jobs.Where(SupportsType).ToArray();
 
             for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
@@ -66,6 +70,7 @@ namespace {0}
 
             void ExecuteManifestLoop()
             {
+                var manifests = manifest.EnumerateManifests().ToArray();
                 for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
                     if (Manifest && JobCanProcessManifest())
                         ExecuteJob();
