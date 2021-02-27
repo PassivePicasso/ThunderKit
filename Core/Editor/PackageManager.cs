@@ -29,13 +29,12 @@ namespace ThunderKit.Core.Editor
         [SerializeField] private string SearchString;
         private Button filtersButton;
         private string targetVersion;
-
+        [SerializeField] public Texture2D ThunderKitIcon;
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Package Manager")]
         public static void ShowExample()
         {
             wnd = GetWindow<PackageManager>();
-            wnd.titleContent = new GUIContent("ThunderKit Packages");
         }
 
         public void OnEnable()
@@ -45,6 +44,7 @@ namespace ThunderKit.Core.Editor
 
         private void Construct()
         {
+            titleContent = new GUIContent("ThunderKit Packages", ThunderKitIcon, "");
             root = this.GetRootVisualContainer();
             root.Clear();
 
