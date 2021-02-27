@@ -44,7 +44,7 @@ namespace ThunderKit.Core.Editor
 
         private void Construct()
         {
-            titleContent = new GUIContent("ThunderKit Packages", ThunderKitIcon, "");
+            titleContent = new GUIContent("Packages", ThunderKitIcon, "");
             root = this.GetRootVisualContainer();
             root.Clear();
 
