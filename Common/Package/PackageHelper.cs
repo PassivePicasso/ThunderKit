@@ -71,6 +71,11 @@ namespace ThunderKit.Common.Package
             return pmm;
         }
 
+        /// <summary>
+        /// Generate a unity meta file for assembly with ThunderKit managed Guid
+        /// </summary>
+        /// <param name="assemblyPath">Path to assembly to generate meta file for</param>
+        /// <param name="metadataPath">Path to write meta file to</param>
         public static void WriteAssemblyMetaData(string assemblyPath, string metadataPath)
         {
             string guid = PackageHelper.GetAssemblyHash(assemblyPath);

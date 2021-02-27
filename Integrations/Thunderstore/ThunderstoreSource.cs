@@ -46,9 +46,9 @@ namespace ThunderKit.Integrations.Thunderstore
 
         protected override void OnLoadPackages()
         {
-            var loadedPackages = ThunderstoreAPI.LookupPackage(string.Empty).ToArray();
-            var realMods = loadedPackages.Where(tsp => !tsp.categories.Contains("Modpacks")).ToArray();
-            var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name).ToArray();
+            var loadedPackages = ThunderstoreAPI.LookupPackage(string.Empty);
+            var realMods = loadedPackages.Where(tsp => !tsp.categories.Contains("Modpacks"));
+            var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
             foreach (var tsp in orderByPinThenName)
             {
                 var versions = tsp.versions.Select(v => (v.version_number, v.full_name, v.dependencies));
@@ -56,9 +56,9 @@ namespace ThunderKit.Integrations.Thunderstore
             }
         }
 
-        public override async Task OnInstallPackageFiles(PackageGroup package, PV version, string packageDirectory)
+        public override async Task OnInstallPackageFiles(PV version, string packageDirectory)
         {
-            var tsPackage = ThunderstoreAPI.LookupPackage(package.DependencyId).First();
+            var tsPackage = ThunderstoreAPI.LookupPackage(version.group.DependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
             var filePath = Path.Combine(packageDirectory, $"{tsPackageVersion.full_name}.zip");
 
@@ -76,15 +76,9 @@ namespace ThunderKit.Integrations.Thunderstore
 
                     var outputPath = Path.Combine(packageDirectory, entry.FullName);
                     var outputDir = Path.GetDirectoryName(outputPath);
-                    var fileName = Path.GetFileName(outputPath);
                     if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
 
                     entry.ExtractToFile(outputPath);
-                    if (Path.GetExtension(fileName).Equals(".dll"))
-                    {
-                        string assemblyPath = outputPath;
-                        PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
-                    }
                 }
 
             File.Delete(filePath);
