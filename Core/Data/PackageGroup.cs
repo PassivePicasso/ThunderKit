@@ -32,7 +32,6 @@ namespace ThunderKit.Core.Data
         public string[] Tags;
         public PackageSource Source;
         public PackageVersion[] Versions;
-        public IEnumerable<string> VersionIds => Versions.Select(pv => pv.dependencyId);
         public string PackageDirectory => Path.Combine("Packages", PackageName);
         public bool HasString(string value)
         {

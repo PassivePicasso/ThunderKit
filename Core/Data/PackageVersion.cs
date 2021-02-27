@@ -7,7 +7,6 @@ namespace ThunderKit.Core.Data
     public class PackageVersion : ScriptableObject
     {
         public string version;
-        [HideInInspector]
         public string dependencyId;
         public PackageGroup group;
         public PackageVersion[] dependencies;

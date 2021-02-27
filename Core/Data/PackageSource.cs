@@ -48,6 +48,16 @@ namespace ThunderKit.Core.Data
 
         private Dictionary<string, HashSet<string>> dependencyMap;
         private Dictionary<string, PackageGroup> groupMap;
+
+        /// <summary>
+        /// Generates a new PackageGroup for this PackageSource
+        /// </summary>
+        /// <param name="author"></param>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <param name="dependencyId">DependencyId for PackageGroup, this is used for mapping dependencies</param>
+        /// <param name="tags"></param>
+        /// <param name="versions">Collection of version numbers, DependencyIds and dependencies as an array of versioned DependencyIds</param>
         protected void AddPackageGroup(string author, string name, string description, string dependencyId, string[] tags, IEnumerable<(string version, string versionDependencyId, string[] dependencies)> versions)
         {
             if (groupMap == null) groupMap = new Dictionary<string, PackageGroup>();
@@ -89,7 +99,17 @@ namespace ThunderKit.Core.Data
 
             Packages.Add(group);
         }
+
+        /// <summary>
+        /// Loads data from data source into the current PackageSource via AddPackageGroup
+        /// </summary>
         protected abstract void OnLoadPackages();
+
+        /// <summary>
+        /// Provides a conversion of versioned dependencyIds to group dependencyIds
+        /// </summary>
+        /// <param name="dependencyId">Versioned Dependency Id</param>
+        /// <returns>Group DependencyId which dependencyId is mapped to</returns>
         protected abstract string VersionIdToGroupId(string dependencyId);
         public void LoadPackages()
         {
@@ -124,119 +144,174 @@ namespace ThunderKit.Core.Data
             AssetDatabase.Refresh();
         }
 
+        IEnumerable<PackageVersion> EnumerateDependencies(PackageVersion package)
+        {
+            foreach (var dependency in package.dependencies)
+            {
+                foreach (var subDependency in EnumerateDependencies(dependency))
+                    yield return subDependency;
+
+                yield return dependency;
+            }
+        }
 
         public async Task InstallPackage(PackageGroup group, string version)
         {
-            if (Directory.Exists(group.PackageDirectory)) Directory.Delete(group.PackageDirectory);
-
-            Directory.CreateDirectory(group.PackageDirectory);
-
             var package = group[version];
 
-            if (SourceGroups.ContainsKey(SourceGroup))
+            var installSet = EnumerateDependencies(package).Distinct().Append(package).Where(dep => !dep.group.Installed).ToArray();
+
+            #region Multi-Source support?
+            //if (SourceGroups.ContainsKey(SourceGroup))
+            //{
+            //var sourceGroup = SourceGroups[SourceGroup];
+            //var sourcePackages = sourceGroup.ToDictionary(source => source, source => source.Packages);
+
+            //var inverseDependencyMap = new Dictionary<PackageGroup, List<PackageGroup>>();
+            //nothing depends on the package being installed by this function, however keys will be used to determine when packages will be installed by the content of their values
+            //inverseDependencyMap[group] = new List<PackageGroup>(0);
+
+            //var pendingDependencies = new HashSet<string>(group[version].dependencies);
+
+            //var finalDependencies = new List<(PackageGroup, PackageVersion)>();
+
+            //var currentDependant = group;
+            //while (pendingDependencies.Any())
+            //{
+            //    foreach (var source in sourceGroup)
+            //    {
+            //        var packages = sourcePackages[source];
+            //        var dependencies = packages.Where(pkg => pkg.VersionIds.Any(pendingDependencies.Contains));
+
+            //        foreach (var dep in dependencies)
+            //        {
+            //            if (!inverseDependencyMap.ContainsKey(dep)) inverseDependencyMap[dep] = new List<PackageGroup>();
+            //            var depVersion = dep.Versions.First(pv => pendingDependencies.Contains(pv.dependencyId));
+            //            pendingDependencies.Remove(depVersion.dependencyId);
+
+
+
+            //            //inverseDependencyMap[dep]
+            //        }
+
+            //        //foreach (var (packageGroup, packageVersions) in dependencies)
+            //        //    foreach (var packageVersion in packageVersions)
+            //        //    {
+            //        //        pendingDependencies.Remove(packageVersion.dependencyId);
+            //        //        if (finalDependencies.Contains((packageGroup, packageVersion))) continue;
+            //        //        finalDependencies.Add((packageGroup, packageVersion));
+
+            //        //        foreach (var nestedDependency in packageVersion.dependencies)
+            //        //            pendingDependencies.Add(nestedDependency);
+            //        //    }
+            //    }
+            //}
+
+            //var builder = new StringBuilder();
+            //builder.AppendLine($"Found {finalDependencies.Count} dependencies");
+            //foreach (var (pg, pv) in finalDependencies)
+            //    builder.AppendLine(pv.dependencyId);
+
+            //Debug.Log(builder.ToString());
+
+            //foreach (var (pg, pv) in finalDependencies)
+            //{
+            //    //This will cause repeated installation of dependencies
+            //    if (Directory.Exists(pg.PackageDirectory)) Directory.Delete(pg.PackageDirectory);
+            //    Directory
+            //        .CreateDirectory(pg.PackageDirectory);
+
+            //    await pg.Source.InstallPackageFiles(pg[version], pg.PackageDirectory);
+
+            //    EstablishPackage(pg, version);
+
+            //}
+            //}
+            #endregion
+
+            foreach (var installable in installSet)
             {
-                var sourceGroup = SourceGroups[SourceGroup];
-                var sourcePackages = sourceGroup.ToDictionary(source => source, source => source.Packages);
+                //This will cause repeated installation of dependencies
+                if (Directory.Exists(installable.group.PackageDirectory)) Directory.Delete(installable.group.PackageDirectory, true);
+                Directory
+                    .CreateDirectory(installable.group.PackageDirectory);
 
-                var inverseDependencyMap = new Dictionary<PackageGroup, List<PackageGroup>>();
-                //nothing depends on the package being installed by this function, however keys will be used to determine when packages will be installed by the content of their values
-                inverseDependencyMap[group] = new List<PackageGroup>(0);
+                await installable.group.Source.OnInstallPackageFiles(installable, installable.group.PackageDirectory);
 
-                //var pendingDependencies = new HashSet<string>(group[version].dependencies);
-
-                //var finalDependencies = new List<(PackageGroup, PackageVersion)>();
-
-                //var currentDependant = group;
-                //while (pendingDependencies.Any())
-                //{
-                //    foreach (var source in sourceGroup)
-                //    {
-                //        var packages = sourcePackages[source];
-                //        var dependencies = packages.Where(pkg => pkg.VersionIds.Any(pendingDependencies.Contains));
-
-                //        foreach (var dep in dependencies)
-                //        {
-                //            if (!inverseDependencyMap.ContainsKey(dep)) inverseDependencyMap[dep] = new List<PackageGroup>();
-                //            var depVersion = dep.Versions.First(pv => pendingDependencies.Contains(pv.dependencyId));
-                //            pendingDependencies.Remove(depVersion.dependencyId);
-
-
-
-                //            //inverseDependencyMap[dep]
-                //        }
-
-                //        //foreach (var (packageGroup, packageVersions) in dependencies)
-                //        //    foreach (var packageVersion in packageVersions)
-                //        //    {
-                //        //        pendingDependencies.Remove(packageVersion.dependencyId);
-                //        //        if (finalDependencies.Contains((packageGroup, packageVersion))) continue;
-                //        //        finalDependencies.Add((packageGroup, packageVersion));
-
-                //        //        foreach (var nestedDependency in packageVersion.dependencies)
-                //        //            pendingDependencies.Add(nestedDependency);
-                //        //    }
-                //    }
-                //}
-
-                //var builder = new StringBuilder();
-                //builder.AppendLine($"Found {finalDependencies.Count} dependencies");
-                //foreach (var (pg, pv) in finalDependencies)
-                //    builder.AppendLine(pv.dependencyId);
-
-                //Debug.Log(builder.ToString());
-
-                //foreach (var (pg, pv) in finalDependencies)
-                //{
-                //    //This will cause repeated installation of dependencies
-                //    if (Directory.Exists(pg.PackageDirectory)) Directory.Delete(pg.PackageDirectory);
-                //    Directory
-                //        .CreateDirectory(pg.PackageDirectory);
-
-                //    await pg.Source.InstallPackageFiles(pg, pg[version], pg.PackageDirectory);
-
-                //    EstablishPackage(pg, version);
-
-                //}
+                foreach (var assemblyPath in Directory.EnumerateFiles(installable.group.PackageDirectory, "*.dll"))
+                    PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
             }
+            var tempRoot = Path.Combine("Assets", "ThunderKitSettings", "Temp");
+            Directory.CreateDirectory(tempRoot);
+            foreach (var installable in installSet)
+            {
+                var assetTempPath = Path.Combine(tempRoot, $"{installable.group.PackageName}.asset");
 
-            await OnInstallPackageFiles(group, group[version], group.PackageDirectory);
+                var identity = CreateInstance<ManifestIdentity>();
+                identity.name = nameof(ManifestIdentity);
+                identity.Author = installable.group.Author;
+                identity.Description = installable.group.Description;
+                identity.Name = installable.group.PackageName;
+                identity.Version = version;
+                var manifest = ScriptableHelper.EnsureAsset<Manifest>(assetTempPath);
+                manifest.InsertElement(identity, 0);
+            }
+            foreach (var installable in installSet)
+            {
+                var assetTempPath = Path.Combine(tempRoot, $"{installable.group.PackageName}.asset");
+                var identity = AssetDatabase.LoadAllAssetRepresentationsAtPath(assetTempPath).OfType<ManifestIdentity>().First();
+                identity.Dependencies = new Manifest[installable.dependencies.Length];
+                for (int i = 0; i < installable.dependencies.Length; i++)
+                {
+                    var installableDependency = installable.dependencies[i];
+                    var dependencyAssetTempPath = Path.Combine(tempRoot, $"{installableDependency.group.PackageName}.asset");
+                    var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetTempPath);
+                    if (!manifest)
+                    {
+                        string[] manifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)} {installableDependency.group.PackageName}",
+                                                              new string[] { "Packages" });
 
-            EstablishPackage(group, version);
+                        manifest = manifests.Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<Manifest>).First();
+                    }
+                    identity.Dependencies[i] = manifest;
+                }
+                EditorUtility.SetDirty(identity);
+            }
+            AssetDatabase.SaveAssets();
+            foreach (var installable in installSet)
+            {
+                var assetTempPath = Path.Combine(tempRoot, $"{installable.group.PackageName}.asset");
+                var assetMetaTempPath = Path.Combine(tempRoot, $"{installable.group.PackageName}.asset.meta");
+                var assetPackagePath = Path.Combine(installable.group.PackageDirectory, $"{installable.group.PackageName}.asset");
+                var assetMetaPackagePath = Path.Combine(installable.group.PackageDirectory, $"{installable.group.PackageName}.asset.meta");
+
+                var fileData = File.ReadAllText(assetTempPath);
+                var metafileData = File.ReadAllText(assetMetaTempPath);
+                AssetDatabase.DeleteAsset(assetTempPath);
+
+                File.WriteAllText(assetPackagePath, fileData);
+                File.WriteAllText(assetMetaPackagePath, metafileData);
+            }
+            foreach (var installable in installSet)
+                PackageHelper.GeneratePackageManifest(
+                    installable.dependencyId.ToLower(), installable.group.PackageDirectory,
+                    installable.group.PackageName, installable.group.Author,
+                    installable.version,
+                    installable.group.Description);
+
+            Directory.Delete(tempRoot);
+            File.Delete($"{tempRoot}.meta");
 
             AssetDatabase.Refresh();
         }
 
-        private static void EstablishPackage(PackageGroup pg, string version)
-        {
-            var identity = CreateInstance<ManifestIdentity>();
-            identity.Author = pg.Author;
-            identity.Description = pg.Description;
-            identity.Name = pg.PackageName;
-            identity.Version = version;
-
-            var assetTempPath = Path.Combine("Assets", $"{pg.PackageName}.asset");
-            var assetMetaTempPath = Path.Combine("Assets", $"{pg.PackageName}.asset.meta");
-            var assetFinalPath = Path.Combine(pg.PackageDirectory, $"{pg.PackageName}.asset");
-            var assetMetaFinalPath = Path.Combine(pg.PackageDirectory, $"{pg.PackageName}.asset.meta");
-            var manifest = ScriptableHelper.EnsureAsset<Manifest>(assetTempPath);
-            manifest.InsertElement(identity, 0);
-
-            var fileData = File.ReadAllText(assetTempPath);
-            var metafileData = File.ReadAllText(assetMetaTempPath);
-            AssetDatabase.DeleteAsset(assetTempPath);
-
-            File.WriteAllText(assetFinalPath, fileData);
-            File.WriteAllText(assetMetaFinalPath, metafileData);
-
-            PackageHelper.GeneratePackageManifest(
-                pg[version].dependencyId.ToLower(), pg.PackageDirectory,
-                pg.PackageName, pg.Author,
-                pg[version].version,
-                pg.Description);
-        }
-
-        //Have this return a set of files for InstallPackage to consume for Manifest construction
-        public abstract Task OnInstallPackageFiles(PackageGroup package, PackageVersion version, string packageDirectory);
+        /// <summary>
+        /// Executes the downloading, unpacking, and placing of package files.  Files
+        /// </summary>
+        /// <param name="version">The version of the Package which should be installed</param>
+        /// <param name="packageDirectory">Root directory which files should be extracted into</param>
+        /// <returns></returns>
+        public abstract Task OnInstallPackageFiles(PackageVersion version, string packageDirectory);
 
 
         public override bool Equals(object obj)
