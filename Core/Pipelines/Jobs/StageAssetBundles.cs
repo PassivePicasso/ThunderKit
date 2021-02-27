@@ -117,6 +117,7 @@ namespace ThunderKit.Pipelines.Jobs
                         }
 
                     build.assetNames = assets
+                        .Select(ap => ap.Replace("\\", "/"))
                         //.Where(dap => !explicitDownstreamAssets.Contains(dap))
                         .Where(dap => !explicitAssets.Contains(dap))
                         .Where(dap => !excludedExtensions.Contains(Path.GetExtension(dap)))
