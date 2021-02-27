@@ -246,6 +246,8 @@ namespace ThunderKit.Core.Data
             foreach (var installable in installSet)
             {
                 var assetTempPath = Path.Combine(tempRoot, $"{installable.group.PackageName}.asset");
+                if (AssetDatabase.LoadAssetAtPath<Manifest>(assetTempPath))
+                    AssetDatabase.DeleteAsset(assetTempPath);
 
                 var identity = CreateInstance<ManifestIdentity>();
                 identity.name = nameof(ManifestIdentity);
@@ -259,7 +261,7 @@ namespace ThunderKit.Core.Data
             foreach (var installable in installSet)
             {
                 var assetTempPath = Path.Combine(tempRoot, $"{installable.group.PackageName}.asset");
-                var identity = AssetDatabase.LoadAllAssetRepresentationsAtPath(assetTempPath).OfType<ManifestIdentity>().First();
+                var identity = AssetDatabase.LoadAllAssetsAtPath(assetTempPath).OfType<ManifestIdentity>().First();
                 identity.Dependencies = new Manifest[installable.dependencies.Length];
                 for (int i = 0; i < installable.dependencies.Length; i++)
                 {
