@@ -9,6 +9,7 @@ using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -51,10 +52,19 @@ namespace {0}
             PipelineJob[] jobs = Jobs.Where(SupportsType).ToArray();
 
             for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
-                if (JobIsManifestProcessor())
-                    ExecuteManifestLoop();
-                else
-                    ExecuteJob();
+                try
+                {
+                    if (JobIsManifestProcessor())
+                        ExecuteManifestLoop();
+                    else
+                        ExecuteJob();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error Invoking Job ({name}):({Job().name})\r\n{e}", this);
+                    JobIndex = jobs.Length;
+                    break;
+                }
 
             JobIndex = -1;
 
