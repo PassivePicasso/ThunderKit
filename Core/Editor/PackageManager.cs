@@ -360,7 +360,12 @@ namespace ThunderKit.Core.Editor
             {
                 var searchResults = AssetDatabase.FindAssets(name, searchpaths);
                 var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath);
-                var templatePath = assetPaths.Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
+                var assetsRoot = Path.Combine("Assets", "ThunderKit");
+                var packagesRoot = Path.Combine("Packages", Constants.ThunderKitPackageName);
+                var templatePath = assetPaths
+                    .Where(path => path.StartsWith(assetsRoot) || path.StartsWith(packagesRoot)
+                                || path.StartsWith(assetsRoot.Replace("\\", "/")) || path.StartsWith(packagesRoot.Replace("\\", "/")))
+                    .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
                                              .FirstOrDefault(path => path.Contains("Templates/") || path.Contains("Templates\\"));
                 templateCache[name] = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
             }
