@@ -10,7 +10,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    inkscape:export-ydpi="96"
    inkscape:export-xdpi="96"
-   inkscape:export-filename="F:\Projects\RoR2_Modding\ThunderKitDevelopment\Assets\ThunderKit\Art\TK_PackageSource_Icon.png"
+   inkscape:export-filename="F:\Projects\RoR2_Modding\ThunderKitDevelopment\Assets\ThunderKit\Art\TK_UnityPackage_Icon.png"
    sodipodi:docname="TKIcon.svg"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
    id="svg8"
@@ -20,6 +20,18 @@
    width="32">
   <defs
      id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient901">
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="0"
+         id="stop897" />
+      <stop
+         style="stop-color:#07006f;stop-opacity:1"
+         offset="1"
+         id="stop899" />
+    </linearGradient>
     <linearGradient
        id="linearGradient957"
        inkscape:collect="always">
@@ -137,6 +149,16 @@
        y1="134.88492"
        x2="102.88708"
        y2="293.46771" />
+    <linearGradient
+       y2="293.46771"
+       x2="102.88708"
+       y1="0.69946867"
+       x1="102.88708"
+       gradientTransform="matrix(0.03642136,0,0,0.02168951,0.48604593,1.0431622)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient895"
+       xlink:href="#linearGradient901"
+       inkscape:collect="always" />
   </defs>
   <sodipodi:namedview
      inkscape:snap-global="true"
@@ -157,9 +179,9 @@
      inkscape:document-rotation="0"
      inkscape:current-layer="layer2"
      inkscape:document-units="mm"
-     inkscape:cy="17.745888"
-     inkscape:cx="20.510366"
-     inkscape:zoom="22.627417"
+     inkscape:cy="18.149375"
+     inkscape:cx="24.209971"
+     inkscape:zoom="16"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -186,10 +208,10 @@
   <g
      inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="ThunderKit Data Background"
+     inkscape:label="UnityPackage Background"
      style="display:inline">
     <rect
-       style="fill:url(#linearGradient951);fill-opacity:1;stroke:none;stroke-width:0.27305;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:url(#linearGradient895);fill-opacity:1;stroke:none;stroke-width:0.27305;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect869"
        width="6.3393936"
        height="6.3393946"
@@ -197,6 +219,21 @@
        y="1.0636362"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
+  </g>
+  <g
+     style="display:none"
+     inkscape:label="ThunderKit Data Background copy"
+     id="g890"
+     inkscape:groupmode="layer">
+    <rect
+       inkscape:export-ydpi="96"
+       inkscape:export-xdpi="96"
+       y="1.0636362"
+       x="1.0636368"
+       height="6.3393946"
+       width="6.3393936"
+       id="rect888"
+       style="fill:url(#linearGradient951);fill-opacity:1;stroke:none;stroke-width:0.27305;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
   </g>
   <g
      style="display:none"
