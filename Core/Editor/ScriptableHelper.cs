@@ -30,7 +30,7 @@ namespace ThunderKit.Core.Editor
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
                 Selection.activeObject = asset;
-                afterCreated(asset);
+                afterCreated?.Invoke(asset);
             }
 
             if (overrideName == null)
