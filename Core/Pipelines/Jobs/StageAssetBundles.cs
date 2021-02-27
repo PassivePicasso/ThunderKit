@@ -120,7 +120,6 @@ namespace ThunderKit.Pipelines.Jobs
                         //.Where(dap => !explicitDownstreamAssets.Contains(dap))
                         .Where(dap => !explicitAssets.Contains(dap))
                         .Where(dap => !excludedExtensions.Contains(Path.GetExtension(dap)))
-                        .Where(ap => !assets.Contains(ap))
                         .Where(ap => !sourceFiles.Contains(ap))
                         .Where(ap => !assemblyFiles.Contains(ap))
                         .Where(asset => !forbiddenAssets.Contains(asset))
