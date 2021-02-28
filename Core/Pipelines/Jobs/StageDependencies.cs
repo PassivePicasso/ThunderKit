@@ -1,31 +1,30 @@
 using System.IO;
 using System.Linq;
 using ThunderKit.Core.Attributes;
+using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
-using ThunderKit.Core.Pipelines;
-using ThunderKit.Integrations.Thunderstore.Manifests;
+using UnityEditor;
 
-namespace ThunderKit.Integrations.Thunderstore.Pipelines.Jobs
+namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(Pipeline)), RequiresManifestDatumType(typeof(ThunderstoreManifest))]
+    [PipelineSupport(typeof(Pipeline)), RequiresManifestDatumType(typeof(ManifestIdentity))]
     public class StageDependencies : PipelineJob
     {
         [PathReferenceResolver]
         public string StagingPath;
         public override void Execute(Pipeline pipeline)
         {
-            var thunderstoreManifests = pipeline.Datums.OfType<ThunderstoreManifest>();
-            var dependencies = thunderstoreManifests.SelectMany(tm => tm.dependencies).Distinct().ToList();
+            var manifestIdentities = pipeline.Datums.OfType<ManifestIdentity>();
+            var dependencies = manifestIdentities.SelectMany(tm => tm.Dependencies).Distinct().ToList();
 
             foreach (var manifest in pipeline.manifests)
-                foreach (var tm in manifest.Data.OfType<ThunderstoreManifest>())
-                    dependencies.RemoveAll(dep => dep.StartsWith($"{tm.author}-{manifest.name}"));
+                foreach (var manifestIdentity in manifest.Data.OfType<ManifestIdentity>())
+                {
+                    if (AssetDatabase.GetAssetPath(manifest).StartsWith("Assets")) continue;
+                    var dependencyPath = Path.Combine("Packages", manifestIdentity.Name);
+                    CopyFilesRecursively(dependencyPath, StagingPath.Resolve(pipeline, this));
 
-            var packages = Path.Combine("Packages");
-            var dependencyPaths = dependencies.Select(dep => Path.Combine(packages, dep));
-
-            foreach(var dependencyPath in dependencyPaths)
-                CopyFilesRecursively(dependencyPath, StagingPath.Resolve(pipeline, this));
+                }
         }
 
         public static void CopyFilesRecursively(string source, string destination)
