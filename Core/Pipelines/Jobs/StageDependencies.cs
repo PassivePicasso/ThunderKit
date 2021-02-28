@@ -12,12 +12,14 @@ namespace ThunderKit.Core.Pipelines.Jobs
     {
         [PathReferenceResolver]
         public string StagingPath;
+        public Manifests.Manifest[] ExcludedManifests;
+
         public override void Execute(Pipeline pipeline)
         {
             var manifestIdentities = pipeline.Datums.OfType<ManifestIdentity>();
             var dependencies = manifestIdentities.SelectMany(tm => tm.Dependencies).Distinct().ToList();
 
-            foreach (var manifest in pipeline.manifests)
+            foreach (var manifest in pipeline.manifests.Except(ExcludedManifests))
                 foreach (var manifestIdentity in manifest.Data.OfType<ManifestIdentity>())
                 {
                     if (AssetDatabase.GetAssetPath(manifest).StartsWith("Assets")) continue;
