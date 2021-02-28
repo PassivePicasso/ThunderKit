@@ -20,8 +20,11 @@ namespace ThunderKit.Core.Pipelines.Jops
         public override void Execute(Pipeline pipeline)
         {
             if (PerManifest)
+            {
                 for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
                     ExecuteInternal(pipeline);
+                pipeline.ManifestIndex = -1;
+            }
             else
                 ExecuteInternal(pipeline);
         }

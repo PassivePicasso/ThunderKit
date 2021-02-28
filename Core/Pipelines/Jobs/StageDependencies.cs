@@ -19,14 +19,16 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var manifestIdentities = pipeline.Datums.OfType<ManifestIdentity>();
             var dependencies = manifestIdentities.SelectMany(tm => tm.Dependencies).Distinct().ToList();
 
-            foreach (var manifest in pipeline.manifests.Except(ExcludedManifests))
-                foreach (var manifestIdentity in manifest.Data.OfType<ManifestIdentity>())
-                {
-                    if (AssetDatabase.GetAssetPath(manifest).StartsWith("Assets")) continue;
-                    var dependencyPath = Path.Combine("Packages", manifestIdentity.Name);
-                    CopyFilesRecursively(dependencyPath, StagingPath.Resolve(pipeline, this));
+            for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
+            {
+                if (ExcludedManifests.Contains(pipeline.Manifest)) continue;
+                if (AssetDatabase.GetAssetPath(pipeline.Manifest).StartsWith("Assets")) continue;
 
-                }
+                var manifestIdentity = pipeline.Manifest.Data.OfType<ManifestIdentity>().First();
+                var dependencyPath = Path.Combine("Packages", manifestIdentity.Name);
+                CopyFilesRecursively(dependencyPath, StagingPath.Resolve(pipeline, this));
+            }
+            pipeline.ManifestIndex = -1;
         }
 
         public static void CopyFilesRecursively(string source, string destination)

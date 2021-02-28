@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
+using UnityEngine;
 using static ThunderKit.Core.Editor.ScriptableHelper;
 
 namespace ThunderKit.Core.Manifests
@@ -15,9 +15,9 @@ namespace ThunderKit.Core.Manifests
         {
             SelectNewAsset(afterCreated: (Action<Manifest>)(manifest =>
             {
-                var identity = CreateInstance<ManifestIdentity>();
-                identity.name = nameof(identity);
-                manifest.InsertElement(identity, 0);
+                manifest.Identity = CreateInstance<ManifestIdentity>();
+                manifest.Identity.name = nameof(ManifestIdentity);
+                manifest.InsertElement(manifest.Identity, 0);
             }));
         }
 
@@ -33,7 +33,8 @@ namespace ThunderKit.Core.Manifests
                 yield return this;
         }
 
-        public ManifestIdentity Identity => Data.OfType<ManifestIdentity>().First();
+        [HideInInspector]
+        public ManifestIdentity Identity;
 
         public override Type ElementType => typeof(ManifestDatum);
 
