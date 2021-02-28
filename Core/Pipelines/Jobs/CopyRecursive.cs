@@ -4,7 +4,7 @@ using ThunderKit.Core.Paths;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
+    [PipelineSupport(typeof(Pipeline))]
     public class CopyRecursive : PipelineJob
     {
         [PathReferenceResolver]
