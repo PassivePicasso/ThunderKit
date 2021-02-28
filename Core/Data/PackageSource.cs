@@ -257,6 +257,7 @@ namespace ThunderKit.Core.Data
                 identity.Version = version;
                 var manifest = ScriptableHelper.EnsureAsset<Manifest>(assetTempPath);
                 manifest.InsertElement(identity, 0);
+                manifest.Identity = identity;
             }
             foreach (var installableForDependencies in installSet)
             {
