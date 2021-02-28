@@ -67,7 +67,7 @@ namespace {0}
                 }
 
             JobIndex = -1;
-
+            
             PipelineJob Job() => jobs[JobIndex];
 
             void ExecuteJob() => Job().Execute(this);
@@ -87,6 +87,7 @@ namespace {0}
 
                 ManifestIndex = -1;
             }
+            //I really can't justify why I designed this like this, but I did, you already saw it, its too late.
         }
 
 

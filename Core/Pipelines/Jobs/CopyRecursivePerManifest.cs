@@ -1,10 +1,11 @@
 using System.IO;
+using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
+    [PipelineSupport(typeof(Pipeline))]
     public class CopyRecursivePerManifest : PipelineJob
     {
         public Manifests.Manifest[] ExcludedManifests;
@@ -15,10 +16,15 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         public override void Execute(Pipeline pipeline)
         {
-            string source = Input.Resolve(pipeline, this);
-            string destination = Output.Resolve(pipeline, this);
-            Directory.CreateDirectory(destination);
-            CopyFilesRecursively(source, destination);
+            for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
+            {
+                if (ExcludedManifests.Contains(pipeline.Manifest)) continue;
+                string source = Input.Resolve(pipeline, this);
+                string destination = Output.Resolve(pipeline, this);
+                Directory.CreateDirectory(destination);
+                CopyFilesRecursively(source, destination);
+            }
+            pipeline.ManifestIndex = -1;
         }
 
         public static void CopyFilesRecursively(string source, string destination)
