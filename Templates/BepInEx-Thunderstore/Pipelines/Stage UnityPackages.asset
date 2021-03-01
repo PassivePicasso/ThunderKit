@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114505394488345480}
-  manifests: {fileID: 0}
+  manifest: {fileID: 0}
 --- !u!114 &114505394488345480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27,3 +27,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d087870ea8abaed4ca4c717444be0165, type: 3}
   m_Name: StageUnityPackages
   m_EditorClassIdentifier: 
+  remapFileIds: 1
