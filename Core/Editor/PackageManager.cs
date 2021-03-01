@@ -1,41 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor.Actions;
 using UnityEditor;
-using UnityEditor.Experimental.UIElements;
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
 using PackageSource = ThunderKit.Core.Data.PackageSource;
+#if UNITY_2019_1_OR_NEWER
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+#elif UNITY_2018_1_OR_NEWER
+using UnityEditor.Experimental.UIElements;
+using UnityEngine.Experimental.UIElements;
+#endif
 
 namespace ThunderKit.Core.Editor
 {
-    public class PackageManager : EditorWindow
+    public class PackageManager : TemplatedWindow
     {
-        Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>();
-        static string[] searchpaths = new string[] { "Assets", "Packages" };
-        private static PackageManager wnd;
-        private VisualElement root;
         private VisualElement packageView;
-        private TextField searchBox;
         private Button searchBoxCancel;
+        private Button filtersButton;
+        private TextField searchBox;
+        private VisualElement root;
+
+        private string targetVersion;
         Dictionary<string, bool> tagEnabled = new Dictionary<string, bool>();
-        [SerializeField] public bool InProject;
+
         [SerializeField] private DeletePackage deletePackage;
         [SerializeField] private string SearchString;
-        private Button filtersButton;
-        private string targetVersion;
-        [SerializeField] public Texture2D ThunderKitIcon;
+        [SerializeField] public bool InProject;
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Package Manager")]
-        public static void ShowExample()
-        {
-            wnd = GetWindow<PackageManager>();
-        }
+        public static void ShowExample() => GetWindow<PackageManager>();
 
         public void OnEnable()
         {
@@ -327,49 +325,5 @@ namespace ThunderKit.Core.Editor
         }
         #endregion
 
-        private static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");
-
-        VisualElement GetTemplateInstance(string template, VisualElement target = null)
-        {
-            var packageTemplate = LoadTemplate(template);
-            var assetPath = AssetDatabase.GetAssetPath(packageTemplate);
-            VisualElement instance = target;
-            if (instance == null) instance = packageTemplate.CloneTree(null);
-            else
-                packageTemplate.CloneTree(instance, null);
-
-            instance.AddToClassList("grow");
-            AddSheet(instance, assetPath);
-            if (EditorGUIUtility.isProSkin)
-                AddSheet(instance, assetPath, "_Dark");
-            else
-                AddSheet(instance, assetPath, "_Light");
-
-            return instance;
-        }
-
-        void AddSheet(VisualElement element, string assetPath, string modifier = "")
-        {
-            string sheetPath = assetPath.Replace(".uxml", $"{modifier}.uss");
-            if (File.Exists(sheetPath)) element.AddStyleSheetPath(sheetPath);
-        }
-
-        private VisualTreeAsset LoadTemplate(string name)
-        {
-            if (!templateCache.ContainsKey(name))
-            {
-                var searchResults = AssetDatabase.FindAssets(name, searchpaths);
-                var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath);
-                var assetsRoot = Path.Combine("Assets", "ThunderKit");
-                var packagesRoot = Path.Combine("Packages", Constants.ThunderKitPackageName);
-                var templatePath = assetPaths
-                    .Where(path => path.StartsWith(assetsRoot) || path.StartsWith(packagesRoot)
-                                || path.StartsWith(assetsRoot.Replace("\\", "/")) || path.StartsWith(packagesRoot.Replace("\\", "/")))
-                    .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
-                                             .FirstOrDefault(path => path.Contains("Templates/") || path.Contains("Templates\\"));
-                templateCache[name] = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
-            }
-            return templateCache[name];
-        }
     }
 }

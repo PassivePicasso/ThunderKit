@@ -114,7 +114,7 @@ namespace ThunderKit.Core.Editor
             }
 
             var composableObject = target as ComposableObject;
-            var size = AddScriptWindow.Styles.addButtonStyle.CalcSize(new GUIContent($"Add {ObjectNames.NicifyVariableName(composableObject.ElementType.Name)}"));
+            var size = new Vector2(250, 24);
             var rect = GUILayoutUtility.GetRect(size.x, size.y);
             rect.width = size.x;
             rect.y += standardVerticalSpacing;
@@ -263,6 +263,7 @@ namespace ThunderKit.Core.Editor
             target.RemoveElement(composableElement, stepData.index);
         }
 
+        AddComposableElementWindow popup;
         void OnAddElementGUI(Rect rect, ComposableObject composableObject)
         {
             bool Filter(MonoScript script)
@@ -285,7 +286,32 @@ namespace ThunderKit.Core.Editor
                 composableObject.InsertElement(instance, dataArray.arraySize);
                 return instance;
             }
-            AddScriptWindow.Show(rect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
+
+            if (AddComposableElementWindow.HasAssetToAdd())
+                AddComposableElementWindow.Backup(CreateFromScript);
+            //AddScriptWindow.Show(rect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
+            if (GUI.Button(rect, $"Add {ObjectNames.NicifyVariableName(composableObject.ElementType.Name)}"))
+            {
+                if (popup && Event.current.modifiers.HasFlag(EventModifiers.Control))
+                {
+                    popup.StaysOpen = false;
+                    popup.Focus();
+                    popup = null;
+                    return;
+                }
+
+                var fudge = EditorGUIUtility.currentViewWidth % 2 == 0 ? 0 : 1;
+                var windowRect = new Rect(rect.x - fudge, rect.y + rect.height, rect.width, 200);
+                var minXY = GUIUtility.GUIToScreenPoint(windowRect.min);
+                windowRect = new Rect(minXY.x, minXY.y, windowRect.width, windowRect.height);
+                popup = CreateInstance<AddComposableElementWindow>();
+                popup.position = windowRect;
+                popup.StaysOpen = Event.current.modifiers.HasFlag(EventModifiers.Control);
+                popup.ScriptTemplate = composableObject.ElementTemplate;
+                popup.Filter = Filter;
+                popup.Create = CreateFromScript;
+                popup.ShowPopup();
+            }
         }
     }
 }

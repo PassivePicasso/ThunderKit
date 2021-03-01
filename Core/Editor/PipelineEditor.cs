@@ -13,12 +13,12 @@ namespace ThunderKit.Core.Editor
         {
             base.OnInspectorGUI();
             var composableObject = target as ComposableObject;
-            var size = AddScriptWindow.Styles.addButtonStyle.CalcSize(new GUIContent($"Add {ObjectNames.NicifyVariableName(composableObject.ElementType.Name)}"));
+            var size = new Vector2(250, 24);
             var rect = GUILayoutUtility.GetRect(size.x, size.y);
             rect.width = size.x;
             rect.y += standardVerticalSpacing * 2;
             rect.x = (currentViewWidth / 2) - (rect.width / 2);
-            if (GUI.Button(rect, "Execute", AddScriptWindow.Styles.addButtonStyle))
+            if (GUI.Button(rect, "Execute"))
             {
                 var pipeline = target as Pipeline;
                 pipeline?.Execute();
