@@ -10,67 +10,71 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3695521163bdd74fa2845bbd3438240, type: 3}
-  m_Name: BepInEx - Build and Launch
+  m_Name: Package Zips
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114201632629626870}
-  - {fileID: 114996052519533010}
-  - {fileID: 114567788167467414}
-  - {fileID: 114653777183018378}
+  - {fileID: 114192568730498312}
+  - {fileID: 114532665349920082}
+  - {fileID: 114367727377661556}
+  - {fileID: 114110618437809084}
   manifest: {fileID: 0}
---- !u!114 &114201632629626870
+--- !u!114 &114110618437809084
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
-  m_Name: ExecutePipeline
+  m_Script: {fileID: 11500000, guid: 8808e815b3ce9c94e9552cb1dee9e305, type: 3}
+  m_Name: Zip
   m_EditorClassIdentifier: 
-  executePipeline: {fileID: 11400000, guid: 6743d3c17d3b43f43ba0337e9b0e34e5, type: 2}
---- !u!114 &114567788167467414
+  PerManifest: 1
+  SourcePath: <ManifestStagingRoot>
+  OutputFile: <ManifestStagingRoot>.zip
+  ShowOutput: 0
+--- !u!114 &114192568730498312
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
-  m_Name: ExecutePipeline
+  m_Script: {fileID: 11500000, guid: b5b20fac9c71fd64183cb7a8f359d73a, type: 3}
+  m_Name: StageAssemblies
   m_EditorClassIdentifier: 
-  executePipeline: {fileID: 11400000, guid: ac446c31552912347b0f10d265d61017, type: 2}
---- !u!114 &114653777183018378
+  stageDebugDatabases: 0
+--- !u!114 &114367727377661556
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77f65d4371163fb4695da79ab8df0e84, type: 3}
-  m_Name: ExecuteProcess
+  m_Script: {fileID: 11500000, guid: 1b4f4581088b47744a114c282abc085d, type: 3}
+  m_Name: StageDependencies
   m_EditorClassIdentifier: 
-  workingDirectory: <BepInExPackDestination>
-  executable: <GameExecutable>
-  arguments:
-  - --doorstop-enable true
-  - --doorstop-target "<PreLoader.dll>"
---- !u!114 &114996052519533010
+  StagingPath: 
+  ExcludedManifests: []
+--- !u!114 &114532665349920082
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
-  m_Name: ExecutePipeline
+  m_Script: {fileID: 11500000, guid: 924ee63e6c016f14d8a1560b288f15a3, type: 3}
+  m_Name: StageAssetBundles
   m_EditorClassIdentifier: 
-  executePipeline: {fileID: 11400000, guid: 5fcc97b8d4681504fb014fb83ce5a0ad, type: 2}
+  AssetBundleBuildOptions: 1
+  buildTarget: 5
+  recurseDirectories: 0
+  simulate: 0
+  BundleArtifactPath: <AssetBundleStaging>
