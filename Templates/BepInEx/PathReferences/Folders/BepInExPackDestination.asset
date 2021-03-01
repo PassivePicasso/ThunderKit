@@ -9,39 +9,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3695521163bdd74fa2845bbd3438240, type: 3}
-  m_Name: BepInEx - Package Zips
+  m_Script: {fileID: 11500000, guid: b4f773cd2b7463d44aa153647e991b43, type: 3}
+  m_Name: BepInExPackDestination
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114640632635890276}
-  - {fileID: 114841849469740562}
-  manifests: {fileID: 0}
---- !u!114 &114640632635890276
+  - {fileID: 114515980546917854}
+  - {fileID: 114499106009027092}
+  lastName: BepInExPackDestination
+--- !u!114 &114499106009027092
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
-  m_Name: ExecutePipeline
+  m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
+  m_Name: Constant
   m_EditorClassIdentifier: 
-  executePipeline: {fileID: 11400000, guid: 6743d3c17d3b43f43ba0337e9b0e34e5, type: 2}
---- !u!114 &114841849469740562
+  Value: BepInExPack
+--- !u!114 &114515980546917854
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8808e815b3ce9c94e9552cb1dee9e305, type: 3}
-  m_Name: Zip
+  m_Script: {fileID: 11500000, guid: 49ea6c70a35243a4c83cfceb6d9f2ce7, type: 3}
+  m_Name: ThunderKitRoot
   m_EditorClassIdentifier: 
-  PerManifest: 1
-  SourcePath: <ManifestStagingRoot>
-  OutputFile: <ManifestStagingRoot>.zip
-  ShowOutput: 0

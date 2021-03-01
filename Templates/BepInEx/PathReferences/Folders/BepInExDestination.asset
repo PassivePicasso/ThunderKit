@@ -9,23 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3695521163bdd74fa2845bbd3438240, type: 3}
-  m_Name: BepInEx - Deploy Staged
+  m_Script: {fileID: 11500000, guid: b4f773cd2b7463d44aa153647e991b43, type: 3}
+  m_Name: BepInExDestination
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114195348005988520}
-  manifests: {fileID: 0}
---- !u!114 &114195348005988520
+  - {fileID: 114194088931974926}
+  lastName: BepInExDestination
+--- !u!114 &114194088931974926
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
-  m_Name: CopyRecursivePerManifest
+  m_Script: {fileID: 11500000, guid: 6bfead62a54d1b04d9ce0a82f51655a1, type: 3}
+  m_Name: Resolver
   m_EditorClassIdentifier: 
-  Input: <ManifestPluginStaging>
-  Output: <BepInExPlugins>
+  value: <PWD>/<BepInExPackDestination>/BepInEx

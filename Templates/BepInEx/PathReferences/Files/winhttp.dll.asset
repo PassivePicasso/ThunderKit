@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4f773cd2b7463d44aa153647e991b43, type: 3}
-  m_Name: BepInExDestination
+  m_Name: winhttp.dll
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114180817035144384}
-  lastName: BepInExDestination
---- !u!114 &114180817035144384
+  - {fileID: 114347219932410804}
+  lastName: winhttp.dll
+--- !u!114 &114347219932410804
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -27,4 +27,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bfead62a54d1b04d9ce0a82f51655a1, type: 3}
   m_Name: Resolver
   m_EditorClassIdentifier: 
-  value: <PWD>/<BepInExPackDestination>/BepInEx
+  value: <BepInExPackSource>/winhttp.dll
