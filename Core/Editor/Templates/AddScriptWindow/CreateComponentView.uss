@@ -50,10 +50,6 @@
 }
 .searchfield {
 	flex-grow: 1;
-	padding-top: 1px;
-	padding-left: 17px;
-	padding-right: 17px;
-	padding-bottom: 1px;
 	-unity-slice-top: 1;
 	-unity-slice-left: 14;
 	-unity-slice-bottom: 1;
@@ -79,23 +75,6 @@
 	background-color: rgb(234,234,234);
 }
 
-
-.searchfield-cancelbutton {
-	padding-top: 2px;
-	padding-bottom: 0px;
-	margin-left: 0px;
-	margin-top: 1px;
-	margin-right: 4px;
-	margin-bottom: 0px;
-	border-left: 0px;
-	border-top: 0px;
-	border-right: 0px;
-	border-bottom: 0px;
-	width: 14;
-	height: 15;
-	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearchCancelButtonOff.png");
-}
-
 #back-button:active {
 	background-color: rgb(128,128,128);
 	color: rgb(224,224,224);
@@ -114,7 +93,10 @@
 	color: rgb(64,64,194);
 }
 #nameField {
-	width: 156px;
+	width: 190px;
+	margin-top: 1px;
+	padding-right: 4px;
+	margin-bottom: 0px;
 }
 #search-box {
 	margin-top: 4px;

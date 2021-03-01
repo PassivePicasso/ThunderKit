@@ -16,8 +16,7 @@ xsi:schemaLocation="
     <engine:VisualElement class="horizontal-stack">
       <engine:Button name="back-button" tooltip="Go back to search component menu" text="&lt; Back" class="no-margin no-padding"/>
       <engine:VisualElement name="search-box" class="horizontal-stack border-bottom-1px grow">
-        <engine:TextField name="nameField" multiline="false" tooltip="Enter new component name" class="searchfield" />
-        <engine:Button tooltip="clear name" class="searchfield-cancelbutton" />
+        <engine:TextField name="nameField" multiline="false" tooltip="Enter new component name" />
       </engine:VisualElement>
     </engine:VisualElement>
 
