@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using ThunderKit.Core.Editor;
-using ThunderKit.Integrations.Thunderstore.Manifests;
 using UnityEditor;
 using UnityEngine;
 
@@ -67,8 +66,8 @@ namespace ThunderKit.Integrations.Thunderstore
                     name = stubManifest.name;
                 }
 
-                SelectNewAsset<ThunderstoreManifest>(() => name);
-                var instance = Selection.activeObject as ThunderstoreManifest;
+                SelectNewAsset<ThunderstoreData>(() => name);
+                var instance = Selection.activeObject as ThunderstoreData;
 
                 JsonUtility.FromJsonOverwrite(json, instance);
             }

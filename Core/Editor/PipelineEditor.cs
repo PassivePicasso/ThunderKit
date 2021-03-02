@@ -12,7 +12,6 @@ namespace ThunderKit.Core.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            var composableObject = target as ComposableObject;
             var size = new Vector2(250, 24);
             var rect = GUILayoutUtility.GetRect(size.x, size.y);
             rect.width = size.x;
