@@ -172,6 +172,10 @@ namespace ThunderKit.Pipelines.Jobs
                                 Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
                                 File.Copy(filePath, destFileName, true);
                             }
+
+                            File.Copy(Path.Combine(bundleArtifactPath, $"{Path.GetFileName(bundleArtifactPath)}.manifest"),
+                                      Path.Combine(outputPath, $"{manifest.Identity.Name}.manifest"),
+                                      true);
                         }
                     }
                 }
