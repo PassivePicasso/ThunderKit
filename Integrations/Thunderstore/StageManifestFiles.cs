@@ -50,15 +50,22 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
             }
         }
 
-        public string RenderJson(ManifestIdentity identity, ThunderstoreData manifest, string name) =>
-            JsonUtility.ToJson(new ThunderstoreManifestStub
+        public string RenderJson(ManifestIdentity identity, ThunderstoreData manifest, string name)
+        {
+            var dependencies = identity.Dependencies.Select(man => {
+                var id = man.Data.OfType<ManifestIdentity>().First();
+                return $"{id.Author}-{id.Name}-{id.Version}";
+            });
+            var stub = new ThunderstoreManifestStub
             {
                 author = identity.Author,
-                dependencies = identity.Dependencies.Select(dep => "").ToArray(),
+                dependencies = dependencies.ToArray(),
                 description = identity.Description,
                 name = identity.Name,
                 version_number = identity.Version,
                 website_url = manifest.url
-            });
+            };
+            return JsonUtility.ToJson(stub);
+        }
     }
 }
