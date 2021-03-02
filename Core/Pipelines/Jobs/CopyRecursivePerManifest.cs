@@ -20,6 +20,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 if (ExcludedManifests.Contains(pipeline.Manifest)) continue;
                 string source = Input.Resolve(pipeline, this);
+                if (!Directory.Exists(source)) continue;
                 string destination = Output.Resolve(pipeline, this);
                 Directory.CreateDirectory(destination);
                 CopyFilesRecursively(source, destination);
