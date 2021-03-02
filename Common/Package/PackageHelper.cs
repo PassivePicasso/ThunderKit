@@ -72,19 +72,32 @@ namespace ThunderKit.Common.Package
         }
 
         /// <summary>
-        /// Generate a unity meta file for assembly with ThunderKit managed Guid
+        /// Generate a unity meta file for an assembly with ThunderKit managed Guid
         /// </summary>
         /// <param name="assemblyPath">Path to assembly to generate meta file for</param>
         /// <param name="metadataPath">Path to write meta file to</param>
         public static void WriteAssemblyMetaData(string assemblyPath, string metadataPath)
         {
-            string guid = PackageHelper.GetAssemblyHash(assemblyPath);
+            string guid = PackageHelper.GetFileNameHash(assemblyPath);
             string metaData = PackageHelper.DefaultAssemblyMetaData(guid);
             if (File.Exists(metadataPath)) File.Delete(metadataPath);
             File.WriteAllText(metadataPath, metaData);
         }
 
-        public static string GetAssemblyHash(string assemblyPath)
+        /// <summary>
+        /// Generate a unity meta file for an asset with ThunderKit managed Guid
+        /// </summary>
+        /// <param name="assemblyPath">Path to asset to generate meta file for</param>
+        /// <param name="metadataPath">Path to write meta file to</param>
+        public static void WriteAssetMetaData(string assetPath, string metadataPath)
+        {
+            string guid = PackageHelper.GetFileNameHash(assetPath);
+            string metaData = PackageHelper.DefaultAssemblyMetaData(guid);
+            if (File.Exists(metadataPath)) File.Delete(metadataPath);
+            File.WriteAllText(metadataPath, metaData);
+        }
+
+        public static string GetFileNameHash(string assemblyPath)
         {
             using (var md5 = MD5.Create())
             {
@@ -96,6 +109,17 @@ namespace ThunderKit.Common.Package
                 return cleanedGuid;
             }
         }
+
+        public static string DefaultScriptableObjectMetaData(string guid) =>
+@"fileFormatVersion: 2
+guid: {guid}
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+";
 
         public static string DefaultAssemblyMetaData(string guid) =>
 "fileFormatVersion: 2"

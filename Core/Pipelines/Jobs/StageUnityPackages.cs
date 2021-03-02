@@ -65,7 +65,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     var type = map.monoScript.GetClass();
                     var fileId = FileIdUtil.Compute(type);
                     var assemblyPath = type.Assembly.Location;
-                    var libraryGuid = PackageHelper.GetAssemblyHash(assemblyPath);
+                    var libraryGuid = PackageHelper.GetFileNameHash(assemblyPath);
                     AssetDatabase.TryGetGUIDAndLocalFileIdentifier(map.monoScript, out string scriptGuid, out long scriptId);
 
                     return (Path: map.path,

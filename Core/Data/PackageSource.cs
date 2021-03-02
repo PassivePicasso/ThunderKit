@@ -291,11 +291,11 @@ namespace ThunderKit.Core.Data
                 var assetMetaPackagePath = Path.Combine(installableForManifestMove.group.PackageDirectory, $"{installableForManifestMove.group.PackageName}.asset.meta");
 
                 var fileData = File.ReadAllText(assetTempPath);
-                var metafileData = File.ReadAllText(assetMetaTempPath);
+
                 AssetDatabase.DeleteAsset(assetTempPath);
 
                 File.WriteAllText(assetPackagePath, fileData);
-                File.WriteAllText(assetMetaPackagePath, metafileData);
+                PackageHelper.WriteAssetMetaData(assetPackagePath, $"{assetPackagePath}.meta");
             }
             foreach (var installable in installSet)
                 PackageHelper.GeneratePackageManifest(
