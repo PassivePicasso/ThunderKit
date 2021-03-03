@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 
@@ -9,6 +10,7 @@ namespace ThunderKit.Core.Pipelines.Jops
     [PipelineSupport(typeof(Pipeline))]
     public class Zip : PipelineJob
     {
+        public Manifests.Manifest[] ExcludedManifests;
         public bool PerManifest;
 
         [PathReferenceResolver]
@@ -22,7 +24,10 @@ namespace ThunderKit.Core.Pipelines.Jops
             if (PerManifest)
             {
                 for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
+                {
+                    if (ExcludedManifests.Contains(pipeline.Manifest)) continue;
                     ExecuteInternal(pipeline);
+                }
                 pipeline.ManifestIndex = -1;
             }
             else
