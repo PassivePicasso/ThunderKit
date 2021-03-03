@@ -14,7 +14,7 @@ using UnityEngine.Experimental.UIElements;
 
 using static ThunderKit.Core.Editor.ScriptEditorHelper;
 
-namespace ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor.Windows
 {
     public class AddComposableElementWindow : TemplatedWindow
     {
