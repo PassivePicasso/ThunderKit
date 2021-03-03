@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Editor.Controls;
+using ThunderKit.Core.Editor.Windows;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 using Debug = UnityEngine.Debug;
 
-namespace ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor.Inspectors
 {
     [CustomEditor(typeof(ComposableObject), true)]
     public class ComposableObjectEditor : UnityEditor.Editor
@@ -289,7 +289,7 @@ namespace ThunderKit.Core.Editor
 
             if (AddComposableElementWindow.HasAssetToAdd())
                 AddComposableElementWindow.Backup(CreateFromScript);
-            //AddScriptWindow.Show(rect, composableObject.ElementType, CreateFromScript, Filter, composableObject.ElementTemplate);
+
             if (GUI.Button(rect, $"Add {ObjectNames.NicifyVariableName(composableObject.ElementType.Name)}"))
             {
                 if (popup && Event.current.modifiers.HasFlag(EventModifiers.Control))

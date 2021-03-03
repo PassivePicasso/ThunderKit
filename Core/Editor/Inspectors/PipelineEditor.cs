@@ -1,10 +1,9 @@
-﻿using ThunderKit.Core.Editor.Controls;
-using ThunderKit.Core.Pipelines;
+﻿using ThunderKit.Core.Pipelines;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 
-namespace ThunderKit.Core.Editor
+namespace ThunderKit.Core.Editor.Inspectors
 {
     [CustomEditor(typeof(Pipeline), true)]
     public class PipelineEditor : ComposableObjectEditor

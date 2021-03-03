@@ -21,7 +21,6 @@ namespace ThunderKit.Integrations.Thunderstore
 
         internal static List<PackageListing> loadedPackages;
 
-        [MenuItem(Common.Constants.ThunderKitMenuRoot + "Refresh Thunderstore", priority = Common.Constants.ThunderKitMenuPriority)]
         [InitializeOnLoadMethod]
         public static void LoadPages()
         {
