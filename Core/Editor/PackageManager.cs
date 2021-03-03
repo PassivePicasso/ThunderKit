@@ -7,6 +7,7 @@ using ThunderKit.Core.Editor.Actions;
 using UnityEditor;
 using UnityEngine;
 using PackageSource = ThunderKit.Core.Data.PackageSource;
+using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -72,7 +73,13 @@ namespace ThunderKit.Core.Editor
                 var source = packageSources[sourceIndex];
                 var packageSource = GetTemplateInstance("PackageSource");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
+                var foldOut = packageSource.Q<Foldout>();
                 var groupName = $"tkpm-package-source-{source.Name}";
+                foldOut.RegisterCallback<ChangeEvent<bool>>(OnFold);
+                void OnFold(ChangeEvent<bool> evt)
+                {
+                    packageSource.ToggleInClassList("grow");
+                }
 
                 packageSource.AddToClassList("tkpm-package-source");
                 packageSource.name = groupName;
@@ -93,9 +100,9 @@ namespace ThunderKit.Core.Editor
                 packageList.bindItem = BindPackage;
 
                 packageSourceList.Add(packageSource);
-
-                UpdatePackageList();
             }
+            UpdatePackageList();
+
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssets();
         }
@@ -217,7 +224,7 @@ namespace ThunderKit.Core.Editor
             RepopulateLabels(packageView.Q("tkpm-package-tags"), selection.Tags, "tag");
 
             var selectedVersion = selection[targetVersion];
-            var pvDependencies = selectedVersion.dependencies;
+            var pvDependencies = selectedVersion.dependencies ?? Array.Empty<PackageVersion>();
             var dependencyIds = new List<string>();
             foreach (var pvd in pvDependencies)
             {

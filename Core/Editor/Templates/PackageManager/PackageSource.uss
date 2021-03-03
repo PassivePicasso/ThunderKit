@@ -17,6 +17,10 @@
 	flex-grow: 1;
 }
 
+#tkpm-package-source-foldout ListView {
+	flex-basis: auto;
+}
+
 #tkpm-package-list {
 	position-type: absolute;
 	position-left: 0px;
