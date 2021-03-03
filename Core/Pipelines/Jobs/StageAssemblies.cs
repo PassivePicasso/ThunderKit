@@ -36,25 +36,25 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (File.Exists($"{fileOutputBase}.dll")) File.Delete($"{fileOutputBase}.dll");
                 var playerBuildExists = File.Exists(Path.Combine(playerScriptAssemblies, $"{assemblyDef.name}.dll"));
                 if (playerBuildExists)
-                    File.Copy(Path.Combine(playerScriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll");
+                    File.Copy(Path.Combine(playerScriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll", true);
                 else
-                    File.Copy(Path.Combine(scriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll");
+                    File.Copy(Path.Combine(scriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll", true);
 
                 if (stageDebugDatabases)
                 {
                     if (File.Exists($"{fileOutputBase}.dll.mdb")) File.Delete($"{fileOutputBase}.dll.mdb");
-                    if (File.Exists($"{fileOutputBase}.pdb")) File.Delete($"{fileOutputBase}.pdb");
+                    if (File.Exists($"{fileOutputBase}.dll.pdb")) File.Delete($"{fileOutputBase}.dll.pdb");
 
                     string pdbPath = Path.Combine(scriptAssemblies, $"{fileName}.pdb");
                     string playerPdbPath = Path.Combine(playerScriptAssemblies, $"{fileName}.pdb");
                     string mdbPath = $"{Path.Combine(scriptAssemblies, fileName)}.dll.mdb";
                     string playerMdbPath = $"{Path.Combine(playerScriptAssemblies, fileName)}.dll.mdb";
 
-                    if (File.Exists(playerMdbPath)) File.Copy($"{Path.Combine(playerScriptAssemblies, fileName)}.dll.mdb", $"{fileOutputBase}.dll.mdb");
-                    else if (File.Exists(mdbPath)) File.Copy(mdbPath, $"{fileOutputBase}.dll.mdb");
+                    if (File.Exists(playerMdbPath)) File.Copy($"{Path.Combine(playerScriptAssemblies, fileName)}.dll.mdb", $"{fileOutputBase}.dll.mdb", true);
+                    else if (File.Exists(mdbPath)) File.Copy(mdbPath, $"{fileOutputBase}.dll.mdb", true);
 
-                    if (File.Exists(playerPdbPath)) File.Copy($"{Path.Combine(playerScriptAssemblies, fileName)}.dll.pdb", $"{fileOutputBase}.dll.pdb");
-                    else if (File.Exists(pdbPath)) File.Copy(pdbPath, $"{fileOutputBase}.dll.pdb");
+                    if (File.Exists(playerPdbPath)) File.Copy($"{Path.Combine(playerScriptAssemblies, fileName)}.dll.pdb", $"{fileOutputBase}.dll.pdb", true);
+                    else if (File.Exists(pdbPath)) File.Copy(pdbPath, $"{fileOutputBase}.dll.pdb", true);
                 }
             }
         }
