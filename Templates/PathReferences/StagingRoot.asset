@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: StagingRoot
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114731456067044302}
-  - {fileID: 114465902200567732}
---- !u!114 &114465902200567732
+  - {fileID: 114762357513803962}
+  - {fileID: 114345867015267698}
+  lastName: StagingRoot
+--- !u!114 &114345867015267698
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -28,16 +29,15 @@ MonoBehaviour:
   m_Name: Constant
   m_EditorClassIdentifier: 
   Value: Staging
---- !u!114 &114731456067044302
+--- !u!114 &114762357513803962
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
-  m_Name: Constant
+  m_Script: {fileID: 11500000, guid: 49ea6c70a35243a4c83cfceb6d9f2ce7, type: 3}
+  m_Name: ThunderKitRoot
   m_EditorClassIdentifier: 
-  Value: ThunderKit

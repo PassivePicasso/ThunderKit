@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: GamePath
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114631931597532982}
---- !u!114 &114631931597532982
+  - {fileID: 114282711146063368}
+  lastName: GamePath
+--- !u!114 &114282711146063368
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

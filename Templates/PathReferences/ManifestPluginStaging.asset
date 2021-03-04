@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: ManifestPluginStaging
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114165114685591936}
-  - {fileID: 114912304182429372}
-  - {fileID: 114244963697542286}
---- !u!114 &114165114685591936
+  - {fileID: 114245713815266146}
+  - {fileID: 114251702095050818}
+  - {fileID: 114620533827442592}
+  lastName: ManifestPluginStaging
+--- !u!114 &114245713815266146
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -28,22 +29,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ceeada0f3a252c4fa6ec9b0c93543ce, type: 3}
   m_Name: OutputReference
   m_EditorClassIdentifier: 
-  reference: {fileID: 11400000, guid: 1d3ab0caf8be7b844a9ff25cbc883f98, type: 2}
---- !u!114 &114244963697542286
+  reference: {fileID: 11400000, guid: 1d1e082f67c3f2347b004afdd825ddd9, type: 2}
+--- !u!114 &114251702095050818
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2efd008a408bd8449ad573ac2d5003ce, type: 3}
-  m_Name: ManifestName
-  m_EditorClassIdentifier: 
---- !u!114 &114912304182429372
-MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -54,3 +43,15 @@ MonoBehaviour:
   m_Name: Constant
   m_EditorClassIdentifier: 
   Value: plugins
+--- !u!114 &114620533827442592
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2efd008a408bd8449ad573ac2d5003ce, type: 3}
+  m_Name: ManifestName
+  m_EditorClassIdentifier: 
