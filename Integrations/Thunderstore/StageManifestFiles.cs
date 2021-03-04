@@ -21,7 +21,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
         {
             var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
             var identity = pipeline.Manifest.Data.OfType<ManifestIdentity>().First();
-            var manifestJson = includeManifestJson ? string.Empty : RenderJson(identity, thunderstoreData, pipeline.Manifest.name);
+            var manifestJson = includeManifestJson ? RenderJson(identity, thunderstoreData, pipeline.Manifest.name) : string.Empty;
 
             foreach (var outputPath in thunderstoreData.StagingPaths.Select(path => path.Resolve(pipeline, this)))
             {
