@@ -18,7 +18,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
     public class StageUnityPackages : PipelineJob
     {
-        public bool remapFileIds = true;
         public override void Execute(Pipeline pipeline)
         {
             var unityPackageData = pipeline.Manifest.Data.OfType<UnityPackages>().ToArray();
@@ -35,8 +34,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 })
                 .Select(path => (path, asset: AssetDatabase.LoadAssetAtPath<Object>(path)))
                 .ToArray();
-            var remappableAssets = unityObjects
-                .SelectMany(map =>
+            var remappableAssets = unityObjects.SelectMany(map =>
                 {
                     var (path, asset) = map;
                     if (asset is Preset preset)
@@ -77,16 +75,13 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 })
                 .ToArray();
 
-            if (remapFileIds)
+            foreach (var map in remappableAssets)
             {
-                foreach (var map in remappableAssets)
-                {
-                    var fileText = File.ReadAllText(map.Path);
-                    fileText = map.ToAssemblyReference.Replace(fileText, map.AssemblyReference);
-                    File.WriteAllText(map.Path, fileText);
-                }
+                var fileText = File.ReadAllText(map.Path);
+                fileText = map.ToAssemblyReference.Replace(fileText, map.AssemblyReference);
+                File.WriteAllText(map.Path, fileText);
             }
-
+            AssetDatabase.Refresh();
             foreach (var unityPackageDatum in unityPackageData)
             {
                 foreach (var outputPath in unityPackageDatum.StagingPaths.Select(path => path.Resolve(pipeline, this)))
@@ -98,15 +93,13 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 }
             }
 
-            if (remapFileIds)
+            foreach (var map in remappableAssets)
             {
-                foreach (var map in remappableAssets)
-                {
-                    var fileText = File.ReadAllText(map.Path);
-                    fileText = map.ToScriptReference.Replace(fileText, map.ScriptReference);
-                    File.WriteAllText(map.Path, fileText);
-                }
+                var fileText = File.ReadAllText(map.Path);
+                fileText = map.ToScriptReference.Replace(fileText, map.ScriptReference);
+                File.WriteAllText(map.Path, fileText);
             }
+            AssetDatabase.Refresh();
         }
     }
 }
