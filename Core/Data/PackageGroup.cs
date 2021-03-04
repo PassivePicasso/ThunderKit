@@ -72,7 +72,7 @@ namespace ThunderKit.Core.Data
                 var pmm = PackageHelper.GetPackageManagerManifest(PackageDirectory);
                 var packageVersion = this[pmm.version];
 
-                return pmm.name.Equals(packageVersion.dependencyId, StringComparison.OrdinalIgnoreCase);
+                return pmm.name.Equals(packageVersion?.dependencyId, StringComparison.OrdinalIgnoreCase);
             }
         }
 
