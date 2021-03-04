@@ -67,7 +67,7 @@ namespace ThunderKit.Integrations.Thunderstore
                             manifestJson = reader.ReadToEnd();
 
                         var tsp = JsonUtility.FromJson<PackageVersion>(manifestJson);
-                        tsp.name = tsp.name.ToLower();
+
                         var versionId = Path.GetFileNameWithoutExtension(filePath);
                         var author = versionId.Split('-')[0];
                         var groupId = $"{author}-{tsp.name}";
