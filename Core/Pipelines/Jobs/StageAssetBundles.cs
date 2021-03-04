@@ -36,33 +36,6 @@ namespace ThunderKit.Pipelines.Jobs
             var bundleArtifactPath = BundleArtifactPath.Resolve(pipeline, this);
             Directory.CreateDirectory(bundleArtifactPath);
 
-            var forbiddenAssets = new List<string>();
-            var forbiddenAssetBundles = AssetDatabase.FindAssets($"t:{nameof(ForbiddenAssetBundle)}")
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .ToArray();
-            var forbiddenBundleBuilds = new List<AssetBundleBuild>();
-
-            foreach (var forbiddenAsset in forbiddenAssetBundles)
-            {
-                var directory = Path.GetDirectoryName(forbiddenAsset);
-                if (AssetDatabase.IsValidFolder(directory))
-                {
-                    var assets = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
-                        .Select(asset => asset.Replace("\\", "/"))
-                        .Where(path => !AssetDatabase.IsValidFolder(path))
-                        .Where(dap => !excludedExtensions.Contains(Path.GetExtension(dap)))
-                        .Where(path => !AssetDatabase.IsValidFolder(path))
-                        .Distinct()
-                        .ToArray();
-                    forbiddenBundleBuilds.Add(new AssetBundleBuild
-                    {
-                        assetBundleName = Path.GetFileNameWithoutExtension(forbiddenAsset),
-                        assetNames = assets
-                    });
-                    forbiddenAssets.AddRange(assets);
-                }
-            }
-
             var builds = new AssetBundleBuild[assetBundleDefs.Sum(abd => abd.assetBundles.Length)];
             var buildsIndex = 0;
             for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
@@ -123,7 +96,6 @@ namespace ThunderKit.Pipelines.Jobs
                         .Where(dap => !excludedExtensions.Contains(Path.GetExtension(dap)))
                         .Where(ap => !sourceFiles.Contains(ap))
                         .Where(ap => !assemblyFiles.Contains(ap))
-                        .Where(asset => !forbiddenAssets.Contains(asset))
                         .Where(path => !AssetDatabase.IsValidFolder(path))
                         .Distinct()
                         .ToArray();
