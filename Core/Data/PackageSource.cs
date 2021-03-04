@@ -245,20 +245,24 @@ namespace ThunderKit.Core.Data
             Directory.CreateDirectory(tempRoot);
             foreach (var installableForManifestCreation in installSet)
             {
-                var assetTempPath = Path.Combine(tempRoot, $"{installableForManifestCreation.group.PackageName}.asset");
+                var installableGroup = installableForManifestCreation.group;
+                var assetTempPath = Path.Combine(tempRoot, $"{installableGroup.PackageName}.asset");
                 if (AssetDatabase.LoadAssetAtPath<Manifest>(assetTempPath))
                     AssetDatabase.DeleteAsset(assetTempPath);
 
                 var identity = CreateInstance<ManifestIdentity>();
                 identity.name = nameof(ManifestIdentity);
-                identity.Author = installableForManifestCreation.group.Author;
-                identity.Description = installableForManifestCreation.group.Description;
-                identity.Name = installableForManifestCreation.group.PackageName;
+                identity.Author = installableGroup.Author;
+                identity.Description = installableGroup.Description;
+                identity.Name = installableGroup.PackageName;
                 identity.Version = version;
                 var manifest = ScriptableHelper.EnsureAsset<Manifest>(assetTempPath);
                 manifest.InsertElement(identity, 0);
                 manifest.Identity = identity;
+                var manifestPath = AssetDatabase.GetAssetPath(manifest);
+                PackageHelper.WriteAssetMetaData(manifestPath, $"{manifestPath}.meta");
             }
+            AssetDatabase.Refresh();
             foreach (var installableForDependencies in installSet)
             {
                 var manifestAssetPath = Path.Combine(tempRoot, $"{installableForDependencies.group.PackageName}.asset");
