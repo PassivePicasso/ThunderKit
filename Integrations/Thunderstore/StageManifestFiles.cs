@@ -37,11 +37,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
 
                 if (includeManifestJson)
                 {
-                    manifestJson = RenderJson(identity, thunderstoreData, pipeline.Manifest.name);
                     var pluginPath = Path.Combine(outputPath, "plugins", identity.Name);
-
-                    if (Directory.Exists(pluginPath)) File.WriteAllText(Path.Combine(pluginPath, "manifest.json"), manifestJson);
-
                     File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
                 }
 
