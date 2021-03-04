@@ -96,7 +96,7 @@ namespace ThunderKit.Integrations.Thunderstore
                         var author = version_full_name.Split('-')[0];
                         var manifest = JsonUtility.FromJson<PackageVersion>(manifestJson);
                         var full_name = $"{author}-{manifest.name}";
-                        if (full_name != version.group.DependencyId) return;
+                        if (full_name != version.group.DependencyId) continue;
 
                         foreach (var entry in archive.Entries)
                         {
