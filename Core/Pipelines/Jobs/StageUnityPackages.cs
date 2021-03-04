@@ -81,7 +81,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 fileText = map.ToAssemblyReference.Replace(fileText, map.AssemblyReference);
                 File.WriteAllText(map.Path, fileText);
             }
-            AssetDatabase.Refresh();
+
             foreach (var unityPackageDatum in unityPackageData)
             {
                 foreach (var outputPath in unityPackageDatum.StagingPaths.Select(path => path.Resolve(pipeline, this)))
@@ -99,7 +99,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 fileText = map.ToScriptReference.Replace(fileText, map.ScriptReference);
                 File.WriteAllText(map.Path, fileText);
             }
-            AssetDatabase.Refresh();
         }
     }
 }
