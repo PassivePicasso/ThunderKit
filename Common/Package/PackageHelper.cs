@@ -78,8 +78,8 @@ namespace ThunderKit.Common.Package
         /// <param name="metadataPath">Path to write meta file to</param>
         public static void WriteAssemblyMetaData(string assemblyPath, string metadataPath)
         {
-            string guid = PackageHelper.GetFileNameHash(assemblyPath);
-            string metaData = PackageHelper.DefaultAssemblyMetaData(guid);
+            string guid = GetFileNameHash(assemblyPath);
+            string metaData = DefaultAssemblyMetaData(guid);
             if (File.Exists(metadataPath)) File.Delete(metadataPath);
             File.WriteAllText(metadataPath, metaData);
         }
@@ -91,8 +91,8 @@ namespace ThunderKit.Common.Package
         /// <param name="metadataPath">Path to write meta file to</param>
         public static void WriteAssetMetaData(string assetPath, string metadataPath)
         {
-            string guid = PackageHelper.GetFileNameHash(assetPath);
-            string metaData = PackageHelper.DefaultAssemblyMetaData(guid);
+            string guid = GetFileNameHash(assetPath);
+            string metaData = DefaultAssemblyMetaData(guid);
             if (File.Exists(metadataPath)) File.Delete(metadataPath);
             File.WriteAllText(metadataPath, metaData);
         }
