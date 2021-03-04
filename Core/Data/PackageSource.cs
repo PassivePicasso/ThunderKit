@@ -259,8 +259,7 @@ namespace ThunderKit.Core.Data
                 var manifest = ScriptableHelper.EnsureAsset<Manifest>(assetTempPath);
                 manifest.InsertElement(identity, 0);
                 manifest.Identity = identity;
-                var manifestPath = AssetDatabase.GetAssetPath(manifest);
-                PackageHelper.WriteAssetMetaData(manifestPath, $"{manifestPath}.meta");
+                PackageHelper.WriteAssetMetaData(assetTempPath, $"{assetTempPath}.meta");
             }
             AssetDatabase.Refresh();
             foreach (var installableForDependencies in installSet)
@@ -278,7 +277,7 @@ namespace ThunderKit.Core.Data
                     if (!manifest)
                     {
                         string[] manifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)} {installableDependency.group.PackageName}",
-                                                              new string[] { "Packages" });
+                                                              new string[] { "Assets", "Packages" });
 
                         manifest = manifests.Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<Manifest>).First();
                     }
