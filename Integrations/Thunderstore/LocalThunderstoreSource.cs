@@ -73,6 +73,8 @@ namespace ThunderKit.Integrations.Thunderstore
                         var groupId = $"{author}-{tsp.name}";
                         var versions = new[] { (tsp.version_number, versionId, tsp.dependencies) };
                         AddPackageGroup(author, tsp.name, tsp.description, groupId, Array.Empty<string>(), versions);
+                        //don't process additional manifest files
+                        break;
                     }
             }
         }
