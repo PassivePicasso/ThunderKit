@@ -19,7 +19,6 @@ MonoBehaviour:
   - {fileID: 114462066413191094}
   - {fileID: 114798003453832074}
   - {fileID: 114826556287447454}
-  - {fileID: 114902970731853360}
   - {fileID: 114183754171662738}
   - {fileID: 114472010549210220}
   - {fileID: 114798125635135374}
@@ -58,7 +57,6 @@ MonoBehaviour:
   arguments:
   - --doorstop-enable true
   - --doorstop-target "<Preloader.dll>"
-  - --LoadGameMode=TestRun
 --- !u!114 &114417224228627872
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -181,20 +179,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SourceFile: <winhttp.dll>
   DestinationFile: <GamePath>/winhttp.dll
---- !u!114 &114902970731853360
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2e56d47d72c3c54589bbb460b0429e2, type: 3}
-  m_Name: CopyFile
-  m_EditorClassIdentifier: 
-  SourceFile: Assets/LocalDevelopment/ThunderKit/BepInEx.cfg
-  DestinationFile: <BepInExDestination>/config/BepInEx.cfg
 --- !u!114 &114944339897399802
 MonoBehaviour:
   m_ObjectHideFlags: 1

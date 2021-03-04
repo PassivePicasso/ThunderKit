@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: GameExecutable
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114414722845777956}
-  - {fileID: 114917382801700578}
+  - {fileID: 114877556266927788}
+  - {fileID: 114979852580270194}
   lastName: GameExecutable
---- !u!114 &114414722845777956
+--- !u!114 &114877556266927788
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -28,9 +28,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df39480b01ece8c459c9db887486877f, type: 3}
   m_Name: GamePath
   m_EditorClassIdentifier: 
---- !u!114 &114917382801700578
+--- !u!114 &114979852580270194
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

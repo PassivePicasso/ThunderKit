@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4f773cd2b7463d44aa153647e991b43, type: 3}
-  m_Name: PWD
+  m_Name: ManifestVersion
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114288562390550650}
-  lastName: PWD
---- !u!114 &114288562390550650
+  - {fileID: 114049497066950108}
+  lastName: ManifestVersion
+--- !u!114 &114049497066950108
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -24,6 +24,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82f9860b00305774b85c0ef6b5e4b0d1, type: 3}
-  m_Name: WorkingDirectory
+  m_Script: {fileID: 11500000, guid: 41b82db3744610d4ba6a7edd9df00836, type: 3}
+  m_Name: ManifestVersion
   m_EditorClassIdentifier: 
