@@ -71,11 +71,14 @@ namespace ThunderKit.Integrations.Thunderstore
             using (var archive = new ZipArchive(fileStream))
                 foreach (var entry in archive.Entries)
                 {
-                    if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
-                        continue;
-
                     var outputPath = Path.Combine(packageDirectory, entry.FullName);
                     var outputDir = Path.GetDirectoryName(outputPath);
+                    if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
+                    {
+                        if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+                        continue;
+                    }
+
                     if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
 
                     entry.ExtractToFile(outputPath);
