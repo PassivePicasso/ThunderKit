@@ -51,26 +51,26 @@ namespace ThunderKit.Core.Data
             SelectNewAsset<UnityPackage>();
         }
 
-        [MenuItem(ExportMenuPath, true, priority = Constants.ThunderKitMenuPriority)]
-        public static bool CanExport() => Selection.activeObject is UnityPackage;
+        //[MenuItem(ExportMenuPath, true, priority = Constants.ThunderKitMenuPriority)]
+        //public static bool CanExport() => Selection.activeObject is UnityPackage;
 
-        [MenuItem(ExportMenuPath, false, priority = Constants.ThunderKitMenuPriority)]
-        public static void Export()
-        {
-            if (!(Selection.activeObject is UnityPackage redist)) return;
-            Export(redist, "Deployments");
-        }
+        //[MenuItem(ExportMenuPath, false, priority = Constants.ThunderKitMenuPriority)]
+        //public static void Export()
+        //{
+        //    if (!(Selection.activeObject is UnityPackage redist)) return;
+        //    redist.Export("Deployments");
+        //}
 
-        public static void Export(UnityPackage redist, string path)
+        public void Export(string path)
         {
-            var assetPaths = redist.AssetFiles.Select(af => AssetDatabase.GetAssetPath(af));
+            var assetPaths = AssetFiles.Select(af => AssetDatabase.GetAssetPath(af));
 
             string[] assetPathNames = assetPaths.ToArray();
-            string fileName = Path.Combine(path, $"{redist.name}.unityPackage");
-            string metaFileName = Path.Combine(path, $"{redist.name}.unityPackage.meta");
+            string fileName = Path.Combine(path, $"{name}.unityPackage");
+            string metaFileName = Path.Combine(path, $"{name}.unityPackage.meta");
             if (File.Exists(fileName)) File.Delete(fileName);
             if (File.Exists(metaFileName)) File.Delete(metaFileName);
-            AssetDatabase.ExportPackage(assetPathNames, fileName, redist.exportPackageOptions);
+            AssetDatabase.ExportPackage(assetPathNames, fileName, exportPackageOptions);
         }
     }
 }
