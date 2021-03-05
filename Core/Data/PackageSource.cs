@@ -261,7 +261,6 @@ namespace ThunderKit.Core.Data
                 manifest.Identity = identity;
                 PackageHelper.WriteAssetMetaData(assetTempPath, $"{assetTempPath}.meta");
             }
-            AssetDatabase.Refresh();
             foreach (var installableForDependencies in installSet)
             {
                 var manifestAssetPath = Path.Combine(tempRoot, $"{installableForDependencies.group.PackageName}.asset");
@@ -276,6 +275,11 @@ namespace ThunderKit.Core.Data
                     var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetTempPath);
                     if (!manifest)
                     {
+                        var dependencyAssetPackagePath = Path.Combine("Packages", installableDependency.dependencyId, $"{installableDependency.group.PackageName}.asset");
+                        manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetPackagePath);
+                    }
+                    if (!manifest)
+                    {
                         string[] manifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)} {installableDependency.group.PackageName}",
                                                               new string[] { "Assets", "Packages" });
 
@@ -283,9 +287,7 @@ namespace ThunderKit.Core.Data
                     }
                     identity.Dependencies[i] = manifest;
                 }
-                EditorUtility.SetDirty(identity);
             }
-            AssetDatabase.SaveAssets();
             foreach (var installableForManifestMove in installSet)
             {
                 var assetTempPath = Path.Combine(tempRoot, $"{installableForManifestMove.group.PackageName}.asset");
