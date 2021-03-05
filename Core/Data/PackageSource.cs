@@ -238,7 +238,7 @@ namespace ThunderKit.Core.Data
 
                 await installable.group.Source.OnInstallPackageFiles(installable, installable.group.PackageDirectory);
 
-                foreach (var assemblyPath in Directory.EnumerateFiles(installable.group.PackageDirectory, "*.dll"))
+                foreach (var assemblyPath in Directory.EnumerateFiles(installable.group.PackageDirectory, "*.dll", SearchOption.AllDirectories))
                     PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
             }
             var tempRoot = Path.Combine("Assets", "ThunderKitSettings", "Temp");
