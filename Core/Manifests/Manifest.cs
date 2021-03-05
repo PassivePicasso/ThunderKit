@@ -23,6 +23,8 @@ namespace ThunderKit.Core.Manifests
 
         public IEnumerable<Manifest> EnumerateManifests()
         {
+            if (this?.Identity?.Dependencies == null) yield break;
+
             HashSet<Manifest> returned = new HashSet<Manifest>();
             foreach (var dependency in this.Identity.Dependencies)
                 foreach (var depManifest in dependency.EnumerateManifests())
