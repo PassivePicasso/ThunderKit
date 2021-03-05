@@ -51,19 +51,11 @@ namespace ThunderKit.Core.Data
             SelectNewAsset<UnityPackage>();
         }
 
-        //[MenuItem(ExportMenuPath, true, priority = Constants.ThunderKitMenuPriority)]
-        //public static bool CanExport() => Selection.activeObject is UnityPackage;
-
-        //[MenuItem(ExportMenuPath, false, priority = Constants.ThunderKitMenuPriority)]
-        //public static void Export()
-        //{
-        //    if (!(Selection.activeObject is UnityPackage redist)) return;
-        //    redist.Export("Deployments");
-        //}
-
         public void Export(string path)
         {
             var assetPaths = AssetFiles.Select(af => AssetDatabase.GetAssetPath(af));
+            var additionalAssets = IncludedSettings.GetFlags().Select(flag => $"ProjectSettings/{flag}.asset");
+            assetPaths = assetPaths.Concat(additionalAssets);
 
             string[] assetPathNames = assetPaths.ToArray();
             string fileName = Path.Combine(path, $"{name}.unityPackage");
