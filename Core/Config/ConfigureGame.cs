@@ -37,7 +37,7 @@ namespace ThunderKit.Core.Config
 
             SetupPackageManifest(settings, packageName);
 
-            AssetDatabase.ImportAsset("Packages", ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
+            AssetDatabase.Refresh();
         }
 
         private static void SetupPackageManifest(ThunderKitSettings settings, string packageName)
