@@ -89,7 +89,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
                     foreach (var unityPackage in unityPackageDatum.unityPackages)
-                        UnityPackage.Export(unityPackage, outputPath);
+                        unityPackage.Export(outputPath);
                 }
             }
 
