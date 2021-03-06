@@ -16,7 +16,7 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.Editor.Windows
 {
-    public abstract class TemplatedWindow : EditorWindow
+    public class TemplatedWindow : EditorWindow
     {
 #if UNITY_2019_1_OR_NEWER
 #elif UNITY_2018_1_OR_NEWER
@@ -76,7 +76,7 @@ namespace ThunderKit.Core.Editor.Windows
             return instance;
         }
 
-        public virtual void OnEnable()
+        public void OnEnable()
         {
             rootVisualContainer.Clear();
             GetTemplateInstance(GetType().Name, rootVisualContainer);

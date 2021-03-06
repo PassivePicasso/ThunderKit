@@ -35,7 +35,7 @@ namespace ThunderKit.Core.Editor.Windows
         [MenuItem(Constants.ThunderKitMenuRoot + "Package Manager")]
         public static void ShowExample() => GetWindow<PackageManager>();
 
-        public override void OnEnable()
+        public void OnEnable()
         {
             Construct();
         }
