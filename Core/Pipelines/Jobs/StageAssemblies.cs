@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Data;
@@ -13,6 +14,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     public class StageAssemblies : PipelineJob
     {
         public bool stageDebugDatabases;
+        public bool preferPlayerBuilds;
 
         public override void Execute(Pipeline pipeline)
         {
@@ -21,7 +23,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     CopyReferences(asmDefs.definitions, outputPath);
         }
 
-        void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string ouptputPath)
+        void CopyReferences(AssemblyDefinitionAsset[] assemblyDefs, string outputPath)
         {
             var scriptAssemblies = Path.Combine("Library", "ScriptAssemblies");
             var playerScriptAssemblies = Path.Combine("Library", "PlayerScriptAssemblies");
@@ -29,34 +31,37 @@ namespace ThunderKit.Core.Pipelines.Jobs
             foreach (var definition in assemblyDefs)
             {
                 var assemblyDef = JsonUtility.FromJson<AssemblyDef>(definition.text);
-                var fileOutputBase = Path.Combine(ouptputPath, assemblyDef.name);
+                var fileOutputBase = Path.Combine(outputPath, assemblyDef.name);
                 var fileName = Path.GetFileName(fileOutputBase);
-                Directory.CreateDirectory(Path.GetDirectoryName(fileOutputBase));
-
-                if (File.Exists($"{fileOutputBase}.dll")) File.Delete($"{fileOutputBase}.dll");
-
-                var playerBuildExists = File.Exists(Path.Combine(playerScriptAssemblies, $"{assemblyDef.name}.dll"));
-                if (playerBuildExists)
-                    File.Copy(Path.Combine(playerScriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll", true);
-                else
-                    File.Copy(Path.Combine(scriptAssemblies, $"{assemblyDef.name}.dll"), $"{fileOutputBase}.dll", true);
-
+                Directory.CreateDirectory(outputPath);
                 if (stageDebugDatabases)
                 {
-                    if (File.Exists($"{fileOutputBase}.dll.mdb")) File.Delete($"{fileOutputBase}.dll.mdb");
-                    if (File.Exists($"{fileOutputBase}.dll.pdb")) File.Delete($"{fileOutputBase}.dll.pdb");
-
-                    string pdbPath = Path.Combine(scriptAssemblies, $"{fileName}.dll.pdb");
-                    string mdbPath = Path.Combine(scriptAssemblies, $"{fileName}.dll.mdb");
-                    string playerPdbPath = Path.Combine(playerScriptAssemblies, $"{fileName}.dll.pdb");
-                    string playerMdbPath = Path.Combine(playerScriptAssemblies, $"{fileName}.dll.mdb");
-
-                    if (File.Exists(playerMdbPath)) File.Copy(playerMdbPath, $"{fileOutputBase}.dll.mdb", true);
-                    else if (File.Exists(mdbPath)) File.Copy(mdbPath, $"{fileOutputBase}.dll.mdb", true);
-
-                    if (File.Exists(playerPdbPath)) File.Copy(playerPdbPath, $"{fileOutputBase}.dll.pdb", true);
-                    else if (File.Exists(pdbPath)) File.Copy(pdbPath, $"{fileOutputBase}.dll.pdb", true);
+                    CopyFiles(scriptAssemblies, outputPath, $"{fileName}*.pdb", $"{fileName}*.mdb", $"{fileName}*.dll");
+                    if (preferPlayerBuilds)
+                        CopyFiles(playerScriptAssemblies, outputPath, $"{fileName}*.pdb", $"{fileName}*.mdb", $"{fileName}*.dll");
                 }
+                else
+                {
+                    CopyFiles(scriptAssemblies, outputPath, $"{fileName}*.dll");
+                    if (preferPlayerBuilds)
+                        CopyFiles(playerScriptAssemblies, outputPath, $"{fileName}*.dll");
+                }
+            }
+        }
+
+
+        void CopyFiles(string path, string outputPath, params string[] patterns)
+        {
+            Directory.CreateDirectory(outputPath);
+            var targetFiles = from pattern in patterns
+                              from file in Directory.EnumerateFiles(path, pattern, SearchOption.AllDirectories)
+                              select file;
+            foreach (var file in targetFiles)
+            {
+                var fileName = Path.GetFileName(file);
+                if (File.Exists(outputPath)) File.Delete(outputPath);
+
+                File.Copy(file, outputPath, true);
             }
         }
     }
