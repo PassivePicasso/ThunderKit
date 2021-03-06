@@ -43,10 +43,7 @@ namespace ThunderKit.Core.Editor.Windows
             {
                 return path =>
                 {
-                    var templateRoot = Path.Combine("Assets", "ThunderKit").Replace("\\", "/");
-                    var isInTemplateRoot = path.StartsWith(templateRoot);
-                    var isInTemplates = Path.GetFileNameWithoutExtension(path) != "Templates" && path.Contains("Templates");
-                    return isInTemplateRoot && isInTemplates;
+                    return Path.GetFileNameWithoutExtension(path) != "Templates" && path.Contains("Templates");
                 };
             }
         }
@@ -93,7 +90,6 @@ namespace ThunderKit.Core.Editor.Windows
             {
                 var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
                 var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
-                var assetsRoot = Path.Combine("Assets", "ThunderKit");
                 var packagesRoot = Path.Combine("Packages", Constants.ThunderKitPackageName);
                 var templatePath = assetPaths
                     .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))
