@@ -5,6 +5,7 @@ using System.Linq;
 using ThunderKit.Common;
 using UnityEditor;
 using UnityEngine;
+using System.Reflection;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -17,6 +18,25 @@ namespace ThunderKit.Core.Editor.Windows
 {
     public class TemplatedWindow : EditorWindow
     {
+#if UNITY_2019_1_OR_NEWER
+#elif UNITY_2018_1_OR_NEWER
+        FieldInfo rvcField;
+        VisualElement rvc;
+        protected VisualElement rootVisualContainer
+        {
+            get
+            {
+                if (rvcField == null)
+                    rvcField = typeof(EditorWindow)
+                               .GetField(nameof(rootVisualContainer), BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if(rvc == null)
+                    rvc = rvcField.GetValue(this) as VisualElement;
+
+                return rvc;
+            }
+        }
+#endif
         private readonly static string[] SearchFolders = new string[] { "Assets", "Packages" };
 
         [SerializeField] public Texture2D ThunderKitIcon;
