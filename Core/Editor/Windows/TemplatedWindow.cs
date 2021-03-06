@@ -67,21 +67,29 @@ namespace ThunderKit.Core.Editor.Windows
 
             instance.AddToClassList("grow");
 
-#if UNITY_2019_1_OR_NEWER
-#elif UNITY_2018_1_OR_NEWER
             AddSheet(instance, assetPath);
+            AddSheet(instance, assetPath, "_style");
             if (EditorGUIUtility.isProSkin)
                 AddSheet(instance, assetPath, "_Dark");
             else
                 AddSheet(instance, assetPath, "_Light");
-#endif
             return instance;
+        }
+
+        public virtual void OnEnable()
+        {
+            rootVisualContainer.Clear();
+            GetTemplateInstance(GetType().Name, rootVisualContainer);
+            rootVisualContainer.Bind(new SerializedObject(this));
         }
 
         protected void AddSheet(VisualElement element, string assetPath, string modifier = "")
         {
+#if UNITY_2019_1_OR_NEWER
+#elif UNITY_2018_1_OR_NEWER
             string sheetPath = assetPath.Replace(".uxml", $"{modifier}.uss");
             if (File.Exists(sheetPath)) element.AddStyleSheetPath(sheetPath);
+#endif
         }
 
         protected VisualTreeAsset LoadTemplate(string name)
