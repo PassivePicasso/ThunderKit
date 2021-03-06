@@ -16,7 +16,7 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.Editor.Windows
 {
-    public class TemplatedWindow : EditorWindow
+    public abstract class TemplatedWindow : EditorWindow
     {
 #if UNITY_2019_1_OR_NEWER
 #elif UNITY_2018_1_OR_NEWER
@@ -30,13 +30,27 @@ namespace ThunderKit.Core.Editor.Windows
                     rvcField = typeof(EditorWindow)
                                .GetProperty(nameof(rootVisualContainer), BindingFlags.NonPublic | BindingFlags.Instance);
 
-                if(rvc == null)
+                if (rvc == null)
                     rvc = rvcField.GetValue(this) as VisualElement;
 
                 return rvc;
             }
         }
 #endif
+        protected virtual Func<string, bool> IsTemplatePath
+        {
+            get
+            {
+                return path =>
+                {
+                    var templateRoot = Path.Combine("Assets", "ThunderKit").Replace("\\", "/");
+                    var isInTemplateRoot = path.StartsWith(templateRoot);
+                    var isInTemplates = Path.GetFileNameWithoutExtension(path) != "Templates" && path.Contains("Templates");
+                    return isInTemplateRoot && isInTemplates;
+                };
+            }
+        }
+
         private readonly static string[] SearchFolders = new string[] { "Assets", "Packages" };
 
         [SerializeField] public Texture2D ThunderKitIcon;
@@ -78,15 +92,14 @@ namespace ThunderKit.Core.Editor.Windows
             if (!templateCache.ContainsKey(name))
             {
                 var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
-                var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath);
+                var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
                 var assetsRoot = Path.Combine("Assets", "ThunderKit");
                 var packagesRoot = Path.Combine("Packages", Constants.ThunderKitPackageName);
                 var templatePath = assetPaths
                     .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))
                     .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
-                    .Where(path => path.StartsWith(assetsRoot) || path.StartsWith(packagesRoot)
-                                || path.StartsWith(assetsRoot.Replace("\\", "/")) || path.StartsWith(packagesRoot.Replace("\\", "/")))
-                                             .FirstOrDefault(path => path.Contains("Templates/") || path.Contains("Templates\\"));
+                    .Where(IsTemplatePath)
+                    .FirstOrDefault();
                 templateCache[name] = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
             }
             return templateCache[name];
