@@ -44,7 +44,6 @@ namespace ThunderKit.Core.Editor.Windows
             }
         }
 
-        private VisualElement root;
         public bool StaysOpen = false;
         public string ScriptTemplate;
         public string ScriptPath;
@@ -98,22 +97,21 @@ namespace ThunderKit.Core.Editor.Windows
 
         private void Construct()
         {
-            root = this.GetRootVisualContainer();
-            root.Clear();
+            rootVisualContainer.Clear();
 
-            GetTemplateInstance("AddComponentView", root);
+            GetTemplateInstance("AddComponentView", rootVisualContainer);
 
-            scriptList = root.Q<ListView>("script-list");
+            scriptList = rootVisualContainer.Q<ListView>("script-list");
             scriptList.makeItem = MakeComponentView;
             scriptList.bindItem = BindComponentView;
             scriptList.onItemChosen += OnChoose;
 
-            searchField = root.Q<TextField>("searchField");
+            searchField = rootVisualContainer.Q<TextField>("searchField");
             searchField.RegisterCallback<ChangeEvent<string>>(OnSearchText);
             searchField.SetValueWithoutNotify(SearchString);
             searchField.RegisterCallback<AttachToPanelEvent>(OnAttach);
 
-            var newScriptButton = root.Q<Button>("new-script-button");
+            var newScriptButton = rootVisualContainer.Q<Button>("new-script-button");
 
             newScriptButton.clickable.clickedWithEventInfo += OnNewScript;
         }
@@ -143,22 +141,22 @@ namespace ThunderKit.Core.Editor.Windows
 
         private void OnNewScript(EventBase obj)
         {
-            root.Clear();
+            rootVisualContainer.Clear();
 
-            GetTemplateInstance("CreateComponentView", root);
+            GetTemplateInstance("CreateComponentView", rootVisualContainer);
 
-            var createScriptButton = root.Q<Button>("create-script-button");
+            var createScriptButton = rootVisualContainer.Q<Button>("create-script-button");
             createScriptButton.clickable.clickedWithEventInfo += OnCreateScript;
-            var backButton = root.Q<Button>("back-button");
+            var backButton = rootVisualContainer.Q<Button>("back-button");
             backButton.clickable.clickedWithEventInfo += OnBackButton;
 
 
-            folderList = root.Q<ListView>("folder-list");
+            folderList = rootVisualContainer.Q<ListView>("folder-list");
             folderList.selectionType = SelectionType.None;
             folderList.makeItem = MakeFolderView;
             folderList.bindItem = BindFolderView;
 
-            nameField = root.Q<TextField>("nameField");
+            nameField = rootVisualContainer.Q<TextField>("nameField");
             nameField.RegisterCallback<ChangeEvent<string>>(OnNameComponent);
             nameField.RegisterCallback<AttachToPanelEvent>(OnAttach);
             nameField.value = SearchString = ScriptPath = string.Empty;

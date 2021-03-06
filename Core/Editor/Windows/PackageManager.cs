@@ -24,7 +24,6 @@ namespace ThunderKit.Core.Editor.Windows
         private Button searchBoxCancel;
         private Button filtersButton;
         private TextField searchBox;
-        private VisualElement root;
 
         private string targetVersion;
         Dictionary<string, bool> tagEnabled = new Dictionary<string, bool>();
@@ -44,15 +43,14 @@ namespace ThunderKit.Core.Editor.Windows
         private void Construct()
         {
             titleContent = new GUIContent("Packages", ThunderKitIcon, "");
-            root = this.GetRootVisualContainer();
-            root.Clear();
+            rootVisualContainer.Clear();
 
-            GetTemplateInstance("PackageManagerData", root);
+            GetTemplateInstance("PackageManagerData", rootVisualContainer);
 
-            packageView = root.Q("tkpm-package-view");
-            searchBox = root.Q<TextField>("tkpm-search-textfield");
-            searchBoxCancel = root.Q<Button>("tkpm-search-cancelbutton");
-            filtersButton = root.Q<Button>("tkpm-filters-selector");
+            packageView = rootVisualContainer.Q("tkpm-package-view");
+            searchBox = rootVisualContainer.Q<TextField>("tkpm-search-textfield");
+            searchBoxCancel = rootVisualContainer.Q<Button>("tkpm-search-cancelbutton");
+            filtersButton = rootVisualContainer.Q<Button>("tkpm-filters-selector");
 
             searchBox.RegisterCallback<ChangeEvent<string>>(OnSearchText);
             searchBox.SetValueWithoutNotify(SearchString);
@@ -62,7 +60,7 @@ namespace ThunderKit.Core.Editor.Windows
 
             GetTemplateInstance("PackageView", packageView);
 
-            var packageSourceList = root.Q(name = "tkpm-package-source-list");
+            var packageSourceList = rootVisualContainer.Q(name = "tkpm-package-source-list");
             var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
                                               .Select(AssetDatabase.GUIDToAssetPath)
                                               .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
@@ -143,7 +141,7 @@ namespace ThunderKit.Core.Editor.Windows
             for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
             {
                 var source = packageSources[sourceIndex];
-                var packageSource = root.Q($"tkpm-package-source-{source.Name}");
+                var packageSource = rootVisualContainer.Q($"tkpm-package-source-{source.Name}");
                 var headerLabel = packageSource.Q<Label>("tkpm-package-source-label");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
 
