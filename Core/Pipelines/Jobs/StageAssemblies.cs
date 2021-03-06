@@ -59,9 +59,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             foreach (var file in targetFiles)
             {
                 var fileName = Path.GetFileName(file);
-                if (File.Exists(outputPath)) File.Delete(outputPath);
-
-                File.Copy(file, outputPath, true);
+                File.Copy(file, Path.Combine(outputPath, fileName), true);
             }
         }
     }
