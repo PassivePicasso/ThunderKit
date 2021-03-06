@@ -69,7 +69,7 @@ namespace ThunderKit.Core.Editor.Windows
         private ListView folderList;
         private TextField nameField;
 
-        public override void OnEnable()
+        public void OnEnable()
         {
             Construct();
         }
