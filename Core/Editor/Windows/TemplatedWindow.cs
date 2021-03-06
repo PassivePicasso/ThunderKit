@@ -20,7 +20,7 @@ namespace ThunderKit.Core.Editor.Windows
     {
 #if UNITY_2019_1_OR_NEWER
 #elif UNITY_2018_1_OR_NEWER
-        FieldInfo rvcField;
+        PropertyInfo rvcField;
         VisualElement rvc;
         protected VisualElement rootVisualContainer
         {
@@ -28,7 +28,7 @@ namespace ThunderKit.Core.Editor.Windows
             {
                 if (rvcField == null)
                     rvcField = typeof(EditorWindow)
-                               .GetField(nameof(rootVisualContainer), BindingFlags.NonPublic | BindingFlags.Instance);
+                               .GetProperty(nameof(rootVisualContainer), BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if(rvc == null)
                     rvc = rvcField.GetValue(this) as VisualElement;
@@ -55,12 +55,15 @@ namespace ThunderKit.Core.Editor.Windows
                 packageTemplate.CloneTree(instance, null);
 
             instance.AddToClassList("grow");
+
+#if UNITY_2019_1_OR_NEWER
+#elif UNITY_2018_1_OR_NEWER
             AddSheet(instance, assetPath);
             if (EditorGUIUtility.isProSkin)
                 AddSheet(instance, assetPath, "_Dark");
             else
                 AddSheet(instance, assetPath, "_Light");
-
+#endif
             return instance;
         }
 
