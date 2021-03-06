@@ -28,9 +28,13 @@ namespace ThunderKit.Core.Data
             LoadAllAssemblies(null, null);
         }
 
-        static void LoadAllAssemblies(string arg1, CompilerMessage[] arg2)
+        private static string[] CopyFilePatterns = new[] { "*.dll", "*.mdb", "*.pdb" };
+        static void LoadAllAssemblies(string somevalue, CompilerMessage[] message)
         {
-            foreach (var file in Directory.EnumerateFiles("Packages", "*.dll", SearchOption.AllDirectories))
+            var targetFiles = from pattern in CopyFilePatterns
+                              from file in Directory.EnumerateFiles("Packages", pattern, SearchOption.AllDirectories)
+                              select file;
+            foreach (var file in targetFiles)
             {
                 var fileName = Path.GetFileName(file);
                 var outputPath = Path.Combine("Library", "ScriptAssemblies", fileName);
@@ -39,6 +43,7 @@ namespace ThunderKit.Core.Data
                 File.Copy(file, outputPath, true);
             }
         }
+
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Create Settings", priority = Constants.ThunderKitMenuPriority)]
         public static void CreateSettings() => GetOrCreateSettings<ThunderKitSettings>();
@@ -53,6 +58,9 @@ namespace ThunderKit.Core.Data
 
         [SerializeField]
         public bool Is64Bit;
+
+        [SerializeField]
+        public bool CopyDebugDatabases;
 
         public override void Initialize() => GamePath = "";
 
