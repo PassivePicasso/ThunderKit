@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using ThunderKit.Core.Editor.Controls;
 using System.IO;
+using System.Reflection;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -19,6 +20,8 @@ namespace ThunderKit.Core.Editor.Windows
 {
     public class AddComposableElementWindow : TemplatedWindow
     {
+        private const BindingFlags nonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
+
         //public static void ShowPopup() => 
         static AddComposableElementWindow _instance;
         public static bool HasAssetToAdd()
@@ -156,7 +159,25 @@ namespace ThunderKit.Core.Editor.Windows
         private void BindComponentView(VisualElement element, int index)
         {
             element.Q<Label>("script-name").text = monoScripts[index].name;
-            element.Q<Image>("script-icon").image = ScriptIcon;
+            var scriptIcon = element.Q<Image>("script-icon");
+            object[] args = new[] { monoScripts[index] };
+            try
+            {
+                var iconA = typeof(EditorGUIUtility).GetMethod("GetIconForObject", nonPublicStatic).Invoke(null, args) as Texture2D;
+                scriptIcon.image = iconA;
+            }
+            catch { }
+
+            if (scriptIcon.image.value == null)
+                try
+                {
+                    var iconB = typeof(EditorGUIUtility).InvokeMember("GetIconForObject", nonPublicStatic, null, null, args) as Texture2D;
+                    scriptIcon.image = iconB;
+                }
+                catch { }
+
+            if (scriptIcon.image.value == null)
+                element.Q<Image>("script-icon").image = ScriptIcon;
         }
 
         private void OnNewScript(EventBase obj)
