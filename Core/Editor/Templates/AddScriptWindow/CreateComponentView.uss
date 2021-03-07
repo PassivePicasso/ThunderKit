@@ -63,7 +63,9 @@
 	padding-bottom: 0px;
 }
 .searchfield {
+	height: 15px;
 	flex-grow: 1;
+	flex-shrink: 1;
 	-unity-slice-top: 1;
 	-unity-slice-left: 14;
 	-unity-slice-bottom: 1;
