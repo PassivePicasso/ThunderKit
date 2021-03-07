@@ -17,6 +17,7 @@
 }
 ListView .selected {
 	background-color: #3E7DE7;
+	color: #fff;
 }
 #tkpm-package-name {
 	width: 190px;
@@ -44,4 +45,7 @@ ListView .selected {
 }
 ListView :selected {
 	background-color: #888;
+}
+ListView :selected .textElement {
+	color: #eee;
 }
