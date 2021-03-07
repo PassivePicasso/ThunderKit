@@ -22,13 +22,13 @@ namespace ThunderKit.Core.Editor.Windows
 #elif UNITY_2018_1_OR_NEWER
         PropertyInfo rvcField;
         VisualElement rvc;
-        protected VisualElement rootVisualContainer
+        protected VisualElement rootVisualElement
         {
             get
             {
                 if (rvcField == null)
                     rvcField = typeof(EditorWindow)
-                               .GetProperty(nameof(rootVisualContainer), BindingFlags.NonPublic | BindingFlags.Instance);
+                               .GetProperty(nameof(rootVisualElement), BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if (rvc == null)
                     rvc = rvcField.GetValue(this) as VisualElement;
@@ -78,9 +78,9 @@ namespace ThunderKit.Core.Editor.Windows
 
         public virtual void OnEnable()
         {
-            rootVisualContainer.Clear();
-            GetTemplateInstance(GetType().Name, rootVisualContainer);
-            rootVisualContainer.Bind(new SerializedObject(this));
+            rootVisualElement.Clear();
+            GetTemplateInstance(GetType().Name, rootVisualElement);
+            rootVisualElement.Bind(new SerializedObject(this));
         }
 
         protected void AddSheet(VisualElement element, string assetPath, string modifier = "")
