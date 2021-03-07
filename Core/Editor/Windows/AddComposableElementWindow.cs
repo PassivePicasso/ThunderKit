@@ -167,8 +167,11 @@ namespace ThunderKit.Core.Editor.Windows
                 scriptIcon.image = iconA;
             }
             catch { }
-
+#if UNITY_2019_1_OR_NEWER
+            if (scriptIcon.image == null)
+#elif UNITY_2018_1_OR_NEWER
             if (scriptIcon.image.value == null)
+#endif
                 try
                 {
                     var iconB = typeof(EditorGUIUtility).InvokeMember("GetIconForObject", nonPublicStatic, null, null, args) as Texture2D;
@@ -176,8 +179,12 @@ namespace ThunderKit.Core.Editor.Windows
                 }
                 catch { }
 
+#if UNITY_2019_1_OR_NEWER
+            if (scriptIcon.image == null)
+#elif UNITY_2018_1_OR_NEWER
             if (scriptIcon.image.value == null)
-                element.Q<Image>("script-icon").image = ScriptIcon;
+#endif
+                scriptIcon.image = ScriptIcon;
         }
 
         private void OnNewScript(EventBase obj)
