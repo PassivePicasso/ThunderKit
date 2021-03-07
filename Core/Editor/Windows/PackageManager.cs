@@ -43,14 +43,14 @@ namespace ThunderKit.Core.Editor.Windows
         private void Construct()
         {
             titleContent = new GUIContent("Packages", ThunderKitIcon, "");
-            rootVisualContainer.Clear();
+            rootVisualElement.Clear();
 
-            GetTemplateInstance("PackageManagerData", rootVisualContainer);
+            GetTemplateInstance("PackageManagerData", rootVisualElement);
 
-            packageView = rootVisualContainer.Q("tkpm-package-view");
-            searchBox = rootVisualContainer.Q<TextField>("tkpm-search-textfield");
-            searchBoxCancel = rootVisualContainer.Q<Button>("tkpm-search-cancelbutton");
-            filtersButton = rootVisualContainer.Q<Button>("tkpm-filters-selector");
+            packageView = rootVisualElement.Q("tkpm-package-view");
+            searchBox = rootVisualElement.Q<TextField>("tkpm-search-textfield");
+            searchBoxCancel = rootVisualElement.Q<Button>("tkpm-search-cancelbutton");
+            filtersButton = rootVisualElement.Q<Button>("tkpm-filters-selector");
 
             searchBox.RegisterCallback<ChangeEvent<string>>(OnSearchText);
             searchBox.SetValueWithoutNotify(SearchString);
@@ -60,7 +60,7 @@ namespace ThunderKit.Core.Editor.Windows
 
             GetTemplateInstance("PackageView", packageView);
 
-            var packageSourceList = rootVisualContainer.Q(name = "tkpm-package-source-list");
+            var packageSourceList = rootVisualElement.Q(name = "tkpm-package-source-list");
             var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
                                               .Select(AssetDatabase.GUIDToAssetPath)
                                               .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
@@ -141,7 +141,7 @@ namespace ThunderKit.Core.Editor.Windows
             for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
             {
                 var source = packageSources[sourceIndex];
-                var packageSource = rootVisualContainer.Q($"tkpm-package-source-{source.Name}");
+                var packageSource = rootVisualElement.Q($"tkpm-package-source-{source.Name}");
                 var headerLabel = packageSource.Q<Label>("tkpm-package-source-label");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
 
