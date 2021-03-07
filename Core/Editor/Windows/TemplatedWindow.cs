@@ -61,9 +61,16 @@ namespace ThunderKit.Core.Editor.Windows
             var packageTemplate = LoadTemplate(template);
             var assetPath = AssetDatabase.GetAssetPath(packageTemplate);
             VisualElement instance = target;
+
+#if UNITY_2019_1_OR_NEWER
+            if (instance == null) instance = packageTemplate.CloneTree();
+            else
+                packageTemplate.CloneTree(instance);
+#elif UNITY_2018_1_OR_NEWER
             if (instance == null) instance = packageTemplate.CloneTree(null);
             else
                 packageTemplate.CloneTree(instance, null);
+#endif
 
             instance.AddToClassList("grow");
 
