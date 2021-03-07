@@ -2,6 +2,7 @@
 using System;
 using UnityEditor;
 using System.Linq;
+using System.Collections.Generic;
 using ThunderKit.Core.Editor.Controls;
 using System.IO;
 #if UNITY_2019_1_OR_NEWER
@@ -104,8 +105,12 @@ namespace ThunderKit.Core.Editor.Windows
             scriptList = rootVisualElement.Q<ListView>("script-list");
             scriptList.makeItem = MakeComponentView;
             scriptList.bindItem = BindComponentView;
-            scriptList.onItemChosen += OnChoose;
 
+#if UNITY_2020_1_OR_NEWER
+            scriptList.onItemsChosen += OnChoose;
+#elif UNITY_2018_1_OR_NEWER
+            scriptList.onItemChosen += OnChoose;
+#endif
             searchField = rootVisualElement.Q<TextField>("searchField");
             searchField.RegisterCallback<ChangeEvent<string>>(OnSearchText);
             searchField.SetValueWithoutNotify(SearchString);
@@ -115,12 +120,23 @@ namespace ThunderKit.Core.Editor.Windows
 
             newScriptButton.clickable.clickedWithEventInfo += OnNewScript;
         }
+
+#if UNITY_2020_1_OR_NEWER
+        private void OnChoose(IEnumerable<object> objs)
+        {
+            var obj = objs.First();
+            Create?.Invoke(obj as MonoScript);
+            Close();
+            DestroyImmediate(this);
+        }
+#elif UNITY_2018_1_OR_NEWER
         private void OnChoose(object obj)
         {
             Create?.Invoke(obj as MonoScript);
             Close();
             DestroyImmediate(this);
         }
+#endif
 
         private void OnAttach(AttachToPanelEvent evt) => (evt.currentTarget as Focusable)?.Focus();
 
