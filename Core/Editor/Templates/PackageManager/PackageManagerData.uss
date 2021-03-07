@@ -139,7 +139,7 @@
 
 #tkpm-package-name {
 	font-size: 11px;
-	font-style: italic;
+	-unity-font-style: italic;
 }
 
 #tkpm-package-title {
