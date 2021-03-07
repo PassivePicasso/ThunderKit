@@ -63,12 +63,12 @@ namespace ThunderKit.Core.Editor.Windows
         public Func<MonoScript, ScriptableObject> Create { get; internal set; }
 
         private ListView scriptList;
-        private Type baseType;
         private MonoScript[] monoScripts;
         private string SearchString;
         private TextField searchField;
         private ListView folderList;
         private TextField nameField;
+        public Texture2D ScriptIcon;
 
         public override void OnEnable()
         {
@@ -153,7 +153,11 @@ namespace ThunderKit.Core.Editor.Windows
             return element;
         }
 
-        private void BindComponentView(VisualElement element, int index) => element.Q<Label>("script-name").text = monoScripts[index].name;
+        private void BindComponentView(VisualElement element, int index)
+        {
+            element.Q<Label>("script-name").text = monoScripts[index].name;
+            element.Q<Image>("script-icon").image = ScriptIcon;
+        }
 
         private void OnNewScript(EventBase obj)
         {
