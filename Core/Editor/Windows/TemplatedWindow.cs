@@ -92,11 +92,16 @@ namespace ThunderKit.Core.Editor.Windows
 
         protected void AddSheet(VisualElement element, string assetPath, string modifier = "")
         {
-#if UNITY_2019_1_OR_NEWER
-#elif UNITY_2018_1_OR_NEWER
             string sheetPath = assetPath.Replace(".uxml", $"{modifier}.uss");
-            if (File.Exists(sheetPath)) element.AddStyleSheetPath(sheetPath);
+            if (File.Exists(sheetPath))
+            {
+#if UNITY_2019_1_OR_NEWER
+               var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath);
+               element.styleSheets.Add(styleSheet);
+#elif UNITY_2018_1_OR_NEWER
+                element.AddStyleSheetPath(sheetPath);
 #endif
+            }
         }
 
         protected VisualTreeAsset LoadTemplate(string name)
