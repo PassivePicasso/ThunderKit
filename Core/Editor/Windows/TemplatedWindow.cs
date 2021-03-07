@@ -28,7 +28,7 @@ namespace ThunderKit.Core.Editor.Windows
             {
                 if (rvcField == null)
                     rvcField = typeof(EditorWindow)
-                               .GetProperty(nameof(rootVisualElement), BindingFlags.NonPublic | BindingFlags.Instance);
+                               .GetProperty("rootVisualContainer", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if (rvc == null)
                     rvc = rvcField.GetValue(this) as VisualElement;
