@@ -29,11 +29,11 @@
 	flex-grow: 1;
 }
 #tkpm-package-dependencies-label {
-	font-style: bold;
+	-unity-font-style: bold;
 }
 
 #tkpm-package-tags-label {
-	font-style: bold;
+	-unity-font-style: bold;
 }
 
 #tkpm-package-description {
@@ -58,5 +58,5 @@
 
 .dependency {
 	font-size: 11px;
-	font-style: italic;
+	-unity-font-style: italic;
 }
