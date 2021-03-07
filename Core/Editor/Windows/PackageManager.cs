@@ -79,6 +79,7 @@ namespace ThunderKit.Core.Editor.Windows
                 }
 
                 packageSource.AddToClassList("tkpm-package-source");
+                packageSource.AddToClassList("grow");
                 packageSource.name = groupName;
                 packageSource.userData = source;
 
