@@ -16,6 +16,10 @@
 	padding-left: 4px;
 	padding-right: 4px;
 	padding-bottom: 0px;
+	-unity-slice-left: 1;
+	-unity-slice-top: 1;
+	-unity-slice-right: 1;
+	-unity-slice-bottom: 1;
 }
 
 #tkpm-package-view {
