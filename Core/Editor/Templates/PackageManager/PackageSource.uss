@@ -34,3 +34,8 @@
 	margin-left: 0px;
 	flex-grow: 1;
 }
+.unity-foldout__content {
+	margin-top: 4px;
+	margin-left: 0px;
+	flex-grow: 1;
+}

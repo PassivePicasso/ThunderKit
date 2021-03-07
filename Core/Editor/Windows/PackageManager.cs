@@ -75,11 +75,13 @@ namespace ThunderKit.Core.Editor.Windows
                 foldOut.RegisterCallback<ChangeEvent<bool>>(OnFold);
                 void OnFold(ChangeEvent<bool> evt)
                 {
-                    packageSource.ToggleInClassList("grow");
+                    if (evt.newValue)
+                        packageSource.AddToClassList("grow");
+                    else
+                        packageSource.RemoveFromClassList("grow");
                 }
 
                 packageSource.AddToClassList("tkpm-package-source");
-                packageSource.AddToClassList("grow");
                 packageSource.name = groupName;
                 packageSource.userData = source;
 
