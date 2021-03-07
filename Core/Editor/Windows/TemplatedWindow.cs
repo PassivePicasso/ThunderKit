@@ -76,6 +76,14 @@ namespace ThunderKit.Core.Editor.Windows
 
             AddSheet(instance, assetPath);
             AddSheet(instance, assetPath, "_style");
+#if UNITY_2020_1_OR_NEWER
+            AddSheet(instance, assetPath, "_2020");
+#elif UNITY_2019_1_OR_NEWER
+            AddSheet(instance, assetPath, "_2019");
+#elif UNITY_2018_1_OR_NEWER
+            AddSheet(instance, assetPath, "_2018");
+#endif
+
             if (EditorGUIUtility.isProSkin)
                 AddSheet(instance, assetPath, "_Dark");
             else
