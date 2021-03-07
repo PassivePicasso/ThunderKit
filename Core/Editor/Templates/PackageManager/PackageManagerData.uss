@@ -96,6 +96,7 @@
 	flex-grow: 1;
 }
 #tkpm-filters-selector {
+	margin-left: 1px;
 	padding-top: 0px;
 	padding-left: 4px;
 	padding-right: 4px;
