@@ -95,7 +95,20 @@
 	border-right-width: 1px;
 	flex-grow: 1;
 }
-
+#tkpm-filters-selector {
+	padding-top: 0px;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-bottom: 0px;
+	-unity-slice-left: 1;
+	-unity-slice-top: 1;
+	-unity-slice-right: 1;
+	-unity-slice-bottom: 1;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
 #tkpm-search-cancelbutton {
 	margin-left: 0px;
 	margin-right: 4px;
