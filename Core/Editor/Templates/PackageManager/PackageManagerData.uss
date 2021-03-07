@@ -76,6 +76,20 @@
 	height: 19px;
 }
 
+.unity-text-field__input {
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	background-color: rgba(0,0,0,0);
+	background-image: unset;
+	flex-grow: 1;
+}
+
 #tkpm-package-source-list {
 	border-color: rgb(128,128,128);
 	border-right-width: 1px;
@@ -110,18 +124,6 @@
 	margin-bottom: 1px;
 	align-self: flex-end;
 	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
-}
-.unity-text-field__input {
-	border-left-width: 0px;
-	border-top-width: 0px;
-	border-right-width: 0px;
-	border-bottom-width: 0px;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-right-radius: 0px;
-	border-bottom-left-radius: 0px;
-	background-color: #00000000;
-	flex-grow: 1;
 }
 
 #tkpm-body {
