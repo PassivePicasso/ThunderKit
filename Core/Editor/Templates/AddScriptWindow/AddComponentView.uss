@@ -101,9 +101,8 @@
 	margin-bottom: 27px;
 }
 #script-list Label {
-	flex-grow: 0;
+	flex-grow: 1;
 	height: 20px;
-	background-color: rgb(128,92,92);
 }
 .script-action-button {
 	position: absolute;
