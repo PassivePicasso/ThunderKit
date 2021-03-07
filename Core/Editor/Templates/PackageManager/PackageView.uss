@@ -37,6 +37,7 @@
 }
 
 #tkpm-package-description {
+	white-space: normal;
 	-unity-word-wrap: true;
 	flex-grow: 0.5;
 	flex-shrink: 0.5;
