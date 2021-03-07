@@ -111,3 +111,6 @@
 	left: 0px;
 	right: 0px;
 }
+.unity-list-view__item--selected {
+	color: unset;
+}
