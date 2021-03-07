@@ -1,7 +1,7 @@
 ﻿#tkpm-package-version {
 	border-color: rgb(128,128,128);
-	position-type: absolute;
-	position-left: 210px;
+	position: absolute;
+	left: 210px;
 
 	border-left-width: 1px;
 
@@ -31,7 +31,7 @@ ListView .selected {
 	margin-right: 0px;
 	margin-bottom: 0px;
 
-	font-style: normal;
+	-unity-font-style: normal;
 	overflow: hidden;
 }
 
