@@ -1,6 +1,6 @@
 ﻿#tkpm-package-view-controls{
-	position-type: absolute;
-	position-right: 0px;
+	position: absolute;
+	right: 0px;
 }
 #tkpm-package-install-button {
 	border-right-width: 0px;
