@@ -65,7 +65,11 @@ namespace ThunderKit.Core.Editor.Windows
             var templatePath = AssetDatabase.GetAssetPath(packageTemplate);
             VisualElement instance = target;
 
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2020_1_OR_NEWER
+            if (instance == null) instance = packageTemplate.Instantiate();
+            else
+                packageTemplate.CloneTree(instance);
+el#if UNITY_2019_1_OR_NEWER
             if (instance == null) instance = packageTemplate.CloneTree();
             else
                 packageTemplate.CloneTree(instance);
