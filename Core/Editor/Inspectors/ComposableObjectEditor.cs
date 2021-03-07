@@ -15,6 +15,7 @@ namespace ThunderKit.Core.Editor.Inspectors
     [CustomEditor(typeof(ComposableObject), true)]
     public class ComposableObjectEditor : UnityEditor.Editor
     {
+        static string[] searchFolders = new [] { "Assets", "Packages" };
         public class StepData
         {
             public SerializedProperty step;
@@ -310,6 +311,14 @@ namespace ThunderKit.Core.Editor.Inspectors
                 popup.ScriptTemplate = composableObject.ElementTemplate;
                 popup.Filter = Filter;
                 popup.Create = CreateFromScript;
+
+                var IconName = $"TK_{composableObject.GetType().Name}_Icon";
+                var icon = AssetDatabase.FindAssets($"t:Texture2D {IconName}", searchFolders)
+                             .Select(AssetDatabase.GUIDToAssetPath)
+                             .Select(AssetDatabase.LoadAssetAtPath<Texture2D>)
+                             .FirstOrDefault();
+
+                popup.ScriptIcon = icon;
                 popup.ShowPopup();
             }
         }
