@@ -86,7 +86,7 @@
 	border-bottom-right-radius: 0px;
 	border-bottom-left-radius: 0px;
 	background-color: rgba(0,0,0,0);
-	background-image: unset;
+	background-image: none;
 	flex-grow: 1;
 }
 
