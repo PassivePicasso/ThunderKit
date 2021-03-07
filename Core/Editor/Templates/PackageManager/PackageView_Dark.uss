@@ -5,18 +5,6 @@
 #tkpm-package-install-button {
 	border-right-width: 0px;
 }
-.package-control-button {
-	height: 18px;
-	border-color: rgb(128,128,128);
-	border-top-width: 1px;
-	border-left-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	padding-top: 0px;
-	padding-left: 4px;
-	padding-right: 4px;
-	padding-bottom: 0px;
-}
 
 #tkpm-package-view {
 	border-color: rgb(128,128,128);

@@ -2,9 +2,7 @@
 	position: absolute;
 	right: 0px;
 }
-#tkpm-package-install-button {
-	border-right-width: 0px;
-}
+
 .package-control-button {
 	height: 18px;
 	border-color: rgb(128,128,128);
@@ -20,6 +18,14 @@
 	-unity-slice-top: 1;
 	-unity-slice-right: 1;
 	-unity-slice-bottom: 1;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+
+#tkpm-package-install-button {
+	border-right-width: 0px;
 }
 
 #tkpm-package-view {
