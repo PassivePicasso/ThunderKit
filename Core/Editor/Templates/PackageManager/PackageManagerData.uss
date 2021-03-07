@@ -4,10 +4,10 @@
 
 .toolbar-button {
 	border-color: rgb(128,128,128);
-	border-left: 0px;
-	border-top: 0px;
-	border-right: 0px;
-	border-bottom: 0px;
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
 
 	background-image: resource("Builtin Skins/LightSkin/Images/toolbar button.png");
 	height: 18px;
@@ -93,10 +93,10 @@
 	margin-left: 0px;
 	margin-right: 4px;
 	margin-top: 1px;
-	border-left: 0px;
-	border-top: 0px;
-	border-right: 0px;
-	border-bottom: 0px;
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
 	width: 14;
 	height: 15;
 	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearchCancelButtonOff.png");
