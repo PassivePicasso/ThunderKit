@@ -69,7 +69,8 @@
 	-unity-slice-bottom: 1;
 	-unity-slice-right: 0;
 	margin-top: 1px;
-	margin-right: 0px;
+	margin-left: 4px;
+	margin-right: -1px;
 	margin-bottom: 0px;
 	align-self: flex-end;
 	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
