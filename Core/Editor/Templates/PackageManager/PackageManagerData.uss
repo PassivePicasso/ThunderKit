@@ -120,7 +120,7 @@
 	-unity-slice-right: 0;
 	width: 300px;
 	margin-top: 1px;
-	margin-right: 0px;
+	margin-right: -1px;
 	margin-bottom: 1px;
 	align-self: flex-end;
 	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
