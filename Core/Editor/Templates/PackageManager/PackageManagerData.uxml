@@ -29,7 +29,7 @@ xsi:schemaLocation="    UnityEngine.Experimental.UIElements ../../../../../../UI
     <engine:VisualElement name="tkpm-body" >
 
       <engine:VisualElement name="tkpm-sidebar" class="tkpm-sidebar-width">
-        <engine:VisualElement name="tkpm-package-source-list" class="tkpm-sidebar-width"/>
+        <engine:VisualElement name="tkpm-package-source-list" class="tkpm-sidebar-width grow"/>
       </engine:VisualElement>
 
       <engine:VisualElement name="tkpm-package-view" template="PackageView" />
