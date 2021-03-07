@@ -12,7 +12,6 @@ using System;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #elif UNITY_2018_1_OR_NEWER
-using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
