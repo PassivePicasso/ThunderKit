@@ -109,7 +109,6 @@
 #script-list Label {
 	flex-grow: 0;
 	height: 20px;
-	background-color: rgb(128,92,92);
 }
 .script-action-button {
 	position: absolute;
