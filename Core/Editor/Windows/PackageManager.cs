@@ -73,6 +73,7 @@ namespace ThunderKit.Core.Editor.Windows
                 var foldOut = packageSource.Q<Foldout>();
                 var groupName = $"tkpm-package-source-{source.Name}";
                 packageSource.RemoveFromClassList("grow");
+                foldOut.value = false;
                 foldOut.RegisterCallback<ChangeEvent<bool>>(OnFold);
                 void OnFold(ChangeEvent<bool> evt)
                 {
