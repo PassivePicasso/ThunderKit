@@ -64,7 +64,7 @@ namespace ThunderKit.Core.Editor.Inspectors
                     var title = ObjectNames.NicifyVariableName(stepType.Name);
                     var foldoutRect = GUILayoutUtility.GetRect(currentViewWidth, singleLineHeight + 3);
 
-                    GUI.Box(new Rect(foldoutRect.x - 14, foldoutRect.y - 1, foldoutRect.width + 20, foldoutRect.height + 1), string.Empty);
+                    GUI.Box(new Rect(foldoutRect.x - 24, foldoutRect.y - 1, foldoutRect.width + 30, foldoutRect.height + 1), string.Empty);
 
                     var standardSize = singleLineHeight + standardVerticalSpacing;
 
