@@ -111,6 +111,18 @@
 	align-self: flex-end;
 	background-image: resource("Builtin Skins/LightSkin/Images/toolbarsearch.png");
 }
+.unity-text-field__input {
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	background-color: #00000000;
+	flex-grow: 1;
+}
 
 #tkpm-body {
 	flex-direction: row;
