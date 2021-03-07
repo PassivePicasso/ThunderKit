@@ -57,7 +57,9 @@
 	margin-bottom: 0px;
 }
 .searchfield {
+	height: 15px;
 	flex-grow: 1;
+	flex-shrink: 1;
 	padding-top: 1px;
 	padding-left: 17px;
 	padding-right: 17px;
