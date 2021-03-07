@@ -57,16 +57,6 @@
 	background-image: resource("Builtin Skins/LightSkin/Images/Toolbar.png");
 }
 
-.link {
-	color: rgb(0,0,255);
-	background-image: none;
-	text-decoration: underline;
-}
-.link:hover {
-	color: rgb(0,0,200);
-	cursor: link ;
-}
-
 .tkpm-package-option {
 	padding-left: 4px;
 	padding-top: 4px;

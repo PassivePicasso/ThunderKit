@@ -22,11 +22,6 @@ xsi:schemaLocation="
         <engine:Label name="tkpm-package-info-version-label" text="Version:"/>
         <engine:Label name="tkpm-package-info-version-value" text="0.0.0"/>
       </engine:VisualElement>
-      <!--<engine:VisualElement name="tkpm-package-links" class="horizontal-stack">
-        <engine:Button name="tkpm-package-documentation" text="view documentation" class="link"/>
-        <engine:Button name="tkpm-package-changelog" text="view changelog" class="link"/>
-        <engine:Button name="tkpm-package-license" text="view licenses" class="link"/>
-      </engine:VisualElement>-->
       <engine:Label name="tkpm-package-name" text="com.package.name"/>
       <engine:VisualElement class="horizontal-stack">
         <engine:Label name="tkpm-package-author-label" text="Author:"/>
