@@ -17,6 +17,20 @@
 	margin-right: 2px;
 	margin-bottom: 2px;
 }
+.unity-text-field__input {
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+	background-color: rgba(0,0,0,0);
+	background-image: none;
+	flex-grow: 1;
+}
+
 
 .center-text {
 	-unity-text-align: middle-center;
