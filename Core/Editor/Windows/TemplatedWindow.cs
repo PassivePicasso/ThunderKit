@@ -6,6 +6,7 @@ using ThunderKit.Common;
 using UnityEditor;
 using UnityEngine;
 using System.Reflection;
+using System.Text.RegularExpressions;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -54,12 +55,14 @@ namespace ThunderKit.Core.Editor.Windows
 
         Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>();
 
+        private static Regex versionRegex = new Regex("(\\d{4}\\.\\d+\\.\\d+)");
+
         protected static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");
 
         protected VisualElement GetTemplateInstance(string template, VisualElement target = null)
         {
             var packageTemplate = LoadTemplate(template);
-            var assetPath = AssetDatabase.GetAssetPath(packageTemplate);
+            var templatePath = AssetDatabase.GetAssetPath(packageTemplate);
             VisualElement instance = target;
 
 #if UNITY_2019_1_OR_NEWER
@@ -74,20 +77,13 @@ namespace ThunderKit.Core.Editor.Windows
 
             instance.AddToClassList("grow");
 
-            AddSheet(instance, assetPath);
-            AddSheet(instance, assetPath, "_style");
-#if UNITY_2020_1_OR_NEWER
-            AddSheet(instance, assetPath, "_2020");
-#elif UNITY_2019_1_OR_NEWER
-            AddSheet(instance, assetPath, "_2019");
-#elif UNITY_2018_1_OR_NEWER
-            AddSheet(instance, assetPath, "_2018");
-#endif
+            AddSheet(instance, templatePath);
+            AddSheet(instance, templatePath, "_style");
 
             if (EditorGUIUtility.isProSkin)
-                AddSheet(instance, assetPath, "_Dark");
+                AddSheet(instance, templatePath, "_Dark");
             else
-                AddSheet(instance, assetPath, "_Light");
+                AddSheet(instance, templatePath, "_Light");
             return instance;
         }
 
@@ -98,18 +94,39 @@ namespace ThunderKit.Core.Editor.Windows
             rootVisualElement.Bind(new SerializedObject(this));
         }
 
-        protected void AddSheet(VisualElement element, string assetPath, string modifier = "")
+        protected void AddSheet(VisualElement element, string templatePath, string modifier = "")
         {
-            string sheetPath = assetPath.Replace(".uxml", $"{modifier}.uss");
-            if (File.Exists(sheetPath))
+            var versionString = versionRegex.Match(Application.unityVersion).Groups[1].Value;
+            var version = new Version(versionString);
+            switch (version.Major)
             {
-#if UNITY_2019_1_OR_NEWER
-               var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath);
-               element.styleSheets.Add(styleSheet);
-#elif UNITY_2018_1_OR_NEWER
-                element.AddStyleSheetPath(sheetPath);
-#endif
+                case 2020 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2020.uss")):
+                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2020.uss"));
+                    break;
+
+                case 2019 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2019.uss")):
+                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2019.uss"));
+                    break;
+
+                case 2018 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2018.uss")):
+                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2018.uss"));
+                    break;
+
+                default:
+                    if (File.Exists(templatePath.Replace(".uxml", $"{modifier}.uss")))
+                        MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}.uss"));
+                    break;
             }
+        }
+
+        private void MultiVersionLoadStyleSheet(VisualElement element, string sheetPath)
+        {
+#if UNITY_2019_1_OR_NEWER
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath);
+            element.styleSheets.Add(styleSheet);
+#elif UNITY_2018_1_OR_NEWER
+            element.AddStyleSheetPath(sheetPath);
+#endif
         }
 
         protected VisualTreeAsset LoadTemplate(string name)
