@@ -72,6 +72,10 @@
 	border-bottom-width: 1px;
 }
 
+.tkpm-package-source {
+	height: 19px;
+}
+
 #tkpm-package-source-list {
 	border-color: rgb(128,128,128);
 	border-right-width: 1px;
