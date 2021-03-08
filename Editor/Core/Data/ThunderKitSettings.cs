@@ -59,9 +59,6 @@ namespace ThunderKit.Core.Data
         [SerializeField]
         public bool Is64Bit;
 
-        [SerializeField]
-        public bool CopyDebugDatabases;
-
         public override void Initialize() => GamePath = "";
 
         public override void CreateSettingsUI(VisualElement rootElement)
