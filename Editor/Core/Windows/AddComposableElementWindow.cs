@@ -18,6 +18,7 @@ using static ThunderKit.Core.Editor.ScriptEditorHelper;
 
 namespace ThunderKit.Core.Editor.Windows
 {
+    using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class AddComposableElementWindow : TemplatedWindow
     {
         private const BindingFlags nonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;

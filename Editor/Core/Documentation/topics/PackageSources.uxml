@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../uss/thunderkit_documentation.uss" />
+    <ui:VisualElement name="help-page" class="grow m4">
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_PackageSource_2X_Icon" />
+            <ui:Label text="Package Sources" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ui:Label text="PackageSources are the extensible portion of the ThunderKit Package Manager. ThunderKit provides the ability to support additional mod distribution systems such as Mod.IO and Steam Workshop. Currently support for these systems are not implemented, however if you wanted to add support yourself, then PackageSources are the first place to start." display-tooltip-when-elided="true" name="forword-section" class="text-wrap bm4 cascadia" />
+        <ui:Label text="Implementing a PackageSource is designed to take care of all the management of the Unity systems. Therefore an implementation of a PackageSource requires that you write 2 pieces of code." display-tooltip-when-elided="true" class="text-wrap" />
+        <ui:Label text="First you will need to acquire the list of available packages to download from the mod distribution system in question. Using this information you will populate the PackageSource data by calling and providing the requested data to the AddPackageGroup method in the PackageSource base class." display-tooltip-when-elided="true" class="text-wrap" />
+        <ui:Label text="Next you will need to implement the OnInstallPackageFiles method.  In this method you will need to download the data from the mod distribution system and then write out the content in the layout required by your project conventions to the packageDirectory parametery provided in the method arguments." display-tooltip-when-elided="true" class="text-wrap" />
+        <ui:Label text="If you would like to look at some examples, look at the ThunderstoreSource and LocalThunderstoreSource implementations in the ThunderKit Package." display-tooltip-when-elided="true" class="text-wrap" />
+    </ui:VisualElement>
+</ui:UXML>
