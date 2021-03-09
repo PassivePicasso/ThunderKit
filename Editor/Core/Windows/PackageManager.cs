@@ -17,6 +17,7 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.Editor.Windows
 {
+    using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class PackageManager : TemplatedWindow
     {
         private VisualElement packageView;

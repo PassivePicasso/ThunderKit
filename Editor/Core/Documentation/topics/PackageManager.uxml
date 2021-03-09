@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../uss/thunderkit_documentation.uss" />
+    <ui:VisualElement name="help-page" class="grow m4">
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_PackageSource_2X_Icon" />
+            <ui:Label text="Package Manager" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ui:Label text="The ThunderKit Package Manager can be opened from the Tools &gt; ThunderKit &gt; Packages menu item. Alternatively you may click the button below to open it now." display-tooltip-when-elided="true" name="forword-section" class="text-wrap bm4 cascadia" />
+        <ui:Button text="Open ThunderKit Package Manager" display-tooltip-when-elided="true" style="height: 20px;" />
+        <ui:Label text="With the package manager you can access mods, mod loaders, and utilites hosted on Thunderstore to assist you in making your project." display-tooltip-when-elided="true" class="text-wrap" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" />
+    </ui:VisualElement>
+</ui:UXML>

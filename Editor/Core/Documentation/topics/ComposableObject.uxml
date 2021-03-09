@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+  <Style src="../uss/thunderkit_documentation.uss" />
+  <ui:VisualElement name="help-page" class="grow m4">
+    <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+      <ui:VisualElement name="icon" class="header-icon TK_ComposableObject_2X_Icon" />
+      <ui:Label text="Composable Object" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+    </ui:VisualElement>
+    <ui:Label text="ThunderKit is aims to be an extensible modding platform. To help achieve this goal the 3 core systems in ThunderKit are built upon the ComposableObject." display-tooltip-when-elided="true" name="forword-section" class="text-wrap bm4 cascadia" />
+    <ui:Label text="The ComposableObject is a component based system with a unified editor to allow the easy implementation of new component based data structures. The editor enhancements automatically enable the ability to create new Components for a custom ComposableObject when a script template is specified. " display-tooltip-when-elided="true" class="text-wrap"/>
+    <ui:VisualElement style="flex-basis: 100px;">
+      <ui:Label text="Figure 1: some inline code of one of the ThunderKit ComposableObjects?" display-tooltip-when-elided="true" style="height: 13px;" />
+    </ui:VisualElement>
+
+    <ui:Label text="Manifests, Pipelines, and PathReferences are built upon ComposableObject so that they can benefit from this common feature set, and to allow users to add new functionality as needed. The Add Script window will allow you to create a new Script Template " display-tooltip-when-elided="true" class="text-wrap" />
+    
+    <ui:Box style="flex-direction: row;" class="grow">
+      <PageListView name="composableobject-page-list" focusable="true" style="flex-basis: 150; flex-shrink:1;" pagepath="ComposableObjects" itemtemplate="../PageListItem" selected-index="0" class="m4"/>
+      <ui:ScrollView name="content-scroller" style="height: 250px; flex-grow: 1; flex-shrink:1;" show-horizontal-scroller="False" stretch-content-width="true" >
+        <PagePresenter list-view-name="composableobject-page-list" />
+      </ui:ScrollView>
+    </ui:Box>
+  </ui:VisualElement>
+</ui:UXML>

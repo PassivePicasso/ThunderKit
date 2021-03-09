@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../../uss/thunderkit_documentation.uss" />
+    <ui:VisualElement name="help-page" class="grow m4">
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_Pipeline_2X_Icon" />
+            <ui:Label text="Pipelines" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ui:Label text="Pipelines are a ComposableObject system which provides the ability to setup instructions for copying and moving assets for ThunderKit Manifests.  Pipelines work from a Manifest and executes each of its PipelineJob components in order from top to bottom.  Some PipelineJobs execute once for each Manifest references by the base Manifest. Unless a Manifest is excluded from these jobs, all Manifests int he dependencies tree will be included." display-tooltip-when-elided="true" name="forword-section" class="text-wrap bm4 cascadia" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" />
+    </ui:VisualElement>
+</ui:UXML>
