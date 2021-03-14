@@ -20,7 +20,12 @@ namespace ThunderKit.Common.Package
             var asyncOpRequest = webRequest.SendWebRequest();
             void Request_completed(AsyncOperation obj)
             {
+
+#if UNITY_2019_1_OR_NEWER
+                if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+#else
                 if (webRequest.isNetworkError || webRequest.isHttpError)
+#endif
                     Debug.Log(webRequest.error);
                 else
                     File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);
@@ -33,13 +38,18 @@ namespace ThunderKit.Common.Package
 
         public static async Task DownloadPackageAsync(string url, string filePath)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 var webRequest = UnityWebRequest.Get(url);
                 var asyncOpRequest = webRequest.SendWebRequest();
                 asyncOpRequest.completed += Request_completed;
                 void Request_completed(AsyncOperation obj)
                 {
+#if UNITY_2019_1_OR_NEWER
+                    if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+#else
                     if (webRequest.isNetworkError || webRequest.isHttpError)
+#endif
                         Debug.Log(webRequest.error);
                     else
                         File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);

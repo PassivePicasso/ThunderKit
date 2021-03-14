@@ -11,7 +11,7 @@ using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
-#elif UNITY_2018_1_OR_NEWER
+#else
 using UnityEngine.Experimental.UIElements;
 #endif
 
@@ -89,8 +89,14 @@ namespace ThunderKit.Core.Editor.Windows
                 packageSource.userData = source;
 
                 packageList.selectionType = SelectionType.Single;
+
+#if UNITY_2019_1_OR_NEWER
+                packageList.onSelectionChange -= PackageList_onSelectionChanged;
+                packageList.onSelectionChange += PackageList_onSelectionChanged;
+#else
                 packageList.onSelectionChanged -= PackageList_onSelectionChanged;
                 packageList.onSelectionChanged += PackageList_onSelectionChanged;
+#endif
 
                 packageList.makeItem = MakePackage;
                 VisualElement MakePackage()
@@ -207,7 +213,7 @@ namespace ThunderKit.Core.Editor.Windows
             var packageVersion = packageElement.Q<Label>("tkpm-package-version");
             if (packageVersion != null) packageVersion.text = package["latest"].version;
         }
-        private void PackageList_onSelectionChanged(List<object> obj)
+        private void PackageList_onSelectionChanged(IEnumerable<object> obj)
         {
             var selection = obj.OfType<PackageGroup>().First();
             if (selection == null) return;
