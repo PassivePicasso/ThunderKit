@@ -40,42 +40,42 @@ namespace ThunderKit.Installer
 
     public class InstallThunderKit
     {
-        [InitializeOnLoadMethod]
-        static void InstallThunderKitNow()
-        {
-#if thunderkit
-#if !IsThunderKitProject
-                AssetDatabase.StartAssetEditing();
-                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
-                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
-                AssetDatabase.DeleteAsset("Assets/ThunderKit");
-                AssetDatabase.StopAssetEditing();
-                AssetDatabase.Refresh();
-#endif
-            return;
-#else
-            if (AssetDatabase.IsValidFolder("Assets/ThunderKit/Core")) return;
-            if (AssetDatabase.LoadAssetAtPath<DefaultAsset>("Assets/ThunderKit/package.json")) return;
+//        [InitializeOnLoadMethod]
+//        static void InstallThunderKitNow()
+//        {
+//#if thunderkit
+//#if !IsThunderKitProject
+//                AssetDatabase.StartAssetEditing();
+//                AssetDatabase.DeleteAsset($"Assets/ThunderKit/Common/InstallThunderKit.cs");
+//                AssetDatabase.DeleteAsset("Assets/ThunderKit/Common");
+//                AssetDatabase.DeleteAsset("Assets/ThunderKit");
+//                AssetDatabase.StopAssetEditing();
+//                AssetDatabase.Refresh();
+//#endif
+//            return;
+//#else
+//            if (AssetDatabase.IsValidFolder("Assets/ThunderKit/Core")) return;
+//            if (AssetDatabase.LoadAssetAtPath<DefaultAsset>("Assets/ThunderKit/package.json")) return;
 
-#if !IsThunderKitProject
-            var listRequest = Client.List(true);
-            if (listRequest != null && listRequest.Result != null)
-                foreach (var package in listRequest.Result)
-                    if (package.packageId.StartsWith("com.passivepicasso.thunderkit@https://github.com/PassivePicasso/ThunderKit.git"))
-                    {
-                        return;
-                    }
-#endif
-            if (!InstallCompression())
-            {
-#if !IsThunderKitProject
-                Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
-#endif
-                AddScriptingDefine("thunderkit");
-            }
-#endif
+//#if !IsThunderKitProject
+//            var listRequest = Client.List(true);
+//            if (listRequest != null && listRequest.Result != null)
+//                foreach (var package in listRequest.Result)
+//                    if (package.packageId.StartsWith("com.passivepicasso.thunderkit@https://github.com/PassivePicasso/ThunderKit.git"))
+//                    {
+//                        return;
+//                    }
+//#endif
+//            if (!InstallCompression())
+//            {
+//#if !IsThunderKitProject
+//                Client.Add("https://github.com/PassivePicasso/ThunderKit.git#development");
+//#endif
+//                AddScriptingDefine("thunderkit");
+//            }
+//#endif
 
-        }
+//        }
 
         /// <summary>
         /// install System.IO.Compression and System.IO.Compression.FileSystem libraries into project as UPM Package
