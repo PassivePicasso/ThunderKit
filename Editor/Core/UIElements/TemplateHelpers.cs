@@ -110,28 +110,18 @@ namespace ThunderKit.Core.UIElements
         }
 
 
-        public static VisualElement LoadTemplateRelative(UnityEngine.Object relative, string templatePath, VisualElement instance = null)
+        public static string GetAssetDirectory(UnityEngine.Object asset)
+        {
+            return Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset));
+        }
+
+        public static VisualElement LoadTemplateRelative(string relativePath, string templatePath, VisualElement instance = null)
         {
             string fullTemplatePath = templatePath;
             if (!templatePath.StartsWith("Assets") && !templatePath.StartsWith("Packages"))
             {
-                var targetDirectory = string.Empty;
-                if (relative != null)
-                {
-                    switch (relative)
-                    {
-                        case VisualTreeAsset treeAsset:
-                            var treeAssetPath = AssetDatabase.GetAssetPath(treeAsset);
-                            targetDirectory = Path.GetDirectoryName(treeAssetPath);
-                            break;
-                        case ScriptableObject so:
-                            var ms = MonoScript.FromScriptableObject(so);
-                            var path = AssetDatabase.GetAssetPath(ms);
-                            targetDirectory = Path.GetDirectoryName(path);
-                            break;
-                    }
-                }
-                fullTemplatePath = Path.GetFullPath(Path.Combine(targetDirectory, templatePath));
+                relativePath = relativePath ?? string.Empty;
+                fullTemplatePath = Path.GetFullPath(Path.Combine(relativePath, templatePath));
                 fullTemplatePath = fullTemplatePath.Replace(Directory.GetCurrentDirectory(), "");
                 fullTemplatePath = fullTemplatePath.TrimStart('\\', '/');
             }

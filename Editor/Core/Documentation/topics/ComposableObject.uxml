@@ -13,11 +13,11 @@
 
     <ui:Label text="Manifests, Pipelines, and PathReferences are built upon ComposableObject so that they can benefit from this common feature set, and to allow users to add new functionality as needed. The Add Script window will allow you to create a new Script Template " display-tooltip-when-elided="true" class="text-wrap" />
     
-    <ui:Box style="flex-direction: row;" class="grow">
-      <PageListView name="composableobject-page-list" focusable="true" style="flex-basis: 150; flex-shrink:1;" pagepath="ComposableObjects" itemtemplate="../PageListItem" selected-index="0" class="m4"/>
-      <ui:ScrollView name="content-scroller" style="height: 250px; flex-grow: 1; flex-shrink:1;" show-horizontal-scroller="False" stretch-content-width="true" >
+    <!--<ui:Box style="flex-direction: row;" class="grow">
+      <PageListView name="composableobject-page-list" focusable="true" style="flex-basis: 110; flex-shrink:1;" pagepath="ComposableObjects" item-height="20" item-template="../PageListItem" selected-index="0" class="m4"/>
+      <ui:ScrollView name="content-scroller" style="height: 400px; flex-grow: 1; flex-shrink:1;" show-horizontal-scroller="False" stretch-content-width="true" >
         <PagePresenter list-view-name="composableobject-page-list" />
       </ui:ScrollView>
-    </ui:Box>
+    </ui:Box>-->
   </ui:VisualElement>
 </ui:UXML>

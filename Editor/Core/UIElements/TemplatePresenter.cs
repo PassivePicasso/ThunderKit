@@ -33,7 +33,7 @@ namespace ThunderKit.Core.UIElements
             var templateAttributeFound = bag.TryGetAttributeValue("template", out var template);
             if (templateAttributeFound)
             {
-                var templateInstance = LoadTemplateRelative(cc.visualTreeAsset, template);
+                var templateInstance = LoadTemplateRelative(GetAssetDirectory(cc.visualTreeAsset), template);
                 return templateInstance;
             }
 

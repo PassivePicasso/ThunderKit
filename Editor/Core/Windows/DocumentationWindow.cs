@@ -17,7 +17,7 @@ namespace ThunderKit.Core.Windows
         {
             titleContent = new UnityEngine.GUIContent("ThunderKit Documentation", ThunderKitIcon);
             rootVisualElement.Clear();
-            var element = LoadTemplateRelative(this, "../Documentation/DocumentationWindow");
+            var element = LoadTemplateRelative(GetAssetDirectory(MonoScript.FromScriptableObject(this)), "../Documentation/DocumentationWindow");
             element.AddToClassList("grow");
             rootVisualElement.Add(element);
             rootVisualElement.Bind(new SerializedObject(this));
