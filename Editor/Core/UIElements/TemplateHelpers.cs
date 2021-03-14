@@ -140,9 +140,9 @@ namespace ThunderKit.Core.UIElements
                 relateiveTemplateCache[fullTemplatePath] = visualTreeAsset;
             }
 #if UNITY_2020_1_OR_NEWER
-            if (instance == null) instance = relateiveTemplateCache[fullTemplatePath].Instantiate();
+            if (instance == null) instance = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(fullTemplatePath).Instantiate();
             else
-                relateiveTemplateCache[fullTemplatePath].CloneTree(instance);
+                AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(fullTemplatePath).CloneTree(instance);
 #elif UNITY_2019_1_OR_NEWER
             if (instance == null) instance = relateiveTemplateCache[fullTemplatePath].CloneTree();
             else
