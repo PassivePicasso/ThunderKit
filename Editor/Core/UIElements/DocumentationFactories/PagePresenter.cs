@@ -54,14 +54,20 @@ namespace ThunderKit.Core.UIElements
                     if (listView != null)
                     {
                         target.UnregisterCallback<AttachToPanelEvent>(OnAttached);
-                        listView.onSelectionChanged += ListView_onSelectionChanged;
+
+#if UNITY_2019_1_OR_NEWER
+                        listView.onSelectionChange += ListView_onSelectionChange;
+#else
+                        listView.onSelectionChanged += ListView_onSelectionChange;
+#endif
 
                         if (listView.itemsSource.Count > 0 && listView.selectedIndex >= 0)
                         {
                             target.Clear();
                             LoadTemplateRelative(GetAssetDirectory(visualTreeAsset), listView.itemsSource[listView.selectedIndex] as string, target);
                         }
-                        void ListView_onSelectionChanged(List<object> obj)
+
+                        void ListView_onSelectionChange(IEnumerable<object> obj)
                         {
                             var templatePath = obj.OfType<string>().First();
                             target.Clear();
