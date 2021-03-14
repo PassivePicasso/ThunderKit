@@ -3,9 +3,9 @@
   <ui:VisualElement name="thunderkit-home" style="flex-grow: 1; flex-direction: row;">
     <ui:Box name="topic-bar" style="flex-basis: 200px;">
       <ui:TextField picking-mode="Ignore" label="Search" value="" text="filler text" name="search-field" style="flex-direction: column; align-items: stretch; justify-content: flex-start; border-bottom-color: rgba(135, 135, 135, 255); border-bottom-width: 1px; padding-left: 5px; padding-right: 5px; margin-left: 0; margin-right: 0; padding-bottom: 4px;" />
-      <PageListView name="page-list" focusable="true" style="flex-grow: 1;" pagepath="topics" itemtemplate="PageListItem" />
+      <PageListView name="page-list" focusable="true" style="flex-grow: 1;" pagepath="topics" item-template="PageListItem" item-height="20" />
     </ui:Box>
-    <ui:VisualElement name="content-view" style="flex-grow: 1; border-left-width: 1px; border-left-color: rgb(144, 144, 144); border-right-color: rgb(144, 144, 144); border-top-color: rgb(144, 144, 144); border-bottom-color: rgb(144, 144, 144);">
+    <ui:VisualElement name="content-view" class="grow" style="border-left-width: 1px; border-left-color: rgb(144, 144, 144); border-right-color: rgb(144, 144, 144); border-top-color: rgb(144, 144, 144); border-bottom-color: rgb(144, 144, 144);">
       <ui:ScrollView name="content-scroller" style="flex-grow: 1; flex-shrink:1;" show-horizontal-scroller="False" stretch-content-width="true" >
         <PagePresenter list-view-name="page-list" class="grow"/>
       </ui:ScrollView>

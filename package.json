@@ -10,7 +10,8 @@
     "url": "https://github.com/PassivePicasso/ThunderKit"
   },
   "dependencies": {
-    "com.unity.scriptablebuildpipeline": "1.16.1"
+    "com.unity.scriptablebuildpipeline": "1.16.1",
+    "com.mischief.markdownviewer": "https://github.com/gwaredd/UnityMarkdownViewer.git"
   }
 }
  

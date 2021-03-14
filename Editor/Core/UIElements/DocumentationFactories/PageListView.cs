@@ -48,9 +48,9 @@ namespace ThunderKit.Core.UIElements
             if (bag.TryGetAttributeValue(nameof(VisualElement.name), out nameValue))
                 listView.name = nameValue;
 
-            string pagepath;
-            string itemtemplate;
-            var itemtemplateFound = bag.TryGetAttributeValue(nameof(itemtemplate), out itemtemplate);
+            string pagepath, itemtemplate, searchoption;
+            var itemtemplateFound = bag.TryGetAttributeValue("item-template", out itemtemplate);
+            var searchoptionFound = bag.TryGetAttributeValue("search-option", out searchoption);
             if (bag.TryGetAttributeValue(nameof(pagepath), out pagepath))
             {
                 string projectPath = pagepath;
@@ -60,6 +60,7 @@ namespace ThunderKit.Core.UIElements
                     projectPath = Path.Combine(treeAssetDirectory, pagepath);
                 }
                 var pageFiles = Directory.EnumerateFiles(projectPath, "*.uxml", SearchOption.TopDirectoryOnly).ToArray();
+                var directories = Directory.EnumerateDirectories(projectPath, "*", SearchOption.TopDirectoryOnly).ToArray();
 
                 EditorApplication.projectChanged += () => listView.itemsSource = Directory.EnumerateFiles(projectPath, "*.uxml", SearchOption.TopDirectoryOnly).ToArray();
 
@@ -68,7 +69,8 @@ namespace ThunderKit.Core.UIElements
                     listView.makeItem = MakeListViewItem;
                     VisualElement MakeListViewItem()
                     {
-                        var element = LoadTemplateRelative(cc.visualTreeAsset, itemtemplate);
+                        var rootpath = GetAssetDirectory(cc.visualTreeAsset);
+                        var element = LoadTemplateRelative(rootpath, itemtemplate);
                         element.AddToClassList(ElementClass);
                         return element;
                     }

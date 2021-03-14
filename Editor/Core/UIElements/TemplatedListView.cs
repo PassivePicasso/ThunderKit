@@ -40,12 +40,11 @@ namespace ThunderKit.Core.UIElements
                 BindingExtensions.Bind(ve, new SerializedObject(item));
             }
             listView.bindItem = BindListViewItem;
-
             var templateAttributeFound = bag.TryGetAttributeValue("template", out var template);
             if (templateAttributeFound)
             {
                 listView.makeItem = MakeListViewItem;
-                VisualElement MakeListViewItem() => LoadTemplateRelative(cc.visualTreeAsset, template);
+                VisualElement MakeListViewItem() => LoadTemplateRelative(GetAssetDirectory(cc.visualTreeAsset), template);
             }
             return listView;
         }

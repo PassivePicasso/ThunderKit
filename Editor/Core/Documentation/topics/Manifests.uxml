@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements">
-  <Style src="../../uss/thunderkit_documentation.uss" />
+  <Style src="../uss/thunderkit_documentation.uss" />
     <ui:VisualElement name="help-page" class="grow m4">
       <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
         <ui:VisualElement name="icon" class="header-icon TK_Manifest_2X_Icon" />
