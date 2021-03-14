@@ -16,3 +16,7 @@
 	margin-right: 2px;
 	margin-bottom: 2px;
 }
+
+.tag {
+	background-color: #444;
+}
