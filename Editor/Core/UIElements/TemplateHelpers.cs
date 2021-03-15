@@ -26,7 +26,6 @@ namespace ThunderKit.Core.UIElements
         private static Regex versionRegex = new Regex("(\\d{4}\\.\\d+\\.\\d+)");
 
         static Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>();
-        static Dictionary<string, VisualTreeAsset> relateiveTemplateCache = new Dictionary<string, VisualTreeAsset>();
 
         public static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");
 
@@ -121,7 +120,7 @@ namespace ThunderKit.Core.UIElements
             return Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset));
         }
 
-        public static VisualElement LoadTemplateRelative(string relativePath, string templatePath, VisualElement instance = null)
+        public static string GetResolvedPath(string relativePath, string templatePath)
         {
             string fullTemplatePath = templatePath;
             if (!templatePath.StartsWith("Assets") && !templatePath.StartsWith("Packages"))
@@ -134,23 +133,26 @@ namespace ThunderKit.Core.UIElements
             if (!fullTemplatePath.EndsWith(".uxml"))
                 fullTemplatePath = $"{fullTemplatePath}.uxml";
 
-            if (!relateiveTemplateCache.ContainsKey(fullTemplatePath))
-            {
-                var visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(fullTemplatePath);
-                relateiveTemplateCache[fullTemplatePath] = visualTreeAsset;
-            }
+            return fullTemplatePath;
+        }
+
+        public static VisualElement LoadTemplateRelative(string relativePath, string templatePath, VisualElement instance = null)
+        {
+            var fullTemplatePath = GetResolvedPath(relativePath, templatePath);
+
+            var visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(fullTemplatePath);
 #if UNITY_2020_1_OR_NEWER
-            if (instance == null) instance = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(fullTemplatePath).Instantiate();
+            if (instance == null) instance = visualTreeAsset.Instantiate();
             else
-                AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(fullTemplatePath).CloneTree(instance);
+                visualTreeAsset.CloneTree(instance);
 #elif UNITY_2019_1_OR_NEWER
-            if (instance == null) instance = relateiveTemplateCache[fullTemplatePath].CloneTree();
+            if (instance == null) instance = visualTreeAsset.CloneTree();
             else
-                relateiveTemplateCache[fullTemplatePath].CloneTree(instance);
+                visualTreeAsset.CloneTree(instance);
 #elif UNITY_2018_1_OR_NEWER
-            if (instance == null) instance = relateiveTemplateCache[fullTemplatePath].CloneTree(null);
+            if (instance == null) instance = visualTreeAsset.CloneTree(null);
             else
-                relateiveTemplateCache[fullTemplatePath].CloneTree(instance, null);
+                visualTreeAsset.CloneTree(instance, null);
 #endif
             return instance;
         }
