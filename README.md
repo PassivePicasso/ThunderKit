@@ -112,3 +112,23 @@ The Simulate field will execute an analysis of the AssetBundles and report in th
 ![enter image description here](https://i.imgur.com/qgzr9g7.png)
 
 5. Your Pipeline will now stage AssetBundles during its next run, it will build out the AssetBundles to `<AssetBundleStaging>` and then copy them to each Staging Path specified in the AssetBundleDefs StagingPaths array.
+
+### Using UnityPackages 
+UnityPackages can be used to setup asset lists that can be built out to a Unity Asset Package.  A Unity AssetPackage allows assets to be easily imported into other Unity projects.
+
+Unity AssetPackages have an issue where assets in them will not work in other projects if the Source code is not included with them.  ThunderKit provides the ability to repair the mapping on these assets to allow you to distribute them with compiled assemblies instead.
+
+To use UnityPackages to create redistributable AssetPackages follow these steps.
+1. Find and Add a UnityPackages ManifestDatum to your Manifest
+
+![enter image description here](https://i.imgur.com/nKWrZKa.png)
+
+3. Create a UnityPackage using the project context menu, ThunderKit/UnityPackage
+4. Add assets to the Asset Files array by adding assets individually or by dragging and dropping assets.
+    - Folders can be added to the Asset Files array, however they will only include assets if the Export Package Options includes the Recurse flag
+ 4. Find and Add a StageUnityPackages PipelineJob to your Pipeline
+ 
+ ![enter image description here](https://i.imgur.com/CC0zhc4.png)
+ 
+ 5. Finally, make sure you've assigned paths to the UnityPackages StagingPaths on your Manifest
+ 
