@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Name: StageAssemblies
   m_EditorClassIdentifier: 
   stageDebugDatabases: 1
+  preferPlayerBuilds: 0
 --- !u!114 &114462066413191094
 MonoBehaviour:
   m_ObjectHideFlags: 1

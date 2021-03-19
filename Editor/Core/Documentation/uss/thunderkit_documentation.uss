@@ -1,27 +1,45 @@
-.TK_ComposableObject_2X_Icon{
-    background-image: url('../graphics/TK_ComposableObject_2X_Icon.png');
+.TK_ComposableObject_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/TK_ComposableObject_2X_Icon.png');
 }
-.TK_Manifest_2X_Icon{
-    background-image: url('../graphics/TK_Manifest_2X_Icon.png');
+
+.TK_Manifest_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/TK_Manifest_2X_Icon.png');
 }
-.TK_PackageSource_2X_Icon{
-    background-image: url('../graphics/TK_PackageSource_2X_Icon.png');
+
+.TK_PackageSource_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/TK_PackageSource_2X_Icon.png');
 }
-.TK_PathReference_2X_Icon{
-    background-image: url('../graphics/TK_PathReference_2X_Icon.png');
+
+.TK_PathReference_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/TK_PathReference_2X_Icon.png');
 }
-.TK_Pipeline_2X_Icon{
-    background-image: url('../graphics/TK_Pipeline_2X_Icon.png');
+
+.TK_Pipeline_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/TK_Pipeline_2X_Icon.png');
 }
-.TK_Server_Icon{
-    background-image: url('../graphics/TK_Server_Icon.png');
+
+.TK_Server_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/TK_Server_Icon.png');
 }
-.TK_ThunderKitSetting_2X_Icon{
-    background-image: url('../graphics/TK_ThunderKitSetting_2X_Icon.png');
+
+.TK_ThunderKitSetting_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/TK_ThunderKitSetting_2X_Icon.png');
 }
-.TK_UnityPackage_2X_Icon{
-    background-image: url('../graphics/TK_UnityPackage_2X_Icon.png');
+
+.TK_UnityPackage_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/TK_UnityPackage_2X_Icon.png');
 }
+
+.hidden {
+    visibility: hidden;
+}
+
+.minimize {
+    position: absolute;
+    height: 0;
+    width: 0;
+}
+
 .grow {
     flex-grow: 1;
 }
@@ -85,16 +103,163 @@
     min-height: 64px;
 }
 
-.page-item {
+.selected {
+    background-color: rgba(128, 0, 0, 0.5);
+}
+
+.pagelistview__page {
     font-size: 12px;
-    padding-left: 3px;
-    padding-right: 3px;
-    padding-top: 1px;
-    padding-bottom: 1px;
+    flex-grow: 1;
+}
+
+.pagelistview__page--header {
+    border-top-width: 0;
+    border-bottom-width: 1px;
+    border-top-color: rgba(0, 0, 0, 0.25);
+    border-bottom-color: rgba(0, 0, 0, 0.25);
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.index-toggle {
+    width: 13px;
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+}
+
+.unity-toggle__checkmark {
+    margin-left: 1px;
     margin-top: 1px;
-    margin-bottom: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+.unity-toggle-checkmark {
+    margin-left: 1px;
+    margin-top: 1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+.unity-foldout__toggle {
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.unity-foldout-toggle {
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.ManifestIdentityImage {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/ManifestIdentity.png');
+    width: 362px;
+    height: 213px;
+    min-width: 362px;
+    max-width: 362px;
+    max-height: 213px;
+    min-height: 213px;
+    overflow: hidden;
+    opacity: 1;
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 1px;
+    border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-top-color: rgba(0, 0, 0, 0.75);
-    border-bottom-color: rgba(0, 0, 0, 0.75);
+}
+
+.shrink {
+    flex-shrink: 1;
+}
+
+.setting-header-icon {
+    width: 20px;
+    height: 20px;
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Setting_Icon.png');
+}
+
+.setting-background {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.thunderkit-field {
+    flex-direction: row;
+    flex-grow: 1;
+    align-self: stretch;
+}
+
+.thunderkit-field-label {
+    width: 150px;
+}
+
+.thunderkit-field-input {
+    flex-grow: 1;
+}
+
+.thunderkit-header {
+    -unity-font-style: bold;
+    font-size: 11px;
+    background-color: rgb(204, 204, 204);
+    color: rgb(0, 0, 0);
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+}
+
+.thunderkit-error {
+    opacity: 0.25;
+    background-color: rgb(255, 0, 0);
+    border-color: rgb(255, 0, 0);
+    border-left-width: 1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    margin-left: 2px;
+    margin-top: 3px;
+    margin-right: 2px;
+    margin-bottom: 1px;
+}
+
+.thunderkit-setting {
+    opacity: 0.25;
+    background-color: rgb(170, 170, 170);
+    border-color: rgb(0, 0, 0);
+    border-left-width: 1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    margin-left: 2px;
+    margin-top: 2px;
+    margin-right: 2px;
+    margin-bottom: 1px;
+}
+
+.configure-game-button {
 }

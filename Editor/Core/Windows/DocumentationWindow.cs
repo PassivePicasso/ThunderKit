@@ -4,12 +4,12 @@ using ThunderKit.Core.UIElements;
 using UnityEditor;
 using System.IO;
 using System.Linq;
-using System;
 using System.Collections.Generic;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 #else
+using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
 using UnityEditor.Experimental.UIElements;
 #endif
@@ -26,6 +26,7 @@ namespace ThunderKit.Core.Windows
         private const string SelectedClass = "selected";
         private const string HiddenClass = "hidden";
         private const string MinimizeClass = "minimize";
+        private const string DocumentationRoot = "Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation";
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Documentation")]
         public static void ShowDocumentation() => GetWindow<DocumentationWindow>();
@@ -35,23 +36,17 @@ namespace ThunderKit.Core.Windows
 
             titleContent = new UnityEngine.GUIContent("ThunderKit Documentation", ThunderKitIcon);
             rootVisualElement.Clear();
-            var relativePath = GetAssetDirectory(MonoScript.FromScriptableObject(this));
-            var fullTemplatePath = GetResolvedPath(relativePath, "../Documentation/DocumentationWindow");
-            var element = LoadTemplateRelative(relativePath, "../Documentation/DocumentationWindow");
-            element.viewDataKey = "TKD_DocumentationWindow";
-            rootVisualElement.viewDataKey = "TKD_Root";
-            var topicsRoot = Path.Combine(Path.GetDirectoryName(fullTemplatePath), "topics");
+            var element = LoadTemplateInstance($"{DocumentationRoot}/DocumentationWindow.uxml");
             element.AddToClassList("grow");
             rootVisualElement.Add(element);
             rootVisualElement.Bind(new SerializedObject(this));
             var pageList = rootVisualElement.Q("page-list");
-            var pageFiles = Directory.EnumerateFiles(topicsRoot, "*.uxml", SearchOption.AllDirectories)
+            var pageFiles = Directory.EnumerateFiles($"{DocumentationRoot}/topics", "*.uxml", SearchOption.AllDirectories)
                                      .OrderBy(dir => Path.GetDirectoryName(dir))
                                      .ThenBy(path => Path.GetFileNameWithoutExtension(path))
                                      .ToArray();
             pageList.RegisterCallback<KeyDownEvent>(OnNavigate);
             pageList.Clear();
-            pageList.viewDataKey = "TKD_PageList";
 
             var pages = new Dictionary<string, PageEntry>();
             foreach (var pagePath in pageFiles)
@@ -66,13 +61,10 @@ namespace ThunderKit.Core.Windows
 
                 int pageDepth = 0;
                 if (parentPage != null) pageDepth = parentPage.depth + 1;
-                float left = pageDepth * 12;
 
                 var pageEntry = new PageEntry(fileName, fullPageName, pagePath, pageDepth);
                 pageEntry.FoldOut.RegisterCallback<ChangeEvent<bool>>(OnToggle);
                 pageEntry.AddManipulator(new Clickable(OnSelect));
-                pageEntry.style.paddingLeft = new StyleLength(new Length(left, LengthUnit.Pixel));
-
                 if (parentPage != null)
                 {
                     var parentIndex = pageList.IndexOf(parentPage);
@@ -86,9 +78,24 @@ namespace ThunderKit.Core.Windows
                     pageList.Add(pageEntry);
 
 
+#if UNITY_2019_1_OR_NEWER
+                rootVisualElement.RegisterCallback<CustomStyleResolvedEvent>(OnStyleResolved);
+#endif
                 pages.Add(fullPageName, pageEntry);
             }
         }
+#if UNITY_2019_1_OR_NEWER
+        private void OnStyleResolved(CustomStyleResolvedEvent evt)
+        {
+            var root = evt.currentTarget as VisualElement;
+            foreach (var pageEntry in root.Query<PageEntry>().Build().ToList())
+            {
+                float left = pageEntry.depth * 12;
+                pageEntry.style.paddingLeft = new StyleLength(new Length(left, LengthUnit.Pixel));
+            }
+
+        }
+#endif
 
         public class PageEntry : VisualElement
         {
@@ -100,13 +107,11 @@ namespace ThunderKit.Core.Windows
             public PageEntry(string templateName, string name, string pagePath, int depth)
             {
                 this.name = name;
-                this.viewDataKey = $"{templateName}PageEntry";
                 this.depth = depth;
                 PagePath = pagePath;
 
                 FoldOut = new Foldout();
                 FoldOut.AddToClassList("index-toggle");
-                FoldOut.viewDataKey = "indexToggle";
                 FoldOut.AddToClassList(HiddenClass);
                 FoldOut.value = false;
 
@@ -120,6 +125,16 @@ namespace ThunderKit.Core.Windows
                 AddToClassList(PageHeaderClass);
                 AddToClassList(ElementClass);
             }
+
+#if UNITY_2018
+            protected override void OnStyleResolved(ICustomStyle style)
+            {
+                base.OnStyleResolved(style);
+                float left = depth * 12;
+                var paddingLeft = new StyleValue<float>(left);
+                this.style.paddingLeft = paddingLeft;
+            }
+#endif
         }
 
         string GetPageName(string path)
@@ -207,7 +222,7 @@ namespace ThunderKit.Core.Windows
             element.AddToClassList(SelectedClass);
 
             pageView.Clear();
-            LoadTemplateRelative(string.Empty, element.PagePath, pageView);
+            LoadTemplateInstance(element.PagePath, pageView);
         }
     }
 }

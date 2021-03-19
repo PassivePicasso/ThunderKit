@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using ThunderKit.Common;
+using ThunderKit.Core.Config;
 #if UNITY_2019 || UNITY_2020
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -69,6 +70,11 @@ namespace ThunderKit.Core.Data
             rootElement.Add(CreateStandardField(nameof(GameExecutable)));
 
             rootElement.Add(CreateStandardField(nameof(GamePath)));
+
+            var configureButton = new Button(() => ConfigureGame.Configure());
+            configureButton.AddToClassList("configure-game-button");
+            configureButton.text = "Locate Game";
+            rootElement.Add(configureButton);
 
             rootElement.Bind(serializedSettings);
         }
@@ -148,5 +154,5 @@ namespace ThunderKit.Core.Data
         }
 #endif
 
-                }
+    }
 }
