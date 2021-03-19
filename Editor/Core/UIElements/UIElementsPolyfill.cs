@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Experimental.UIElements;
+using UnityEngine;
 using UnityEngine.Experimental.UIElements;
+using UnityEngine.Experimental.UIElements.StyleSheets;
 
 namespace ThunderKit.Core.UIElements
 {
@@ -119,9 +121,9 @@ namespace ThunderKit.Core.UIElements
             var foundSrc = bag.TryGetAttributeValue("src", out var src);
             if (foundSrc)
             {
-                if (src.StartsWith("Assets") || src.StartsWith("Packages"))
+                if (src.StartsWith("Assets") || src.StartsWith("Packages") || src.StartsWith("/Assets") || src.StartsWith("/Packages"))
                 {
-                    cc.target.AddStyleSheetPath(src);
+                    cc.target.AddStyleSheetPath(src.TrimStart('/'));
                 }
                 else
                 {

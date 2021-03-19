@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/uss/thunderkit_documentation.uss" />
+    <ui:VisualElement class="m4 grow">
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_ComposableObject_2X_Icon" />
+            <ui:Label text="Your First Mod" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ui:VisualElement class="grow" style="flex-direction: row;">
+            <ui:VisualElement class="m4" style="min-width: 251px;">
+                <ui:Label text="To get started making a new mod you will need to create a few objects in your project." display-tooltip-when-elided="true" style="white-space: normal;" />
+                <ui:Label text="Right click a folder under Assets in your project, navigate to ThunderKit and click on Manifest." display-tooltip-when-elided="true" class="bm4" style="white-space: normal;" />
+                <ui:Label text="Name this manifest file whatever you like." display-tooltip-when-elided="true" style="white-space: normal;" />
+                <ui:Label text="Select your manifest to view it in the inspector, it should look similar to the reference image" display-tooltip-when-elided="true" class="bm4" style="white-space: normal;" />
+                <ui:Label text="The Manifest is where you will track your assemblies, assets and asset collections so that they can be used by a Pipeline to build and deploy your mod." display-tooltip-when-elided="true" style="white-space: normal;" />
+                <ui:Label text="The default manifest can only contain details describing your mod for packaging. You can add additional pieces of information by using the Add Manifest Datum button." display-tooltip-when-elided="true" style="white-space: normal;" />
+                <ui:VisualElement class="m4" style="background-image: url(&apos;/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/AddManifestDatum.png&apos;); width: 251px; height: 224px; max-height: 224px; min-height: 224px; max-width: 251px; min-width: 251px;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="min-width: 384px; align-items: center;">
+                <ui:VisualElement style="background-image: url(&apos;/Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation/graphics/Manifest.png&apos;); width: 384px; height: 376px; min-width: 384px; max-width: 384px; max-height: 376px; min-height: 376px; justify-content: flex-end;" />
+                <ui:Label text="The default availabled Manifest Datums are shown here. Mods which have code will need to add AssemblyDefinitions, mods which include Assets will likely need to use AssetBundleDefs. Files is for adding any assets which wouldn&apos;t fit into those categories, or which would need to be copied unmodified into to the output. For more information about each of these datums check their documentation page." display-tooltip-when-elided="true" class="m4" style="white-space: normal;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

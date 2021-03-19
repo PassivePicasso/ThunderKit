@@ -16,7 +16,7 @@ namespace ThunderKit.Core.Config
     public class ConfigureGame
     {
         [MenuItem(Constants.ThunderKitMenuRoot + "Configure Game", priority = Constants.ThunderKitMenuPriority - 1)]
-        private static void Configure()
+        public static void Configure()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
 

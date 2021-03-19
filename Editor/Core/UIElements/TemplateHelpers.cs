@@ -99,11 +99,10 @@ namespace ThunderKit.Core.UIElements
 
         private static VisualTreeAsset LoadTemplate(string name, Func<string, bool> isTemplatePath)
         {
-            if (!templateCache.ContainsKey(name))
+            if (!templateCache.ContainsKey(name) || templateCache[name] == null)
             {
                 var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
                 var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
-                var packagesRoot = Path.Combine("Packages", Constants.ThunderKitPackageName);
                 var templatePath = assetPaths
                     .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))
                     .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
@@ -120,27 +119,9 @@ namespace ThunderKit.Core.UIElements
             return Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset));
         }
 
-        public static string GetResolvedPath(string relativePath, string templatePath)
+        public static VisualElement LoadTemplateInstance(string templatePath, VisualElement instance = null)
         {
-            string fullTemplatePath = templatePath;
-            if (!templatePath.StartsWith("Assets") && !templatePath.StartsWith("Packages"))
-            {
-                relativePath = relativePath ?? string.Empty;
-                fullTemplatePath = Path.GetFullPath(Path.Combine(relativePath, templatePath));
-                fullTemplatePath = fullTemplatePath.Replace(Directory.GetCurrentDirectory(), "");
-                fullTemplatePath = fullTemplatePath.TrimStart('\\', '/');
-            }
-            if (!fullTemplatePath.EndsWith(".uxml"))
-                fullTemplatePath = $"{fullTemplatePath}.uxml";
-
-            return fullTemplatePath;
-        }
-
-        public static VisualElement LoadTemplateRelative(string relativePath, string templatePath, VisualElement instance = null)
-        {
-            var fullTemplatePath = GetResolvedPath(relativePath, templatePath);
-
-            var visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(fullTemplatePath);
+            var visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
 #if UNITY_2020_1_OR_NEWER
             if (instance == null) instance = visualTreeAsset.Instantiate();
             else
