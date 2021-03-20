@@ -13,34 +13,39 @@ namespace ThunderKit.Core.UIElements
 {
     public class AssetLink : Label
     {
-
+        public bool SelectAsset { get; set; } = true;
         public string AssetPath { get; set; }
 
         public AssetLink()
         {
-
+            AddToClassList("asset-link");
+            UnregisterCallback<MouseUpEvent>(OnMouseUp);
+            RegisterCallback<MouseUpEvent>(OnMouseUp);
         }
+        private void OnMouseUp(MouseUpEvent evt)
+        {
+            var assetLink = evt.currentTarget as AssetLink;
+            if (assetLink == null) return;
+            var path = assetLink.AssetPath;
+            Object asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+            EditorGUIUtility.PingObject(asset);
+            if (SelectAsset)
+                Selection.activeObject = asset;
+        }
+
         public new class UxmlFactory : UxmlFactory<AssetLink, UxmlTraits> { }
 
         public new class UxmlTraits : Label.UxmlTraits
         {
             private UxmlStringAttributeDescription m_assetPath = new UxmlStringAttributeDescription { name = "asset-path" };
+            private UxmlBoolAttributeDescription m_selectAsset = new UxmlBoolAttributeDescription { name = "select-asset" };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
                 base.Init(ve, bag, cc);
                 var assetLink = (AssetLink)ve;
                 assetLink.AssetPath = m_assetPath.GetValueFromBag(bag, cc);
-                assetLink.AddToClassList("asset-link");
-                assetLink.RegisterCallback<MouseUpEvent>(OnMouseUp);
-            }
-
-            private void OnMouseUp(MouseUpEvent evt)
-            {
-                var assetLink = evt.currentTarget as AssetLink;
-                if (assetLink == null) return;
-                var path = assetLink.AssetPath;
-                EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath<Object>(path));
+                assetLink.SelectAsset = m_selectAsset.GetValueFromBag(bag, cc);
             }
 
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription

@@ -3,7 +3,9 @@ guid: 4db6fe78f71324044b64a0d961e36bfc
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - m_ViewDataDictionary: {instanceID: 0}
+  - ThunderKitIcon: {fileID: 2800000, guid: 1a4acb487af2097468c6c2796f519e80, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

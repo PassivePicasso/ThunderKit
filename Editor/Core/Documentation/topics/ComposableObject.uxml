@@ -10,7 +10,7 @@
         <ui:Label text="Manifests, Pipelines, and PathReferences are built upon ComposableObject so that they can benefit from this common feature set, and to allow users to add new functionality as needed. The Add Script window will allow you to create new components for each of these systems. " display-tooltip-when-elided="true" class="text-wrap m4" />
         <ui:Label text="Continue reading below to gain an understanding of the existing systems ThunderKit uses to help you develop, test, and deploy your mods." display-tooltip-when-elided="true" class="text-wrap m4" />
     </ui:VisualElement>
-    <ui:VisualElement style="height: 50px;" />
+    <ui:VisualElement class="standard-spacer" />
     <ui:VisualElement name="help-page" class="m4">
         <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
             <ui:VisualElement name="icon" class="header-icon TK_PathReference_2X_Icon" />
@@ -21,11 +21,12 @@
         <ui:Label text="In the first situation a PathReference has access only to infromation available on the Pipeline and static information available in the project.  This situation is when a PathReference is accessed from a Pipeline during a PipelineJob that isn&apos;t setup to execute against a Manifest." display-tooltip-when-elided="true" class="m4" style="white-space: normal;" />
         <ui:Label text="In the second a PathReference has access to the same information, plus it can access information about the Manifest currently being processed by the Pipeline. We will go over this in more detail in the Pipeline section." display-tooltip-when-elided="true" class="m4" style="white-space: normal;" />
         <ui:Label text="In ThunderKit Pipelines and Manifests any place you can enter a path to a file or a folder, you can use a PathReference by invoking it in the field to ensure common paths are always used correctly.  You can invoke a path reference by naming it in arrow brackets." display-tooltip-when-elided="true" class="m4" style="white-space: normal;" />
-        <ui:Label text="For Example: &lt;ManifestName&gt;/manifest.json" display-tooltip-when-elided="true" class="m4 settings-background" style="white-space: normal;" />
+        <ThunderKit.Core.UIElements.SlightlyRichTextElement text="For Example: &lt;[ManifestName](Packages/com.passivepicasso.thunderkit/Editor/Templates/ManifestName.asset)&gt;/manifest.json" />
+        <ui:Label text="For Example: &lt;[ManifestName](Packages/com.passivepicasso.thunderkit/Editor/Templates/ManifestName.asset)&gt;/manifest.json" display-tooltip-when-elided="true" class="m4 settings-background" style="white-space: normal; display: none;" />
         <ui:Label text="ThunderKit comes with a number of already defined PathReferences for the BepInEx workflow. Please note that some adjustments may be needed for different games." display-tooltip-when-elided="true" class="m4 text-wrap" />
         <ui:Label text="Finally it is important to note that fields which can use PathReferences do not automatically resolve.  They are resolved explicitly in PipelineJobs" display-tooltip-when-elided="true" class="m4" style="white-space: normal;" />
     </ui:VisualElement>
-    <ui:VisualElement style="height: 50px;" />
+    <ui:VisualElement class="standard-spacer" style="height: 50px;" />
     <ui:VisualElement name="help-page" class="m4">
         <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
             <ui:VisualElement name="icon" class="header-icon TK_Manifest_2X_Icon" />
@@ -38,7 +39,7 @@
         <ui:Label text="This allows you to specify complex path rules for the deployment of your assets. See the PathReferences documentation for more information." display-tooltip-when-elided="true" class="text-wrap m4" />
         <ui:Label text="If you would like to check out an example, inspect the BepInEx (Default) manifest in the ThunderKit Package." display-tooltip-when-elided="true" class="text-wrap m4" />
     </ui:VisualElement>
-    <ui:VisualElement style="height: 50px;" />
+    <ui:VisualElement class="standard-spacer" style="height: 50px;" />
     <ui:VisualElement name="help-page" class="m4">
         <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
             <ui:VisualElement name="icon" class="header-icon TK_Pipeline_2X_Icon" />
@@ -50,5 +51,6 @@
         <ui:Label text="Each PipelineJob will use a ManifestDatums&apos; StagingPaths to deploy its content, if you are constructing a new PipelineJob, you should attempt to do this, as well as utilize PathReference&apos;s resolver on these output paths." display-tooltip-when-elided="true" class="m4" style="white-space: normal;" />
         <ui:Label text="Some PipelineJobs include the ability to Exclude Manifests.  This can be used to exclude Manifests which have special deployment requirements,  such as a Mod Loader.  In these situations you may need to have explicit control over where and how the content of that Manifest is deployed.  The BepInEx (Default) template uses this to deploy BepInEx separately so that mods can properly be installed into its plugins, patchers and monomod folders." display-tooltip-when-elided="true" class="m4" style="white-space: normal;" />
     </ui:VisualElement>
-    <ui:VisualElement style="height: 100px;" />
+    <ui:VisualElement class="standard-spacer" />
+    <ui:VisualElement class="standard-spacer" />
 </ui:UXML>

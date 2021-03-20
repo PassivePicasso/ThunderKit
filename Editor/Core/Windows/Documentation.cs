@@ -18,7 +18,7 @@ namespace ThunderKit.Core.Windows
 {
     using static TemplateHelpers;
 
-    public class DocumentationWindow : TemplatedWindow
+    public class Documentation : TemplatedWindow
     {
         private const string PageClass = "pagelistview__page";
         private const string PageHeaderClass = "pagelistview__page--header";
@@ -29,12 +29,11 @@ namespace ThunderKit.Core.Windows
         private const string DocumentationRoot = "Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation";
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Documentation")]
-        public static void ShowDocumentation() => GetWindow<DocumentationWindow>();
+        public static void ShowDocumentation() => GetWindow<Documentation>();
 
         public override void OnEnable()
         {
-
-            titleContent = new UnityEngine.GUIContent("ThunderKit Documentation", ThunderKitIcon);
+            titleContent = new UnityEngine.GUIContent("Documentation", ThunderKitIcon);
             rootVisualElement.Clear();
             var element = LoadTemplateInstance($"{DocumentationRoot}/DocumentationWindow.uxml");
             element.AddToClassList("grow");
