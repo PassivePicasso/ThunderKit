@@ -1,4 +1,4 @@
-## ThunderKit Crash Course
+## _**ThunderKit Crash Course**_
 
 This is a step by step guide on how to configure your ThunderKit environment for modding. Some steps will vary by game and mod loader and some customization may be needed.
 
@@ -96,7 +96,7 @@ ThunderKit provides the AssetBundleDefs ManifestDatum for Manifests and the Stag
 	* You also use ThunderKit UnityPackage definitions to collect assets for the AssetBundle's Asset array.
 6. Finally specify the output path(s) for the AssetBundles under Staging Paths.
 
-#### Deploying AssetBundles
+### Deploying AssetBundles
 The PipelineJob StageAssetBundles can be used to deploy AssetBundles defined by AssetBundleDefs.
 The StageAssetBundles PipelineJob has a Bundle Artifact Path field, this defaults to `<AssetBundleStaging>`
 
@@ -112,7 +112,7 @@ The Simulate field will execute an analysis of the AssetBundles and report in th
 
 4. Your Pipeline will now stage AssetBundles during its next run, it will build out the AssetBundles to `<AssetBundleStaging>` and then copy them to each Staging Path specified in the AssetBundleDefs StagingPaths array.
 
-## Redistributable Libraries
+## Redistributable  Libraries
 
 If you need to create asset libraries that other developers need to depend on use [UnityPackages](Packages/com.passivepicasso.thunderkit/Editor/Core/Data/UnityPackage.cs) to simplify that process.
 UnityPackages provide you with the ability 

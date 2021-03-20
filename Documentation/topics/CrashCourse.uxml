@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss" />
+    <ThunderKit.Markdown.MarkdownElement data="Packages/com.passivepicasso.thunderkit/README.md" focusable="false" style="margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
+</ui:UXML>

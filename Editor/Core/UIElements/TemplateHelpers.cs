@@ -19,7 +19,7 @@ namespace ThunderKit.Core.UIElements
 {
     public static class TemplateHelpers
     {
-        static bool IsTemplatePath(string path) => Path.GetFileNameWithoutExtension(path) != "Templates" && path.Contains("Templates");
+        static bool IsTemplatePath(string path) => path.Contains("Packages/com.passivepicasso.thunderkit");
 
         private readonly static string[] SearchFolders = new string[] { "Assets", "Packages" };
 
