@@ -1,10 +1,15 @@
-﻿* 3.0.0
-### Bells and Whistles Update
+﻿## 3.0.0 Bells and Whistles Update
 This update completes the last major system feature implementations for ThunderKit.
 
 #### Initial Setup
-A Welcome window has been added to ThunderKit as well to help ensure users will conduct important first steps for setting up their project.
+A Welcome window has been added to ThunderKit to help ensure users will conduct important first steps for setting up their project.
 This window can be disabled by a toggle it provides.
+
+#### ThunderKit Settings
+
+ThunderKit Settings now get a dedicated window from ThunderKit and can be accessed from the main menu under Tools/ThunderKit/Settings
+These settings will no longer show up in the Project Settings window.  This is due to changes in how Unity collects the UI in different versions of Unity, moving the settings
+into a dedicated window provided by ThunderKit will improve stability and consistency across Unity versions.
 
 #### Package Manager
 
@@ -27,20 +32,11 @@ Documentation is a major issue for new users and as such ThunderKit now comes wi
 The documentation available from the main menu under Tools/ThunderKit/Documentation
 
 Documentation is a work in progress and improvements will be made as a better understanding is gained about users needs for information.
-ThunderKit Documentation is semi-rich, you may find Magenta and Blue links in the documentation.  
-Blue links will launch web addresses to your browser, and Magenta links will select and ping assets in your project
-As such, to get the most out of the integrated documentation, it is recommended you keep your Inspector and Project windows visible while reading documentation.
 
-#### ThunderKit Settings
-
-ThunderKit Settings now get a dedicated window from ThunderKit and can be accessed from the main menu under Tools/ThunderKit/Settings
-These settings will no longer show up in the Project Settings window.  This is due to changes in how Unity collects the UI in different versions of Unity, moving the settings
-into a dedicated window provided by ThunderKit will improve stability and consistency across Unity versions.
-
-* 2.2.1
+## 2.2.1
   * Fix issues with assembly identitification
 
-* 2.1.3
+## 2.1.3
   * New Features
     * Establish base for documentation system
     * Establish Package management as a core system
@@ -57,15 +53,16 @@ into a dedicated window provided by ThunderKit will improve stability and consis
     * Fix cases where directories are not created when needed
     * Fix some problems with the Thunderstore - BepInEx templates
 
-* 2.1.0 - 2.1.2
+## 2.1.0 - 2.1.2
   * Fix issues with automatic installer
   * Fix issues with package management
 
-* 2.0.0 - First Major Version update
+## 2.0.0 - First Major Version update
   * Replace Deployments with new system.
     * Manifest's will now hold all references to files that need to be included or processed for deploying a mod
     * Deployment operations will now be handled by Pipeline's and Pipeline Jobs.
     * Pipelines are containers for pipeline jobs, pipelines with special requirements can be made by creating derivatives of Pipeline.
 
+## Early Versions
 * 1.x.x - untracked iterative updates to ThunderKits feature set
 * 1.0.0 - Initial Relesae of Thunderkit
