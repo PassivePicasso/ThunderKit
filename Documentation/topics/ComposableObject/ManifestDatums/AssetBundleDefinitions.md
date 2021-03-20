@@ -5,7 +5,7 @@ This means that only AssetBundles defined within the Pipelines Manifest hiearchy
 
 When StageAssetBundles executes, it will process all AssetBundles simultanously, and will resolve dependencies both within and across Manifests.
 
-![AssetBundleDefinitions](Packages/com.passivepicasso.thunderkit/Documentation/graphics/AssetBundleDefinitions.png)
+![AssetBundleDefinitions](Packages/com.passivepicasso.thunderkit/Documentation/graphics/ManifestDatums/AssetBundleDefinitions.png)
 
 #### More Information
 

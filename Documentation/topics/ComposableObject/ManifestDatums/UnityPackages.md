@@ -6,9 +6,9 @@ ThunderKit provides an asset based method of building Asset Packages via the Uni
 
 To create a UnityPackage, use the project context menu and navigate to ThunderKit/UnityPackage
 
-![UnityPackages](Packages/com.passivepicasso.thunderkit/Documentation/graphics/UnityPackageDatum.png)
+![UnityPackages](Packages/com.passivepicasso.thunderkit/Documentation/graphics/ManifestDatums/UnityPackageDatum.png)
 
-![UnityPackages](Packages/com.passivepicasso.thunderkit/Documentation/graphics/UnityPackage.png)
+![UnityPackages](Packages/com.passivepicasso.thunderkit/Documentation/graphics/ManifestDatums/UnityPackage.png)
 
 #### More Information
 
