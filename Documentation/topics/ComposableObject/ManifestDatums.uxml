@@ -1,17 +1,11 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements">
-  <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss" />
     <ui:VisualElement name="help-page" class="grow m4">
-      <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
-        <ui:VisualElement name="icon" class="header-icon TK_Manifest_2X_Icon" />
-        <ui:Label text="Manifests" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px; " />
-      </ui:VisualElement>
-      <ui:Label text="Manifests are where you will store all the information about your project for ThunderKit to utilize. This includes meta data information for mod distribution systems like Thunderstore. Manifests are composed of ManifestDatums there are many ManifestDatums already available. Below are the ManifestDatums currently available in your project. Select one to see what information they hold." display-tooltip-when-elided="true" name="forword-section" class="text-wrap bm4 cascadia" />
-      <ui:Label text="ManifestDatums all have an array named Staging Paths.  This array of strings are used to direct where assets will be copied to in Pipelines. In the StagingPaths array you can utilize a PathReference by wrapping the name of a path reference in arrow bracks, &lt;&gt;. " display-tooltip-when-elided="true" class="text-wrap" />
-      <ui:Label text="For Example: &lt;ManifestStagingRoot&gt;/AdditionalAssets" display-tooltip-when-elided="true" class="cascadia" />
-      <ui:Label text="This allows you to specify complex path rules for the deployment of your assets. See the PathReferences documentation for more information." display-tooltip-when-elided="true" class="text-wrap" />
-      <ui:VisualElement style="height: 100px;">
-        <ui:Label text="Inline explorable data driven list of ManifestDatums in the project" display-tooltip-when-elided="true" />
-      </ui:VisualElement>
-      <ui:Label text="If you would like to check out an example, inspect the BepInEx (Default) manifest in the ThunderKit Package." display-tooltip-when-elided="true" class="text-wrap" />
+        <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
+            <ui:VisualElement name="icon" class="header-icon TK_Manifest_2X_Icon" />
+            <ui:Label text="ManifestDatums" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+        </ui:VisualElement>
+        <ThunderKit.Markdown.MarkdownElement markdown-data-type="Implicit" focusable="false" />
     </ui:VisualElement>
 </ui:UXML>

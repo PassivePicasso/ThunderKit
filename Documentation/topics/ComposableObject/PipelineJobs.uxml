@@ -1,10 +1,12 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss" />
     <ui:VisualElement name="help-page" class="grow m4">
         <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
             <ui:VisualElement name="icon" class="header-icon TK_Pipeline_2X_Icon" />
             <ui:Label text="Pipeline Jobs" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
         </ui:VisualElement>
+        <ThunderKit.Markdown.MarkdownElement markdown-data-type="Implicit" focusable="false" />
         <ui:Label text="Pipeline Jobs are components of a Pipeline.  You can add existing and create new Pipeline Jobs via the ComposableObject Editor available for Pipelines." display-tooltip-when-elided="true" name="forword-section" class="text-wrap bm4 cascadia" />
         <ui:Label text="Pipeline Jobs can be setup to execute once per pipeline or once per manifest. When a Pipeline Job is executing per manifest additional information will be available to Path References and its components for resolving paths." display-tooltip-when-elided="true" name="forword-section" class="text-wrap bm4 cascadia" />
     </ui:VisualElement>

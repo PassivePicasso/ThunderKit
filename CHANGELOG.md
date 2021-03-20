@@ -1,4 +1,5 @@
-﻿## 3.0.0 Bells and Whistles Update
+﻿## 3.0.0 
+### Dependencies 2
 This update completes the last major system feature implementations for ThunderKit.
 
 #### Initial Setup
