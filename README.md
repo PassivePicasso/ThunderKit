@@ -3,20 +3,19 @@
 This is a step by step guide on how to configure your ThunderKit environment for modding. Some steps will vary by game and mod loader and some customization may be needed.
 
 ### Initial Setup
+
 These initial steps are the universal basic setup for any ThunderKit project.
 
 1. Install Unity
 2. Create a new Unity Project with a version of Unity that matches the games product and/or file version 
     * You will need to install the same version of unity that the game uses.  You can find the version of the game by viewing the game executables properties with Windows Explorer.
-    
 3. Install ThunderKit
     - Navigate to the Project folder with your file explorer and open the Packages folder 
     - Open the manifest.json file in this folder and add the following to the top of  dependencies
-`"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git",` 
+      `"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git",` 
 4. Open the ThunderKit Settings using Tools/ThunderKit/Settings from the main menu
 5. Click on Locate Game under the ThunderKit settings to locate and select the games executable
     * It may take some time for ThunderKit and Unity to complete the configuration
-  
 6. Open the project window from the main menu via Windows/General/Project
 7. Create a Manifest by right clicking in any folder under assets and selecting ThunderKit/Manifest
 
@@ -27,9 +26,11 @@ From this point forward you will need to understand some facets of mod developin
 If you're using Thunderstore, check the Thunderstore community for the game for a ThunderKit template.  Users of ThunderKit are encouraged to build and share reusable templates that define standard Pipelines for building mods for games and even specialized toolkits to allow more Unity Editor functionality for modding games.
 
 ### ManifestDatum Staging Paths
+
 Each ManifestDatum on a Manifest will have a StagingPaths array. This is where you will indicate to ThunderKit where to deploy your assets. You can use paths relative to the Project's root folder.  Each entry will be a destination, so if you need to output assemblies or AssetBundles to multiple places, you can add multiple paths. 
 
 ### PathReferences
+
 Use PathReferences to easily reuse common paths. A PathReference can be referenced in StagingPaths by using arrow brackets.
 
 For example; `<ManifestStagingRoot>`
@@ -42,7 +43,7 @@ ThunderKit includes a number of PathReferences already.
 
 ![enter image description here](https://i.imgur.com/afj5qZI.png)
 
-### Scripts, Assemblies, and Assembly Definitions
+## Scripts, Assemblies, and Assembly Definitions
 It is recommended to manage code for mod projects inside your ThunderKit project.
 However there are a few things you need to do in order to get your project setup.
 
@@ -80,9 +81,7 @@ To deploy assemblies managed by a Manifest you will need a Pipeline with the Sta
 
 Now the Assemblies referenced in your Manifest will be deployed by the Pipeline to the paths specified in the Manifest's AssemblyDefinition's Staging Paths array.
 
-
-
-### Preparing Assets and AssetBundles for Deployment
+## Preparing Assets and AssetBundles for Deployment
 To deploy assets with your mod you may need to package them into AssetBundles.
 ThunderKit provides the AssetBundleDefs ManifestDatum for Manifests and the StageAssetBundles PipelineJob for Pipelines.
 
@@ -111,7 +110,12 @@ The Simulate field will execute an analysis of the AssetBundles and report in th
 
 ![enter image description here](https://i.imgur.com/qgzr9g7.png)
 
-5. Your Pipeline will now stage AssetBundles during its next run, it will build out the AssetBundles to `<AssetBundleStaging>` and then copy them to each Staging Path specified in the AssetBundleDefs StagingPaths array.
+4. Your Pipeline will now stage AssetBundles during its next run, it will build out the AssetBundles to `<AssetBundleStaging>` and then copy them to each Staging Path specified in the AssetBundleDefs StagingPaths array.
+
+## Redistributable Libraries
+
+If you need to create asset libraries that other developers need to depend on use [UnityPackages](Packages/com.passivepicasso.thunderkit/Editor/Core/Data/UnityPackage.cs) to simplify that process.
+UnityPackages provide you with the ability 
 
 ### Using UnityPackages 
 UnityPackages can be used to setup asset lists that can be built out to a Unity Asset Package.  A Unity AssetPackage allows assets to be easily imported into other Unity projects.
@@ -126,9 +130,9 @@ To use UnityPackages to create redistributable AssetPackages follow these steps.
 3. Create a UnityPackage using the project context menu, ThunderKit/UnityPackage
 4. Add assets to the Asset Files array by adding assets individually or by dragging and dropping assets.
     - Folders can be added to the Asset Files array, however they will only include assets if the Export Package Options includes the Recurse flag
- 4. Find and Add a StageUnityPackages PipelineJob to your Pipeline
+5. Find and Add a StageUnityPackages PipelineJob to your Pipeline
  
  ![enter image description here](https://i.imgur.com/CC0zhc4.png)
  
- 5. Finally, make sure you've assigned paths to the UnityPackages StagingPaths on your Manifest
+6. Finally, make sure you've assigned paths to the UnityPackages StagingPaths on your Manifest
  
