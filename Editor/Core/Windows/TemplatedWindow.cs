@@ -47,6 +47,7 @@ namespace ThunderKit.Core.Editor.Windows
         {
             rootVisualElement.Clear();
             GetTemplateInstance(GetType().Name, rootVisualElement);
+            titleContent = new GUIContent(ObjectNames.NicifyVariableName(GetType().Name), ThunderKitIcon);
             rootVisualElement.Bind(new SerializedObject(this));
         }
     }

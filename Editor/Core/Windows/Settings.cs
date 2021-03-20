@@ -18,16 +18,12 @@ using UnityEngine.Experimental.UIElements;
 namespace ThunderKit.Core.Windows
 {
     using static ThunderKit.Core.UIElements.TemplateHelpers;
-    public class ThunderKitSettingsWindow : TemplatedWindow
+    public class Settings : TemplatedWindow
     {
         static string[] searchFolders = new[] { "Assets", "Packages" };
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Settings")]
-        public static void ShowExample()
-        {
-            var window = GetWindow<ThunderKitSettingsWindow>();
-            window.titleContent = new GUIContent("ThunderKit Settings");
-        }
+        public static void ShowExample() => GetWindow<Settings>();
 
         public override void OnEnable()
         {
