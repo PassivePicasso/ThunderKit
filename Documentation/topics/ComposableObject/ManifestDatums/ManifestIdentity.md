@@ -1,6 +1,6 @@
 The Manifest Identity stores unique identifying information used by ThunderKit to construct dependency information for stores and mod loaders.
 
-![ManifestIdentity](Packages/com.passivepicasso.thunderkit/Documentation/graphics/ManifestIdentity.png)
+![ManifestIdentity](Packages/com.passivepicasso.thunderkit/Documentation/graphics/ManifestDatums/ManifestIdentity.png)
 
 ### Required Fields
   * Author: The name of the developer or team responsible for developing and releasing this package.
