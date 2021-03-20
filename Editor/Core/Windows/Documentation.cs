@@ -26,19 +26,15 @@ namespace ThunderKit.Core.Windows
         private const string SelectedClass = "selected";
         private const string HiddenClass = "hidden";
         private const string MinimizeClass = "minimize";
-        private const string DocumentationRoot = "Packages/com.passivepicasso.thunderkit/Editor/Core/Documentation";
+        private const string DocumentationRoot = "Packages/com.passivepicasso.thunderkit/Documentation";
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Documentation")]
         public static void ShowDocumentation() => GetWindow<Documentation>();
 
         public override void OnEnable()
         {
-            titleContent = new UnityEngine.GUIContent("Documentation", ThunderKitIcon);
-            rootVisualElement.Clear();
-            var element = LoadTemplateInstance($"{DocumentationRoot}/DocumentationWindow.uxml");
-            element.AddToClassList("grow");
-            rootVisualElement.Add(element);
-            rootVisualElement.Bind(new SerializedObject(this));
+            base.OnEnable();
+
             var pageList = rootVisualElement.Q("page-list");
             var pageFiles = Directory.EnumerateFiles($"{DocumentationRoot}/topics", "*.uxml", SearchOption.AllDirectories)
                                      .OrderBy(dir => Path.GetDirectoryName(dir))

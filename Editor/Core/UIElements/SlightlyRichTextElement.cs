@@ -4,7 +4,10 @@ using UnityEditor;
 using System.Text.RegularExpressions;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 #else
+using UnityEngine.Experimental.UIElements.StyleEnums;
+using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
 using UnityEditor.Experimental.UIElements;
 #endif
@@ -18,7 +21,7 @@ namespace ThunderKit.Core.UIElements
 
         public SlightlyRichTextElement()
         {
-            style.flexDirection = FlexDirection.Row;
+            style.flexDirection  = FlexDirection.Row;
             style.flexWrap = Wrap.Wrap;
         }
         public new class UxmlFactory : UxmlFactory<SlightlyRichTextElement, UxmlTraits> { }
@@ -52,9 +55,11 @@ namespace ThunderKit.Core.UIElements
                             safetyBreak = 0;
                         }
                         else if (match.Groups[1].Success && match.Groups[2].Success && match.Groups[3].Success)
+                        { }
+                        else if (match.Groups[3].Success && match.Groups[4].Success && match.Groups[3].Success)
                         {
                             value = match.Value;
-                            switch (match.Groups[2].Value)
+                            switch (match.Groups[3].Value)
                             {
                                 case "AssetLink":
                                     ve.Add(new AssetLink

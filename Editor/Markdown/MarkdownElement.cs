@@ -1,18 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Markdig;
-using UnityEngine.UIElements;
 using Markdig.Syntax;
-using System.Linq;
-using Markdig.Helpers;
 using Markdig.Syntax.Inlines;
-using UnityEngine.Networking;
-using System.Threading.Tasks;
 using System;
-using UnityEditor;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Networking;
+#if UNITY_2019_1_OR_NEWER
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+#else
+using UnityEngine.Experimental.UIElements.StyleSheets;
+using UnityEngine.Experimental.UIElements;
+using UnityEditor.Experimental.UIElements;
+#endif
 
 namespace ThunderKit.Markdown
 {
@@ -149,6 +152,18 @@ namespace ThunderKit.Markdown
                 return blockElement;
             }
 
+            private static void SetupImage(Image imageElement, Texture texture)
+            {
+                imageElement.image = texture;
+#if UNITY_2019_1_OR_NEWER
+                imageElement.style.width = texture.width;
+                imageElement.style.height = texture.height;
+#else
+                imageElement.style.width = new StyleValue<float>(texture.width);
+                imageElement.style.height = new StyleValue<float>(texture.height);
+#endif
+            }
+
             private static IEnumerable<VisualElement> ProcessInline(Inline inline)
             {
                 switch (inline)
@@ -156,27 +171,32 @@ namespace ThunderKit.Markdown
                     #region hiding stuff
                     case LinkInline lb:
                         {
+                            var url = lb.Url;
                             if (lb.IsImage)
                             {
                                 var imageElement = GetClassedElement<Image>("image");
-
-                                async Task DownloadImage(string MediaUrl)
+                                if (url.StartsWith("Packages") || url.StartsWith("Assets") || url.StartsWith("/Packages") || url.StartsWith("/Assets"))
                                 {
-                                    UnityWebRequest request = UnityWebRequestTexture.GetTexture(MediaUrl);
-                                    var asyncOp = request.SendWebRequest();
-                                    while (!asyncOp.isDone)
-                                        await Task.Delay(100);
-
-                                    if (request.isNetworkError || request.isHttpError)
-                                        Debug.Log(request.error);
-                                    else
-                                    {
-                                        imageElement.image = ((DownloadHandlerTexture)request.downloadHandler).texture;
-                                        imageElement.style.width = imageElement.image.width;
-                                        imageElement.style.height = imageElement.image.height;
-                                    }
+                                    var image = AssetDatabase.LoadAssetAtPath<Texture>(url);
+                                    if (image)
+                                        SetupImage(imageElement, image);
                                 }
-                                _ = DownloadImage(lb.Url);
+                                else
+                                {
+                                    async Task DownloadImage(string MediaUrl)
+                                    {
+                                        UnityWebRequest request = UnityWebRequestTexture.GetTexture(MediaUrl);
+                                        var asyncOp = request.SendWebRequest();
+                                        while (!asyncOp.isDone)
+                                            await Task.Delay(100);
+
+                                        if (request.isNetworkError || request.isHttpError)
+                                            Debug.Log(request.error);
+                                        else
+                                            SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
+                                    }
+                                    _ = DownloadImage(lb.Url);
+                                }
                                 yield return imageElement;
                                 break;
                             }
@@ -184,9 +204,7 @@ namespace ThunderKit.Markdown
                             {
                                 var firstChild = lb.FirstChild as LiteralInline;
                                 var label = GetTextElement<Label>(firstChild.Content.ToString(), "link");
-                                var url = lb.Url;
                                 label.tooltip = url;
-                                label.displayTooltipWhenElided = true;
                                 if (url.StartsWith("Packages") || url.StartsWith("Assets"))
                                 {
                                     if (Path.GetExtension(url).Equals(".md"))
@@ -319,7 +337,11 @@ namespace ThunderKit.Markdown
             {
                 T element = new T();
 
+#if UNITY_2019_1_OR_NEWER
                 element.style.whiteSpace = WhiteSpace.Normal;
+#else
+                element.style.wordWrap = true;
+#endif
 
                 if (classNames == null || classNames.Length == 0) return element;
                 element.name = classNames[0];
