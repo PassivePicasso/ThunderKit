@@ -26,7 +26,6 @@
     flex-direction: row;
 }
 
-
 .header-3 {
     font-size: 16px;
     -unity-font-style: bold;
@@ -57,12 +56,14 @@
     padding-left: 4px;
     padding-right: 6px;
 }
+
 .header-2 .inline {
     font-size: 22px;
     -unity-font-style: bold;
     padding-left: 3px;
     padding-right: 5px;
 }
+
 .header-3 .inline {
     font-size: 16px;
     -unity-font-style: bold;
@@ -72,6 +73,7 @@
     padding-left: 2px;
     padding-right: 4px;
 }
+
 .header-4 .inline {
     font-size: 14px;
     -unity-font-style: bold;
@@ -81,6 +83,7 @@
     padding-left: 1px;
     padding-right: 3px;
 }
+
 .header-5 .inline {
     font-size: 13px;
     -unity-font-style: bold;
@@ -133,10 +136,8 @@
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-left: 1px;
+    padding-right: 2px;
 }
 
 .asset-link {
@@ -146,14 +147,14 @@
     border-top-color: rgb(128, 0, 64);
     border-bottom-color: rgb(128, 0, 64);
     border-color: rgb(128, 0, 64);
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
     margin-bottom: 0;
+    padding-left: 1px;
+    padding-right: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .inline {
@@ -163,8 +164,8 @@
     margin-bottom: 0;
     padding-left: 1px;
     padding-right: 2px;
-    padding-top: 0px;
-    padding-bottom: 0px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .bold {

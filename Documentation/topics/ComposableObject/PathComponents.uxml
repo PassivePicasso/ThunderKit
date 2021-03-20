@@ -1,12 +1,11 @@
 <ui:UXML  xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss" />
     <ui:VisualElement name="help-page" class="grow m4">
         <ui:VisualElement name="header" class="bm4" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
             <ui:VisualElement name="icon" class="header-icon TK_PathReference_2X_Icon" />
-            <ui:Label text="Path References" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
+            <ui:Label text="PathComponents" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
         </ui:VisualElement>
-        <ui:Label text="PathReferences are a ComposableObject that provide tools to target paths.  Using these you can coordinate the deployment of files via your Manifests and Pipelines." display-tooltip-when-elided="true" name="forword-section" class="text-wrap bm4 m4" />
-        <ui:Label text="ThunderKit comes with a number of already defined PathReferences for the BepInEx workflow. Please note that some adjustments may be needed for different games." display-tooltip-when-elided="true" class="m4 text-wrap" />
-        <ui:Label text="PathReferences can be used in a number of places in ThunderKit. ManifestDatum.StagingPaths, StageAssetBundles.BundleArtifactPath and all the Copy PipelineJobs allow you to use PathReferences by calling them in a tag.  ThunderKit comes with a PathReference named ManifestStagingRoot.  This PathReference can be referenced in StagingPaths as &lt;ManifestStagingRoot&gt;" display-tooltip-when-elided="true" class="m4 text-wrap" />
+        <ThunderKit.Markdown.MarkdownElement markdown-data-type="Implicit" focusable="false" />
     </ui:VisualElement>
 </ui:UXML>

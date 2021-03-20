@@ -19,7 +19,7 @@ using UnityEditor.Experimental.UIElements;
 
 namespace ThunderKit.Markdown
 {
-    public enum MarkdownDataType { Source, Text }
+    public enum MarkdownDataType { Implicit, Source, Text }
     public class MarkdownElement : VisualElement
     {
         private static Regex LiteralSplitter = new Regex("^([\\S]+\\b\\S?)|^\\s+", RegexOptions.Singleline | RegexOptions.Compiled);
@@ -56,9 +56,35 @@ namespace ThunderKit.Markdown
                 var markdown = string.Empty;
                 switch (mdElement.MarkdownDataType)
                 {
+                    case MarkdownDataType.Implicit:
+                        {
+                            if (cc.visualTreeAsset == null) break;
+                            var treeAssetPath = AssetDatabase.GetAssetPath(cc.visualTreeAsset);
+                            if (string.IsNullOrEmpty(treeAssetPath)) break;
+                            var treeAssetDirectory = Path.GetDirectoryName(treeAssetPath);
+                            var fileName = $"{Path.GetFileNameWithoutExtension(treeAssetPath)}.md";
+                            var sourcePath = Path.Combine(treeAssetDirectory, fileName);
+                            var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
+                            markdown = asset?.text ?? string.Empty;
+                        }
+                        break;
                     case MarkdownDataType.Source:
-                        var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(mdElement.Data);
-                        markdown = asset?.text ?? string.Empty;
+                        var source = mdElement.Data;
+                        if (!".md".Equals(Path.GetExtension(source))) break;
+
+                        if (source.StartsWith("Packages") || source.StartsWith("Assets"))
+                        {
+                            var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(source);
+                            markdown = asset?.text ?? string.Empty;
+                        }
+                        else
+                        {
+                            var treeAssetPath = AssetDatabase.GetAssetPath(cc.visualTreeAsset);
+                            var treeAssetDirectory = Path.GetDirectoryName(treeAssetPath);
+                            var sourcePath = Path.Combine(treeAssetDirectory, source);
+                            var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
+                            markdown = asset?.text ?? string.Empty;
+                        }
                         break;
                     case MarkdownDataType.Text:
                         markdown = mdElement.Data;
@@ -101,34 +127,20 @@ namespace ThunderKit.Markdown
                         break;
                     case ListItemBlock li:
                         var listBlock = li.Parent as ListBlock;
-                        blockElement.name = $"list-item-{li.Order}";
-                        var firstElement = true;
+
                         foreach (var inner in li)
                         {
                             var child = ProcessBlock(inner);
                             if (child != null)
-                            {
-                                if (firstElement)
-                                {
-                                    firstElement = false;
-                                    var inline = child.Q<Label>(className: "inline");
-                                    switch (listBlock.BulletType)
-                                    {
-                                        case '*':
-                                            inline.text = $"* {inline.text}";
-                                            break;
-                                        case '1':
-                                            inline.text = $"{li.Order}. {inline.text}";
-                                            break;
-                                        case '-':
-                                            inline.text = $"- {inline.text}";
-                                            break;
-                                    }
-                                }
                                 blockElement.Add(child);
-                            }
                         }
 
+                        var paragraph = blockElement.Q(className: "paragraph");
+                        var labelText = listBlock.BulletType == '1' ? $"{li.Order}." : $"{listBlock.BulletType}";
+                        var label = GetTextElement<Label>(labelText, "inline");
+                        paragraph.Insert(0, label);
+
+                        blockElement.name = $"list-item-{li.Order}";
                         blockElement.AddToClassList("list-item");
                         break;
                     case ListBlock l:
