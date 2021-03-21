@@ -2,21 +2,11 @@ using System;
 using System.Collections.Generic;
 using Markdig.Helpers;
 using Markdig.Syntax;
-using Markdig.Renderers;
-
-#if !NET40
+using Markdig.Renderers;using Markdig.Syntax.Inlines;using ThunderKit.Markdown.ObjectRenderers;using System.Text.RegularExpressions;
+#if !NET40
 using System.Runtime.CompilerServices;
 #endif
-#if UNITY_2019_1_OR_NEWER
-using UnityEngine.UIElements;
-using Markdig.Syntax.Inlines;
-using ThunderKit.Markdown.ObjectRenderers;
-using System.Text.RegularExpressions;
-#else
-using UnityEngine.Experimental.UIElements.StyleSheets;
-using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
-#endif
+#if UNITY_2019_1_OR_NEWERusing UnityEngine.UIElements;#elseusing UnityEngine.Experimental.UIElements.StyleSheets;using UnityEngine.Experimental.UIElements;using UnityEditor.Experimental.UIElements;#endif
 
 
 namespace ThunderKit.Markdown
