@@ -19,7 +19,6 @@
     margin-top: 12px;
     flex-direction: row;
 }
-
 .header-2 {
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
@@ -37,70 +36,74 @@
 
 .header-4 {
     margin-bottom: 12px;
-    flex-direction: row;
     margin-top: 12px;
+    flex-direction: row;
 }
 
 .header-5 {
     margin-bottom: 12px;
-    flex-direction: row;
     margin-top: 12px;
+    flex-direction: row;
 }
 
-.header-1 .inline {
+.header-1 * {
     font-size: 26px;
     padding-left: 4px;
     padding-right: 6px;
-    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    flex-direction: row;
 }
 
-.header-2 .inline {
+.header-2 * {
     font-size: 24px;
     padding-left: 3px;
     padding-right: 5px;
-    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    flex-direction: row;
 }
 
-.header-3 .inline {
+.header-3 * {
     font-size: 22px;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
     padding-left: 2px;
     padding-right: 4px;
-    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    flex-direction: row;
 }
 
-.header-4 .inline {
+.header-4 * {
     font-size: 20px;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
     padding-left: 1px;
     padding-right: 3px;
-    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    flex-direction: row;
 }
 
-.header-5 .inline {
+.header-5 * {
     font-size: 18px;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
     padding-left: 1px;
     padding-right: 2px;
-    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    flex-direction: row;
 }
 
 .paragraph {
     margin-bottom: 6px;
     margin-top: 6px;
-    flex-direction: row;
     flex-wrap: wrap;
+    flex-direction: row;
 }
 
 .list {
     cursor: link;
-    flex-direction: column;
 }
 
 .list-item {
@@ -142,12 +145,8 @@
     background-color: rgba(128, 128, 128, 0.5);
 }
 
-.bold {
-    -unity-font-style: bold;
-}
 
 .image {
-    flex-direction: row;
     margin-bottom: 10px;
     justify-content: center;
     align-items: flex-start;
@@ -155,10 +154,19 @@
 
 .image:hover > .alt-text {
     visibility: visible;
-    top: 100%;
 }
 
-.italic {
+.bold *.italic TextElement {
+    -unity-font-style: bold-and-italic;
+}
+.italic .bold TextElement {
+    -unity-font-style: bold-and-italic;
+}
+.bold TextElement {
+    -unity-font-style: bold;
+}
+
+.italic TextElement {
     -unity-font-style: italic;
 }
 

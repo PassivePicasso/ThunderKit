@@ -67,7 +67,8 @@
 }
 
 .page-header {
-    font-size: 30px;
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    font-size: 32px;
     -unity-font-style: normal;
     color: rgba(255, 255, 255, 0.53);
 }
