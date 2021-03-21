@@ -1,10 +1,5 @@
 .header-1 {
-    font-size: 28px;
-    -unity-font-style: bold;
     border-bottom-width: 1px;
-    border-left-color: rgb(0, 0, 0);
-    border-right-color: rgb(0, 0, 0);
-    border-top-color: rgb(0, 0, 0);
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
     margin-bottom: 12px;
@@ -13,12 +8,7 @@
 }
 
 .header-2 {
-    font-size: 22px;
-    -unity-font-style: bold;
     border-bottom-width: 1px;
-    border-left-color: rgb(0, 0, 0);
-    border-right-color: rgb(0, 0, 0);
-    border-top-color: rgb(0, 0, 0);
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
     margin-bottom: 12px;
@@ -27,24 +17,18 @@
 }
 
 .header-3 {
-    font-size: 16px;
-    -unity-font-style: bold;
     margin-bottom: 12px;
     margin-top: 12px;
     flex-direction: row;
 }
 
 .header-4 {
-    -unity-font-style: bold;
-    font-size: 14px;
     margin-bottom: 12px;
     flex-direction: row;
     margin-top: 12px;
 }
 
 .header-5 {
-    font-size: 13px;
-    -unity-font-style: bold;
     margin-bottom: 12px;
     flex-direction: row;
     margin-top: 12px;
@@ -65,7 +49,7 @@
 }
 
 .header-3 .inline {
-    font-size: 16px;
+    font-size: 18px;
     -unity-font-style: bold;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
@@ -75,7 +59,7 @@
 }
 
 .header-4 .inline {
-    font-size: 14px;
+    font-size: 16px;
     -unity-font-style: bold;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
@@ -85,7 +69,7 @@
 }
 
 .header-5 .inline {
-    font-size: 13px;
+    font-size: 14px;
     -unity-font-style: bold;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
@@ -125,13 +109,10 @@
 }
 
 .link {
-    color: rgb(0, 0, 255);
-    border-bottom-width: 1px;
-    border-left-color: rgb(0, 0, 255);
-    border-right-color: rgb(0, 0, 255);
-    border-top-color: rgb(0, 0, 255);
-    border-bottom-color: rgb(0, 0, 255);
-    border-color: rgb(0, 0, 255);
+    cursor: link;
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(0, 0, 192);
+    border-color: rgb(0, 0, 192);
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
@@ -140,24 +121,9 @@
     padding-right: 2px;
 }
 
-.asset-link {
-    color: rgb(128, 0, 64);
-    border-left-color: rgb(128, 0, 64);
-    border-right-color: rgb(128, 0, 64);
-    border-top-color: rgb(128, 0, 64);
-    border-bottom-color: rgb(128, 0, 64);
-    border-color: rgb(128, 0, 64);
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 1px;
-    padding-right: 2px;
-    padding-top: 0;
-    padding-bottom: 0;
-}
 
 .inline {
+    font-size: 12px;
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;

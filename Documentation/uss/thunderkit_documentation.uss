@@ -29,7 +29,9 @@
 .TK_UnityPackage_2X_Icon {
     background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_UnityPackage_2X_Icon.png');
 }
-
+.TK_Documentation_2X_Icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png');
+}
 .hidden {
     visibility: hidden;
 }
@@ -176,7 +178,7 @@
 }
 
 .ManifestIdentityImage {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/ManifestIdentity.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/ManifestDatums/ManifestIdentity.png');
     width: 362px;
     height: 213px;
     min-width: 362px;
@@ -264,18 +266,32 @@
 .configure-game-button {
 }
 
-.asset-link {
-    color: rgb(0, 0, 255);
-    border-bottom-width: 1px;
-    border-left-color: rgb(0, 0, 255);
-    border-right-color: rgb(0, 0, 255);
-    border-top-color: rgb(0, 0, 255);
-    border-bottom-color: rgb(0, 0, 255);
-    flex-shrink: 1;
-    padding-right: 0;
-    padding-left: 0;
-}
-
 .standard-spacer {
     height: 50px;
 }
+.assetlink {
+    border-bottom-color: rgb(255, 0, 0);
+    border-color: rgb(255, 0, 0);
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 1px;
+    padding-right: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.menulink {
+    border-bottom-color: rgb(0, 192, 0);
+    border-color: rgb(0, 192, 0);
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 1px;
+    padding-right: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+

@@ -23,6 +23,7 @@ namespace ThunderKit.Markdown
     public class MarkdownElement : VisualElement
     {
         private static Regex LiteralSplitter = new Regex("^([\\S]+\\b\\S?)|^\\s+", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static Regex SchemeCheck = new Regex("^([\\w]+)://.*", RegexOptions.Singleline | RegexOptions.Compiled);
         private static event EventHandler UpdateMarkdown;
         static MarkdownElement()
         {
@@ -34,12 +35,24 @@ namespace ThunderKit.Markdown
         }
         public string Data { get; set; }
         public MarkdownDataType MarkdownDataType { get; set; }
+        private static readonly Dictionary<string, Action<(string text, string uri)>> SchemeLinkHandlers = new Dictionary<string, Action<(string text, string uri)>>
+        {
+            { "http",  link => System.Diagnostics.Process.Start(link.uri) },
+            { "https",  link => System.Diagnostics.Process.Start(link.uri) },
+            { "assetlink",  link => {
+                    var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(link.uri.Substring("assetlink://".Length));
+                    EditorGUIUtility.PingObject(asset);
+                    Selection.activeObject = asset;
+                }
+            },
+            { "menulink", link => EditorApplication.ExecuteMenuItem(link.uri.Substring("menulink://".Length)) }
+        };
+
         public MarkdownElement()
         {
-            //style.flexDirection = FlexDirection.Row;
-            //style.flexWrap = Wrap.Wrap;
         }
 
+        static bool IsAssetDirectory(string path) => path.StartsWith("Packages") || path.StartsWith("/Packages") || path.StartsWith("Assets") || path.StartsWith("/Assets");
         public new class UxmlFactory : UxmlFactory<MarkdownElement, UxmlTraits> { }
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
@@ -72,7 +85,7 @@ namespace ThunderKit.Markdown
                         var source = mdElement.Data;
                         if (!".md".Equals(Path.GetExtension(source))) break;
 
-                        if (source.StartsWith("Packages") || source.StartsWith("Assets"))
+                        if (IsAssetDirectory(source))
                         {
                             var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(source);
                             markdown = asset?.text ?? string.Empty;
@@ -187,7 +200,7 @@ namespace ThunderKit.Markdown
                             if (lb.IsImage)
                             {
                                 var imageElement = GetClassedElement<Image>("image");
-                                if (url.StartsWith("Packages") || url.StartsWith("Assets") || url.StartsWith("/Packages") || url.StartsWith("/Assets"))
+                                if (IsAssetDirectory(url))
                                 {
                                     var image = AssetDatabase.LoadAssetAtPath<Texture>(url);
                                     if (image)
@@ -214,40 +227,17 @@ namespace ThunderKit.Markdown
                             }
                             else
                             {
+                                var uri = new Uri(url);
+                                var lowerScheme = uri.Scheme.ToLower();
                                 var firstChild = lb.FirstChild as LiteralInline;
-                                var label = GetTextElement<Label>(firstChild.Content.ToString(), "link");
+                                var text = firstChild.Content.ToString();
+                                var label = GetTextElement<Label>(text, "link", lowerScheme);
                                 label.tooltip = url;
-                                if (url.StartsWith("Packages") || url.StartsWith("Assets"))
+                                label.RegisterCallback<MouseUpEvent>(evt =>
                                 {
-                                    if (Path.GetExtension(url).Equals(".md"))
-                                    {
-
-                                    }
-                                    else
-                                    {
-                                        label.AddToClassList("asset-link");
-                                        label.RegisterCallback<MouseUpEvent>(evt =>
-                                        {
-                                            var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(url);
-                                            EditorGUIUtility.PingObject(asset);
-                                            Selection.activeObject = asset;
-                                        });
-                                    }
-                                }
-                                else
-                                {
-                                    label.RegisterCallback<MouseUpEvent>(evt =>
-                                    {
-                                        var uri = new Uri(url);
-                                        switch (uri.Scheme)
-                                        {
-                                            case "https":
-                                            case "http":
-                                                System.Diagnostics.Process.Start(url);
-                                                break;
-                                        }
-                                    });
-                                }
+                                    if (SchemeLinkHandlers.ContainsKey(lowerScheme))
+                                        SchemeLinkHandlers[lowerScheme]?.Invoke((text, url));
+                                });
 
                                 yield return label;
                                 break;

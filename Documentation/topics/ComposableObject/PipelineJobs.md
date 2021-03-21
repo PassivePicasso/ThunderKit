@@ -6,9 +6,9 @@ PipelineJobs and ManifestDatums are paired together in ThunderKit.  When you cre
 
 Some pairs that already exist are;
 
-1. ManifestDatum [AssemblyDefinitions](Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssemblyDefinitions.cs) and PipelineJob [StageAssemblies](Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssemblies.cs) 
-2. ManifestDatum [AssetBundleDefinitions](Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssetBundleDefinitions.cs) and PipelineJob [StageAssetBundles](Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssetBundles.cs) 
-3. ManifestDatum [UnityPackages](Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/UnityPackages.cs) and PipelineJob [StageUnityPackages](Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageUnityPackages.cs) 
+1. ManifestDatum [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssemblyDefinitions.cs) and PipelineJob [StageAssemblies](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssemblies.cs) 
+2. ManifestDatum [AssetBundleDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssetBundleDefinitions.cs) and PipelineJob [StageAssetBundles](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssetBundles.cs) 
+3. ManifestDatum [UnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/UnityPackages.cs) and PipelineJob [StageUnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageUnityPackages.cs) 
 
 Examine these pairs of types to gain a better understanding of how to build your own customized set of data.
 
