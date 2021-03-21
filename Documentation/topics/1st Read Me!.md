@@ -1,20 +1,25 @@
 ### Wait, Read this before moving on
 
-The ThunderKit Documentation is built with a combination of Unity's UIToolkit (UIElements) and a custom UIToolkit element, the [MarkdownElement](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Markdown/MarkdownElement.cs) built off of
-[Markdig](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/MarkDig/license.txt).
+The Integrated ThunderKit Documentation system is a markdown based [UIToolkit](https://docs.unity3d.com/2018.4/Documentation/Manual/UIElements.html) templating system.
+ThunderKit's [MarkdownElement](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Markdown/MarkdownElement.cs) is a VisualElement which renders Markdown using the 
+[Markdig](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/MarkDig/license.txt) library. 
 
-Throughout the ThunderKit documentation you will see text underlined with various colors, these are links and each color is a different type of link.
+Go to the [Markdig GiHhub Repository](https://github.com/xoofx/markdig) for more information about Markdig.
+
+The ThunderKit Markdown implementation extends markdown links with extra functionality to provide an integrated experience.
+Throughout the ThunderKit documentation you will find various types of links and each color represents specific functionality.
+
 Hovering over a link will show you what URI the link will be executing when you click it.
 
-- Red Links: These are links to assets in the ThunderKit project, clicking on these links will ping and select the asset, this means it will be revealed in your project window, and shown in your inspector.
-- Green Links: These are Menu Item links. Clicking these links will invoke a menu item in Unity.
-- Blue Links: These are links to websites such as the [Unity Manual](https://docs.unity3d.com/Manual/index.html) or [ThunderKit Git Repository](https://github.com/PassivePicasso/ThunderKit)
+- [Menu Links](menulink://) are shortcuts to menu items in the Unity main menu, these are for convenience when you may need a window for more information from documentation.
+
+- [Asset Links](assetlink://) are links to assets in the project, clicking on these links will
+ping and select the asset, this means it will be revealed in your project window, and shown in 
+your inspector. Open the [Project window](menulink://Window/General/Project) and 
+[Inspector window](menulink://Window/General/Inspector) to make use of these asset links.
+
+- [Internet Hyperlinks](http://) are links to websites such as the [Unity Manual](https://docs.unity3d.com/Manual/index.html) or [ThunderKit Git Repository](https://github.com/PassivePicasso/ThunderKit) and will launch in your default Web Browser.
+
+This page will be updated as more types of links are added.
 
 MarkdownElement's links do not track visitation, so the color of links will not change from usage.
-
-The ThunderKit Markdown implementation extends markdown links with extra functionality to provide an improved integration experience.
-
-While reading through ThunderKit documentation it will be helpful to have the [Project window](menulink://Window/General/Project) and [Inspector window](menulink://Window/General/Inspector) open so that you can see the additional information made available by these links.
-
-
-
