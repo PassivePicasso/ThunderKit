@@ -1,6 +1,22 @@
 ## _**ThunderKit Crash Course**_
 
-This is a step by step guide on how to configure your ThunderKit environment for modding. Some steps will vary by game and mod loader and some customization may be needed.
+Welcome and thank you for trying ThunderKit. ThunderKit is a Unity extension that provides an expansive and expandable environment for mod development.
+
+ThunderKit can help you develop multiple mods in a single project and streamline your building and testing efforts through automation.
+
+ThunderKit aims to help you stop wasting time copying files, managing game installations and collections of mods so that you can quickly test your mods under many different configurations and with other mods easily.
+
+Below is a quick overview of how to get started using ThunderKit, showing you the basic parts and pieces you will need to get together to get started making cool stuff!
+
+This guide is not a specific how to for setting up modding for a specific game. What information you put in may vary depending on the game or mod loader you are using.
+
+ThunderKit comes with a template for a simple BepInEx setup that will help you get straight to modding if the game you're modding can use this setup.
+
+If you need to build a custom setup, ThunderKit comes with a integrated documentation that will help you understand how the BepInEx template works with a Tear down guide, so that you can start building a setup that works for your environment.
+
+If you like ThunderKit and make use of it please consider donating through [GitHub Sponsors](https://github.com/sponsors/PassivePicasso)
+
+These donations only serve to provide the developer with motivation. ThunderKit takes considerable time to develop and sometimes that reminder that people really believe in the project is all I need to keep going.
 
 ### Initial Setup
 
@@ -115,7 +131,7 @@ The Simulate field will execute an analysis of the AssetBundles and report in th
 ## Redistributable  Libraries
 
 If you need to create asset libraries that other developers need to depend on, use [UnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Data/UnityPackage.cs) to simplify that process.
-UnityPackages provide you with the ability 
+UnityPackages is ThunderKit tooling for [Unity Manual - Asset Packages](https://docs.unity3d.com/2018.4/Documentation/Manual/AssetPackages.html)
 
 ### Using UnityPackages 
 UnityPackages can be used to setup asset lists that can be built out to a Unity Asset Package.  A Unity AssetPackage allows assets to be easily imported into other Unity projects.
