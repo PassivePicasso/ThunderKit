@@ -44,6 +44,7 @@ namespace ThunderKit.Core.Windows
             pageList.Clear();
 
             var pages = new Dictionary<string, PageEntry>();
+            PageEntry defaultPage = null;
             foreach (var pagePath in pageFiles)
             {
                 var fileName = Path.GetFileNameWithoutExtension(pagePath);
@@ -60,6 +61,10 @@ namespace ThunderKit.Core.Windows
                 var pageEntry = new PageEntry(fileName, fullPageName, pagePath, pageDepth);
                 pageEntry.FoldOut.RegisterCallback<ChangeEvent<bool>>(OnToggle);
                 pageEntry.AddManipulator(new Clickable(OnSelect));
+                if (fullPageName.Equals ("topics-1st_read_me!"))
+                {
+                    defaultPage = pageEntry;
+                }
                 if (parentPage != null)
                 {
                     var parentIndex = pageList.IndexOf(parentPage);
@@ -71,13 +76,13 @@ namespace ThunderKit.Core.Windows
                 }
                 else
                     pageList.Add(pageEntry);
-
-
 #if UNITY_2019_1_OR_NEWER
                 rootVisualElement.RegisterCallback<CustomStyleResolvedEvent>(OnStyleResolved);
 #endif
                 pages.Add(fullPageName, pageEntry);
             }
+            if(defaultPage != null)
+                LoadSelection(defaultPage);
         }
 #if UNITY_2019_1_OR_NEWER
         private void OnStyleResolved(CustomStyleResolvedEvent evt)
