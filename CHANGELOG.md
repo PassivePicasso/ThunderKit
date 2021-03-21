@@ -7,18 +7,23 @@ This window can be disabled by a toggle it provides.
 #### ThunderKit Installer - Removed
 The ThunderKit installer has been removed.  The installer caused many development issues and lost work during the development of ThunderKit. While this issue
 may not have affected end users, the risk associated with the cost of lost work makes this feature dangerous to continue to maintain.
-This means on Unity 2018.1 to 2019.1 users will need to add the Thunderkit dependency to their projects Packages/manifest.json
-For Unity 2019.2+ users can add ThunderKit using the Git url and the Add from Git option in the Unity Package Manager.
+This means on Unity 2018.1 to 2019.2 users will need to add the Thunderkit dependency to their projects Packages/manifest.json
+For Unity 2019.3+ users can add ThunderKit using the Git url and use the [Install from Git](https://docs.unity3d.com/2019.3/Documentation/Manual/upm-ui-giturl.html) option in the Unity Package Manager.
 
 #### ThunderKit Settings
 
-ThunderKit Settings now get a dedicated window from ThunderKit and can be accessed from the main menu under Tools/ThunderKit/Settings
-These settings will no longer show up in the Project Settings window.  This is due to changes in how Unity collects the UI in different versions of Unity, moving the settings
-into a dedicated window provided by ThunderKit will improve stability and consistency across Unity versions.
+ThunderKit Settings now get a dedicated window from ThunderKit and can be accessed from the main menu under [Tools/ThunderKit/Settings](menulink://Tools/ThunderKit/Settings).
+
+These settings will no longer show up in the Project Settings window.
+
+#### Dependencies
+Dependency Management in the 3.0.0 update has changed significantly.  Instead of Manifests installing and managing dependencies in its entirety, Manifests will now only 
+be responsible for containing dependency references.  Instead a user will now install packages via the [Package Manager](menulink://Tools/ThunderKit/Packages), and then 
+add the Manifest from the Packages folder to the Manifest that requires the dependency
 
 #### Package Manager
 
-ThunderKit now includes a complete Package Manager, available from the main menu under Tools/ThunderKit/Packages 
+ThunderKit now includes a complete Package Manager, available from the main menu under [Tools/ThunderKit/Packages](menulink://Tools/ThunderKit/Packages)
 
 The ThunderKit Package Manager is how you will add and remove all mod dependencies for your project.
 If a mod in your project needs to depend on a Mod, Loader, or Library, you have the ability to install these dependencies through the Package Manager.
@@ -27,10 +32,6 @@ You can also create a Local Thunderstore source where you can specify a folder t
 Zip files in Local Thunderstore Sources must conform to Thunderstore's file naming schemes in order to be resolved correctly.  
 This scheme is: `Author-ModName-Version.zip`
 
-
-#### Dependencies
-Dependency Management in the 3.0.0 update has changed significantly.  Instead of Manifests installing and managing dependencies in its entirety, Manifests will now only 
-be responsible for containing dependency references.  Instead a user will now install packages via the Package Manager window, and then add the Manifest from the Packages folder to the Manifest that requires the dependency
 
 #### Documentation
 Documentation is a major issue for new users and as such ThunderKit now comes with integrated documentation to help new users get acclimated to the environment.
