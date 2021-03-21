@@ -4,4 +4,4 @@ First you will need to acquire the list of available packages to download from t
 
 Next you will need to implement the OnInstallPackageFiles method.  In this method you will need to download the data from the mod distribution system and then write out the content in the layout required by your project conventions to the packageDirectory parametery provided in the method arguments.
 
-If you would like to look at some examples, look at the [ThunderstoreSource](Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreSource.cs) and the [LocalThunderstoreSource](Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/LocalThunderstoreSource.cs) files.
+If you would like to look at some examples, look at the [ThunderstoreSource](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreSource.cs) and the [LocalThunderstoreSource](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/LocalThunderstoreSource.cs) files.
