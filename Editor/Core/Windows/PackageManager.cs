@@ -32,7 +32,7 @@ namespace ThunderKit.Core.Editor.Windows
         [SerializeField] private string SearchString;
         [SerializeField] public bool InProject;
 
-        [MenuItem(Constants.ThunderKitMenuRoot + "Package Manager")]
+        [MenuItem(Constants.ThunderKitMenuRoot + "Packages")]
         public static void ShowExample() => GetWindow<PackageManager>();
 
         public override void OnEnable()
