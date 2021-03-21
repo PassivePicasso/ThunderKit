@@ -1,3 +1,16 @@
+.inline {
+    font-size: 14px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 1px;
+    padding-right: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Light.otf');
+}
+
 .header-1 {
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
@@ -35,47 +48,47 @@
 }
 
 .header-1 .inline {
-    font-size: 28px;
-    -unity-font-style: bold;
+    font-size: 26px;
     padding-left: 4px;
     padding-right: 6px;
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
 }
 
 .header-2 .inline {
-    font-size: 22px;
-    -unity-font-style: bold;
+    font-size: 24px;
     padding-left: 3px;
     padding-right: 5px;
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
 }
 
 .header-3 .inline {
-    font-size: 18px;
-    -unity-font-style: bold;
+    font-size: 22px;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
     padding-left: 2px;
     padding-right: 4px;
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
 }
 
 .header-4 .inline {
-    font-size: 16px;
-    -unity-font-style: bold;
+    font-size: 20px;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
     padding-left: 1px;
     padding-right: 3px;
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
 }
 
 .header-5 .inline {
-    font-size: 14px;
-    -unity-font-style: bold;
+    font-size: 18px;
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
     padding-left: 1px;
     padding-right: 2px;
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
 }
 
 .paragraph {
@@ -102,6 +115,7 @@
     border-bottom-right-radius: 4px;
     padding-left: 4px;
     padding-right: 4px;
+    -unity-text-align: middle-center;
 }
 
 .quote {
@@ -109,6 +123,7 @@
 }
 
 .link {
+    flex-direction: row;
     cursor: link;
     border-bottom-width: 2px;
     border-bottom-color: rgb(0, 0, 192);
@@ -121,17 +136,10 @@
     padding-right: 2px;
 }
 
-
-.inline {
-    font-size: 12px;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 1px;
-    padding-right: 2px;
-    padding-top: 0;
-    padding-bottom: 0;
+.alt-text {
+    visibility: hidden;
+    flex-grow: 0;
+    background-color: rgba(128, 128, 128, 0.5);
 }
 
 .bold {
@@ -139,6 +147,15 @@
 }
 
 .image {
+    flex-direction: row;
+    margin-bottom: 10px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.image:hover > .alt-text {
+    visibility: visible;
+    top: 100%;
 }
 
 .italic {

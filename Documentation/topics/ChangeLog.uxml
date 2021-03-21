@@ -6,6 +6,6 @@
             <ui:VisualElement name="icon" class="header-icon TK_Documentation_2X_Icon" />
             <ui:Label text="Change Log" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
         </ui:VisualElement>
-        <ThunderKit.Markdown.MarkdownElement data="Packages/com.passivepicasso.thunderkit/CHANGELOG.md" markdown-data-type="Source" style="margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
+        <ThunderKit.Markdown.MarkdownElement data="Packages/com.passivepicasso.thunderkit/CHANGELOG.md" focusable="true" markdown-data-type="Source" style="margin-left: 12px; margin-right: 12px; margin-top: 12px; margin-bottom: 12px;" />
     </ui:VisualElement>
 </ui:UXML>

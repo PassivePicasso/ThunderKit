@@ -5,9 +5,10 @@ A Welcome window has been added to ThunderKit to help users set up their project
 This window can be disabled by a toggle it provides.
 
 #### ThunderKit Installer - Removed
-The ThunderKit installer has been removed.  The installer caused many development issues and lost work during the development of ThunderKit. While this issue
-may not have affected end users, the risk associated with the cost of lost work makes this feature dangerous to continue to maintain.
-This means on Unity 2018.1 to 2019.2 users will need to add the Thunderkit dependency to their projects Packages/manifest.json
+The ThunderKit installer has been removed.  The installer caused many development issues and lost
+work during the development of ThunderKit. While this issue may not have affected end users, the 
+risk associated with the cost of lost work makes this feature dangerous to continue to maintain.
+Unity 2018.1-2019.2 users will need to add the Thunderkit dependency to their projects Packages/manifest.json
 For Unity 2019.3+ users can add ThunderKit using the Git url and use the [Install from Git](https://docs.unity3d.com/2019.3/Documentation/Manual/upm-ui-giturl.html) option in the Unity Package Manager.
 
 #### ThunderKit Settings
