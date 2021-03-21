@@ -2,32 +2,29 @@ using System;
 using System.Collections.Generic;
 using Markdig.Helpers;
 using Markdig.Syntax;
-using Markdig.Renderers;
-
+using Markdig.Renderers;
+
 #if !NET40
 using System.Runtime.CompilerServices;
-#endif
-#if UNITY_2019_1_OR_NEWER
-using UnityEngine.UIElements;
-using UnityEditor.UIElements;
-using Markdig.Syntax.Inlines;
-using ThunderKit.Markdown.ObjectRenderers;
-using System.Text.RegularExpressions;
-#else
-using UnityEngine.Experimental.UIElements.StyleSheets;
-using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
-#endif
-
-
+#endif
+#if UNITY_2019_1_OR_NEWER
+using UnityEngine.UIElements;
+using Markdig.Syntax.Inlines;
+using ThunderKit.Markdown.ObjectRenderers;
+using System.Text.RegularExpressions;
+#else
+using UnityEngine.Experimental.UIElements.StyleSheets;
+using UnityEngine.Experimental.UIElements;
+using UnityEditor.Experimental.UIElements;
+#endif
+
+
 namespace ThunderKit.Markdown
 {
     using static Helpers.VisualElementFactory;
-    using static Helpers.VisualElementUtility;
-    using static Helpers.UnityPathUtility;
     public class UIElementRenderer : RendererBase
     {
-        private static Regex LiteralSplitter = new Regex("^([\\S]+\\b\\S?)|^\\s+", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static Regex LiteralSplitter = new Regex("^([\\S]+\\b\\S?)|^\\s+", RegexOptions.Singleline | RegexOptions.Compiled);
         private readonly Stack<VisualElement> stack = new Stack<VisualElement>();
         private char[] buffer;
 
@@ -56,7 +53,7 @@ namespace ThunderKit.Markdown
         {
             Write(markdownObject);
             return Document;
-        }
+        }
 
 #if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -125,26 +122,26 @@ namespace ThunderKit.Markdown
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
         public void WriteText(string text)
-        {
-            var content = text;
-            int safetyBreak = 0;
-            while (++safetyBreak < 10 && !string.IsNullOrWhiteSpace(content) && content.Length > 0)
-            {
-                var match = LiteralSplitter.Match(content);
-                if (match.Success)
-                {
-                    if (!string.IsNullOrEmpty(match.Value) && !string.IsNullOrWhiteSpace(match.Value))
-                    {
-                        safetyBreak = 0;
-                        content = content.Substring(match.Value.Length);
-                        WriteInline(GetTextElement<Label>(match.Value, "inline"));
-                    }
-                    else
-                        content = content.Substring(1);
-                }
-                else
-                    break;
-            }
+        {
+            var content = text;
+            int safetyBreak = 0;
+            while (++safetyBreak < 10 && !string.IsNullOrWhiteSpace(content) && content.Length > 0)
+            {
+                var match = LiteralSplitter.Match(content);
+                if (match.Success)
+                {
+                    if (!string.IsNullOrEmpty(match.Value) && !string.IsNullOrWhiteSpace(match.Value))
+                    {
+                        safetyBreak = 0;
+                        content = content.Substring(match.Value.Length);
+                        WriteInline(GetTextElement<Label>(match.Value, "inline"));
+                    }
+                    else
+                        content = content.Substring(1);
+                }
+                else
+                    break;
+            }
         }
 
         public void WriteText(string text, int offset, int length)
