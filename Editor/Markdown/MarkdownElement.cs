@@ -1,15 +1,10 @@
 using Markdig;
-using Markdig.Syntax;
-using Markdig.Syntax.Inlines;
 using Markdig.Extensions.GenericAttributes;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 using Markdig.Renderers.Normalize;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
@@ -22,8 +17,6 @@ using UnityEditor.Experimental.UIElements;
 
 namespace ThunderKit.Markdown
 {
-    using static Helpers.VisualElementFactory;
-    using static Helpers.VisualElementUtility;
     using static Helpers.UnityPathUtility;
 
     public enum MarkdownDataType { Implicit, Source, Text }
