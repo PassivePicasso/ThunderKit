@@ -1,4 +1,4 @@
-The ThunderKit Package Manager can be opened from the Tools > ThunderKit > Packages menu item.
+The [ThunderKit Package Manager](menulink://Tools/ThunderKit/Packages) can be opened from the main menu under Tools/ThunderKit/Packages
 
 With the package manager you can access mods, mod loaders, and utilites hosted on Thunderstore and other mod distribution sources in the future to assist you in making your project.
 
