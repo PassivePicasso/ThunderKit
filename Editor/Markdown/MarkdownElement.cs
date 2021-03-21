@@ -39,13 +39,26 @@ namespace ThunderKit.Markdown
         {
             { "http",  link => System.Diagnostics.Process.Start(link.uri) },
             { "https",  link => System.Diagnostics.Process.Start(link.uri) },
-            { "assetlink",  link => {
-                    var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(link.uri.Substring("assetlink://".Length));
+            {
+                "assetlink",
+                link =>
+                {
+                    var schemelessUri = link.uri.Substring("assetlink://".Length);
+                    if(schemelessUri.Length == 0) return;
+                    var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(schemelessUri);
                     EditorGUIUtility.PingObject(asset);
                     Selection.activeObject = asset;
                 }
             },
-            { "menulink", link => EditorApplication.ExecuteMenuItem(link.uri.Substring("menulink://".Length)) }
+            { 
+                "menulink", 
+                link => 
+                {
+                    var schemelessUri = link.uri.Substring("menulink://".Length);
+                    if(schemelessUri.Length == 0) return;
+                    EditorApplication.ExecuteMenuItem(schemelessUri);
+                } 
+            }
         };
 
         public MarkdownElement()
@@ -227,19 +240,34 @@ namespace ThunderKit.Markdown
                             }
                             else
                             {
-                                var uri = new Uri(url);
-                                var lowerScheme = uri.Scheme.ToLower();
-                                var firstChild = lb.FirstChild as LiteralInline;
-                                var text = firstChild.Content.ToString();
-                                var label = GetTextElement<Label>(text, "link", lowerScheme);
-                                label.tooltip = url;
-                                label.RegisterCallback<MouseUpEvent>(evt =>
+                                if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
                                 {
-                                    if (SchemeLinkHandlers.ContainsKey(lowerScheme))
-                                        SchemeLinkHandlers[lowerScheme]?.Invoke((text, url));
-                                });
+                                    var match = SchemeCheck.Match(url);
+                                    if (match.Success)
+                                    {
+                                        var lowerScheme = match.Groups[1].Value.ToLower();
+                                        var firstChild = lb.FirstChild as LiteralInline;
+                                        var text = firstChild.Content.ToString();
+                                        var label = GetTextElement<Label>(text, "link", lowerScheme);
+                                        yield return label;
+                                    }
+                                }
+                                else
+                                {
+                                    var uri = new Uri(url);
+                                    var lowerScheme = uri.Scheme.ToLower();
+                                    var firstChild = lb.FirstChild as LiteralInline;
+                                    var text = firstChild.Content.ToString();
+                                    var label = GetTextElement<Label>(text, "link", lowerScheme);
+                                    label.tooltip = url;
+                                    label.RegisterCallback<MouseUpEvent>(evt =>
+                                    {
+                                        if (SchemeLinkHandlers.ContainsKey(lowerScheme))
+                                            SchemeLinkHandlers[lowerScheme]?.Invoke((text, url));
+                                    });
 
-                                yield return label;
+                                    yield return label;
+                                }
                                 break;
                             }
                         }
