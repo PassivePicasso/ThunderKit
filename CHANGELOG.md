@@ -1,9 +1,7 @@
 ﻿## 3.0.0 
-### Dependencies 2
-This update completes the last major system feature implementations for ThunderKit.
 
 #### Initial Setup
-A Welcome window has been added to ThunderKit to help ensure users will conduct important first steps for setting up their project.
+A Welcome window has been added to ThunderKit to help users set up their project.
 This window can be disabled by a toggle it provides.
 
 #### ThunderKit Installer - Removed
