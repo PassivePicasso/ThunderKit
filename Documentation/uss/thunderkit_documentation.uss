@@ -29,9 +29,11 @@
 .TK_UnityPackage_2X_Icon {
     background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_UnityPackage_2X_Icon.png');
 }
+
 .TK_Documentation_2X_Icon {
     background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png');
 }
+
 .hidden {
     visibility: hidden;
 }
@@ -62,11 +64,6 @@
 
 .bm4 {
     margin-bottom: 4px;
-}
-
-.text-wrap {
-    white-space: normal;
-    -unity-word-wrap: true;
 }
 
 .page-header {
@@ -269,6 +266,7 @@
 .standard-spacer {
     height: 50px;
 }
+
 .assetlink {
     border-bottom-color: rgb(255, 0, 0);
     border-color: rgb(255, 0, 0);
@@ -294,4 +292,3 @@
     padding-top: 0;
     padding-bottom: 0;
 }
-

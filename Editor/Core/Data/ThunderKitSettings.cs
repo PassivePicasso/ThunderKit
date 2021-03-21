@@ -46,7 +46,6 @@ namespace ThunderKit.Core.Data
         }
 
 
-        [MenuItem(Constants.ThunderKitMenuRoot + "Create Settings", priority = Constants.ThunderKitMenuPriority)]
         public static void CreateSettings() => GetOrCreateSettings<ThunderKitSettings>();
 
         private const string PathLabel = "Game Path";

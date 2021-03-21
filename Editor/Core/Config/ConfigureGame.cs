@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using UnityEditor;
@@ -15,7 +14,6 @@ namespace ThunderKit.Core.Config
 {
     public class ConfigureGame
     {
-        [MenuItem(Constants.ThunderKitMenuRoot + "Configure Game", priority = Constants.ThunderKitMenuPriority - 1)]
         public static void Configure()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
