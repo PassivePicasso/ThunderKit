@@ -22,8 +22,6 @@ namespace ThunderKit.Markdown
     public enum MarkdownDataType { Implicit, Source, Text }
     public class MarkdownElement : VisualElement
     {
-        private static event EventHandler UpdateMarkdown;
-
         private static UIElementRenderer renderer;
         static MarkdownElement()
         {
@@ -32,13 +30,9 @@ namespace ThunderKit.Markdown
             mpb.Extensions.AddIfNotAlready<GenericAttributesExtension>();
             var pipeline = mpb.Build();
             pipeline.Setup(renderer);
-            EditorApplication.projectChanged += EditorApplication_projectChanged;
-        }
-        private static void EditorApplication_projectChanged()
-        {
-            UpdateMarkdown?.Invoke(null, EventArgs.Empty);
         }
         public string Data { get; set; }
+        private string Source { get; set; }
         public MarkdownDataType MarkdownDataType { get; set; }
         public bool SpaceAfterQuoteBlock { get; set; }
         public bool EmptyLineAfterCodeBlock { get; set; }
@@ -48,10 +42,34 @@ namespace ThunderKit.Markdown
         public bool ExpandAutoLinks { get; set; }
         public MarkdownElement()
         {
+            EditorApplication.projectChanged += RefreshContent;
         }
 
-        void RefreshContent(string markdown)
+        string GetMarkdown()
         {
+            string markdown = Data;
+            switch (MarkdownDataType)
+            {
+                case MarkdownDataType.Implicit:
+                case MarkdownDataType.Source:
+                    if (!".md".Equals(Path.GetExtension(Source))) break;
+
+                    var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Source);
+                    markdown = asset?.text ?? string.Empty;
+
+                    break;
+                case MarkdownDataType.Text:
+                    markdown = Data;
+                    break;
+            }
+
+            return string.IsNullOrEmpty(markdown) ? $"No data found: {MarkdownDataType} : {Data}" : markdown;
+        }
+
+        void RefreshContent()
+        {
+            Clear();
+
             var normalizeOptions = new NormalizeOptions
             {
                 EmptyLineAfterCodeBlock = EmptyLineAfterCodeBlock,
@@ -61,6 +79,8 @@ namespace ThunderKit.Markdown
                 ListItemCharacter = ListItemCharacter[0],
                 SpaceAfterQuoteBlock = SpaceAfterQuoteBlock
             };
+
+            var markdown = GetMarkdown();
 
             markdown = Markdig.Markdown.Normalize(markdown, normalizeOptions);
 
@@ -86,7 +106,6 @@ namespace ThunderKit.Markdown
             {
                 base.Init(ve, bag, cc);
                 var mdElement = (MarkdownElement)ve;
-                mdElement.Clear();
                 mdElement.Data = m_text.GetValueFromBag(bag, cc);
                 mdElement.MarkdownDataType = m_dataType.GetValueFromBag(bag, cc);
                 mdElement.EmptyLineAfterCodeBlock = m_EmptyLineAfterCodeBlock.GetValueFromBag(bag, cc);
@@ -96,49 +115,33 @@ namespace ThunderKit.Markdown
                 mdElement.ListItemCharacter = m_ListItemCharacter.GetValueFromBag(bag, cc);
                 mdElement.SpaceAfterQuoteBlock = m_SpaceAfterQuoteBlock.GetValueFromBag(bag, cc);
 
-                var markdown = string.Empty;
-                switch (mdElement.MarkdownDataType)
+                bool configured = false;
+                if (mdElement.MarkdownDataType != MarkdownDataType.Text)
                 {
-                    case MarkdownDataType.Implicit:
+                    if (IsAssetDirectory(mdElement.Data))
+                    {
+                        mdElement.Source = mdElement.Data;
+                        configured = true;
+                    }
+                    else if (cc.visualTreeAsset != null)
+                    {
+                        var treeAssetPath = AssetDatabase.GetAssetPath(cc.visualTreeAsset);
+                        if (!string.IsNullOrEmpty(treeAssetPath))
                         {
-                            if (cc.visualTreeAsset == null) break;
-                            var treeAssetPath = AssetDatabase.GetAssetPath(cc.visualTreeAsset);
-                            if (string.IsNullOrEmpty(treeAssetPath)) break;
                             var treeAssetDirectory = Path.GetDirectoryName(treeAssetPath);
-                            var fileName = $"{Path.GetFileNameWithoutExtension(treeAssetPath)}.md";
-                            var sourcePath = Path.Combine(treeAssetDirectory, fileName);
-                            var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
-                            markdown = asset?.text ?? string.Empty;
-                        }
-                        break;
-                    case MarkdownDataType.Source:
-                        var source = mdElement.Data;
-                        if (!".md".Equals(Path.GetExtension(source))) break;
-
-                        if (IsAssetDirectory(source))
-                        {
-                            var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(source);
-                            markdown = asset?.text ?? string.Empty;
-                        }
-                        else
-                        {
-                            var treeAssetPath = AssetDatabase.GetAssetPath(cc.visualTreeAsset);
-                            var treeAssetDirectory = Path.GetDirectoryName(treeAssetPath);
+                            var source = string.IsNullOrEmpty(mdElement.Data) ? $"{Path.GetFileNameWithoutExtension(treeAssetPath)}.md"
+                                                                              : mdElement.Data;
                             var sourcePath = Path.Combine(treeAssetDirectory, source);
-                            var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
-                            markdown = asset?.text ?? string.Empty;
+                            mdElement.Source = sourcePath;
+                            configured = true;
                         }
-                        break;
-                    case MarkdownDataType.Text:
-                        markdown = mdElement.Data;
-                        break;
+                    }
                 }
-                if (markdown == string.Empty)
-                {
-                    mdElement.Add(new Label($"No data found: {mdElement.MarkdownDataType} : {mdElement.Data}"));
-                    return;
-                }
-                mdElement.RefreshContent(markdown);
+                else
+                    configured = true;
+
+                if (configured)
+                    mdElement.RefreshContent();
             }
 
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
