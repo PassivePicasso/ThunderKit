@@ -8,33 +8,15 @@ using ThunderKit.Core.Paths;
 namespace ThunderKit.Core.Pipelines.Jops
 {
     [PipelineSupport(typeof(Pipeline))]
-    public class Zip : PipelineJob
+    public class Zip : FlowPipelineJob
     {
-        public Manifests.Manifest[] ExcludedManifests;
-        public bool PerManifest;
-
         [PathReferenceResolver]
         public string SourcePath;
         [PathReferenceResolver]
         public string OutputFile;
         public bool ShowOutput;
 
-        public override void Execute(Pipeline pipeline)
-        {
-            if (PerManifest)
-            {
-                for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
-                {
-                    if (ExcludedManifests.Contains(pipeline.Manifest)) continue;
-                    ExecuteInternal(pipeline);
-                }
-                pipeline.ManifestIndex = -1;
-            }
-            else
-                ExecuteInternal(pipeline);
-        }
-
-        private void ExecuteInternal(Pipeline pipeline)
+        protected override void ExecuteInternal(Pipeline pipeline)
         {
             var outputFile = OutputFile.Resolve(pipeline, this);
             var outputRoot = Path.GetDirectoryName(outputFile);
