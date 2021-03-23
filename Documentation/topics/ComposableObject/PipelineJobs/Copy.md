@@ -1,16 +1,16 @@
-[Copy](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Copy.cs) provides the ability to copy files with a set of configuration options
+[Copy](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Copy.cs) copy file(s) with configuration options
 
 ## Fields
 * **Recursive**
-  - When enabled will copy the entire contents of a specified folder including all subfolders and files to be content of a Destination folder
+  - When enabled will copy the entire contents of a specified directory including all subdirectories and files to be content of a Destination directory
   - When using Recursive the Source and Destination are expected to be directories and will error if a file is set as the value
 * **Source Required**
   - Enable this field when the Source is required and an error should occur if not found
 * **Source**
-  - Name of File or Folder to copy
+  - Name of File or directory to copy
   - Supports PathReferences
 * **Destination**
-  - Name of File or Folder to copy to
+  - Name of File or directory to copy to
   - Supports PathReferences
 
 ## Inherited Fields
