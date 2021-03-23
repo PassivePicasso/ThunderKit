@@ -116,7 +116,12 @@ namespace ThunderKit.Markdown
                     {
                         safetyBreak = 0;
                         content = content.Substring(match.Value.Length);
-                        WriteInline(GetTextElement<Label>(match.Value, "inline"));
+
+                        var element = GetTextElement<Label>(match.Value, "inline");
+                        if (!LiteralSplitter.Match(content).Success)
+                            element.AddToClassList("last-inline");
+
+                        WriteInline(element);
                     }
                     else
                         content = content.Substring(1);
