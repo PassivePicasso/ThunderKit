@@ -50,10 +50,15 @@ namespace {0}
         {
             manifests = manifest.EnumerateManifests().ToArray();
             PipelineJob[] jobs = Jobs.Where(SupportsType).ToArray();
-
+            for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
+            {
+                Job().Errored = false;
+                Job().ErrorMessage = string.Empty;
+            }
             for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
                 try
                 {
+                    if (!Job().Active) continue;
                     if (JobIsManifestProcessor())
                         ExecuteManifestLoop();
                     else
@@ -61,13 +66,16 @@ namespace {0}
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Error Invoking Job ({name}):({Job().name})\r\n{e}", this);
+                    Job().Errored = true;
+                    Job().ErrorMessage = e.Message;
+                    EditorGUIUtility.PingObject(Job());
+                    Debug.LogError($"Error Invoking {Job().name} Job on Pipeline {name}\r\n{e}", this);
                     JobIndex = jobs.Length;
                     break;
                 }
 
             JobIndex = -1;
-            
+
             PipelineJob Job() => jobs[JobIndex];
 
             void ExecuteJob() => Job().Execute(this);

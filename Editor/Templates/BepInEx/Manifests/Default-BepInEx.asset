@@ -42,7 +42,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f22bb7fd1d3b56a48bc52f8e407901d6, type: 3}
-  m_Name: identity
+  m_Name: ManifestIdentity
   m_EditorClassIdentifier: 
   StagingPaths:
   - <ManifestPluginStaging>
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 17d1008b78cb6e846889b7778282fbef, type: 3}
-  m_Name: AssetBundleDefs
+  m_Name: AssetBundleDefinitions
   m_EditorClassIdentifier: 
   StagingPaths:
   - <ManifestPluginStaging>

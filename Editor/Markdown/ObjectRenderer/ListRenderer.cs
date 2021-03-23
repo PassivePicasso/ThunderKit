@@ -1,5 +1,6 @@
 using System.Globalization;
 using Markdig.Syntax;
+using System.Linq;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -20,11 +21,25 @@ namespace ThunderKit.Markdown.ObjectRenderers
         {
             renderer.Push(GetClassedElement<VisualElement>("list"));
 
-            foreach (var item in listBlock)
+            //if (listBlock.IsOrdered)
+            //{
+            //    list.MarkerStyle = TextMarkerStyle.Decimal;
+
+            //    if (listBlock.OrderedStart != null && (listBlock.DefaultOrderedStart != listBlock.OrderedStart))
+            //    {
+            //        list.StartIndex = int.Parse(listBlock.OrderedStart, NumberFormatInfo.InvariantInfo);
+            //    }
+            //}
+            //else
+            //{
+            //    list.MarkerStyle = TextMarkerStyle.Disc;
+            //}
+
+            foreach (var item in listBlock.OfType<ListItemBlock>())
             {
-                var listItemBlock = (ListItemBlock)item;
-                renderer.Push(GetClassedElement<VisualElement>("list-item"));
-                renderer.WriteChildren(listItemBlock);
+                var listItem = GetClassedElement<VisualElement>("list-item");
+                renderer.Push(listItem);
+                renderer.WriteChildren(item);
                 renderer.Pop();
             }
 
