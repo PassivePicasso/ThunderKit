@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using UnityEditor;
