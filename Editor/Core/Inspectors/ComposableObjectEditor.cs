@@ -110,6 +110,7 @@ namespace ThunderKit.Core.Editor.Inspectors
                     }
 
                     foldoutRect = OnAfterElementHeaderGUI(foldoutRect, element);
+                    foldoutRect.width -= menuRect.width;
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && foldoutRect.Contains(Event.current.mousePosition))
                         step.isExpanded = !step.isExpanded;
 
