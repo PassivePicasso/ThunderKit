@@ -1,11 +1,9 @@
-
-using ThunderKit.Core.Manifests;
-using UnityEditor;
+using UnityEngine;
 
 namespace ThunderKit.Core.Manifests.Datum
 {
     public class Files : ManifestDatum
     {
-        public DefaultAsset[] files;
+        public Object[] files;
     }
 }
