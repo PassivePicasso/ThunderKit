@@ -1,15 +1,15 @@
-[Deletes](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Delete.cs) a file or folder
+[Delete](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Delete.cs) a file or directory
 
 ## Fields
 * **Recursive**
-  - When enabled will copy the entire contents of a specified folder including all subfolders and files to be content of a Destination folder
-  - When using Recursive the Source and Destination are expected to be directories and will error if a file is set as the value
+  - When enabled will copy the entire contents of a specified directory including all subdirectories and files to be content of a Destination directory
+  - When using Recursive the Source and Destination are expected to be directory and will error if a file is set as the value
 * **Path**
-  - Path to file or folder to be deleted
+  - Path to file or directory to be deleted
   - Supports PathReferences
 
 * **Fatal Failure**
-  - When enabled will cause the job to terminate pipeline execution if the attempt to delete the file or folder fails.
+  - When enabled will cause the job to terminate pipeline execution if the attempt to delete the file or directory fails.
 
 ## Inherited Fields
 * **Per Manifest**
