@@ -16,10 +16,23 @@ For Unity 2019.3+ users can add ThunderKit using the Git url and use the [Instal
 #### ThunderKit Settings
 
 ThunderKit Settings now get a dedicated window from ThunderKit and can be accessed from the main menu under [Tools/ThunderKit/Settings](menulink://Tools/ThunderKit/Settings).
-
 These settings will no longer show up in the Project Settings window.
 
+#### Debugging Features
+
+ComposableObjects now support some debugging features to provide an easy access interface to implementations of Composable Object to report errors in the UI.
+
+ComposableElements now have 2 members, IsErrored and ErrorMessage. The ComposableObjectEditor will change the header color of ComposableElements to red if IsErrored is true, signalling where a problem may be.
+
+Implementations of ComposableObject are responsible for setting the values in IsErrored and ErrorMessage.  
+
+For examples see [Pipeline](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Pipeline.cs) 
+and [PathReference](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/PathReference.cs)
+
+ThunderKit Manifests do not utilize these debugging features as they are only Data Containers, however if worth while usage for debugging issues can be identified then support will be added.
+
 #### Dependencies
+
 Dependency Management in the 3.0.0 update has changed significantly.  Instead of Manifests installing and managing dependencies in its entirety, Manifests will now only 
 be responsible for containing dependency references.  
 
@@ -41,7 +54,7 @@ Zip files in Local Thunderstore Sources must conform to Thunderstore's file nami
 This scheme is: `Author-ModName-Version.zip`
 
 #### Documentation
-Documentation is a major issue for new users and as such ThunderKit now comes with integrated documentation to help new users get acclimated to the environment.
+Documentation is a major issue for new users and as such ThunderKit now comes with integrated documentation to help onboard new users.
 The documentation available from the main menu under Tools/ThunderKit/Documentation
 
 Documentation is a work in progress and improvements will be made as a better understanding is gained about users needs for information.
