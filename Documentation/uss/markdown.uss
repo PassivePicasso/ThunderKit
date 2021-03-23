@@ -1,5 +1,5 @@
 .inline {
-    font-size: 13px;
+    font-size: 14px;
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
@@ -120,22 +120,28 @@
     color: rgb(255, 255, 255);
 }
 
-.link .inline {
+.last-inline {
     padding-left: 0px;
     padding-right: 0px;
 }
+
 .link {
+    justify-content: space-between;
     flex-direction: row;
     cursor: link;
-    border-bottom-width: 2px;
-    border-bottom-color: rgb(0, 0, 192);
-    border-color: rgb(0, 0, 192);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(0, 0, 128, 0.75);
+    border-color: rgba(0, 0, 128, 0.75);
     margin-left: 1px;
     margin-right: 2px;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    height: 17px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.link .inline {
+    color: rgba(0, 0, 128, 0.75);
 }
 
 .alt-text {
@@ -154,22 +160,26 @@
     visibility: visible;
 }
 
-.bold *.italic TextElement {
+.bold .italic .inline  {
     -unity-font-style: bold-and-italic;
 }
 
-.italic .bold TextElement {
+.italic .bold .inline  {
     -unity-font-style: bold-and-italic;
 }
 
-.bold TextElement {
+.bold .inline {
     -unity-font-style: bold;
 }
 
-.italic TextElement {
+.italic .inline  {
     -unity-font-style: italic;
 }
 
-.emphasis {
-    -unity-font-style: bold-and-italic;
+.bold {
+    flex-direction: row;
+}
+
+.italic {
+    flex-direction: row;
 }
