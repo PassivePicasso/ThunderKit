@@ -1,45 +1,22 @@
 using System;
 using System.IO;
-using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
-    public class Copy : PipelineJob
+    public class Copy : FlowPipelineJob
     {
-        public bool PerManifest;
         public bool Recursive;
         public bool SourceRequired;
 
-        public Manifests.Manifest[] ExcludedManifests;
         [PathReferenceResolver]
         public string Source;
         [PathReferenceResolver]
         public string Destination;
 
-        public override void Execute(Pipeline pipeline)
-        {
-            if (PerManifest)
-            {
-                for (pipeline.ManifestIndex = 0;
-                     pipeline.ManifestIndex < pipeline.manifests.Length;
-                     pipeline.ManifestIndex++)
-                {
-                    if (ExcludedManifests.Contains(pipeline.Manifest)) continue;
-
-                    //ExecuteCopy  will return early if no source is found to skip to the next manifest.
-                    //consider this when making changes here.
-                    ExecuteCopy(pipeline);
-                }
-                pipeline.ManifestIndex = -1;
-            }
-            else
-                ExecuteCopy(pipeline);
-        }
-
-        private void ExecuteCopy(Pipeline pipeline)
+        protected override void ExecuteInternal(Pipeline pipeline)
         {
             var source = Source.Resolve(pipeline, this);
             var destination = Destination.Resolve(pipeline, this);
