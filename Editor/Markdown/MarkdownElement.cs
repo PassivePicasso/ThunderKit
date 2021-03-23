@@ -32,6 +32,8 @@ namespace ThunderKit.Markdown
             pipeline.Setup(renderer);
         }
         public string Data { get; set; }
+        private string Markdown { get; set; }
+        private string NormalizedMarkdown { get; set; }
         private string Source { get; set; }
         public MarkdownDataType MarkdownDataType { get; set; }
         public bool SpaceAfterQuoteBlock { get; set; }
@@ -42,6 +44,7 @@ namespace ThunderKit.Markdown
         public bool ExpandAutoLinks { get; set; }
         public MarkdownElement()
         {
+            EditorApplication.projectChanged -= RefreshContent;
             EditorApplication.projectChanged += RefreshContent;
         }
 
@@ -68,6 +71,10 @@ namespace ThunderKit.Markdown
 
         void RefreshContent()
         {
+            var markdown = GetMarkdown();
+            if (markdown.Equals(Markdown)) return;
+            Markdown = markdown;
+
             Clear();
 
             var normalizeOptions = new NormalizeOptions
@@ -80,11 +87,10 @@ namespace ThunderKit.Markdown
                 SpaceAfterQuoteBlock = SpaceAfterQuoteBlock
             };
 
-            var markdown = GetMarkdown();
 
-            markdown = Markdig.Markdown.Normalize(markdown, normalizeOptions);
+            NormalizedMarkdown = Markdig.Markdown.Normalize(Markdown, normalizeOptions);
 
-            var document = Markdig.Markdown.Parse(markdown);
+            var document = Markdig.Markdown.Parse(NormalizedMarkdown);
             renderer.LoadDocument(this);
             renderer.Render(document);
         }

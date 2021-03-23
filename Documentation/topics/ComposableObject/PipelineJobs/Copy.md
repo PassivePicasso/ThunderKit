@@ -1,23 +1,27 @@
 [Copy](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Copy.cs) provides the ability to copy files with a set of configuration options
 
-Fields:
-* Per Manifest
-  - When enabled this job will execute once for each Manifest associated with the Pipeline
+## Fields
 * Recursive
   - When enabled will copy the entire contents of a specified folder including all subfolders and files to be content of a Destination folder
   - When using Recursive the Source and Destination are expected to be directories and will error if a file is set as the value
 * Source Required
   - Enable this field when the Source is required and an error should occur if not found
-* Excluded Manifests
-  - When Per Manifest is toggled on and you need the pipeline to not execute this job for certain Manifests, add them to this field
 * Source
-  - File or Folder to copy
+  - Name of File or Folder to copy
   - Supports PathReferences
 * Destination
-  - Name of destination file or directory
+  - Name of File or Folder to copy to
   - Supports PathReferences
 
-### Remarks
+## Inherited Fields
+* Per Manifest
+  - When enabled this job will execute once for each Manifest associated with the Pipeline
+* Excluded Manifests
+  - When Per Manifest is toggled on and you need the pipeline to not execute this job for certain Manifests, add them to this field
+
+## Remarks
+
+PathReferences are resources which can define dynamic paths, you can use them in fields that support PathReferences by invoking them with arrow brackets.
 
 For example if you use [ManifestPluginStaging](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/PathReferences/ManifestPluginStaging.asset) in StagingPaths in your Manifest's ManifestDatums
 You could then use [ManifestPluginStaging](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/PathReferences/ManifestPluginStaging.asset) in Copy with Per Manifest toggled to copy those files to another location
