@@ -21,7 +21,7 @@ MonoBehaviour:
       - {fileID: 0}
       m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_Hover:
-      m_Background: {fileID: 0}
+      m_Background: {fileID: 2800000, guid: 911339644303f9e42bc5a0a86d25644e, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Active:
@@ -1361,7 +1361,7 @@ MonoBehaviour:
       m_ScaledBackgrounds: []
       m_TextColor: {r: 0, g: 0, b: 0, a: 0}
     m_Hover:
-      m_Background: {fileID: 0}
+      m_Background: {fileID: 2800000, guid: 86d830c65fd51d3488090c1389ad8432, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 0, g: 0, b: 0, a: 0}
     m_Active:

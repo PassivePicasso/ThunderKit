@@ -29,8 +29,8 @@ namespace ThunderKit.Core.Editor.Inspectors
         Dictionary<UnityEngine.Object, UnityEditor.Editor> Editors;
         SerializedProperty dataArray;
 
-        protected virtual Rect PreHeader(Rect rect, ComposableElement element) => rect;
-
+        protected virtual Rect OnBeforeElementHeaderGUI(Rect rect, ComposableElement element, ref string title) => rect;
+        protected virtual Rect OnAfterElementHeaderGUI(Rect rect, ComposableElement element) => rect;
         private void OnEnable()
         {
             try
@@ -84,16 +84,17 @@ namespace ThunderKit.Core.Editor.Inspectors
 
                     var standardSize = singleLineHeight + standardVerticalSpacing;
 
-                    Rect deleteRect = new Rect(foldoutRect.x + 1 + foldoutRect.width - standardSize, foldoutRect.y + 1, standardSize, standardSize);
+                    Rect menuRect = new Rect(foldoutRect.x + 1 + foldoutRect.width - standardSize, foldoutRect.y + 1, standardSize, standardSize);
 
                     var popupIcon = IconContent("_Popup");
                     if (Event.current.type == EventType.Repaint)
-                        GUIStyle.none.Draw(deleteRect, popupIcon, false, false, false, false);
+                        GUIStyle.none.Draw(menuRect, popupIcon, false, false, false, false);
 
-                    if (Event.current.type == EventType.MouseUp && deleteRect.Contains(Event.current.mousePosition))
+                    if (Event.current.type == EventType.MouseUp && menuRect.Contains(Event.current.mousePosition))
                         ShowContextMenu(i, step);
 
-                    foldoutRect = PreHeader(foldoutRect, element);
+
+                    foldoutRect = OnBeforeElementHeaderGUI(foldoutRect, element, ref title);
                     if (isSingleLine)
                     {
                         var so = new SerializedObject(step.objectReferenceValue);
@@ -123,6 +124,9 @@ namespace ThunderKit.Core.Editor.Inspectors
                             editor.serializedObject.ApplyModifiedProperties();
                         }
                     }
+                    foldoutRect = OnAfterElementHeaderGUI(foldoutRect, element);
+                    if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && foldoutRect.Contains(Event.current.mousePosition))
+                        step.isExpanded = !step.isExpanded;
 
                 }
                 catch (Exception e)
