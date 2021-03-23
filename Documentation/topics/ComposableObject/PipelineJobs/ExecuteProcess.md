@@ -1,4 +1,4 @@
-[ExecuteProcess](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/ExecuteProcess.cs) will start a new process with the supplied [ProcessStartInfo](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.processstartinfo)
+[ExecuteProcess](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/ExecuteProcess.cs) starts a new process
 
 ## Fields
 * **Working Directory**
