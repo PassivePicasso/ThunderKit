@@ -63,7 +63,6 @@ namespace ThunderKit.Core.Editor.Inspectors
                 var stepSo = new SerializedObject(step.objectReferenceValue);
                 var stepType = step.objectReferenceValue.GetType();
                 var element = step.objectReferenceValue as ComposableElement;
-                var isSingleLine = stepType.GetCustomAttributes<SingleLineAttribute>().Any();
 
                 UnityEditor.Editor editor;
                 if (Editors.ContainsKey(step.objectReferenceValue))
@@ -93,37 +92,23 @@ namespace ThunderKit.Core.Editor.Inspectors
                     if (Event.current.type == EventType.MouseUp && menuRect.Contains(Event.current.mousePosition))
                         ShowContextMenu(i, step);
 
-
                     foldoutRect = OnBeforeElementHeaderGUI(foldoutRect, element, ref title);
-                    if (isSingleLine)
-                    {
-                        var so = new SerializedObject(step.objectReferenceValue);
-                        var iter = so.GetIterator().Copy();
-                        iter.NextVisible(true);
-                        if ("m_script".Equals(iter.name, System.StringComparison.OrdinalIgnoreCase))
-                            iter.NextVisible(false);
 
-                        EditorHelpers.AddField(new Rect(foldoutRect.x, foldoutRect.y + 1, foldoutRect.width - 20, foldoutRect.height - 1),
-                                                 iter,
-                                                 title);
-                    }
-                    else
+                    step.isExpanded = EditorGUI.Foldout(foldoutRect, step.isExpanded, title);
+                    if (step.isExpanded)
                     {
-                        step.isExpanded = EditorGUI.Foldout(foldoutRect, step.isExpanded, title);
-                        if (step.isExpanded)
+                        editor.serializedObject.Update();
+                        editor.OnInspectorGUI();
+                        if (GUI.changed)
                         {
-                            editor.serializedObject.Update();
-                            editor.OnInspectorGUI();
-                            if (GUI.changed)
-                            {
-                                EditorUtility.SetDirty(editor.serializedObject.targetObject);
-                                editor.serializedObject.ApplyModifiedProperties();
-                                Repaint();
-                            }
-                            Repaint();
+                            EditorUtility.SetDirty(editor.serializedObject.targetObject);
                             editor.serializedObject.ApplyModifiedProperties();
+                            Repaint();
                         }
+                        Repaint();
+                        editor.serializedObject.ApplyModifiedProperties();
                     }
+
                     foldoutRect = OnAfterElementHeaderGUI(foldoutRect, element);
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && foldoutRect.Contains(Event.current.mousePosition))
                         step.isExpanded = !step.isExpanded;

@@ -2,15 +2,16 @@ using ThunderKit.Core.Attributes;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(Pipeline)), SingleLine]
+    [PipelineSupport(typeof(Pipeline))]
     public class ExecutePipeline : PipelineJob
     {
+        public bool InheritRootManifest;
         public Pipeline executePipeline;
         public override void Execute(Pipeline pipeline)
         {
             if (!executePipeline) return;
 
-            if (pipeline.manifest)
+            if (InheritRootManifest && pipeline.manifest)
             {
                 var manifest = executePipeline.manifest;
                 executePipeline.manifest = pipeline.manifest;

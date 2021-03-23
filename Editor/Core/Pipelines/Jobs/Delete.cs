@@ -5,7 +5,7 @@ using System;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(Pipeline)), SingleLine]
+    [PipelineSupport(typeof(Pipeline))]
     public class Delete : FlowPipelineJob
     {
         public bool Recursive;
