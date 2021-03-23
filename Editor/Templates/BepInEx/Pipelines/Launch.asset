@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   PerManifest: 1
   Recursive: 0
-  ErrorOnSourceNotFound: 0
+  SourceRequired: 0
   ExcludedManifests: []
   Source: <ManifestStagingRoot>/monomod
-  Destination: <BepInExDestination>/monomod
+  Destination: <BepInExPackDestination>/BepInEx/monomod
 --- !u!114 &-7733731780651343911
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -52,13 +52,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   PerManifest: 1
   Recursive: 0
-  ErrorOnSourceNotFound: 0
+  SourceRequired: 0
   ExcludedManifests: []
   Source: <ManifestStagingRoot>/patchers
-  Destination: <BepInExDestination>/patchers
+  Destination: <BepInExPackDestination>/BepInEx/patchers
+--- !u!114 &-3529899152580426278
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  PerManifest: 0
+  Recursive: 1
+  SourceRequired: 1
+  ExcludedManifests: []
+  Source: <BepInExPackSource>
+  Destination: <BepInExPackDestination>
 --- !u!114 &-2147024917744884463
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -114,6 +135,7 @@ MonoBehaviour:
   - {fileID: -7733731780651343911}
   - {fileID: -1464023257577256927}
   - {fileID: 8644992239895033318}
+  - {fileID: -3529899152580426278}
   - {fileID: 725402799908082364}
   - {fileID: -5218163526715038906}
   - {fileID: -8022382733329462254}
@@ -157,7 +179,7 @@ MonoBehaviour:
   Active: 1
   PerManifest: 0
   Recursive: 0
-  ErrorOnSourceNotFound: 0
+  SourceRequired: 0
   ExcludedManifests: []
   Source: 
   Destination: 
@@ -175,13 +197,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   PerManifest: 1
   Recursive: 0
-  ErrorOnSourceNotFound: 0
+  SourceRequired: 0
   ExcludedManifests: []
   Source: <ManifestStagingRoot>/plugins
-  Destination: <BepInExDestination>/plugins
+  Destination: <BepInExPackDestination>/BepInEx/plugins
+--- !u!114 &818774413007333658
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  PerManifest: 0
+  Recursive: 0
+  SourceRequired: 0
+  ExcludedManifests: []
+  Source: 
+  Destination: 
 --- !u!114 &1537855316202664555
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -199,7 +242,7 @@ MonoBehaviour:
   Active: 1
   PerManifest: 0
   Recursive: 0
-  ErrorOnSourceNotFound: 0
+  SourceRequired: 0
   ExcludedManifests: []
   Source: 
   Destination: 
@@ -235,12 +278,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
   m_Name: Copy
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
+  Errored: 1
+  ErrorMessage: Sequence contains no elements
   Active: 1
   PerManifest: 0
   Recursive: 0
-  ErrorOnSourceNotFound: 0
+  SourceRequired: 0
   ExcludedManifests: []
   Source: <winhttp.dll>
   Destination: <GamePath>/winhttp.dll
@@ -261,7 +304,7 @@ MonoBehaviour:
   Active: 1
   PerManifest: 0
   Recursive: 0
-  ErrorOnSourceNotFound: 0
+  SourceRequired: 0
   ExcludedManifests: []
   Source: 
   Destination: 

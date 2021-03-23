@@ -11,7 +11,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     {
         public bool PerManifest;
         public bool Recursive;
-        public bool ErrorOnSourceNotFound;
+        public bool SourceRequired;
 
         public Manifests.Manifest[] ExcludedManifests;
         [PathReferenceResolver]
@@ -50,7 +50,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             }
             catch (Exception e)
             {
-                if (ErrorOnSourceNotFound) throw e;
+                if (SourceRequired) throw e;
             }
 
             var destinationIsFile = !File.GetAttributes(destination).HasFlag(FileAttributes.Directory);

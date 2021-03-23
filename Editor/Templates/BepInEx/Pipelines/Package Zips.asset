@@ -30,6 +30,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8808e815b3ce9c94e9552cb1dee9e305, type: 3}
   m_Name: Zip
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
   ExcludedManifests: []
   PerManifest: 1
   SourcePath: <ManifestStagingRoot>
@@ -47,6 +50,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5b20fac9c71fd64183cb7a8f359d73a, type: 3}
   m_Name: StageAssemblies
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
   stageDebugDatabases: 0
   preferPlayerBuilds: 0
 --- !u!114 &114367727377661556
@@ -61,6 +67,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b4f4581088b47744a114c282abc085d, type: 3}
   m_Name: StageDependencies
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
   StagingPath: 
   ExcludedManifests: []
 --- !u!114 &114532665349920082
@@ -75,6 +84,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 924ee63e6c016f14d8a1560b288f15a3, type: 3}
   m_Name: StageAssetBundles
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
   AssetBundleBuildOptions: 1
   buildTarget: 5
   recurseDirectories: 0
