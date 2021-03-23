@@ -10,24 +10,24 @@ namespace ThunderKit.Core.Pipelines.Jops
     [PipelineSupport(typeof(Pipeline))]
     public class Zip : FlowPipelineJob
     {
+        public CompressionLevel Compression;
+        public bool IncludeBaseDirectory;
         [PathReferenceResolver]
-        public string SourcePath;
+        public string Source;
         [PathReferenceResolver]
-        public string OutputFile;
-        public bool ShowOutput;
+        public string Output;
 
         protected override void ExecuteInternal(Pipeline pipeline)
         {
-            var outputFile = OutputFile.Resolve(pipeline, this);
-            var outputRoot = Path.GetDirectoryName(outputFile);
+            var output = Output.Resolve(pipeline, this);
+            var source = Source.Resolve(pipeline, this);
+            var outputDir = Path.GetDirectoryName(output);
 
-            if (File.Exists(outputFile)) File.Delete(outputFile);
-            Directory.CreateDirectory(outputRoot);
+            File.Delete(output);
 
-            ZipFile.CreateFromDirectory(SourcePath.Resolve(pipeline, this), outputFile);
+            Directory.CreateDirectory(outputDir);
 
-            if (ShowOutput)
-                Process.Start(outputRoot);
+            ZipFile.CreateFromDirectory(source, output, Compression, IncludeBaseDirectory);
         }
     }
 }
