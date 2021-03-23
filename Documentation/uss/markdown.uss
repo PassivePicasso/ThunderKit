@@ -120,18 +120,22 @@
     color: rgb(255, 255, 255);
 }
 
+.link .inline {
+    padding-left: 0px;
+    padding-right: 0px;
+}
 .link {
     flex-direction: row;
     cursor: link;
     border-bottom-width: 2px;
     border-bottom-color: rgb(0, 0, 192);
     border-color: rgb(0, 0, 192);
-    margin-left: 0;
-    margin-right: 0;
+    margin-left: 1px;
+    margin-right: 2px;
     margin-top: 0;
     margin-bottom: 0;
-    padding-left: 1px;
-    padding-right: 2px;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .alt-text {

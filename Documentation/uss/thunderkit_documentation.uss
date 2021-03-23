@@ -271,25 +271,9 @@
 .assetlink {
     border-bottom-color: rgb(255, 0, 0);
     border-color: rgb(255, 0, 0);
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 1px;
-    padding-right: 2px;
-    padding-top: 0;
-    padding-bottom: 0;
 }
 
 .menulink {
     border-bottom-color: rgb(0, 192, 0);
     border-color: rgb(0, 192, 0);
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 1px;
-    padding-right: 2px;
-    padding-top: 0;
-    padding-bottom: 0;
 }
