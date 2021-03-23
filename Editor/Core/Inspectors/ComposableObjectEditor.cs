@@ -15,7 +15,9 @@ namespace ThunderKit.Core.Editor.Inspectors
     [CustomEditor(typeof(ComposableObject), true)]
     public class ComposableObjectEditor : UnityEditor.Editor
     {
-        static string[] searchFolders = new [] { "Assets", "Packages" };
+        protected static GUISkin EditorSkin;
+
+        static string[] searchFolders = new[] { "Assets", "Packages" };
         public class StepData
         {
             public SerializedProperty step;
@@ -26,6 +28,8 @@ namespace ThunderKit.Core.Editor.Inspectors
         static ComposableElement ClipboardItem;
         Dictionary<UnityEngine.Object, UnityEditor.Editor> Editors;
         SerializedProperty dataArray;
+
+        protected virtual Rect PreHeader(Rect rect, ComposableElement element) => rect;
 
         private void OnEnable()
         {
@@ -40,6 +44,13 @@ namespace ThunderKit.Core.Editor.Inspectors
         }
         public override void OnInspectorGUI()
         {
+            if (!EditorSkin)
+                if (EditorGUIUtility.isProSkin)
+                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>("Packages/com.passivepicasso.thunderkit/Editor/Core/DarkSkin.guiskin");
+                else
+                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>("Packages/com.passivepicasso.thunderkit/Editor/Core/LightSkin.guiskin");
+
+
             serializedObject.Update();
             DrawPropertiesExcluding(serializedObject, "m_Script", "Data");
             GUILayout.Space(2);
@@ -51,6 +62,7 @@ namespace ThunderKit.Core.Editor.Inspectors
                 var step = dataArray.GetArrayElementAtIndex(i);
                 var stepSo = new SerializedObject(step.objectReferenceValue);
                 var stepType = step.objectReferenceValue.GetType();
+                var element = step.objectReferenceValue as ComposableElement;
                 var isSingleLine = stepType.GetCustomAttributes<SingleLineAttribute>().Any();
 
                 UnityEditor.Editor editor;
@@ -63,8 +75,12 @@ namespace ThunderKit.Core.Editor.Inspectors
                 {
                     var title = ObjectNames.NicifyVariableName(stepType.Name);
                     var foldoutRect = GUILayoutUtility.GetRect(currentViewWidth, singleLineHeight + 3);
-                    
-                    GUI.Box(new Rect(foldoutRect.x - 24, foldoutRect.y - 1, foldoutRect.width + 30, foldoutRect.height + 1), string.Empty, EditorStyles.helpBox);
+
+                    var boxSkin = EditorSkin.box;
+                    if (element.Errored)
+                        boxSkin = EditorSkin.GetStyle("error-box");
+
+                    GUI.Box(new Rect(foldoutRect.x - 24, foldoutRect.y - 1, foldoutRect.width + 30, foldoutRect.height + 1), string.Empty, boxSkin);
 
                     var standardSize = singleLineHeight + standardVerticalSpacing;
 
@@ -77,6 +93,7 @@ namespace ThunderKit.Core.Editor.Inspectors
                     if (Event.current.type == EventType.MouseUp && deleteRect.Contains(Event.current.mousePosition))
                         ShowContextMenu(i, step);
 
+                    foldoutRect = PreHeader(foldoutRect, element);
                     if (isSingleLine)
                     {
                         var so = new SerializedObject(step.objectReferenceValue);
@@ -87,7 +104,7 @@ namespace ThunderKit.Core.Editor.Inspectors
 
                         EditorHelpers.AddField(new Rect(foldoutRect.x, foldoutRect.y + 1, foldoutRect.width - 20, foldoutRect.height - 1),
                                                  iter,
-                                                 ObjectNames.NicifyVariableName(stepType.Name));
+                                                 title);
                     }
                     else
                     {

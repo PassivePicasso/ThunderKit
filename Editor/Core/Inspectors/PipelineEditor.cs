@@ -8,6 +8,15 @@ namespace ThunderKit.Core.Editor.Inspectors
     [CustomEditor(typeof(Pipeline), true)]
     public class PipelineEditor : ComposableObjectEditor
     {
+        protected override Rect PreHeader(Rect rect, ComposableElement element)
+        {
+            var job = element as PipelineJob;
+            var toggleRect = new Rect(rect.x - 14, rect.y + 1, 14, EditorGUIUtility.singleLineHeight);
+            rect.x += 16;
+            job.Active = GUI.Toggle(toggleRect, job.Active, new GUIContent());
+
+            return rect;
+        }
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();

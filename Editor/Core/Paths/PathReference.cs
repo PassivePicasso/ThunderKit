@@ -51,7 +51,15 @@ namespace ThunderKit.Core.Paths
 
         public string GetPath(Pipeline pipeline)
         {
-            return Data.OfType<PathComponent>().Select(d => d.GetPath(this, pipeline)).Aggregate(Combine);
+            try
+            {
+                return Data.OfType<PathComponent>().Select(d => d.GetPath(this, pipeline)).Aggregate(Combine);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Unable to resolve PathReference {this.name}", this);
+                throw e;
+            }
         }
 
         [SerializeField, HideInInspector]

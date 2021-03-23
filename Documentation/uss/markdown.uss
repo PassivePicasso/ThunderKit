@@ -18,6 +18,7 @@
     margin-top: 12px;
     flex-direction: row;
 }
+
 .header-2 {
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
@@ -139,7 +140,6 @@
     background-color: rgba(128, 128, 128, 0.5);
 }
 
-
 .image {
     margin-bottom: 10px;
     justify-content: center;
@@ -153,9 +153,11 @@
 .bold *.italic TextElement {
     -unity-font-style: bold-and-italic;
 }
+
 .italic .bold TextElement {
     -unity-font-style: bold-and-italic;
 }
+
 .bold TextElement {
     -unity-font-style: bold;
 }

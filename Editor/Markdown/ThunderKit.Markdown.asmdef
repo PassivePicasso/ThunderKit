@@ -9,7 +9,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "Markdig.dll"
+        "Markdig.Signed.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

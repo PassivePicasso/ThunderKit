@@ -23,10 +23,10 @@ namespace ThunderKit.Markdown.ObjectRenderers
             {
                 case '*':
                 case '_':
-                    delimiterClass = obj.IsDouble ? "bold" : "italic";
+                    delimiterClass = obj.DelimiterCount == 2 ? "bold" : "italic";
                     break;
                 case '~':
-                    delimiterClass = obj.IsDouble ? "strikethrough" : "subscript";
+                    delimiterClass = obj.DelimiterCount == 2 ? "strikethrough" : "subscript";
                     break;
                 case '^':
                     delimiterClass = "superscript";
