@@ -2,49 +2,50 @@ using System;
 using System.Collections.Generic;
 using Markdig.Helpers;
 using Markdig.Syntax;
-using Markdig.Renderers;using Markdig.Syntax.Inlines;using ThunderKit.Markdown.ObjectRenderers;using System.Text.RegularExpressions;
-#if !NET40
+using Markdig.Renderers;
+using Markdig.Syntax.Inlines;
+using ThunderKit.Markdown.ObjectRenderers;
+using System.Text.RegularExpressions;
+#if !NET40
 using System.Runtime.CompilerServices;
-#endif
-#if UNITY_2019_1_OR_NEWERusing UnityEngine.UIElements;#elseusing UnityEngine.Experimental.UIElements.StyleSheets;using UnityEngine.Experimental.UIElements;using UnityEditor.Experimental.UIElements;#endif
-
-
+#endif
+#if UNITY_2019_1_OR_NEWER
+using UnityEngine.UIElements;
+#else
+using UnityEngine.Experimental.UIElements.StyleSheets;
+using UnityEngine.Experimental.UIElements;
+using UnityEditor.Experimental.UIElements;
+#endif
 namespace ThunderKit.Markdown
 {
     using static Helpers.VisualElementFactory;
     public class UIElementRenderer : RendererBase
     {
-        private static Regex LiteralSplitter = new Regex("^([\\S]+\\b\\S?)|^\\s+", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static Regex LiteralSplitter = new Regex("^([\\S]+\\b\\S?)|^\\s+", RegexOptions.Singleline | RegexOptions.Compiled);
         private readonly Stack<VisualElement> stack = new Stack<VisualElement>();
         private char[] buffer;
-
         public UIElementRenderer()
         {
             buffer = new char[1024];
         }
-
         public UIElementRenderer(VisualElement document)
         {
             buffer = new char[1024];
             LoadDocument(document);
         }
-
         public virtual void LoadDocument(VisualElement document)
         {
             Document = document;
             stack.Push(document);
             LoadRenderers();
         }
-
         public VisualElement Document { get; protected set; }
-
         /// <inheritdoc/>
         public override object Render(MarkdownObject markdownObject)
         {
             Write(markdownObject);
             return Document;
-        }
-
+        }
 #if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
@@ -58,7 +59,6 @@ namespace ThunderKit.Markdown
                 inline = inline.NextSibling;
             }
         }
-
         public void WriteLeafRawLines(LeafBlock leafBlock)
         {
             if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
@@ -70,33 +70,27 @@ namespace ThunderKit.Markdown
                 {
                     if (i != 0)
                         WriteInline(GetClassedElement<Label>("linebreak"));
-
                     WriteText(ref slices[i].Slice);
                 }
             }
         }
-
         public void Push(VisualElement o)
         {
             stack.Push(o);
         }
-
         public void Pop()
         {
             var popped = stack.Pop();
             stack.Peek().Add(popped);
         }
-
         public void WriteBlock(VisualElement block)
         {
             stack.Peek().Add(block);
         }
-
         public void WriteInline(VisualElement inline)
         {
             AddInline(stack.Peek(), inline);
         }
-
 #if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
@@ -104,41 +98,37 @@ namespace ThunderKit.Markdown
         {
             if (slice.Start > slice.End)
                 return;
-
             WriteText(slice.Text, slice.Start, slice.Length);
         }
-
 #if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
         public void WriteText(string text)
-        {
-            var content = text;
-            int safetyBreak = 0;
-            while (++safetyBreak < 10 && !string.IsNullOrWhiteSpace(content) && content.Length > 0)
-            {
-                var match = LiteralSplitter.Match(content);
-                if (match.Success)
-                {
-                    if (!string.IsNullOrEmpty(match.Value) && !string.IsNullOrWhiteSpace(match.Value))
-                    {
-                        safetyBreak = 0;
-                        content = content.Substring(match.Value.Length);
-                        WriteInline(GetTextElement<Label>(match.Value, "inline"));
-                    }
-                    else
-                        content = content.Substring(1);
-                }
-                else
-                    break;
-            }
+        {
+            var content = text;
+            int safetyBreak = 0;
+            while (++safetyBreak < 10 && !string.IsNullOrWhiteSpace(content) && content.Length > 0)
+            {
+                var match = LiteralSplitter.Match(content);
+                if (match.Success)
+                {
+                    if (!string.IsNullOrEmpty(match.Value) && !string.IsNullOrWhiteSpace(match.Value))
+                    {
+                        safetyBreak = 0;
+                        content = content.Substring(match.Value.Length);
+                        WriteInline(GetTextElement<Label>(match.Value, "inline"));
+                    }
+                    else
+                        content = content.Substring(1);
+                }
+                else
+                    break;
+            }
         }
-
         public void WriteText(string text, int offset, int length)
         {
             if (text == null)
                 return;
-
             if (offset == 0 && text.Length == length)
             {
                 WriteText(text);
@@ -157,7 +147,6 @@ namespace ThunderKit.Markdown
                 }
             }
         }
-
         protected virtual void LoadRenderers()
         {
             // Default block renderers
@@ -167,7 +156,6 @@ namespace ThunderKit.Markdown
             ObjectRenderers.Add(new ParagraphRenderer());
             ObjectRenderers.Add(new QuoteBlockRenderer());
             ObjectRenderers.Add(new ThematicBreakRenderer());
-
             // Default inline renderers
             ObjectRenderers.Add(new AutolinkInlineRenderer());
             ObjectRenderers.Add(new CodeInlineRenderer());
@@ -177,12 +165,10 @@ namespace ThunderKit.Markdown
             ObjectRenderers.Add(new LineBreakInlineRenderer());
             ObjectRenderers.Add(new LinkInlineRenderer());
             ObjectRenderers.Add(new LiteralInlineRenderer());
-
             // Extension renderers
             //ObjectRenderers.Add(new TableRenderer());
             ObjectRenderers.Add(new TaskListRenderer());
         }
-
         private static void AddInline(VisualElement parent, VisualElement inline)
         {
             parent.Add(inline);
