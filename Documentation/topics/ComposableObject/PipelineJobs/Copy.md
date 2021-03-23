@@ -1,22 +1,22 @@
 [Copy](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Copy.cs) provides the ability to copy files with a set of configuration options
 
 ## Fields
-* Recursive
+* **Recursive**
   - When enabled will copy the entire contents of a specified folder including all subfolders and files to be content of a Destination folder
   - When using Recursive the Source and Destination are expected to be directories and will error if a file is set as the value
-* Source Required
+* **Source Required**
   - Enable this field when the Source is required and an error should occur if not found
-* Source
+* **Source**
   - Name of File or Folder to copy
   - Supports PathReferences
-* Destination
+* **Destination**
   - Name of File or Folder to copy to
   - Supports PathReferences
 
 ## Inherited Fields
-* Per Manifest
+* **Per Manifest**
   - When enabled this job will execute once for each Manifest associated with the Pipeline
-* Excluded Manifests
+* **Excluded Manifests**
   - When Per Manifest is toggled on and you need the pipeline to not execute this job for certain Manifests, add them to this field
 
 ## Remarks
