@@ -183,3 +183,8 @@
 .italic {
     flex-direction: row;
 }
+
+.bullet {
+    padding-top: 4px;
+    height: 8px;
+}
