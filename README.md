@@ -55,11 +55,11 @@ For example
 `<ManifestStagingRoot>`
 
 
-![enter image description here](https://i.imgur.com/MtmmrRL.png)
+![](https://i.imgur.com/MtmmrRL.png)
 
 ThunderKit includes a number of PathReferences already.
 
-![enter image description here](https://i.imgur.com/afj5qZI.png)
+![](https://i.imgur.com/afj5qZI.png)
 
 ## Scripts, Assemblies, and Assembly Definitions
 It is recommended to manage code for mod projects inside your ThunderKit project.
@@ -78,7 +78,7 @@ Any scripts placed in or under a  folder containing an AssemblyDefinition will b
 To include these Assemblies in your mod project, you will need to add an AssemblyDefinitions component to your Manifest.
 1. Create or select your Manifest and click on Add Manifest Datum.
 
-![enter image description here](https://i.imgur.com/0OL996l.png)
+![](https://i.imgur.com/0OL996l.png)
 
 3. Double Click on AssemblyDefinitions to add it.
 4. Under the Assembly Definitions component add an element to Definitions, then drag and drop the AssemblyDefinition into the open field.
@@ -89,11 +89,11 @@ To deploy assemblies managed by a Manifest you will need a Pipeline with the Sta
 1. Create a Pipeline from the project window context menu, ThunderKit/Pipeline
 2. Drag and drop your Manifest into the open Manifest field on the Pipeline.
 
-![enter image description here](https://i.imgur.com/7ff9RXm.png)
+![](https://i.imgur.com/7ff9RXm.png)
 
 4. Click on Add Pipeline Job
 
-![enter image description here](https://i.imgur.com/jtM0Hx2.png)
+![](https://i.imgur.com/jtM0Hx2.png)
 
 5. Find and Double Click on Stage Assemblies
 
@@ -105,7 +105,7 @@ ThunderKit provides the AssetBundleDefs ManifestDatum for Manifests and the Stag
 
 1. Find and add an AssetBundleDefs to your Manifest
 
-![enter image description here](https://i.imgur.com/Bh6rE2e.png)
+![](https://i.imgur.com/Bh6rE2e.png)
 
 3. Add an element to the AssetBundles array
 4. Name your AssetBundle, make sure this will be a unique name, unity can only load 1 bundle with a given name at a time.
@@ -126,7 +126,7 @@ The Simulate field will execute an analysis of the AssetBundles and report in th
 2. If a Manifest isn't assigned to your Pipeline, Drag and drop your Manifest into the open Manifest field on the Pipeline.
 3. Find and add the StageAssetBundles PipelineJob to your Pipeline
 
-![enter image description here](https://i.imgur.com/qgzr9g7.png)
+![](https://i.imgur.com/qgzr9g7.png)
 
 4. Your Pipeline will now stage AssetBundles during its next run, it will build out the AssetBundles to `<AssetBundleStaging>` and then copy them to each Staging Path specified in the AssetBundleDefs StagingPaths array.
 
@@ -143,14 +143,14 @@ Unity AssetPackages have an issue where assets in them will not work in other pr
 To use UnityPackages to create redistributable AssetPackages follow these steps.
 1. Find and Add a UnityPackages ManifestDatum to your Manifest
 
-![enter image description here](https://i.imgur.com/nKWrZKa.png)
+![](https://i.imgur.com/nKWrZKa.png)
 
 3. Create a UnityPackage using the project window context menu, ThunderKit/UnityPackage
 4. Add assets to the Asset Files array by adding assets individually or by dragging and dropping assets.
     - Folders can be added to the Asset Files array, however they will only include assets if the Export Package Options includes the Recurse flag
 5. Find and Add a StageUnityPackages PipelineJob to your Pipeline
  
- ![enter image description here](https://i.imgur.com/CC0zhc4.png)
+![](https://i.imgur.com/CC0zhc4.png)
  
 6. Finally, make sure you've assigned paths to the UnityPackages StagingPaths on your Manifest
  

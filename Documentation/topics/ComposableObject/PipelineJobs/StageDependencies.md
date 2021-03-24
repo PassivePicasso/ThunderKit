@@ -7,7 +7,7 @@
 
 ## Required ManifestDatums
 
-* [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssemblyDefinitions.cs)
+* [ManifestIdentity](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/ManifestIdentity.cs)
 
 ## Remarks
 

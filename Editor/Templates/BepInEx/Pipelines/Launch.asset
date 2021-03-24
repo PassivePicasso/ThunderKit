@@ -17,7 +17,7 @@ MonoBehaviour:
   Active: 1
   includeReadme: 0
   includeIcon: 0
-  includeManifestJson: 0
+  includeManifestJson: 1
 --- !u!114 &-5465487307450690123
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33,12 +33,12 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  PerManifest: 0
+  PerManifest: 1
   ExcludedManifests: []
   Recursive: 0
   SourceRequired: 0
-  Source: 
-  Destination: 
+  Source: <ManifestStagingRoot>/patchers
+  Destination: <BepInExPackDestination>/BepInEx/patchers
 --- !u!114 &-1363876913999848018
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -71,7 +71,7 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  stageDebugDatabases: 0
+  stageDebugDatabases: 1
   preferPlayerBuilds: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3695521163bdd74fa2845bbd3438240, type: 3}
-  m_Name: Launch2
+  m_Name: Launch
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 8831074544502548826}
@@ -117,8 +117,8 @@ MonoBehaviour:
   ExcludedManifests: []
   Recursive: 0
   SourceRequired: 0
-  Source: 
-  Destination: 
+  Source: <winhttp.dll>
+  Destination: <GamePath>/winhttp.dll
 --- !u!114 &2102528772214527436
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -134,9 +134,11 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  workingDirectory: 
-  executable: 
-  arguments: []
+  workingDirectory: <BepInExPackDestination>
+  executable: <GameExecutable>
+  arguments:
+  - --doorstop-enable true
+  - --doorstop-target "<Preloader.dll>"
 --- !u!114 &2246702635225239771
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -152,12 +154,12 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  PerManifest: 0
+  PerManifest: 1
   ExcludedManifests: []
   Recursive: 0
   SourceRequired: 0
-  Source: 
-  Destination: 
+  Source: <ManifestStagingRoot>/plugins
+  Destination: <BepInExPackDestination>/BepInEx/plugins
 --- !u!114 &2935167292843794703
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -175,10 +177,10 @@ MonoBehaviour:
   Active: 1
   PerManifest: 0
   ExcludedManifests: []
-  Recursive: 0
-  SourceRequired: 0
-  Source: 
-  Destination: 
+  Recursive: 1
+  SourceRequired: 1
+  Source: <BepInExPackSource>
+  Destination: <BepInExPackDestination>
 --- !u!114 &3833238480386866369
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -209,12 +211,12 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  PerManifest: 0
+  PerManifest: 1
   ExcludedManifests: []
   Recursive: 0
   SourceRequired: 0
-  Source: 
-  Destination: 
+  Source: <ManifestStagingRoot>/monomod
+  Destination: <BepInExPackDestination>/BepInEx/monomod
 --- !u!114 &8695962743389497748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -230,7 +232,7 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  StagingPath: 
+  StagingPath: <StagingRoot>
   ExcludedManifests: []
 --- !u!114 &8831074544502548826
 MonoBehaviour:
@@ -247,8 +249,8 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  AssetBundleBuildOptions: 1
+  AssetBundleBuildOptions: 0
   buildTarget: 5
-  recurseDirectories: 0
+  recurseDirectories: 1
   simulate: 0
   BundleArtifactPath: <AssetBundleStaging>
