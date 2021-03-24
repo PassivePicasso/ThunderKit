@@ -34,13 +34,11 @@ namespace ThunderKit.Core.Data
         protected static VisualElement CreateStandardField(string gamePath)
         {
             var container = new VisualElement();
-            var label = new Label(ObjectNames.NicifyVariableName(gamePath));
-            var field = new TextField { bindingPath = gamePath, };
-            container.Add(label);
+            var label = ObjectNames.NicifyVariableName(gamePath);
+            var field = new PropertyField { bindingPath = gamePath, label = label };
             container.Add(field);
             container.AddToClassList("thunderkit-field");
             field.AddToClassList("thunderkit-field-input");
-            label.AddToClassList("thunderkit-field-label");
             return container;
         }
 

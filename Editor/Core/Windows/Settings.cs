@@ -23,7 +23,7 @@ namespace ThunderKit.Core.Windows
         static string[] searchFolders = new[] { "Assets", "Packages" };
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Settings")]
-        public static void ShowExample() => GetWindow<Settings>();
+        public static void ShowSettings() => GetWindow<Settings>();
 
         public override void OnEnable()
         {

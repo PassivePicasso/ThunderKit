@@ -23,6 +23,8 @@ namespace ThunderKit.Markdown
     public class MarkdownElement : VisualElement
     {
         private static UIElementRenderer renderer;
+        private string data;
+
         static MarkdownElement()
         {
             renderer = new UIElementRenderer();
@@ -31,7 +33,7 @@ namespace ThunderKit.Markdown
             var pipeline = mpb.Build();
             pipeline.Setup(renderer);
         }
-        public string Data { get; set; }
+        public string Data { get => data; set => data = value; }
         private string Markdown { get; set; }
         private string NormalizedMarkdown { get; set; }
         private string Source { get; set; }
@@ -69,7 +71,7 @@ namespace ThunderKit.Markdown
             return string.IsNullOrEmpty(markdown) ? $"No data found: {MarkdownDataType} : {Data}" : markdown;
         }
 
-        void RefreshContent()
+        public void RefreshContent()
         {
             var markdown = GetMarkdown();
             if (markdown.Equals(Markdown)) return;
