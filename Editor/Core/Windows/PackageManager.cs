@@ -90,7 +90,7 @@ namespace ThunderKit.Core.Editor.Windows
 
                 packageList.selectionType = SelectionType.Single;
 
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2020_1_OR_NEWER
                 packageList.onSelectionChange -= PackageList_onSelectionChanged;
                 packageList.onSelectionChange += PackageList_onSelectionChanged;
 #else

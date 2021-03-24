@@ -1,7 +1,7 @@
 {
     "name": "ThunderKit.Markdown",
-    "rootNamespace": "",
     "references": [],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,7 +12,5 @@
         "Markdig.Signed.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "defineConstraints": []
 }

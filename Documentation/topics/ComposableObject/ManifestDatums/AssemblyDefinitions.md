@@ -1,6 +1,6 @@
 The [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssemblyDefinitions.cs) ManifestDatum stores references to Unity AssemblyDefinition objects.
 
-### Fields
+## Fields
 * **Definitions**
   - An array of AssemblyDefinition assets
 

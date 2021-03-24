@@ -21,7 +21,7 @@ namespace ThunderKit.Common.Package
             void Request_completed(AsyncOperation obj)
             {
 
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2020_1_OR_NEWER
                 if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
 #else
                 if (webRequest.isNetworkError || webRequest.isHttpError)
@@ -45,7 +45,7 @@ namespace ThunderKit.Common.Package
                 asyncOpRequest.completed += Request_completed;
                 void Request_completed(AsyncOperation obj)
                 {
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2020_1_OR_NEWER
                     if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
 #else
                     if (webRequest.isNetworkError || webRequest.isHttpError)

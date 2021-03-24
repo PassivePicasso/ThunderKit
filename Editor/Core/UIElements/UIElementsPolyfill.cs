@@ -1,12 +1,16 @@
-﻿#if UNITY_2018
+﻿#if UNITY_2018 || UNITY_2019
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
-using UnityEditor.Experimental.UIElements;
 using UnityEngine;
+using UnityEditor.Experimental.UIElements;
+#if UNITY_2019
+using UnityEngine.UIElements;
+#elif UNITY_2018
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements.StyleSheets;
+#endif
 
 namespace ThunderKit.Core.UIElements
 {
@@ -14,7 +18,7 @@ namespace ThunderKit.Core.UIElements
     {
         public const string unityNamespace = "UnityEngine.UIElements";
     }
-
+#if Unity_2018
     public class UxmlVisualElementPolyFillFactory : VisualElement.UxmlFactory
     {
         public override string uxmlQualifiedName => PolyFillConstants.unityNamespace + "." + uxmlName;
@@ -94,6 +98,7 @@ namespace ThunderKit.Core.UIElements
         public override string substituteForTypeNamespace => PolyFillConstants.unityNamespace;
         public override string substituteForTypeQualifiedName => PolyFillConstants.unityNamespace + nameof(Box);
     }
+#endif
 
     public class UxmlStylePolyFillFactory : UxmlFactory<VisualElement, UxmlStyleTraits>
     {
@@ -116,14 +121,22 @@ namespace ThunderKit.Core.UIElements
         public override string substituteForTypeNamespace => PolyFillConstants.unityNamespace;
         public override string substituteForTypeQualifiedName => PolyFillConstants.unityNamespace + "." + uxmlName;
 
+#if UNITY_2018
         public override UnityEngine.Experimental.UIElements.VisualElement Create(IUxmlAttributes bag, CreationContext cc)
+#else
+        public override UnityEngine.UIElements.VisualElement Create(IUxmlAttributes bag, CreationContext cc)
+#endif
         {
             var foundSrc = bag.TryGetAttributeValue("src", out var src);
             if (foundSrc)
             {
                 if (src.StartsWith("Assets") || src.StartsWith("Packages") || src.StartsWith("/Assets") || src.StartsWith("/Packages"))
                 {
+#if UNITY_2018
                     cc.target.AddStyleSheetPath(src.TrimStart('/'));
+#else
+                    cc.target.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(src.TrimStart('/')));
+#endif
                 }
                 else
                 {
@@ -131,7 +144,11 @@ namespace ThunderKit.Core.UIElements
                     var vtaPath = AssetDatabase.GetAssetPath(vta);
                     var vtaDirector = Path.GetDirectoryName(vtaPath);
                     string sheetPath = Path.GetFullPath(Path.Combine(vtaDirector, src)).Replace(Directory.GetCurrentDirectory(), "").TrimStart('\\', '/');
+#if UNITY_2018
                     cc.target.AddStyleSheetPath(sheetPath);
+#else
+                    cc.target.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath));
+#endif
                 }
             }
 
