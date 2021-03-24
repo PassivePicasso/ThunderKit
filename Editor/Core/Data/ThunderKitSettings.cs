@@ -29,33 +29,8 @@ namespace ThunderKit.Core.Data
             CompilationPipeline.assemblyCompilationFinished -= LoadAllAssemblies;
             CompilationPipeline.assemblyCompilationFinished += LoadAllAssemblies;
             LoadAllAssemblies(null, null);
-            EditorApplication.wantsToQuit -= EditorApplication_wantsToQuit;
-            EditorApplication.wantsToQuit += EditorApplication_wantsToQuit;
-
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            if (settings.FirstLoad && settings.ShowOnStartup)
-                EditorApplication.update += ShowSettings;
         }
 
-        private static void ShowSettings()
-        {
-            EditorApplication.update -= ShowSettings;
-            var window = EditorWindow.GetWindow<Settings>();
-            Settings.ShowSettings();
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            settings.FirstLoad = false;
-            EditorUtility.SetDirty(settings);
-            AssetDatabase.SaveAssets();
-        }
-
-        private static bool EditorApplication_wantsToQuit()
-        {
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            settings.FirstLoad = true;
-            EditorUtility.SetDirty(settings);
-            AssetDatabase.SaveAssets();
-            return true;
-        }
 
         private static string[] CopyFilePatterns = new[] { "*.dll", "*.mdb", "*.pdb" };
         static void LoadAllAssemblies(string somevalue, CompilerMessage[] message)
@@ -73,11 +48,6 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        [SerializeField]
-        private bool FirstLoad = true;
-
-        [SerializeField]
-        public bool ShowOnStartup = true;
 
         [SerializeField]
         public string GameExecutable;
@@ -92,8 +62,6 @@ namespace ThunderKit.Core.Data
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            var serializedSettings = new SerializedObject(settings);
             MarkdownElement markdown = null;
             if (string.IsNullOrEmpty(GameExecutable) || string.IsNullOrEmpty(GamePath))
             {
@@ -101,24 +69,20 @@ namespace ThunderKit.Core.Data
                 {
                     Data =
 $@"
-**_Warning:_**   No game configured, click locate game to setup your ThunderKit Project
-
-_Uncheck Show On Startup to not show this window on next startup_
+**_Warning:_**   No game configured. Click the Locate Game button to setup your ThunderKit Project before continuing
 ",
                     MarkdownDataType = MarkdownDataType.Text
                 };
+
 #if UNITY_2018
                 markdown.AddStyleSheetPath("Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss");
 #else
                 markdown.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss"));
 #endif
+                markdown.AddToClassList("m4");
                 markdown.RefreshContent();
                 rootElement.Add(markdown);
             }
-
-            var child = CreateStandardField(nameof(ShowOnStartup));
-            child.tooltip = "Uncheck this to stop showing this window on startup";
-            rootElement.Add(child);
 
             rootElement.Add(CreateStandardField(nameof(GameExecutable)));
 
@@ -138,7 +102,7 @@ _Uncheck Show On Startup to not show this window on next startup_
             configureButton.text = "Locate Game";
             rootElement.Add(configureButton);
 
-            rootElement.Bind(serializedSettings);
+            rootElement.Bind(new SerializedObject(this));
         }
     }
 }
