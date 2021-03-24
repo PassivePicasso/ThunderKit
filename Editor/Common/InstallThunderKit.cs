@@ -39,6 +39,13 @@ namespace ThunderKit.Installer
 
     public class InstallThunderKit
     {
+        [InitializeOnLoadMethod]
+        static void LoadCompression()
+        {
+            InstallCompression();
+            AddScriptingDefine("thunderkit");
+        }
+
         /// <summary>
         /// install System.IO.Compression and System.IO.Compression.FileSystem libraries into project as UPM Package
         /// </summary>
