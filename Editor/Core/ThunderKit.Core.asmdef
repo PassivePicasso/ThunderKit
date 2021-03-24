@@ -3,7 +3,8 @@
     "references": [
         "ThunderKit.Common",
         "Unity.ScriptableBuildPipeline",
-        "Unity.ScriptableBuildPipeline.Editor"
+        "Unity.ScriptableBuildPipeline.Editor",
+        "ThunderKit.Markdown"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
