@@ -18,7 +18,7 @@ namespace ThunderKit.Core.UIElements
     {
         public const string unityNamespace = "UnityEngine.UIElements";
     }
-#if Unity_2018
+#if UNITY_2018
     public class UxmlVisualElementPolyFillFactory : VisualElement.UxmlFactory
     {
         public override string uxmlQualifiedName => PolyFillConstants.unityNamespace + "." + uxmlName;
