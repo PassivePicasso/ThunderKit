@@ -1,6 +1,9 @@
 ## Integrated Links
 
-The ThunderKit Documentation is enhanced by links with extra functionality to provide an integrated experience.
+The ThunderKit Documentation is enhanced by multiple types of links that enhances the documentation with Unity integration.
+
+This Documentation is best viewed in Unity with ThunderKit's Markdown system.
+
 Hovering over a link will show you what URI the link will be executing when you click it.
 
 - [Menu Links](menulink://) use the `menulink://` scheme and are shortcuts to menu items in the Unity main menu, these are for convenience when you may need a window for more information from documentation.
@@ -15,6 +18,11 @@ your inspector. Open the [Project window](menulink://Window/General/Project) and
 This page will be updated as more types of links are added.
 
 MarkdownElement's links do not track visitation, so the color of links will not change from usage.
+
+## Copying Text
+
+The documentation in its current form doesn't easily allow free selection of text.
+However, holding control and clicking on `code blocks` will copy their content to the clipboard.
 
 ## About ThunderKit Documentation
 

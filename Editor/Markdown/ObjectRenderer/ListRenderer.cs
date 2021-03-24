@@ -21,25 +21,20 @@ namespace ThunderKit.Markdown.ObjectRenderers
         {
             renderer.Push(GetClassedElement<VisualElement>("list"));
 
-            //if (listBlock.IsOrdered)
-            //{
-            //    list.MarkerStyle = TextMarkerStyle.Decimal;
-
-            //    if (listBlock.OrderedStart != null && (listBlock.DefaultOrderedStart != listBlock.OrderedStart))
-            //    {
-            //        list.StartIndex = int.Parse(listBlock.OrderedStart, NumberFormatInfo.InvariantInfo);
-            //    }
-            //}
-            //else
-            //{
-            //    list.MarkerStyle = TextMarkerStyle.Disc;
-            //}
-
             foreach (var item in listBlock.OfType<ListItemBlock>())
             {
                 var listItem = GetClassedElement<VisualElement>("list-item");
+
                 renderer.Push(listItem);
+
+                var marker = listBlock.IsOrdered ? $"{item.Order}." : $"{listBlock.BulletType}";
+
+                var classes = listBlock.IsOrdered ? "inline" : "bullet";
+
                 renderer.WriteChildren(item);
+
+                listItem.Children()?.FirstOrDefault()?.Insert(0, GetTextElement<Label>(marker, classes));
+
                 renderer.Pop();
             }
 
