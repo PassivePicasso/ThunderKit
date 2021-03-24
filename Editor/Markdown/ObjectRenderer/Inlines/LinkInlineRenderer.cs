@@ -83,10 +83,10 @@ namespace ThunderKit.Markdown.ObjectRenderers
                         while (!asyncOp.isDone)
                             await Task.Delay(100);
 
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2020_1_OR_NEWER
                         if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
 #else
-                                        if (request.isNetworkError || request.isHttpError)
+                        if (request.isNetworkError || request.isHttpError)
 #endif
                             Debug.Log(request.error);
                         else
