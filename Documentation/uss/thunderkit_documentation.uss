@@ -175,26 +175,6 @@
     bottom: 0;
 }
 
-.ManifestIdentityImage {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/ManifestDatums/ManifestIdentity.png');
-    width: 362px;
-    height: 213px;
-    min-width: 362px;
-    max-width: 362px;
-    max-height: 213px;
-    min-height: 213px;
-    overflow: hidden;
-    opacity: 1;
-    border-left-color: rgb(0, 0, 0);
-    border-right-color: rgb(0, 0, 0);
-    border-top-color: rgb(0, 0, 0);
-    border-bottom-color: rgb(0, 0, 0);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-}
-
 .shrink {
     flex-shrink: 1;
 }
