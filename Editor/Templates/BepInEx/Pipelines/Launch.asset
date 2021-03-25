@@ -135,7 +135,7 @@ MonoBehaviour:
   executable: <GameExecutable>
   arguments:
   - --doorstop-enable true
-  - --doorstop-target "<BepInEx.Preloader.dll>"
+  - --doorstop-target "<PWD>/<BepInEx.Preloader.dll>"
 --- !u!114 &2246702635225239771
 MonoBehaviour:
   m_ObjectHideFlags: 1
