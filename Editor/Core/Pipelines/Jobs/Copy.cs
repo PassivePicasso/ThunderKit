@@ -20,7 +20,10 @@ namespace ThunderKit.Core.Pipelines.Jobs
         {
             var source = Source.Resolve(pipeline, this);
             var destination = Destination.Resolve(pipeline, this);
-            bool sourceIsFile = false;
+
+            bool sourceIsFile = false,
+            destinationIsFile = false;
+
             try
             {
                 sourceIsFile = !File.GetAttributes(source).HasFlag(FileAttributes.Directory);
@@ -29,8 +32,10 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 if (SourceRequired) throw e;
             }
-
-            var destinationIsFile = !File.GetAttributes(destination).HasFlag(FileAttributes.Directory);
+            try
+            {
+                destinationIsFile = !File.GetAttributes(destination).HasFlag(FileAttributes.Directory);
+            } catch(Exception e) { /* A catch is a valid result of this check */ }
 
             if (Recursive)
             {
