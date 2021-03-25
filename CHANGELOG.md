@@ -29,6 +29,9 @@ Implementations of ComposableObject are responsible for setting the values in Is
 For examples see [Pipeline](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Pipeline.cs) 
 and [PathReference](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/PathReference.cs)
 
+If a pipeline encounters a problem it will halt its execution and highlight the step that it faulted on.
+The PipelineJobs and Pipeline itself are setup to log exceptions to the Unity console like normal, with these two pieces of information you should be able to quickly identify and rectify problems.
+
 ThunderKit Manifests do not utilize these debugging features as they are only Data Containers, however if worth while usage for debugging issues can be identified then support will be added.
 
 #### Dependencies
