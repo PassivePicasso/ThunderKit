@@ -13,36 +13,18 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreData), typeof(ManifestIdentity))]
     public class StageThunderstoreManifest : PipelineJob
     {
-        public bool includeReadme;
-        public bool includeIcon;
-        public bool includeManifestJson;
-
         public override void Execute(Pipeline pipeline)
         {
             var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
             var identity = pipeline.Manifest.Data.OfType<ManifestIdentity>().First();
-            var manifestJson = includeManifestJson ? RenderJson(identity, thunderstoreData, pipeline.Manifest.name) : string.Empty;
+            var manifestJson = RenderJson(identity, thunderstoreData, pipeline.Manifest.name);
 
             foreach (var outputPath in thunderstoreData.StagingPaths.Select(path => path.Resolve(pipeline, this)))
             {
                 if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
-                if (includeReadme)
-                    if (thunderstoreData.readme)
-                    {
-                        var readmePath = AssetDatabase.GetAssetPath(thunderstoreData.readme);
-                        File.Copy(readmePath, Path.Combine(outputPath, "README.md"), true);
-                    }
-                    else File.WriteAllText(Path.Combine(outputPath, "README.md"), $"# {identity.Name}");
-
-                if (includeManifestJson)
-                {
                     var pluginPath = Path.Combine(outputPath, "plugins", identity.Name);
                     File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
-                }
-
-                if (includeIcon && thunderstoreData.icon)
-                    File.WriteAllBytes(Path.Combine(outputPath, "icon.png"), thunderstoreData.icon.EncodeToPNG());
             }
         }
 

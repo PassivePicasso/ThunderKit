@@ -15,9 +15,6 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  includeReadme: 0
-  includeIcon: 0
-  includeManifestJson: 1
 --- !u!114 &-5465487307450690123
 MonoBehaviour:
   m_ObjectHideFlags: 1
