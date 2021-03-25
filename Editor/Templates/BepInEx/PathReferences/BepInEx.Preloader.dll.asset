@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114319775462179368}
-  lastName: BepInEx.Preloader.dll
 --- !u!114 &114319775462179368
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -29,4 +28,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  value: <BepInExDestination>/BepInEx/core/BepInEx.Preloader.dll
+  value: <BepInExPackDestination>/BepInEx/core/BepInEx.Preloader.dll
