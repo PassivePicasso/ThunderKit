@@ -10,25 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4f773cd2b7463d44aa153647e991b43, type: 3}
-  m_Name: BepInExPlugins
+  m_Name: BepInEx.Preloader.dll
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114938130411441054}
-  - {fileID: 114519586371591302}
-  lastName: BepInExPlugins
---- !u!114 &114519586371591302
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2efd008a408bd8449ad573ac2d5003ce, type: 3}
-  m_Name: ManifestName
-  m_EditorClassIdentifier: 
---- !u!114 &114938130411441054
+  - {fileID: 114319775462179368}
+  lastName: BepInEx.Preloader.dll
+--- !u!114 &114319775462179368
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,4 +27,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bfead62a54d1b04d9ce0a82f51655a1, type: 3}
   m_Name: Resolver
   m_EditorClassIdentifier: 
-  value: <BepInExDestination>/plugins
+  Errored: 0
+  ErrorMessage: 
+  value: <BepInExDestination>/BepInEx/core/BepInEx.Preloader.dll
