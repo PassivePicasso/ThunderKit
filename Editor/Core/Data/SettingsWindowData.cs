@@ -57,13 +57,17 @@ namespace ThunderKit.Editor.Core.Data
         {
             MarkdownElement markdown = new MarkdownElement
             {
-                Data = $@"Welcome and Thank you for trying ThunderKit.  Please configure your ThunderKit project by first clicking the Locate Game button below!",
+                Data = $@"Welcome and Thank you for trying ThunderKit.  Please configure your ThunderKit project by first clicking the Locate Game button below!
+
+If this is your first time using ThunderKit, [Click Here](menulink://Tools/ThunderKit/Documentation) to launch the documentation",
                 MarkdownDataType = MarkdownDataType.Text
             };
 #if UNITY_2018
             markdown.AddStyleSheetPath("Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss");
+            markdown.AddStyleSheetPath("Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss");
 #else
             markdown.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss"));
+            markdown.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss"));
 #endif
             markdown.RefreshContent();
             markdown.AddToClassList("m4");
