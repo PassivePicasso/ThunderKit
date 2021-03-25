@@ -236,7 +236,7 @@ namespace ThunderKit.Core.Data
             }
             foreach (var installable in installSet)
                 PackageHelper.GeneratePackageManifest(
-                    installable.dependencyId.ToLower(), installable.group.PackageDirectory,
+                    installable.group.DependencyId.ToLower(), installable.group.PackageDirectory,
                     installable.group.PackageName, installable.group.Author,
                     installable.version,
                     installable.group.Description);
