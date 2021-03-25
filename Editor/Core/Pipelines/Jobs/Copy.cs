@@ -35,7 +35,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
             try
             {
                 destinationIsFile = !File.GetAttributes(destination).HasFlag(FileAttributes.Directory);
-            } catch(Exception e) { /* A catch is a valid result of this check */ }
+            }
+            catch { /* A catch is a valid result of this check */ }
 
             if (Recursive)
             {
