@@ -1,0 +1,25 @@
+{
+    "name": "ThunderKit.Thunderstore",
+    "references": [
+        "ThunderKit.Core",
+        "ThunderKit.Common",
+        "Unity.ScriptableBuildPipeline",
+        "Unity.ScriptableBuildPipeline.Editor"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "System.IO.Compression.dll",
+        "System.IO.Compression.FileSystem.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "system_io_compression",
+        "thunderkit"
+    ]
+}

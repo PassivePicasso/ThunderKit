@@ -1,0 +1,253 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8917451345743007243
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc52389347ae9634bbb7e74eba886518, type: 3}
+  m_Name: StageThunderstoreManifest
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+--- !u!114 &-5465487307450690123
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  PerManifest: 1
+  ExcludedManifests: []
+  Recursive: 1
+  SourceRequired: 0
+  Source: <ManifestStagingRoot>/patchers
+  Destination: <BepInExPackDestination>/BepInEx/patchers
+--- !u!114 &-1363876913999848018
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
+  m_Name: ExecutePipeline
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  InheritRootManifest: 0
+  executePipeline: {fileID: 0}
+--- !u!114 &-1197235564015282764
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5b20fac9c71fd64183cb7a8f359d73a, type: 3}
+  m_Name: StageAssemblies
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  stageDebugDatabases: 1
+  preferPlayerBuilds: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3695521163bdd74fa2845bbd3438240, type: 3}
+  m_Name: Launch
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: 8831074544502548826}
+  - {fileID: -1197235564015282764}
+  - {fileID: 8695962743389497748}
+  - {fileID: 3833238480386866369}
+  - {fileID: -8917451345743007243}
+  - {fileID: 2935167292843794703}
+  - {fileID: 2246702635225239771}
+  - {fileID: -5465487307450690123}
+  - {fileID: 7527256621150178074}
+  - {fileID: 2078919326612615040}
+  - {fileID: 2102528772214527436}
+  manifest: {fileID: 0}
+--- !u!114 &2078919326612615040
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  PerManifest: 0
+  ExcludedManifests: []
+  Recursive: 0
+  SourceRequired: 0
+  Source: <winhttp.dll>
+  Destination: <GamePath>/winhttp.dll
+--- !u!114 &2102528772214527436
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77f65d4371163fb4695da79ab8df0e84, type: 3}
+  m_Name: ExecuteProcess
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  workingDirectory: <BepInExPackDestination>
+  executable: <GameExecutable>
+  arguments:
+  - --doorstop-enable true
+  - --doorstop-target "<PWD>/<BepInEx.Preloader.dll>"
+--- !u!114 &2246702635225239771
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  PerManifest: 1
+  ExcludedManifests: []
+  Recursive: 1
+  SourceRequired: 0
+  Source: <ManifestStagingRoot>/plugins
+  Destination: <BepInExPackDestination>/BepInEx/plugins
+--- !u!114 &2935167292843794703
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  PerManifest: 0
+  ExcludedManifests: []
+  Recursive: 1
+  SourceRequired: 1
+  Source: <BepInExPackSource>
+  Destination: <BepInExPackDestination>
+--- !u!114 &3833238480386866369
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3570c76eb7a5c3c45942d9295a150917, type: 3}
+  m_Name: StageManifestFiles
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+--- !u!114 &7527256621150178074
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  PerManifest: 1
+  ExcludedManifests: []
+  Recursive: 1
+  SourceRequired: 0
+  Source: <ManifestStagingRoot>/monomod
+  Destination: <BepInExPackDestination>/BepInEx/monomod
+--- !u!114 &8695962743389497748
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b4f4581088b47744a114c282abc085d, type: 3}
+  m_Name: StageDependencies
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  StagingPath: <StagingRoot>
+  ExcludedManifests: []
+--- !u!114 &8831074544502548826
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 924ee63e6c016f14d8a1560b288f15a3, type: 3}
+  m_Name: StageAssetBundles
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  AssetBundleBuildOptions: 0
+  buildTarget: 5
+  recurseDirectories: 1
+  simulate: 0
+  BundleArtifactPath: <AssetBundleStaging>
