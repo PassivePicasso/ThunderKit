@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Editor;
@@ -21,6 +20,13 @@ namespace ThunderKit.Core.Data
             public string version;
             public string versionDependencyId;
             public string[] dependencies;
+
+            public PackageVersionInfo(string version, string dependencyId, string[] dependencies)
+            {
+                this.version = version;
+                this.versionDependencyId = dependencyId;
+                this.dependencies = dependencies;
+            }
         }
 
         static Dictionary<string, List<PackageSource>> sourceGroups;
@@ -177,7 +183,7 @@ namespace ThunderKit.Core.Data
                 Directory
                     .CreateDirectory(installable.group.PackageDirectory);
 
-                await installable.group.Source.OnInstallPackageFiles(installable, installable.group.PackageDirectory);
+                installable.group.Source.OnInstallPackageFiles(installable, installable.group.PackageDirectory);
 
                 foreach (var assemblyPath in Directory.GetFiles(installable.group.PackageDirectory, "*.dll", SearchOption.AllDirectories))
                     PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
@@ -262,7 +268,7 @@ namespace ThunderKit.Core.Data
         /// <param name="version">The version of the Package which should be installed</param>
         /// <param name="packageDirectory">Root directory which files should be extracted into</param>
         /// <returns></returns>
-        public abstract Task OnInstallPackageFiles(PackageVersion version, string packageDirectory);
+        public abstract void OnInstallPackageFiles(PackageVersion version, string packageDirectory);
 
 
         public override bool Equals(object obj)

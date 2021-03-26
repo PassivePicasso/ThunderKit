@@ -7,6 +7,7 @@ using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 using static ThunderKit.Integrations.Thunderstore.ThunderstoreSettings;
 
 namespace ThunderKit.Integrations.Thunderstore
@@ -76,25 +77,14 @@ namespace ThunderKit.Integrations.Thunderstore
             return nameMatch || fullNameMatch || latestFullNameMatch;
         }
 
-        //public static Task<string> DownloadPackageAsync(PackageListing package, string filePath)
-        //{
-        //    using (WebClient WebClient = new WebClient())
-        //    {
-        //        var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
-
-        //        return WebClient.DownloadFileTaskAsync(latest.download_url, filePath).ContinueWith(t => filePath);
-        //    }
-        //}
-
         public static void DownloadLatestPackage(PackageListing package, string filePath)
         {
             DownloadPackage(package.versions.OrderByDescending(pck => pck.version_number).First(), filePath);
         }
 
-        public static void DownloadPackage(PackageVersion package, string filePath)
+        public static UnityWebRequestAsyncOperation DownloadPackage(PackageVersion package, string filePath)
         {
-            PackageHelper.DownloadPackage(package.download_url, filePath);
+            return PackageHelper.DownloadPackage(package.download_url, filePath);
         }
-
     }
 }
