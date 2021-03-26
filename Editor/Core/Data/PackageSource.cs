@@ -135,7 +135,6 @@ namespace ThunderKit.Core.Data
 
             foreach (var packageGroup in Packages)
             {
-                var groupName = packageGroup.PackageName;
                 foreach (var version in packageGroup.Versions)
                 {
                     var dependencies = dependencyMap[version.name].ToArray();
@@ -237,9 +236,7 @@ namespace ThunderKit.Core.Data
             foreach (var installableForManifestMove in installSet)
             {
                 var assetTempPath = Path.Combine(tempRoot, $"{installableForManifestMove.group.PackageName}.asset");
-                var assetMetaTempPath = Path.Combine(tempRoot, $"{installableForManifestMove.group.PackageName}.asset.meta");
                 var assetPackagePath = Path.Combine(installableForManifestMove.group.PackageDirectory, $"{installableForManifestMove.group.PackageName}.asset");
-                var assetMetaPackagePath = Path.Combine(installableForManifestMove.group.PackageDirectory, $"{installableForManifestMove.group.PackageName}.asset.meta");
 
                 var fileData = File.ReadAllText(assetTempPath);
 

@@ -36,7 +36,7 @@ namespace ThunderKit.Core.Windows
             base.OnEnable();
 
             var pageList = rootVisualElement.Q("page-list");
-            var pageFiles = Directory.EnumerateFiles($"{DocumentationRoot}/topics", "*.uxml", SearchOption.AllDirectories)
+            var pageFiles = Directory.GetFiles($"{DocumentationRoot}/topics", "*.uxml", SearchOption.AllDirectories)
                                      .OrderBy(dir => Path.GetDirectoryName(dir))
                                      .ThenBy(path => Path.GetFileNameWithoutExtension(path))
                                      .ToArray();

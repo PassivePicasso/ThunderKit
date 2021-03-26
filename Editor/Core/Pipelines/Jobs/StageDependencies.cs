@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
-    [PipelineSupport(typeof(Pipeline)), RequiresManifestDatumType(typeof(ManifestIdentity))]
+    [PipelineSupport(typeof(Pipeline))]
     public class StageDependencies : PipelineJob
     {
         [PathReferenceResolver]
@@ -16,9 +16,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         public override void Execute(Pipeline pipeline)
         {
-            var manifestIdentities = pipeline.Datums.OfType<ManifestIdentity>();
-            var dependencies = manifestIdentities.SelectMany(tm => tm.Dependencies).Distinct().ToList();
-
             for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
             {
                 if (ExcludedManifests.Contains(pipeline.Manifest)) continue;

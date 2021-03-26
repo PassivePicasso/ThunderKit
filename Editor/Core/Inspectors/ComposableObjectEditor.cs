@@ -35,7 +35,9 @@ namespace ThunderKit.Core.Editor.Inspectors
         {
             try
             {
+#pragma warning disable 0219
                 var targetObject = target as ComposableObject;
+#pragma warning restore 0219
                 Editors = new Dictionary<UnityEngine.Object, UnityEditor.Editor>();
             }
             catch
@@ -60,7 +62,6 @@ namespace ThunderKit.Core.Editor.Inspectors
             for (int i = 0; i < dataArray.arraySize; i++)
             {
                 var step = dataArray.GetArrayElementAtIndex(i);
-                var stepSo = new SerializedObject(step.objectReferenceValue);
                 var stepType = step.objectReferenceValue.GetType();
                 var element = step.objectReferenceValue as ComposableElement;
 

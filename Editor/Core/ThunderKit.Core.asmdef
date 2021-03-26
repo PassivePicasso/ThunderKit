@@ -2,8 +2,6 @@
     "name": "ThunderKit.Core",
     "references": [
         "ThunderKit.Common",
-        "Unity.ScriptableBuildPipeline",
-        "Unity.ScriptableBuildPipeline.Editor",
         "ThunderKit.Markdown"
     ],
     "optionalUnityReferences": [],
@@ -14,11 +12,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "System.IO.Compression.dll",
-        "System.IO.Compression.FileSystem.dll"
+        "SharpCompress.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": [
-        "system_io_compression"
-    ]
+    "defineConstraints": []
 }
