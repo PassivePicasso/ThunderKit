@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests;
@@ -170,7 +169,7 @@ namespace ThunderKit.Core.Data
             yield return package;
         }
 
-        public async Task InstallPackage(PackageGroup group, string version)
+        public void InstallPackage(PackageGroup group, string version)
         {
             var package = group[version];
 
