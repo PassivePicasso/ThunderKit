@@ -294,7 +294,7 @@ namespace ThunderKit.Core.Editor.Windows
                 AssetDatabase.Refresh();
             }
             else
-                _ = selection.Source.InstallPackage(selection, targetVersion);
+                selection.Source.InstallPackage(selection, targetVersion);
         }
         private void OnInspectorUpdate()
         {
