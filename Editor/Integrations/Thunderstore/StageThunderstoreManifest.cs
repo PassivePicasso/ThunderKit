@@ -25,14 +25,14 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
             {
                 if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
-                    var pluginPath = Combine(outputPath, "plugins", identity.Name);
-                    File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
+                File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
             }
         }
 
         public string RenderJson(ManifestIdentity identity, ThunderstoreData manifest, string name)
         {
-            var dependencies = identity.Dependencies.Select(man => {
+            var dependencies = identity.Dependencies.Select(man =>
+            {
                 var id = man.Data.OfType<ManifestIdentity>().First();
                 return $"{id.Author}-{id.Name}-{id.Version}";
             });
