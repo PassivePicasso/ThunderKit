@@ -36,10 +36,13 @@ namespace ThunderKit.Core.Windows
             base.OnEnable();
 
             var pageList = rootVisualElement.Q("page-list");
-            var pageFiles = Directory.GetFiles($"{DocumentationRoot}/topics", "*.uxml", SearchOption.AllDirectories)
-                                     .OrderBy(dir => Path.GetDirectoryName(dir))
-                                     .ThenBy(path => Path.GetFileNameWithoutExtension(path))
-                                     .ToArray();
+            var topicsFileGuids = AssetDatabase.FindAssets("", new string[] { $"{DocumentationRoot}/topics" });
+            var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            var uxmlTopics = topicsFilePaths.Where(path => ".uxml".Equals(Path.GetExtension(path).ToLower())).Distinct().ToArray();
+            var pageFiles = uxmlTopics
+                .OrderBy(dir => Path.GetDirectoryName(dir))
+                .ThenBy(path => Path.GetFileNameWithoutExtension(path))
+                .ToArray();
             pageList.RegisterCallback<KeyDownEvent>(OnNavigate);
             pageList.Clear();
 
