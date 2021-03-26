@@ -24,20 +24,19 @@ namespace ThunderKit.Core.Editor
             }
             var name = typeof(T).Name;
             string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath($"{path}/{name}.asset");
-
-            void onCreated(int instanceId, string pathname, string resourceFile)
-            {
-                AssetDatabase.CreateAsset(asset, pathname);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-                Selection.activeObject = asset;
-                afterCreated?.Invoke(asset);
-            }
-
+            Action<int, string, string> action =
+                (int instanceId, string pathname, string resourceFile) =>
+                  {
+                      AssetDatabase.CreateAsset(asset, pathname);
+                      AssetDatabase.SaveAssets();
+                      AssetDatabase.Refresh();
+                      Selection.activeObject = asset;
+                      afterCreated?.Invoke(asset);
+                  };
             if (overrideName == null)
             {
                 var endAction = ScriptableObject.CreateInstance<SelfDestructingActionAsset>();
-                endAction.action = onCreated;
+                endAction.action = action;
                 var findTexture = typeof(EditorGUIUtility).GetMethod(nameof(EditorGUIUtility.FindTexture), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                 findTextureParams[0] = typeof(T);
                 var icon = (Texture2D)findTexture.Invoke(null, findTextureParams);
@@ -48,7 +47,7 @@ namespace ThunderKit.Core.Editor
                 name = overrideName();
                 assetPathAndName = AssetDatabase.GenerateUniqueAssetPath($"{path}/{name}.asset");
 
-                onCreated(asset.GetInstanceID(), assetPathAndName, null);
+                action(asset.GetInstanceID(), assetPathAndName, null);
             }
         }
 

@@ -59,7 +59,8 @@ namespace ThunderKit.Installer
             var packageDir = Path.Combine("Packages", compression);
 
             var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
-            var path = Path.Combine(editorPath, "Data", "MonoBleedingEdge", "lib", "mono", "gac");
+            //I know, I know, but I blame .net 3.5
+            var path = Path.Combine(Path.Combine(Path.Combine(Path.Combine(Path.Combine(editorPath, "Data"), "MonoBleedingEdge"), "lib"), "mono"), "gac");
 
             var destFileSystemPath = Path.Combine(packageDir, siocfs);
             var destCompressionPath = Path.Combine(packageDir, sioc);
@@ -72,14 +73,14 @@ namespace ThunderKit.Installer
 
             if (generatePackage || !File.Exists(destCompressionPath))
             {
-                var compressionDll = Directory.EnumerateFiles(path, sioc, SearchOption.AllDirectories).FirstOrDefault();
+                var compressionDll = Directory.GetFiles(path, sioc, SearchOption.AllDirectories).FirstOrDefault();
                 File.Copy(compressionDll, destCompressionPath, true);
                 generatePackage = true;
             }
 
             if (generatePackage || !File.Exists(destFileSystemPath))
             {
-                var fileSystemDll = Directory.EnumerateFiles(path, siocfs, SearchOption.AllDirectories).FirstOrDefault();
+                var fileSystemDll = Directory.GetFiles(path, siocfs, SearchOption.AllDirectories).FirstOrDefault();
                 File.Copy(fileSystemDll, destFileSystemPath, true);
                 generatePackage = true;
             }

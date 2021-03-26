@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
@@ -53,11 +52,11 @@ namespace ThunderKit.Integrations.Thunderstore
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
         protected override void OnLoadPackages()
         {
-            var potentialPackages = Directory.EnumerateFiles(LocalRepositoryPath, "*.zip", SearchOption.TopDirectoryOnly);
+            var potentialPackages = Directory.GetFiles(LocalRepositoryPath, "*.zip", SearchOption.TopDirectoryOnly);
             foreach (var filePath in potentialPackages)
             {
                 using (var fileStream = File.OpenRead(filePath))
-                using (var archive = new ZipArchive(fileStream))
+                using (var archive = new System.IO.Compression.ZipArchive(fileStream))
                     foreach (var entry in archive.Entries)
                     {
                         if (!"manifest.json".Equals(Path.GetFileName(entry.FullName))) continue;

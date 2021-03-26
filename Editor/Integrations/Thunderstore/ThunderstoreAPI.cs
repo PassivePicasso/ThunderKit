@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
+using static ThunderKit.Integrations.Thunderstore.ThunderstoreSettings;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
@@ -26,12 +26,12 @@ namespace ThunderKit.Integrations.Thunderstore
         {
             ThunderstoreSettings.OnThunderstoreUrlChanged -= LoadPages;
             ThunderstoreSettings.OnThunderstoreUrlChanged += LoadPages;
-            _ = ReloadPages();
+            ReloadPages();
         }
 
         static double timeSinceStartup;
 
-        public static void LoadPages(object sender, (string newValue, string oldValue) value)
+        public static void LoadPages(object sender, StringValueChangeArgs value)
         {
             timeSinceStartup = EditorApplication.timeSinceStartup;
             EditorApplication.update -= WaitUpdate;
@@ -44,17 +44,17 @@ namespace ThunderKit.Integrations.Thunderstore
             if (timeElapsed > 2)
             {
                 EditorApplication.update -= WaitUpdate;
-                _ = ReloadPages();
+                ReloadPages();
             }
         }
 
-        public static async Task ReloadPages()
+        public static void ReloadPages()
         {
             var packages = new List<PackageListing>();
             using (WebClient client = new WebClient())
             {
                 var address = new Uri(PackageListApi);
-                var response = await client.DownloadStringTaskAsync(address);
+                var response = client.DownloadString(address);
                 var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
                 packages.AddRange(resultSet.results);
             }
@@ -76,15 +76,15 @@ namespace ThunderKit.Integrations.Thunderstore
             return nameMatch || fullNameMatch || latestFullNameMatch;
         }
 
-        public static Task<string> DownloadPackageAsync(PackageListing package, string filePath)
-        {
-            using (WebClient WebClient = new WebClient())
-            {
-                var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
+        //public static Task<string> DownloadPackageAsync(PackageListing package, string filePath)
+        //{
+        //    using (WebClient WebClient = new WebClient())
+        //    {
+        //        var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
 
-                return WebClient.DownloadFileTaskAsync(latest.download_url, filePath).ContinueWith(t => filePath);
-            }
-        }
+        //        return WebClient.DownloadFileTaskAsync(latest.download_url, filePath).ContinueWith(t => filePath);
+        //    }
+        //}
 
         public static void DownloadLatestPackage(PackageListing package, string filePath)
         {

@@ -25,7 +25,7 @@ namespace ThunderKit.Core.Pipelines
 
         public IEnumerable<PipelineJob> Jobs => Data.OfType<PipelineJob>();
 
-        public string OutputRoot => System.IO.Path.Combine("ThunderKit");
+        public string OutputRoot => "ThunderKit";
 
         public override string ElementTemplate =>
 @"using ThunderKit.Core.Pipelines;
@@ -42,6 +42,7 @@ namespace {0}
 }}
 ";
 
+        private PipelineJob[] currentJobs;
         public int JobIndex { get; protected set; }
         public int ManifestIndex { get; set; }
         public Manifest Manifest => manifests[ManifestIndex];
@@ -49,13 +50,13 @@ namespace {0}
         public virtual void Execute()
         {
             manifests = manifest.EnumerateManifests().ToArray();
-            PipelineJob[] jobs = Jobs.Where(SupportsType).ToArray();
-            for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
+            currentJobs = Jobs.Where(SupportsType).ToArray();
+            for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
             {
                 Job().Errored = false;
                 Job().ErrorMessage = string.Empty;
             }
-            for (JobIndex = 0; JobIndex < jobs.Length; JobIndex++)
+            for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                 try
                 {
                     if (!Job().Active) continue;
@@ -70,34 +71,32 @@ namespace {0}
                     Job().ErrorMessage = e.Message;
                     EditorGUIUtility.PingObject(Job());
                     Debug.LogError($"Error Invoking {Job().name} Job on Pipeline {name}\r\n{e}", this);
-                    JobIndex = jobs.Length;
+                    JobIndex = currentJobs.Length;
                     break;
                 }
 
             JobIndex = -1;
-
-            PipelineJob Job() => jobs[JobIndex];
-
-            void ExecuteJob() => Job().Execute(this);
-
-            bool JobIsManifestProcessor() => Job().GetType().GetCustomAttributes<ManifestProcessorAttribute>().Any();
-
-            bool CanProcessManifest(RequiresManifestDatumTypeAttribute attribute) => attribute.CanProcessManifest(Manifest);
-
-            bool JobCanProcessManifest() => Job().GetType().GetCustomAttributes<RequiresManifestDatumTypeAttribute>().All(CanProcessManifest);
-
-            void ExecuteManifestLoop()
-            {
-                var manifests = manifest.EnumerateManifests().ToArray();
-                for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
-                    if (Manifest && JobCanProcessManifest())
-                        ExecuteJob();
-
-                ManifestIndex = -1;
-            }
-            //I really can't justify why I designed this like this, but I did, you already saw it, its too late.
         }
 
+        PipelineJob Job() => currentJobs[JobIndex];
+
+        void ExecuteJob() => Job().Execute(this);
+
+        bool JobIsManifestProcessor() => Job().GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any();
+
+        bool CanProcessManifest(RequiresManifestDatumTypeAttribute attribute) => attribute.CanProcessManifest(Manifest);
+
+        bool JobCanProcessManifest() => Job().GetType().GetCustomAttributes(true).OfType<RequiresManifestDatumTypeAttribute>().All(CanProcessManifest);
+
+        void ExecuteManifestLoop()
+        {
+            var manifests = manifest.EnumerateManifests().ToArray();
+            for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
+                if (Manifest && JobCanProcessManifest())
+                    ExecuteJob();
+
+            ManifestIndex = -1;
+        }
 
         [OnOpenAsset]
         public static bool DoubleClickDeploy(int instanceID, int line)
@@ -114,7 +113,7 @@ namespace {0}
         {
             if (ElementType.IsAssignableFrom(type))
             {
-                var customAttributes = type.GetCustomAttributes();
+                var customAttributes = type.GetCustomAttributes(true);
                 var pipelineSupportAttributes = customAttributes.OfType<PipelineSupportAttribute>();
                 if (pipelineSupportAttributes.Any(psa => psa.HandlesPipeline(GetType())))
                     return true;

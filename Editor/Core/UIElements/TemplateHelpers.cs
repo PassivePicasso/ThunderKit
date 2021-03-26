@@ -66,25 +66,38 @@ namespace ThunderKit.Core.UIElements
         {
             var versionString = versionRegex.Match(Application.unityVersion).Groups[1].Value;
             var version = new Version(versionString);
+            bool success = false;
             switch (version.Major)
             {
-                case 2020 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2020.uss")):
-                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2020.uss"));
+                case 2020:
+                    if (File.Exists(templatePath.Replace(".uxml", $"{modifier}_2020.uss")))
+                    {
+                        MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2020.uss"));
+                        success = true;
+                    }
                     break;
 
-                case 2019 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2019.uss")):
-                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2019.uss"));
+                case 2019:
+                    if (File.Exists(templatePath.Replace(".uxml", $"{modifier}_2019.uss")))
+                    {
+                        MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2019.uss"));
+                        success = true;
+                    }
                     break;
 
-                case 2018 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2018.uss")):
-                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2018.uss"));
+                case 2018:
+                    if (File.Exists(templatePath.Replace(".uxml", $"{modifier}_2018.uss")))
+                    {
+                        MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2018.uss"));
+                        success = true;
+                    }
                     break;
 
                 default:
-                    if (File.Exists(templatePath.Replace(".uxml", $"{modifier}.uss")))
-                        MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}.uss"));
                     break;
             }
+            if (!success && File.Exists(templatePath.Replace(".uxml", $"{modifier}.uss")))
+                MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}.uss"));
         }
 
         private static void MultiVersionLoadStyleSheet(VisualElement element, string sheetPath)
