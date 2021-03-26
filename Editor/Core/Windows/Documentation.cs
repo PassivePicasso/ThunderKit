@@ -36,9 +36,9 @@ namespace ThunderKit.Core.Windows
             base.OnEnable();
 
             var pageList = rootVisualElement.Q("page-list");
-            var topicsFileGuids = AssetDatabase.FindAssets("", new string[] { $"{DocumentationRoot}/topics" });
+            var topicsFileGuids = AssetDatabase.FindAssets($"t:{nameof(VisualTreeAsset)}", new string[] { $"{DocumentationRoot}/topics" });
             var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
-            var uxmlTopics = topicsFilePaths.Where(path => ".uxml".Equals(Path.GetExtension(path).ToLower())).Distinct().ToArray();
+            var uxmlTopics = topicsFilePaths.Distinct().ToArray();
             var pageFiles = uxmlTopics
                 .OrderBy(dir => Path.GetDirectoryName(dir))
                 .ThenBy(path => Path.GetFileNameWithoutExtension(path))
