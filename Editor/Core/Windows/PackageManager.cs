@@ -23,7 +23,7 @@ namespace ThunderKit.Core.Editor.Windows
         private static readonly PackageVersion[] EmptyPackages = new PackageVersion[0];
 
         private VisualElement packageView;
-        private Button searchBoxCancel;
+        //private Button searchBoxCancel;
         private Button filtersButton;
         private TextField searchBox;
 
@@ -51,7 +51,7 @@ namespace ThunderKit.Core.Editor.Windows
 
             packageView = rootVisualElement.Q("tkpm-package-view");
             searchBox = rootVisualElement.Q<TextField>("tkpm-search-textfield");
-            searchBoxCancel = rootVisualElement.Q<Button>("tkpm-search-cancelbutton");
+            //searchBoxCancel = rootVisualElement.Q<Button>("tkpm-search-cancelbutton");
             filtersButton = rootVisualElement.Q<Button>("tkpm-filters-selector");
 
             searchBox.RegisterCallback<ChangeEvent<string>>(OnSearchText);

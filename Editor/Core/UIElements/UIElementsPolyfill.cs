@@ -12,6 +12,7 @@ using UnityEngine.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements.StyleSheets;
 #endif
 
+#pragma warning disable 0414
 namespace ThunderKit.Core.UIElements
 {
     internal static class PolyFillConstants
@@ -169,3 +170,4 @@ namespace ThunderKit.Core.UIElements
     }
 }
 #endif
+#pragma warning restore 0414
