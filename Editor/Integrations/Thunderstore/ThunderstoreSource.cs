@@ -14,9 +14,9 @@ namespace ThunderKit.Integrations.Thunderstore
     {
         private static string CachePath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
         [InitializeOnLoadMethod]
-        public static async Task Initialize()
+        public static void Initialize()
         {
-            await ThunderstoreAPI.ReloadPages();
+            ThunderstoreAPI.ReloadPages();
 
             var isNew = false;
             var source = ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath, so =>
@@ -36,7 +36,7 @@ namespace ThunderKit.Integrations.Thunderstore
         public static async Task Regenerate()
         {
             AssetDatabase.DeleteAsset(CachePath);
-            await Initialize();
+            Initialize();
         }
 
         public override string Name => "Thunderstore";
@@ -51,41 +51,46 @@ namespace ThunderKit.Integrations.Thunderstore
             var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
             foreach (var tsp in orderByPinThenName)
             {
-                var versions = tsp.versions.Select(v => (v.version_number, v.full_name, v.dependencies));
+                var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies));
                 AddPackageGroup(tsp.owner, tsp.name, tsp.latest.description, tsp.full_name, tsp.categories, versions);
             }
         }
 
-        public override async Task OnInstallPackageFiles(PV version, string packageDirectory)
+        public override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
             var tsPackage = ThunderstoreAPI.LookupPackage(version.group.DependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
             var filePath = Path.Combine(packageDirectory, $"{tsPackageVersion.full_name}.zip");
 
-            ThunderstoreAPI.DownloadPackage(tsPackageVersion, filePath);
+            var asyncOp = ThunderstoreAPI.DownloadPackage(tsPackageVersion, filePath);
 
-            while (!File.Exists(filePath))
-                await Task.Delay(1);
-
-            using (var fileStream = File.OpenRead(filePath))
-            using (var archive = new ZipArchive(fileStream))
-                foreach (var entry in archive.Entries)
+            asyncOp.completed += (op) =>
+            {
+                using (var fileStream = File.OpenRead(filePath))
+                using (var archive = new ZipArchive(fileStream))
                 {
-                    var outputPath = Path.Combine(packageDirectory, entry.FullName);
-                    var outputDir = Path.GetDirectoryName(outputPath);
-                    if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
+                    foreach (var entry in archive.Entries)
                     {
-                        if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
-                        continue;
+                        var outputPath = Path.Combine(packageDirectory, entry.FullName);
+                        var outputDir = Path.GetDirectoryName(outputPath);
+                        if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
+                        {
+                            if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+                            continue;
+                        }
+
+                        if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
+
+                        entry.ExtractToFile(outputPath);
                     }
-
-                    if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
-
-                    entry.ExtractToFile(outputPath);
                 }
-
-            File.Delete(filePath);
+                File.Delete(filePath);
+            };
         }
 
+        private void AsyncOp_completed(UnityEngine.AsyncOperation obj)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

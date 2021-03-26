@@ -23,9 +23,9 @@ namespace ThunderKit.Integrations.Thunderstore
             var localSources = AssetDatabase.FindAssets($"t:{nameof(LocalThunderstoreSource)}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<LocalThunderstoreSource>)
-                .Where(source=> source.Packages == null || !source.Packages.Any())
+                .Where(source => source.Packages == null || !source.Packages.Any())
                 .ToArray();
-            foreach(var drySource in localSources)
+            foreach (var drySource in localSources)
                 drySource.LoadPackages();
 
         }
@@ -70,7 +70,7 @@ namespace ThunderKit.Integrations.Thunderstore
                         var versionId = Path.GetFileNameWithoutExtension(filePath);
                         var author = versionId.Split('-')[0];
                         var groupId = $"{author}-{tsp.name}";
-                        var versions = new[] { (tsp.version_number, versionId, tsp.dependencies) };
+                        var versions = new PackageVersionInfo[] { new PackageVersionInfo(tsp.version_number, versionId, tsp.dependencies) };
                         AddPackageGroup(author, tsp.name, tsp.description, groupId, Array.Empty<string>(), versions);
                         //don't process additional manifest files
                         break;
@@ -78,44 +78,41 @@ namespace ThunderKit.Integrations.Thunderstore
             }
         }
 
-        public override async Task OnInstallPackageFiles(PV version, string packageDirectory)
+        public override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
-            await Task.Run(() =>
+            var potentialPackages = Directory.EnumerateFiles(LocalRepositoryPath, "*.zip", SearchOption.TopDirectoryOnly);
+            foreach (var filePath in potentialPackages)
             {
-                var potentialPackages = Directory.EnumerateFiles(LocalRepositoryPath, "*.zip", SearchOption.TopDirectoryOnly);
-                foreach (var filePath in potentialPackages)
+                using (var fileStream = File.OpenRead(filePath))
+                using (var archive = new ZipArchive(fileStream))
                 {
-                    using (var fileStream = File.OpenRead(filePath))
-                    using (var archive = new ZipArchive(fileStream))
+                    var manifestJsonEntry = archive.Entries.First(entry => entry.Name.Equals("manifest.json"));
+                    var manifestJson = string.Empty;
+                    using (var reader = new StreamReader(manifestJsonEntry.Open()))
+                        manifestJson = reader.ReadToEnd();
+
+                    var version_full_name = Path.GetFileNameWithoutExtension(filePath);
+                    var author = version_full_name.Split('-')[0];
+                    var manifest = JsonUtility.FromJson<PackageVersion>(manifestJson);
+                    var full_name = $"{author}-{manifest.name}";
+                    if (full_name != version.group.DependencyId) continue;
+
+                    foreach (var entry in archive.Entries)
                     {
-                        var manifestJsonEntry = archive.Entries.First(entry => entry.Name.Equals("manifest.json"));
-                        var manifestJson = string.Empty;
-                        using (var reader = new StreamReader(manifestJsonEntry.Open()))
-                            manifestJson = reader.ReadToEnd();
-
-                        var version_full_name = Path.GetFileNameWithoutExtension(filePath);
-                        var author = version_full_name.Split('-')[0];
-                        var manifest = JsonUtility.FromJson<PackageVersion>(manifestJson);
-                        var full_name = $"{author}-{manifest.name}";
-                        if (full_name != version.group.DependencyId) continue;
-
-                        foreach (var entry in archive.Entries)
+                        var outputPath = Path.Combine(packageDirectory, entry.FullName);
+                        var outputDir = Path.GetDirectoryName(outputPath);
+                        if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
                         {
-                            var outputPath = Path.Combine(packageDirectory, entry.FullName);
-                            var outputDir = Path.GetDirectoryName(outputPath);
-                            if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
-                            {
-                                if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
-                                continue;
-                            }
-
-                            if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
-
-                            entry.ExtractToFile(outputPath);
+                            if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+                            continue;
                         }
+
+                        if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
+
+                        entry.ExtractToFile(outputPath);
                     }
                 }
-            });
+            }
         }
 
     }

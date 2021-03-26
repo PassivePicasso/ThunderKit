@@ -14,7 +14,7 @@ namespace ThunderKit.Common.Package
     {
         public static string nl => Environment.NewLine;
 
-        public static void DownloadPackage(string url, string filePath)
+        public static UnityWebRequestAsyncOperation DownloadPackage(string url, string filePath)
         {
             var webRequest = UnityWebRequest.Get(url);
             var asyncOpRequest = webRequest.SendWebRequest();
@@ -33,6 +33,7 @@ namespace ThunderKit.Common.Package
                 if (File.Exists(filePath)) File.Delete(filePath);
                 File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
             };
+            return asyncOpRequest;
         }
         //        public static async Task DownloadPackageAsync(string url, string filePath)
         //        {
