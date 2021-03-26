@@ -10,6 +10,8 @@ using static ThunderKit.Integrations.Thunderstore.CreateThunderstoreManifest;
 
 namespace ThunderKit.Integrations.Thunderstore.Jobs
 {
+    using static ThunderKit.Core.Editor.Extensions;
+
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreData), typeof(ManifestIdentity))]
     public class StageThunderstoreManifest : PipelineJob
     {
@@ -23,8 +25,8 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
             {
                 if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
-                    var pluginPath = Path.Combine(outputPath, "plugins", identity.Name);
-                    File.WriteAllText(Path.Combine(outputPath, "manifest.json"), manifestJson);
+                    var pluginPath = Combine(outputPath, "plugins", identity.Name);
+                    File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
             }
         }
 

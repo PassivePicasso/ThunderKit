@@ -15,7 +15,7 @@ namespace ThunderKit.Core.Editor.Actions
                 if (EditorApplication.isCompiling) return false;
                 if (Directory.Exists(directory))
                 {
-                    foreach (var metaFile in Directory.EnumerateFiles(directory, "*.meta", SearchOption.AllDirectories))
+                    foreach (var metaFile in Directory.GetFiles(directory, "*.meta", SearchOption.AllDirectories))
                         File.Delete(metaFile);
                     Directory.Delete(directory, true);
                 }

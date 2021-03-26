@@ -12,6 +12,7 @@ using Debug = UnityEngine.Debug;
 
 namespace ThunderKit.Core.Config
 {
+    using static ThunderKit.Core.Editor.Extensions;
     public class ConfigureGame
     {
         public static void Configure()
@@ -43,14 +44,13 @@ namespace ThunderKit.Core.Config
             var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
             var unityVersion = new Version(fileVersionInfo.FileVersion);
-            var gameVersion = new Version(fileVersionInfo.FileVersion);
             var author = new Author
             {
                 name = fileVersionInfo.CompanyName,
             };
             var packageManifest = new PackageManagerManifest(author, name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
-            File.WriteAllText(Path.Combine("Packages", packageName, "package.json"), packageManifestJson);
+            File.WriteAllText(Combine("Packages", packageName, "package.json"), packageManifestJson);
         }
 
         private static void AssertDestinations(string packageName)
@@ -59,7 +59,7 @@ namespace ThunderKit.Core.Config
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
 
-            destinationFolder = Path.Combine("Packages", packageName, "plugins");
+            destinationFolder = Combine("Packages", packageName, "plugins");
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
         }
@@ -69,7 +69,7 @@ namespace ThunderKit.Core.Config
             string currentDir = Directory.GetCurrentDirectory();
             var foundExecutable = string.IsNullOrEmpty(settings.GamePath)
                                 ? false
-                                : Directory.EnumerateFiles(settings.GamePath ?? currentDir, Path.GetFileName(settings.GameExecutable)).Any();
+                                : Directory.GetFiles(settings.GamePath ?? currentDir, Path.GetFileName(settings.GameExecutable)).Any();
 
             while (!foundExecutable)
             {
@@ -77,15 +77,15 @@ namespace ThunderKit.Core.Config
                 if (string.IsNullOrEmpty(path)) return;
                 settings.GameExecutable = Path.GetFileName(path);
                 settings.GamePath = Path.GetDirectoryName(path);
-                foundExecutable = Directory.EnumerateFiles(settings.GamePath, settings.GameExecutable).Any();
+                foundExecutable = Directory.GetFiles(settings.GamePath, settings.GameExecutable).Any();
             }
             EditorUtility.SetDirty(settings);
         }
 
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
-            var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
-            var windowsStandalonePath = Path.Combine(editorPath, "Data", "PlaybackEngines", "windowsstandalonesupport");
+            //var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
+            //var windowsStandalonePath = Combine(editorPath, "Data", "PlaybackEngines", "windowsstandalonesupport");
 
             var regs = new Regex("(\\d\\d\\d\\d\\.\\d+\\.\\d+).*");
 
@@ -103,17 +103,27 @@ namespace ThunderKit.Core.Config
         {
             Debug.Log("Acquiring references");
             var blackList = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(asm => !asm.IsDynamic)
-                .Select(asm => Path.GetFileName(asm.Location))
+                //.Where(asm => !asm.IsDynamic)
+                .Select(asm =>
+                {
+                    try
+                    {
+                        return Path.GetFileName(asm.Location);
+                    }
+                    catch
+                    {
+                        return string.Empty;
+                    }
+                })
                 .ToArray();
 
-            var managedPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
-            var pluginsPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
+            var managedPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
+            var pluginsPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
             var packagePath = Path.Combine("Packages", packageName);
             var packagePluginsPath = Path.Combine(packagePath, "plugins");
 
-            var managedAssemblies = Directory.EnumerateFiles(managedPath, "*.dll").ToArray();
-            var plugins = Directory.EnumerateFiles(pluginsPath, "*.dll").ToArray();
+            var managedAssemblies = Directory.GetFiles(managedPath, "*.dll").ToArray();
+            var plugins = Directory.GetFiles(pluginsPath, "*.dll").ToArray();
 
             GetReferences(packagePath, managedAssemblies, blackList);
             GetReferences(packagePluginsPath, plugins, Enumerable.Empty<string>());

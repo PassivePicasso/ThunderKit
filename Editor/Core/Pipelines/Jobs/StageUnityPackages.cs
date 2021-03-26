@@ -13,6 +13,45 @@ namespace ThunderKit.Core.Pipelines.Jobs
 {
     using Object = UnityEngine.Object;
 
+    struct ScriptPath
+    {
+        public string path;
+        public MonoScript monoScript;
+        public ScriptPath(string path, MonoScript mooScript)
+        {
+            this.path = path;
+            this.monoScript = mooScript;
+        }
+    }
+    struct AssetPath
+    {
+        public string path;
+        public Object asset;
+        public AssetPath(string path, Object asset)
+        {
+            this.path = path;
+            this.asset = asset;
+        }
+    }
+
+    struct RemapData
+    {
+        public string Path;
+        public Regex ToAssemblyReference;
+        public Regex ToScriptReference;
+        public string ScriptReference;
+        public string AssemblyReference;
+
+        public RemapData(string path, Regex toAssemblyReference, Regex toScriptReference, string scriptReference, string assemblyReference)
+        {
+            Path = path;
+            ToAssemblyReference = toAssemblyReference;
+            ToScriptReference = toScriptReference;
+            ScriptReference = scriptReference;
+            AssemblyReference = assemblyReference;
+        }
+    }
+
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
     public class StageUnityPackages : PipelineJob
     {
@@ -26,15 +65,16 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 .SelectMany(path =>
                 {
                     if (AssetDatabase.IsValidFolder(path))
-                        return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
+                        return Directory.GetFiles(path, "*", SearchOption.AllDirectories);
                     else
                         return Enumerable.Repeat(path, 1);
                 })
-                .Select(path => (path, asset: AssetDatabase.LoadAssetAtPath<Object>(path)))
+                .Select(path => new AssetPath(path, AssetDatabase.LoadAssetAtPath<Object>(path)))
                 .ToArray();
             var remappableAssets = unityObjects.SelectMany(map =>
                 {
-                    var (path, asset) = map;
+                    var path = map.path;
+                    var asset = map.asset;
                     if (asset is Preset preset)
                     {
                         var presetSo = new SerializedObject(preset);
@@ -43,18 +83,18 @@ namespace ThunderKit.Core.Pipelines.Jobs
                         m_ManagedTypePPtr = m_TargetType.FindPropertyRelative(nameof(m_ManagedTypePPtr));
                         var monoScript = m_ManagedTypePPtr.objectReferenceValue as MonoScript;
 
-                        return Enumerable.Repeat((path: path, monoScript: monoScript), 1);
+                        return Enumerable.Repeat(new ScriptPath(path, monoScript), 1);
                     }
 
                     if (asset is GameObject goAsset)
                         return goAsset.GetComponentsInChildren<MonoBehaviour>()
-                                         .Select(mb => (path: path, monoScript: MonoScript.FromMonoBehaviour(mb)));
+                                         .Select(mb => new ScriptPath(path, MonoScript.FromMonoBehaviour(mb)));
 
                     if (asset is ScriptableObject soAsset)
-                        return Enumerable.Repeat((path: path, monoScript: MonoScript.FromScriptableObject(soAsset)), 1);
+                        return Enumerable.Repeat(new ScriptPath(path, MonoScript.FromScriptableObject(soAsset)), 1);
 
 
-                    return Enumerable.Empty<(string path, MonoScript monoScript)>();
+                    return Enumerable.Empty<ScriptPath>();
                 })
                 .Select(map =>
                 {
@@ -64,14 +104,15 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     var libraryGuid = PackageHelper.GetFileNameHash(assemblyPath);
                     AssetDatabase.TryGetGUIDAndLocalFileIdentifier(map.monoScript, out string scriptGuid, out long scriptId);
 
-                    return (Path: map.path,
-                            ToAssemblyReference: new Regex($"(\\{{fileID:)\\s*?{scriptId},(\\s*?guid:)\\s*?{scriptGuid},(\\s*?type:\\s*?\\d+\\s*?\\}})", RegexOptions.Singleline),
-                            ToScriptReference: new Regex($"(\\{{fileID:)\\s*?{fileId},(\\s*?guid:)\\s*?{libraryGuid},(\\s*?type:\\s*?\\d+\\s*?\\}})", RegexOptions.Singleline),
-                                ScriptReference: $"$1 {scriptId},$2 {scriptGuid},$3",
-                                AssemblyReference: $"$1 {fileId},$2 {libraryGuid},$3"
+                    return new RemapData(map.path,
+                             new Regex($"(\\{{fileID:)\\s*?{scriptId},(\\s*?guid:)\\s*?{scriptGuid},(\\s*?type:\\s*?\\d+\\s*?\\}})", RegexOptions.Singleline),
+                             new Regex($"(\\{{fileID:)\\s*?{fileId},(\\s*?guid:)\\s*?{libraryGuid},(\\s*?type:\\s*?\\d+\\s*?\\}})", RegexOptions.Singleline),
+                                 $"$1 {scriptId},$2 {scriptGuid},$3",
+                                 $"$1 {fileId},$2 {libraryGuid},$3"
                                 );
                 })
                 .ToArray();
+
 
             foreach (var map in remappableAssets)
             {

@@ -40,60 +40,12 @@ namespace ThunderKit.Installer
     public class InstallThunderKit
     {
         [InitializeOnLoadMethod]
-        static void LoadCompression()
+        static void IdentifyThunderKit()
         {
-            InstallCompression();
             AddScriptingDefine("thunderkit");
         }
 
-        /// <summary>
-        /// install System.IO.Compression and System.IO.Compression.FileSystem libraries into project as UPM Package
-        /// </summary>
-        /// <returns>true if installation of compression was executed, false if compression libraries are installed</returns>
-        public static bool InstallCompression()
-        {
-            var compression = "Compression";
-            var siocfs = "System.IO.Compression.FileSystem.dll";
-            var sioc = "System.IO.Compression.dll";
-
-            var packageDir = Path.Combine("Packages", compression);
-
-            var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
-            //I know, I know, but I blame .net 3.5
-            var path = Path.Combine(Path.Combine(Path.Combine(Path.Combine(Path.Combine(editorPath, "Data"), "MonoBleedingEdge"), "lib"), "mono"), "gac");
-
-            var destFileSystemPath = Path.Combine(packageDir, siocfs);
-            var destCompressionPath = Path.Combine(packageDir, sioc);
-            var generatePackage = false;
-            if (!Directory.Exists(packageDir))
-            {
-                Directory.CreateDirectory(packageDir);
-                generatePackage = true;
-            }
-
-            if (generatePackage || !File.Exists(destCompressionPath))
-            {
-                var compressionDll = Directory.GetFiles(path, sioc, SearchOption.AllDirectories).FirstOrDefault();
-                File.Copy(compressionDll, destCompressionPath, true);
-                generatePackage = true;
-            }
-
-            if (generatePackage || !File.Exists(destFileSystemPath))
-            {
-                var fileSystemDll = Directory.GetFiles(path, siocfs, SearchOption.AllDirectories).FirstOrDefault();
-                File.Copy(fileSystemDll, destFileSystemPath, true);
-                generatePackage = true;
-            }
-
-            if (generatePackage)
-                GeneratePackageManifest(
-                    "system_io_compression", packageDir,
-                    "System.IO.Compression", "Microsoft",
-                    "1.0.0",
-                    "System.IO.Compression and System.IO.Compression.FileSystem");
-
-            return generatePackage;
-        }
+        static string Combine(params string[] parts) => parts.Aggregate((a, b) => Path.Combine(a, b));
 
         static bool IsObsolete(BuildTargetGroup group)
         {

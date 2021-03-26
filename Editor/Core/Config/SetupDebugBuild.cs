@@ -8,6 +8,7 @@ using Debug = UnityEngine.Debug;
 
 namespace ThunderKit.Core.Config
 {
+    using static ThunderKit.Core.Editor.Extensions;
     internal struct SwapPair
     {
         public string newFile;
@@ -30,7 +31,6 @@ namespace ThunderKit.Core.Config
             var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
 
             var gamePath = settings.GamePath;
-            var gameDir = new DirectoryInfo(gamePath);
             var gameName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
             var gameMonoPath = Path.Combine(gamePath, $"MonoBleedingEdge");
             var gameDataPath = Path.Combine(gamePath, $"{gameName}_Data");
@@ -38,7 +38,7 @@ namespace ThunderKit.Core.Config
             var gameBootConfigFile = Path.Combine(gameDataPath, "boot.config");
 
             var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
-            var windowsStandalonePath = Path.Combine(editorPath, "Data", "PlaybackEngines", "windowsstandalonesupport");
+            var windowsStandalonePath = Combine(editorPath, "Data", "PlaybackEngines", "windowsstandalonesupport");
 
             var gamePlayer = Path.Combine(gamePath, $"{gameName}.exe");
 
@@ -47,9 +47,9 @@ namespace ThunderKit.Core.Config
             var playerPdbFile = settings.Is64Bit ? "UnityPlayer_Win64_development_mono_x64.pdb" : "UnityPlayer_Win32_development_mono_x86.pdb";
             var playerReleasePdb = settings.Is64Bit ? "WindowsPlayer_Release_mono_x64.pdb" : "WindowsPlayer_Release_mono_x86.pdb";
 
-            var bitVersionPath = Path.Combine(windowsStandalonePath, "Variations", monoString);
+            var bitVersionPath = Combine(windowsStandalonePath, "Variations", monoString);
             var monoBleedingEdgePath = Path.Combine(bitVersionPath, "MonoBleedingEdge");
-            var dataManagedPath = Path.Combine(bitVersionPath, "Data", "Managed");
+            var dataManagedPath = Combine(bitVersionPath, "Data", "Managed");
             var winPlayer = Path.Combine(bitVersionPath, "WindowsPlayer.exe");
 
 
@@ -87,7 +87,7 @@ namespace ThunderKit.Core.Config
                 if (!bootConfig.Any(line => line.Contains(playerConnectionDebug1)))
                     bootConfig.Add(playerConnectionDebug1);
 
-                File.WriteAllLines(gameBootConfigFile, bootConfig);
+                File.WriteAllLines(gameBootConfigFile, bootConfig.ToArray());
             }
             else
                 File.WriteAllText(gameBootConfigFile, playerConnectionDebug1);

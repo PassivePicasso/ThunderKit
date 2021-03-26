@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
@@ -66,7 +67,7 @@ namespace ThunderKit.Pipelines.Jobs
 
                             if (AssetDatabase.IsValidFolder(assetPath))
                                 assets.AddRange(Directory.GetFiles(assetPath, "*", SearchOption.AllDirectories)
-                                      .SelectMany(ap => AssetDatabase.GetDependencies(ap).Append(ap)));
+                                      .SelectMany(ap => AssetDatabase.GetDependencies(ap).Union(new[] { ap })));
 
                             else if (asset is UnityPackage up)
                             {
@@ -76,7 +77,7 @@ namespace ThunderKit.Pipelines.Jobs
                                         var path = AssetDatabase.GetAssetPath(upAsset);
                                         if (AssetDatabase.IsValidFolder(path))
                                             assets.AddRange(Directory.GetFiles(path, "*", SearchOption.AllDirectories)
-                                                  .SelectMany(ap => AssetDatabase.GetDependencies(ap).Append(ap)));
+                                                  .SelectMany(ap => AssetDatabase.GetDependencies(ap).Union(new[] { ap })));
                                         else
                                             assets.Add(path);
                                     }
@@ -84,7 +85,7 @@ namespace ThunderKit.Pipelines.Jobs
                             else
                                 assets.AddRange(AssetDatabase.GetDependencies(assetPath)
                                     .Where(ap => AssetDatabase.GetMainAssetTypeAtPath(ap) != typeof(UnityPackage))
-                                    .Append(assetPath));
+                                    .Union(new[] { assetPath }));
                         }
 
                     build.assetNames = assets
@@ -127,7 +128,6 @@ namespace ThunderKit.Pipelines.Jobs
 
                             foreach (string filePath in Directory.GetFiles(bundleArtifactPath, "*", SearchOption.AllDirectories))
                             {
-                                var fileName = Path.GetFileName(filePath);
                                 bool found = false;
                                 foreach (var bundleName in bundleNames)
                                 {

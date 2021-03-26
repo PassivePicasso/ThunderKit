@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
+using ThunderKit.Core.Editor;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
