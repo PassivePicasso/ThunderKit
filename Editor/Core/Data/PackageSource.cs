@@ -15,6 +15,14 @@ namespace ThunderKit.Core.Data
 {
     public abstract class PackageSource : ScriptableObject, IEquatable<PackageSource>
     {
+        [Serializable]
+        public class PackageVersionInfo
+        {
+            public string version;
+            public string versionDependencyId;
+            public string[] dependencies;
+        }
+
         static Dictionary<string, List<PackageSource>> sourceGroups;
         public static Dictionary<string, List<PackageSource>> SourceGroups
         {
@@ -58,7 +66,7 @@ namespace ThunderKit.Core.Data
         /// <param name="dependencyId">DependencyId for PackageGroup, this is used for mapping dependencies</param>
         /// <param name="tags"></param>
         /// <param name="versions">Collection of version numbers, DependencyIds and dependencies as an array of versioned DependencyIds</param>
-        protected void AddPackageGroup(string author, string name, string description, string dependencyId, string[] tags, IEnumerable<(string version, string versionDependencyId, string[] dependencies)> versions)
+        protected void AddPackageGroup(string author, string name, string description, string dependencyId, string[] tags, IEnumerable<PackageVersionInfo> versions)
         {
             if (groupMap == null) groupMap = new Dictionary<string, PackageGroup>();
             if (dependencyMap == null) dependencyMap = new Dictionary<string, HashSet<string>>();
@@ -80,7 +88,9 @@ namespace ThunderKit.Core.Data
             group.Versions = new PackageVersion[versionData.Length];
             for (int i = 0; i < versionData.Length; i++)
             {
-                var (version, versionDependencyId, dependencies) = versionData[i];
+                var version = versionData[i].version;
+                var versionDependencyId = versionData[i].versionDependencyId;
+                var dependencies = versionData[i].dependencies;
 
                 var packageVersion = CreateInstance<PackageVersion>();
                 packageVersion.name = packageVersion.dependencyId = versionDependencyId;
@@ -116,7 +126,7 @@ namespace ThunderKit.Core.Data
             OnLoadPackages();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            var versionMap = Packages.Where(pkgGrp => pkgGrp?.Versions != null).SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => (pkgGrp, pkgVer))).ToDictionary(ver => ver.pkgVer.dependencyId);
+            var versionMap = Packages.Where(pkgGrp => pkgGrp?.Versions != null).SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => new KeyValuePair<PackageGroup, PackageVersion>(pkgGrp, pkgVer))).ToDictionary(ver => ver.Value.dependencyId);
 
             foreach (var packageGroup in Packages)
             {
@@ -131,7 +141,7 @@ namespace ThunderKit.Core.Data
                         string groupId = VersionIdToGroupId(dependencyId);
                         if (versionMap.ContainsKey(dependencyId))
                         {
-                            version.dependencies[i] = versionMap[dependencyId].pkgVer;
+                            version.dependencies[i] = versionMap[dependencyId].Value;
                         }
                         else if (groupMap.ContainsKey(groupId))
                         {
@@ -150,16 +160,15 @@ namespace ThunderKit.Core.Data
             {
                 foreach (var subDependency in EnumerateDependencies(dependency))
                     yield return subDependency;
-
-                yield return dependency;
             }
+            yield return package;
         }
 
         public async Task InstallPackage(PackageGroup group, string version)
         {
             var package = group[version];
 
-            var installSet = EnumerateDependencies(package).Distinct().Append(package).Where(dep => !dep.group.Installed).ToArray();
+            var installSet = EnumerateDependencies(package).Where(dep => !dep.group.Installed).ToArray();
 
             foreach (var installable in installSet)
             {
@@ -170,10 +179,10 @@ namespace ThunderKit.Core.Data
 
                 await installable.group.Source.OnInstallPackageFiles(installable, installable.group.PackageDirectory);
 
-                foreach (var assemblyPath in Directory.EnumerateFiles(installable.group.PackageDirectory, "*.dll", SearchOption.AllDirectories))
+                foreach (var assemblyPath in Directory.GetFiles(installable.group.PackageDirectory, "*.dll", SearchOption.AllDirectories))
                     PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
             }
-            var tempRoot = Path.Combine("Assets", "ThunderKitSettings", "Temp");
+            var tempRoot = Path.Combine(Path.Combine("Assets", "ThunderKitSettings"), "Temp");
             Directory.CreateDirectory(tempRoot);
             foreach (var installableForManifestCreation in installSet)
             {
@@ -207,7 +216,7 @@ namespace ThunderKit.Core.Data
                     var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetTempPath);
                     if (!manifest)
                     {
-                        var dependencyAssetPackagePath = Path.Combine("Packages", installableDependency.dependencyId, $"{installableDependency.group.PackageName}.asset");
+                        var dependencyAssetPackagePath = Path.Combine(Path.Combine("Packages", installableDependency.dependencyId), $"{installableDependency.group.PackageName}.asset");
                         manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetPackagePath);
                     }
                     if (!manifest)

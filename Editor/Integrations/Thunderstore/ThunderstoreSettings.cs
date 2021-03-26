@@ -23,7 +23,13 @@ namespace ThunderKit.Integrations.Thunderstore
         [SerializeField]
         public string ThunderstoreUrl = "https://thunderstore.io";
 
-        public static event EventHandler<(string newValue, string previousValue)> OnThunderstoreUrlChanged;
+        public class StringValueChangeArgs : EventArgs
+        {
+            public string newValue;
+            public string previousValue;
+        }
+
+        public static event EventHandler<StringValueChangeArgs> OnThunderstoreUrlChanged;
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
@@ -35,7 +41,7 @@ namespace ThunderKit.Integrations.Thunderstore
             field.RegisterCallback<ChangeEvent<string>>(ce =>
             {
                 if (ce.newValue != ce.previousValue)
-                    OnThunderstoreUrlChanged?.Invoke(field, (ce.newValue, ce.previousValue));
+                    OnThunderstoreUrlChanged?.Invoke(field, new StringValueChangeArgs { newValue = ce.newValue, previousValue = ce.previousValue });
             });
             container.Add(label);
             container.Add(field);
@@ -47,6 +53,7 @@ namespace ThunderKit.Integrations.Thunderstore
             container.Bind(serializedSettings);
         }
 
-        public override IEnumerable<string> Keywords() => Enumerable.Empty<string>().Append(nameof(ThunderstoreUrl));
+        string[] keywords = new string[] { nameof(ThunderstoreUrl) };
+        public override IEnumerable<string> Keywords() => keywords;
     }
 }

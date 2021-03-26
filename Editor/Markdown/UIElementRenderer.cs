@@ -46,9 +46,7 @@ namespace ThunderKit.Markdown
             Write(markdownObject);
             return Document;
         }
-#if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
+
         public void WriteLeafInline(LeafBlock leafBlock)
         {
             if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
@@ -91,28 +89,22 @@ namespace ThunderKit.Markdown
         {
             AddInline(stack.Peek(), inline);
         }
-#if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteText(ref StringSlice slice)
         {
             if (slice.Start > slice.End)
                 return;
             WriteText(slice.Text, slice.Start, slice.Length);
         }
-#if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void WriteText(string text)
         {
             var content = text;
             int safetyBreak = 0;
-            while (++safetyBreak < 10 && !string.IsNullOrWhiteSpace(content) && content.Length > 0)
+            while (++safetyBreak < 10 && !string.IsNullOrEmpty(content) && content.Length > 0)
             {
                 var match = LiteralSplitter.Match(content);
                 if (match.Success)
                 {
-                    if (!string.IsNullOrEmpty(match.Value) && !string.IsNullOrWhiteSpace(match.Value))
+                    if (!string.IsNullOrEmpty(match.Value) && !string.IsNullOrEmpty(match.Value))
                     {
                         safetyBreak = 0;
                         content = content.Substring(match.Value.Length);

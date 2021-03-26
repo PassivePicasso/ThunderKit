@@ -2,7 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 using ThunderKit.Common.Configuration;
 using UnityEditor;
 using UnityEngine;
@@ -18,7 +18,7 @@ namespace ThunderKit.Common.Package
         {
             var webRequest = UnityWebRequest.Get(url);
             var asyncOpRequest = webRequest.SendWebRequest();
-            void Request_completed(AsyncOperation obj)
+            asyncOpRequest.completed += (obj) =>
             {
 
 #if UNITY_2020_1_OR_NEWER
@@ -32,33 +32,32 @@ namespace ThunderKit.Common.Package
 
                 if (File.Exists(filePath)) File.Delete(filePath);
                 File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
-            }
-            asyncOpRequest.completed += Request_completed;
+            };
         }
+        //        public static async Task DownloadPackageAsync(string url, string filePath)
+        //        {
+        //            await Task.Run(() =>
+        //            {
+        //                var webRequest = UnityWebRequest.Get(url);
+        //                var asyncOpRequest = webRequest.SendWebRequest();
+        //                asyncOpRequest.completed += Request_completed;
+        //                void Request_completed(AsyncOperation obj)
+        //                {
+        //#if UNITY_2020_1_OR_NEWER
+        //                    if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+        //#else
+        //                    if (webRequest.isNetworkError || webRequest.isHttpError)
+        //#endif
+        //                        Debug.Log(webRequest.error);
+        //                    else
+        //                        File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);
 
-        public static async Task DownloadPackageAsync(string url, string filePath)
-        {
-            await Task.Run(() =>
-            {
-                var webRequest = UnityWebRequest.Get(url);
-                var asyncOpRequest = webRequest.SendWebRequest();
-                asyncOpRequest.completed += Request_completed;
-                void Request_completed(AsyncOperation obj)
-                {
-#if UNITY_2020_1_OR_NEWER
-                    if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
-#else
-                    if (webRequest.isNetworkError || webRequest.isHttpError)
-#endif
-                        Debug.Log(webRequest.error);
-                    else
-                        File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);
+        //                    if (File.Exists(filePath)) File.Delete(filePath);
+        //                    File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
+        //                }
+        //            });
+        //        }
 
-                    if (File.Exists(filePath)) File.Delete(filePath);
-                    File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
-                }
-            });
-        }
 
         public static void GeneratePackageManifest(string packageName, string outputDir, string modName, string authorAlias, string modVersion, string description = null)
         {

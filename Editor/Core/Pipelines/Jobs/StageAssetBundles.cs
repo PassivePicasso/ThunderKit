@@ -8,7 +8,6 @@ using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
 using UnityEditor;
-using UnityEditor.Build.Pipeline;
 using UnityEditor.Compilation;
 using UnityEngine;
 
@@ -66,7 +65,7 @@ namespace ThunderKit.Pipelines.Jobs
                             var assetPath = AssetDatabase.GetAssetPath(asset);
 
                             if (AssetDatabase.IsValidFolder(assetPath))
-                                assets.AddRange(Directory.EnumerateFiles(assetPath, "*", SearchOption.AllDirectories)
+                                assets.AddRange(Directory.GetFiles(assetPath, "*", SearchOption.AllDirectories)
                                       .SelectMany(ap => AssetDatabase.GetDependencies(ap).Append(ap)));
 
                             else if (asset is UnityPackage up)
@@ -76,7 +75,7 @@ namespace ThunderKit.Pipelines.Jobs
                                     {
                                         var path = AssetDatabase.GetAssetPath(upAsset);
                                         if (AssetDatabase.IsValidFolder(path))
-                                            assets.AddRange(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+                                            assets.AddRange(Directory.GetFiles(path, "*", SearchOption.AllDirectories)
                                                   .SelectMany(ap => AssetDatabase.GetDependencies(ap).Append(ap)));
                                         else
                                             assets.Add(path);
@@ -114,7 +113,7 @@ namespace ThunderKit.Pipelines.Jobs
             if (!simulate)
             {
                 var allBuilds = builds.ToArray();
-                CompatibilityBuildPipeline.BuildAssetBundles(bundleArtifactPath, allBuilds, AssetBundleBuildOptions, buildTarget);
+                BuildPipeline.BuildAssetBundles(bundleArtifactPath, allBuilds, AssetBundleBuildOptions, buildTarget);
                 for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
                 {
                     var manifest = pipeline.Manifest;

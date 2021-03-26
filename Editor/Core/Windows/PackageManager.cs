@@ -20,6 +20,8 @@ namespace ThunderKit.Core.Editor.Windows
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class PackageManager : TemplatedWindow
     {
+        private static readonly PackageVersion[] EmptyPackages = new PackageVersion[0];
+
         private VisualElement packageView;
         private Button searchBoxCancel;
         private Button filtersButton;
@@ -75,14 +77,13 @@ namespace ThunderKit.Core.Editor.Windows
                 var groupName = $"tkpm-package-source-{source.Name}";
                 packageSource.RemoveFromClassList("grow");
                 foldOut.value = false;
-                foldOut.RegisterCallback<ChangeEvent<bool>>(OnFold);
-                void OnFold(ChangeEvent<bool> evt)
+                foldOut.RegisterCallback<ChangeEvent<bool>>((evt) =>
                 {
                     if (evt.newValue)
                         packageSource.AddToClassList("grow");
                     else
                         packageSource.RemoveFromClassList("grow");
-                }
+                });
 
                 packageSource.AddToClassList("tkpm-package-source");
                 packageSource.name = groupName;
@@ -98,14 +99,13 @@ namespace ThunderKit.Core.Editor.Windows
                 packageList.onSelectionChanged += PackageList_onSelectionChanged;
 #endif
 
-                packageList.makeItem = MakePackage;
-                VisualElement MakePackage()
+                packageList.makeItem = () =>
                 {
                     var packageInstance = GetTemplateInstance("Package");
                     packageInstance.userData = packageList;
                     packageInstance.AddToClassList("tkpm-package-option");
                     return packageInstance;
-                }
+                };
                 packageList.bindItem = BindPackage;
 
                 packageSourceList.Add(packageSource);
@@ -233,7 +233,7 @@ namespace ThunderKit.Core.Editor.Windows
             RepopulateLabels(packageView.Q("tkpm-package-tags"), selection.Tags, "tag");
 
             var selectedVersion = selection[targetVersion];
-            var pvDependencies = selectedVersion.dependencies ?? Array.Empty<PackageVersion>();
+            var pvDependencies = selectedVersion.dependencies ?? EmptyPackages;
             var dependencyIds = new List<string>();
             foreach (var pvd in pvDependencies)
             {
@@ -328,16 +328,27 @@ namespace ThunderKit.Core.Editor.Windows
             var menu = new GenericMenu();
             foreach (var version in selection.Versions)
             {
-                menu.AddItem(new GUIContent(version.version), version.Equals(targetVersion), SelectVersion, (version.version, versionButton));
+                menu.AddItem(new GUIContent(version.version), version.Equals(targetVersion), SelectVersion, new SelectData(version.version, versionButton));
             }
             menu.ShowAsContext();
         }
 
+        private class SelectData
+        {
+            public string version;
+            public Button versionButton;
+            public SelectData(string version, Button versionButton)
+            {
+                this.version = version;
+                this.versionButton = versionButton;
+            }
+        }
+
         void SelectVersion(object userData)
         {
-            var (version, versionButton) = ((string, Button))userData;
+            var selectData = (SelectData)userData;
 
-            versionButton.text = targetVersion = version;
+            selectData.versionButton.text = targetVersion = selectData.version;
         }
         #endregion
 

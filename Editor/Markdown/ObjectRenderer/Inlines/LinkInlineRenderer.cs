@@ -3,7 +3,6 @@ using Markdig.Syntax.Inlines;
 using UnityEditor;
 using UnityEngine.Networking;
 using UnityEngine;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 #if UNITY_2019_1_OR_NEWER
@@ -61,7 +60,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
             }
         };
 
-        
+
         protected override void Write(UIElementRenderer renderer, LinkInline link)
         {
             var url = link.Url;
@@ -76,13 +75,10 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 }
                 else
                 {
-                    async Task DownloadImage(string MediaUrl)
+                    UnityWebRequest request = UnityWebRequestTexture.GetTexture(link.Url);
+                    var asyncOp = request.SendWebRequest();
+                    asyncOp.completed += (obj) =>
                     {
-                        UnityWebRequest request = UnityWebRequestTexture.GetTexture(MediaUrl);
-                        var asyncOp = request.SendWebRequest();
-                        while (!asyncOp.isDone)
-                            await Task.Delay(100);
-
 #if UNITY_2020_1_OR_NEWER
                         if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
 #else
@@ -91,8 +87,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
                             Debug.Log(request.error);
                         else
                             SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
-                    }
-                    _ = DownloadImage(link.Url);
+                    };
                 }
 
                 renderer.Push(imageElement);
@@ -130,10 +125,11 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 }
 
                 renderer.Push(linkLabel);
-                renderer.WriteChildren(link); 
+                renderer.WriteChildren(link);
                 renderer.Pop();
             }
 
         }
+
     }
 }
