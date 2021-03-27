@@ -43,11 +43,10 @@ namespace ThunderKit.Core.Data
                         .Select(AssetDatabase.LoadAssetAtPath<PackageSource>);
                     foreach (var packageSource in packageSources)
                     {
-                        if (!sourceGroups.ContainsKey(packageSource.SourceGroup))
-                            sourceGroups[packageSource.SourceGroup] = new List<PackageSource>();
-
-                        if (!sourceGroups[packageSource.SourceGroup].Contains(packageSource))
-                            sourceGroups[packageSource.SourceGroup].Add(packageSource);
+                        if (!sourceGroups.TryGetValue(packageSource.SourceGroup, out var sourceGroup))
+                            sourceGroups[packageSource.SourceGroup] = sourceGroup = new List<PackageSource> { packageSource };
+                        else if (!sourceGroup.Contains(packageSource))
+                            sourceGroup.Add(packageSource);
                     }
 
                 }
@@ -107,11 +106,10 @@ namespace ThunderKit.Core.Data
                 AssetDatabase.AddObjectToAsset(packageVersion, group);
                 group.Versions[i] = packageVersion;
 
-                if (!dependencyMap.ContainsKey(packageVersion.dependencyId))
-                    dependencyMap[packageVersion.dependencyId] = new HashSet<string>();
+                if (!dependencyMap.TryGetValue(packageVersion.dependencyId, out var packageDeps))
+                    dependencyMap[packageVersion.dependencyId] = packageDeps = new HashSet<string>();
 
-                foreach (var depDepId in dependencies)
-                    dependencyMap[packageVersion.dependencyId].Add(depDepId);
+                packageDeps.UnionWith(dependencies);
             }
 
             Packages.Add(group);
@@ -145,13 +143,13 @@ namespace ThunderKit.Core.Data
                     {
                         string dependencyId = dependencies[i];
                         string groupId = VersionIdToGroupId(dependencyId);
-                        if (versionMap.ContainsKey(dependencyId))
+                        if (versionMap.TryGetValue(dependencyId, out var packageDep))
                         {
-                            version.dependencies[i] = versionMap[dependencyId].Value;
+                            version.dependencies[i] = packageDep.Value;
                         }
-                        else if (groupMap.ContainsKey(groupId))
+                        else if (groupMap.TryGetValue(groupId, out var groupDep))
                         {
-                            version.dependencies[i] = groupMap[groupId]["latest"];
+                            version.dependencies[i] = groupDep["latest"];
                         }
                     }
                 }

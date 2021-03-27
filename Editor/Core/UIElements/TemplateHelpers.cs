@@ -112,7 +112,7 @@ namespace ThunderKit.Core.UIElements
 
         private static VisualTreeAsset LoadTemplate(string name, Func<string, bool> isTemplatePath)
         {
-            if (!templateCache.ContainsKey(name) || templateCache[name] == null)
+            if (!templateCache.TryGetValue(name, out var asset) || asset)
             {
                 var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
                 var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
@@ -121,9 +121,9 @@ namespace ThunderKit.Core.UIElements
                     .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
                     .Where(isTemplatePath)
                     .FirstOrDefault();
-                templateCache[name] = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
+                templateCache[name] = (asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath));
             }
-            return templateCache[name];
+            return asset;
         }
 
 
