@@ -31,7 +31,5 @@ namespace ThunderKit.Core.Editor
             return (input & flag) == flag;
         }
 
-        public static string Combine(params string[] parts) => parts.Aggregate((a, b) => Path.Combine(a, b));
-
     }
 }
