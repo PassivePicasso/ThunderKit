@@ -83,11 +83,23 @@ namespace ThunderKit.Core.Config
 
             if (File.Exists(gameBootConfigFile))
             {
-                var bootConfig = File.ReadAllLines(gameBootConfigFile).ToList();
-                if (!bootConfig.Any(line => line.Contains(playerConnectionDebug1)))
-                    bootConfig.Add(playerConnectionDebug1);
+                bool foundConnectionDebug = false;
+                using (var sr = File.OpenText(gameBootConfigFile))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.Contains(playerConnectionDebug1))
+                        {
+                            foundConnectionDebug = true;
+                            break;
+                        }
+                    }
 
-                File.WriteAllLines(gameBootConfigFile, bootConfig.ToArray());
+                }
+
+                if (!foundConnectionDebug)
+                    File.AppendAllText(gameBootConfigFile, playerConnectionDebug1);
             }
             else
                 File.WriteAllText(gameBootConfigFile, playerConnectionDebug1);

@@ -12,13 +12,7 @@ namespace ThunderKit.Core.Editor.Actions
         {
             try
             {
-                if (EditorApplication.isCompiling) return false;
-                if (Directory.Exists(directory))
-                {
-                    foreach (var metaFile in Directory.GetFiles(directory, "*.meta", SearchOption.AllDirectories))
-                        File.Delete(metaFile);
-                    Directory.Delete(directory, true);
-                }
+                return !EditorApplication.isCompiling && FileUtil.DeleteFileOrDirectory(directory);
             }
             catch { }
             return !Directory.Exists(directory);
