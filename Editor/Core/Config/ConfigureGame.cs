@@ -12,7 +12,7 @@ using Debug = UnityEngine.Debug;
 
 namespace ThunderKit.Core.Config
 {
-    using static ThunderKit.Core.Editor.Extensions;
+    using static ThunderKit.Common.PathExtensions;
     public class ConfigureGame
     {
         public static void Configure()
@@ -122,8 +122,8 @@ namespace ThunderKit.Core.Config
             var packagePath = Path.Combine("Packages", packageName);
             var packagePluginsPath = Path.Combine(packagePath, "plugins");
 
-            var managedAssemblies = Directory.GetFiles(managedPath, "*.dll").ToArray();
-            var plugins = Directory.GetFiles(pluginsPath, "*.dll").ToArray();
+            var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
+            var plugins = Directory.GetFiles(pluginsPath, "*.dll");
 
             GetReferences(packagePath, managedAssemblies, blackList);
             GetReferences(packagePluginsPath, plugins, Enumerable.Empty<string>());

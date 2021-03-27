@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+
 using UnityEngine;
 
 namespace ThunderKit.Installer
@@ -44,8 +45,6 @@ namespace ThunderKit.Installer
         {
             AddScriptingDefine("thunderkit");
         }
-
-        static string Combine(params string[] parts) => parts.Aggregate((a, b) => Path.Combine(a, b));
 
         static bool IsObsolete(BuildTargetGroup group)
         {

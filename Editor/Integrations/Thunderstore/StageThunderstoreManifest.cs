@@ -10,7 +10,7 @@ using static ThunderKit.Integrations.Thunderstore.CreateThunderstoreManifest;
 
 namespace ThunderKit.Integrations.Thunderstore.Jobs
 {
-    using static ThunderKit.Core.Editor.Extensions;
+    using static ThunderKit.Common.PathExtensions;
 
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreData), typeof(ManifestIdentity))]
     public class StageThunderstoreManifest : PipelineJob

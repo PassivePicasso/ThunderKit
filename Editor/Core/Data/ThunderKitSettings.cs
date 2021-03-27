@@ -20,7 +20,7 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.Data
 {
-    using static ThunderKit.Core.Editor.Extensions;
+    using static ThunderKit.Common.PathExtensions;
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ThunderKitSetting
     {
