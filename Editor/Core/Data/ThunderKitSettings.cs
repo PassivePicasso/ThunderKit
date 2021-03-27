@@ -30,6 +30,7 @@ namespace ThunderKit.Core.Data
             CompilationPipeline.assemblyCompilationFinished -= LoadAllAssemblies;
             CompilationPipeline.assemblyCompilationFinished += LoadAllAssemblies;
             LoadAllAssemblies(null, null);
+            GetOrCreateSettings<ThunderKitSettings>();
         }
 
 

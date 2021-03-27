@@ -70,9 +70,9 @@ namespace ThunderKit.Core.Data
                 if (!File.Exists(Path.Combine(PackageDirectory, "package.json"))) return false;
 
                 var pmm = PackageHelper.GetPackageManagerManifest(PackageDirectory);
-                var packageVersion = this[pmm.version];
+                //var packageVersion = this[pmm.version];
 
-                return pmm.name.Equals(packageVersion?.dependencyId, StringComparison.OrdinalIgnoreCase);
+                return pmm.name.Equals(DependencyId, StringComparison.OrdinalIgnoreCase);
             }
         }
 

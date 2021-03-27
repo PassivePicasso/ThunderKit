@@ -257,11 +257,22 @@ namespace ThunderKit.Core.Data
             Directory.Delete(tempRoot);
             File.Delete($"{tempRoot}.meta");
 
+            EditorApplication.update += OneRefresh;
+
+            RefreshWait = EditorApplication.timeSinceStartup;
+        }
+
+        double RefreshWait = 0;
+        private void OneRefresh()
+        {
+            if (EditorApplication.timeSinceStartup - RefreshWait < 1) return;
+
+            EditorApplication.update -= OneRefresh;
             AssetDatabase.Refresh();
         }
 
         /// <summary>
-        /// Executes the downloading, unpacking, and placing of package files.  Files
+        /// Executes the downloading, unpacking, and placing of package files.
         /// </summary>
         /// <param name="version">The version of the Package which should be installed</param>
         /// <param name="packageDirectory">Root directory which files should be extracted into</param>
