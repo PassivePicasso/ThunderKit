@@ -18,7 +18,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         {
             for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
             {
-                if (ExcludedManifests.Contains(pipeline.Manifest)) continue;
+                if (ArrayUtility.Contains(ExcludedManifests, pipeline.Manifest)) continue;
                 if (AssetDatabase.GetAssetPath(pipeline.Manifest).StartsWith("Assets")) continue;
 
                 var manifestIdentity = pipeline.Manifest.Data.OfType<ManifestIdentity>().First();
