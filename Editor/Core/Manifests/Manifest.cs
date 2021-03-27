@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ThunderKit.Common;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
@@ -23,16 +25,12 @@ namespace ThunderKit.Core.Manifests
 
         public IEnumerable<Manifest> EnumerateManifests()
         {
-            if (this?.Identity?.Dependencies == null) yield break;
+            if (this?.Identity?.Dependencies == null)
+                return Enumerable.Empty<Manifest>();
 
-            HashSet<Manifest> returned = new HashSet<Manifest>();
-            foreach (var dependency in this.Identity.Dependencies)
-                foreach (var depManifest in dependency.EnumerateManifests())
-                    if (returned.Add(depManifest))
-                        yield return depManifest;
-
-            if (returned.Add(this))
-                yield return this;
+            HashSet<Manifest> returned = new HashSet<Manifest>(this.Identity.Dependencies.SelectMany(x => x.EnumerateManifests()));
+            returned.Add(this);
+            return returned;
         }
 
         [HideInInspector]

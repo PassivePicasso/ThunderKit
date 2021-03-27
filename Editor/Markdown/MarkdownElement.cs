@@ -6,6 +6,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using Markdig.Renderers.Normalize;
+using System.Linq;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -152,13 +153,8 @@ namespace ThunderKit.Markdown
                     mdElement.RefreshContent();
             }
 
-            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
-            {
-                get
-                {
-                    yield break;
-                }
-            }
+            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
+                Enumerable.Empty<UxmlChildElementDescription>();
         }
     }
 }
