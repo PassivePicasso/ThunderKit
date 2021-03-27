@@ -14,6 +14,15 @@ namespace ThunderKit.Markdown.Helpers
 {
     public static class VisualElementFactory 
     {
+        public static T GetTextElement<T>(string text, string className) where T : TextElement, new()
+        {
+            T element = GetClassedElement<T>(className);
+
+            element.text = text;
+            element.pickingMode = PickingMode.Ignore;
+
+            return element;
+        }
 
         public static T GetTextElement<T>(string text, params string[] classNames) where T : TextElement, new()
         {
@@ -21,6 +30,16 @@ namespace ThunderKit.Markdown.Helpers
 
             element.text = text;
             element.pickingMode = PickingMode.Ignore;
+
+            return element;
+        }
+
+        public static T GetClassedElement<T>(string className) where T : VisualElement, new()
+        {
+            T element = new T();
+
+            element.name = className;
+            element.AddToClassList(className);
 
             return element;
         }
