@@ -22,8 +22,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var source = Source.Resolve(pipeline, this);
             var destination = Destination.Resolve(pipeline, this);
 
-            bool sourceIsFile = false,
-            destinationIsFile = false;
+            bool sourceIsFile = false;
 
             try
             {
@@ -33,22 +32,15 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 if (SourceRequired) throw e;
             }
-            try
-            {
-                destinationIsFile = !File.GetAttributes(destination).HasFlag(FileAttributes.Directory);
-            }
-            catch { /* A catch is a valid result of this check */ }
 
             if (Recursive)
             {
                 if (!Directory.Exists(source)) return;
                 else if (sourceIsFile)
                     throw new ArgumentException($"Source Error: Expected Directory, Recieved File {source}");
-                else if (destinationIsFile)
-                    throw new ArgumentException($"Destination Error: Expected Directory, Recieved File {source}");
             }
 
-            if (!destinationIsFile) Directory.CreateDirectory(destination);
+            if (!sourceIsFile) Directory.CreateDirectory(destination);
             else
                 Directory.CreateDirectory(Path.GetDirectoryName(destination));
 
