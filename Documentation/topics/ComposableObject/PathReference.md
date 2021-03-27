@@ -6,7 +6,7 @@ PathReferences provide the ability for you to create a custom rule set for how p
 You setup these rules by adding Path Components.  A PathReference will execute each of its components
 in order and will have access to 2 sets of information depending on when they are executed.
 
-In the first situation a PathReference has access only to infromation available on the Pipeline and 
+In the first situation a PathReference has access only to information available on the Pipeline and 
 static information available in the project.  This situation is when a PathReference is accessed from
 a Pipeline during a PipelineJob that isn't setup to execute against a Manifest.
 
