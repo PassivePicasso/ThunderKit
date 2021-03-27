@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Experimental.UIElements;
+using System.Linq;
 #if UNITY_2019
 using UnityEngine.UIElements;
 #elif UNITY_2018
@@ -163,10 +164,8 @@ namespace ThunderKit.Core.UIElements
         UxmlStringAttributeDescription m_Path = new UxmlStringAttributeDescription { name = "path" };
         UxmlStringAttributeDescription m_Src = new UxmlStringAttributeDescription { name = "src" };
 
-        public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
-        {
-            get { yield break; }
-        }
+        public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
+            Enumerable.Empty<UxmlChildElementDescription>();
     }
 }
 #endif
