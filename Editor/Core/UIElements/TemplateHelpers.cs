@@ -112,18 +112,22 @@ namespace ThunderKit.Core.UIElements
 
         private static VisualTreeAsset LoadTemplate(string name, Func<string, bool> isTemplatePath)
         {
-            if (!templateCache.TryGetValue(name, out var asset) || asset)
-            {
-                var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
-                var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
-                var templatePath = assetPaths
-                    .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))
-                    .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
-                    .Where(isTemplatePath)
-                    .FirstOrDefault();
-                templateCache[name] = (asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath));
-            }
-            return asset;
+            if (templateCache.TryGetValue(name, out var asset) && asset != null)
+                return asset;
+
+            return templateCache[name] = CreateTemplate(name, isTemplatePath);
+        }
+
+        static VisualTreeAsset CreateTemplate(string name, Func<string, bool> isTemplatePath)
+        {
+            var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
+            var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
+            var templatePath = assetPaths
+                .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))
+                .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
+                .Where(isTemplatePath)
+                .FirstOrDefault();
+            return AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
         }
 
 
