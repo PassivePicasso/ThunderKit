@@ -18,7 +18,7 @@ namespace ThunderKit.Core.Paths
 
         const char opo = '<';
         const char opc = '>';
-        private static Regex referenceIdentifier = new Regex($"\\{opo}(.*?)\\{opc}");
+        private static readonly Regex referenceIdentifier = new Regex($"\\{opo}(.*?)\\{opc}", RegexOptions.Compiled);
         public static string ResolvePath(string input, Pipeline pipeline, UnityEngine.Object caller)
         {
             var result = input;
