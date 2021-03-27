@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -48,10 +49,8 @@ namespace ThunderKit.Core.UIElements
                 assetLink.SelectAsset = m_selectAsset.GetValueFromBag(bag, cc);
             }
 
-            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
-            {
-                get { yield break; }
-            }
+            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
+                Enumerable.Empty<UxmlChildElementDescription>();
         }
 
     }
