@@ -215,7 +215,7 @@ namespace ThunderKit.Core.Editor.Windows
         }
         private void PackageList_onSelectionChanged(IEnumerable<object> obj)
         {
-            var selection = obj.OfType<PackageGroup>().First();
+            var selection = obj.OfType<PackageGroup>().FirstOrDefault();
             if (selection == null) return;
             BindPackageView(selection);
         }
