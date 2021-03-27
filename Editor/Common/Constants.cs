@@ -12,7 +12,7 @@ namespace ThunderKit.Common
         public const string ThunderKitMenuRoot = "Tools/ThunderKit/";
         public const string ThunderKitSettingsRoot = "Assets/ThunderKitSettings/";
 
-        public static readonly string TempDir = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "Temp"), ThunderKit);
+        public static readonly string TempDir = PathExtensions.Combine(Directory.GetCurrentDirectory(), "Temp", ThunderKit);
         public static readonly string Packages = "Packages";
         public static readonly string[] AssetDatabaseFindFolders = new[] { "Packages", "Assets" };
         public static readonly string ThunderKitPackageName = "com.passivepicasso.thunderkit";

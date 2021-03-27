@@ -12,7 +12,7 @@ using Debug = UnityEngine.Debug;
 
 namespace ThunderKit.Core.Config
 {
-    using static ThunderKit.Core.Editor.Extensions;
+    using static ThunderKit.Common.PathExtensions;
     public class ConfigureGame
     {
         public static void Configure()
