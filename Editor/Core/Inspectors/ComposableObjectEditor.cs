@@ -65,10 +65,7 @@ namespace ThunderKit.Core.Editor.Inspectors
                 var stepType = step.objectReferenceValue.GetType();
                 var element = step.objectReferenceValue as ComposableElement;
 
-                UnityEditor.Editor editor;
-                if (Editors.ContainsKey(step.objectReferenceValue))
-                    editor = Editors[step.objectReferenceValue];
-                else
+                if (!Editors.TryGetValue(step.objectReferenceValue, out var editor))
                     Editors[step.objectReferenceValue] = editor = CreateEditor(step.objectReferenceValue);
 
                 try
