@@ -22,15 +22,14 @@ namespace ThunderKit.Markdown
     public class UIElementRenderer : RendererBase
     {
         private static Regex LiteralSplitter = new Regex("^([\\S]+\\b\\S?)|^\\s+", RegexOptions.Singleline | RegexOptions.Compiled);
-        private readonly Stack<VisualElement> stack = new Stack<VisualElement>();
-        private char[] buffer;
+        private readonly Stack<VisualElement> stack = new Stack<VisualElement>(128);
+
         public UIElementRenderer()
         {
-            buffer = new char[1024];
         }
+
         public UIElementRenderer(VisualElement document)
         {
-            buffer = new char[1024];
             LoadDocument(document);
         }
         public virtual void LoadDocument(VisualElement document)
@@ -89,61 +88,49 @@ namespace ThunderKit.Markdown
         {
             AddInline(stack.Peek(), inline);
         }
-        public void WriteText(ref StringSlice slice)
+        public void WriteText(ref StringSlice initial)
         {
-            if (slice.Start > slice.End)
-                return;
-            WriteText(slice.Text, slice.Start, slice.Length);
-        }
-        public void WriteText(string text)
-        {
-            var content = text;
+            var slice = initial;
             int safetyBreak = 0;
-            while (++safetyBreak < 10 && !string.IsNullOrEmpty(content) && content.Length > 0)
+            while (++safetyBreak < 10 && !slice.IsEmpty)
             {
-                var match = LiteralSplitter.Match(content);
-                if (match.Success)
+                var match = LiteralSplitter.Match(slice.Text, slice.Start, slice.Length);
+                string value = match.Success ? match.Value : null;
+
+                if (!string.IsNullOrEmpty(value))
                 {
-                    if (!string.IsNullOrEmpty(match.Value) && !string.IsNullOrEmpty(match.Value))
-                    {
-                        safetyBreak = 0;
-                        content = content.Substring(match.Value.Length);
+                    safetyBreak = 0;
+                    slice = new StringSlice(slice.Text, slice.Start + value.Length, slice.End);
 
-                        var element = GetTextElement<Label>(match.Value, "inline");
-                        if (!LiteralSplitter.Match(content).Success)
-                            element.AddToClassList("last-inline");
+                    var element = GetTextElement<Label>(value, "inline");
+                    if (slice.IsEmpty || !LiteralSplitter.Match(slice.Text, slice.Start, slice.Length).Success)
+                        element.AddToClassList("last-inline");
 
-                        WriteInline(element);
-                    }
-                    else
-                        content = content.Substring(1);
+                    WriteInline(element);
                 }
                 else
-                    break;
+                    slice = new StringSlice(slice.Text, slice.Start + 1, slice.End);
             }
         }
+
+        public void WriteText(string text)
+        {
+            if (text == null)
+                return;
+
+            var slice = new StringSlice(text);
+            WriteText(ref slice);
+        }
+
         public void WriteText(string text, int offset, int length)
         {
             if (text == null)
                 return;
-            if (offset == 0 && text.Length == length)
-            {
-                WriteText(text);
-            }
-            else
-            {
-                if (length > buffer.Length)
-                {
-                    buffer = text.ToCharArray();
-                    WriteText(new string(buffer, offset, length));
-                }
-                else
-                {
-                    text.CopyTo(offset, buffer, 0, length);
-                    WriteText(new string(buffer, 0, length));
-                }
-            }
+
+            var slice = new StringSlice(text, offset, offset + length);
+            WriteText(ref slice);
         }
+
         protected virtual void LoadRenderers()
         {
             // Default block renderers
