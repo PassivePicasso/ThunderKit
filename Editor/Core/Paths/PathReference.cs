@@ -18,13 +18,13 @@ namespace ThunderKit.Core.Paths
 
         const char opo = '<';
         const char opc = '>';
-        private static Regex referenceIdentifier = new Regex($"\\{opo}(.*?)\\{opc}");
+        private static readonly Regex referenceIdentifier = new Regex($"\\{opo}(.*?)\\{opc}", RegexOptions.Compiled);
         public static string ResolvePath(string input, Pipeline pipeline, UnityEngine.Object caller)
         {
             var result = input;
             var pathReferenceGuids = AssetDatabase.FindAssets($"t:{nameof(PathReference)}", Constants.AssetDatabaseFindFolders);
-            var pathReferencePaths = pathReferenceGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
-            var pathReferences = pathReferencePaths.Select(AssetDatabase.LoadAssetAtPath<PathReference>).ToArray();
+            var pathReferencePaths = pathReferenceGuids.Select(x => AssetDatabase.GUIDToAssetPath(x)).ToArray();
+            var pathReferences = pathReferencePaths.Select(x => AssetDatabase.LoadAssetAtPath<PathReference>(x)).ToArray();
             var pathReferenceDictionary = pathReferences.ToDictionary(pr => pr.name);
 
             Match match = referenceIdentifier.Match(result);

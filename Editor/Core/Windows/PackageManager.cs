@@ -183,7 +183,7 @@ namespace ThunderKit.Core.Editor.Windows
                 .Select(kvp => kvp.Key.Substring(kvp.Key.LastIndexOf('/') + 1))
                 .ToArray();
 
-            var hasTags = enabledTags.Any() ? packages.Where(pkg => enabledTags.All(tag => pkg.Tags.Contains(tag))) : packages;
+            var hasTags = enabledTags.Any() ? packages.Where(pkg => enabledTags.All(tag => ArrayUtility.Contains(pkg.Tags, tag))) : packages;
 
             var hasString = hasTags.Where(pkg => pkg.HasString(SearchString ?? string.Empty));
 
@@ -215,7 +215,7 @@ namespace ThunderKit.Core.Editor.Windows
         }
         private void PackageList_onSelectionChanged(IEnumerable<object> obj)
         {
-            var selection = obj.OfType<PackageGroup>().First();
+            var selection = obj.OfType<PackageGroup>().FirstOrDefault();
             if (selection == null) return;
             BindPackageView(selection);
         }

@@ -119,8 +119,8 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 {
                     linkLabel.RegisterCallback<MouseUpEvent>(evt =>
                     {
-                        if (LinkInlineRenderer.SchemeLinkHandlers.ContainsKey(lowerScheme))
-                            LinkInlineRenderer.SchemeLinkHandlers[lowerScheme]?.Invoke(url);
+                        if (SchemeLinkHandlers.TryGetValue(lowerScheme, out var handler))
+                            handler?.Invoke(url);
                     });
                 }
 

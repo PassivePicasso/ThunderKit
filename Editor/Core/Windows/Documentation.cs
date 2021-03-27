@@ -56,7 +56,7 @@ namespace ThunderKit.Core.Windows
 
                 var fullParentPageName = GetPageName(containingDirectory);
                 var fullPageName = GetPageName(pageNamePath);
-                var parentPage = pages.ContainsKey(fullParentPageName) ? pages[fullParentPageName] : null;
+                var parentPage = pages.TryGetValue(fullParentPageName, out var tempPage) ? tempPage : null;
 
                 int pageDepth = 0;
                 if (parentPage != null) pageDepth = parentPage.depth + 1;

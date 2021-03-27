@@ -35,17 +35,19 @@ namespace ThunderKit.Core.Data
         public string PackageDirectory => Path.Combine("Packages", PackageName);
         public bool HasString(string value)
         {
-            var authorContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(Author, value, CompareOptions.OrdinalIgnoreCase) > -1;
+            var compareInfo = CultureInfo.InvariantCulture.CompareInfo;
+
+            var authorContains = compareInfo.IndexOf(Author, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (authorContains) return true;
-            var nameContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(PackageName, value, CompareOptions.OrdinalIgnoreCase) > -1;
+            var nameContains = compareInfo.IndexOf(PackageName, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (nameContains) return true;
-            var descriptionContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(Description, value, CompareOptions.OrdinalIgnoreCase) > -1;
+            var descriptionContains = compareInfo.IndexOf(Description, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (descriptionContains) return true;
-            var dependencyIdContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(DependencyId, value, CompareOptions.OrdinalIgnoreCase) > -1;
+            var dependencyIdContains = compareInfo.IndexOf(DependencyId, value, CompareOptions.OrdinalIgnoreCase) > -1;
             if (dependencyIdContains) return true;
             foreach (var tag in Tags)
             {
-                var tagContains = CultureInfo.InvariantCulture.CompareInfo.IndexOf(tag, value, CompareOptions.OrdinalIgnoreCase) > -1;
+                var tagContains = compareInfo.IndexOf(tag, value, CompareOptions.OrdinalIgnoreCase) > -1;
                 if (tagContains) return true;
             }
 
