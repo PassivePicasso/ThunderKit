@@ -59,7 +59,9 @@ namespace ThunderKit.Pipelines.Jobs
                     
                     logBuilder.AppendLine($"Building bundle: {def.assetBundleName}");
 
-                    if (def.assets.OfType<SceneAsset>().Any()) assets.Add(AssetDatabase.GetAssetPath(def.assets.OfType<SceneAsset>().First()));
+                    var firstAsset = def.assets.FirstOrDefault(x => x is SceneAsset);
+
+                    if (firstAsset != null) assets.Add(AssetDatabase.GetAssetPath(firstAsset));
                     else
                         foreach (var asset in def.assets)
                         {
