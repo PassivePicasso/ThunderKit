@@ -90,10 +90,11 @@ namespace ThunderKit.Core.Editor.Windows
         {
             if (scriptList != null)
             {
+                string searchString = SearchString ?? string.Empty;
 
                 monoScripts = Resources.FindObjectsOfTypeAll<MonoScript>()
                                            .Where(filter)
-                                           .Where(ms => ms.name.ToLower().Contains((SearchString ?? string.Empty).ToLower()))
+                                           .Where(ms => ms.name.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0)
                                            .OrderBy(ms => ms.name)
                                            .ToArray();
                 scriptList.itemsSource = monoScripts;
