@@ -91,11 +91,11 @@ namespace ThunderKit.Pipelines.Jobs
                     build.assetNames = assets
                         .Select(ap => ap.Replace("\\", "/"))
                         //.Where(dap => !explicitDownstreamAssets.Contains(dap))
-                        .Where(dap => !explicitAssets.Contains(dap))
-                        .Where(dap => !excludedExtensions.Contains(Path.GetExtension(dap)))
-                        .Where(ap => !sourceFiles.Contains(ap))
-                        .Where(ap => !assemblyFiles.Contains(ap))
-                        .Where(path => !AssetDatabase.IsValidFolder(path))
+                        .Where(dap => !ArrayUtility.Contains(explicitAssets, dap) &&
+                                      !ArrayUtility.Contains(excludedExtensions, Path.GetExtension(dap)) &&
+                                      !ArrayUtility.Contains(sourceFiles, dap) &&
+                                      !ArrayUtility.Contains(assemblyFiles, dap) &&
+                                      !AssetDatabase.IsValidFolder(dap))
                         .Distinct()
                         .ToArray();
                     build.assetBundleName = def.assetBundleName;
