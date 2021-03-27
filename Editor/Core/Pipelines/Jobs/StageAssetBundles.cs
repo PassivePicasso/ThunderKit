@@ -131,7 +131,7 @@ namespace ThunderKit.Pipelines.Jobs
                                 bool found = false;
                                 foreach (var bundleName in bundleNames)
                                 {
-                                    if (filePath.ToLower().Contains(bundleName.ToLower()))
+                                    if (filePath.IndexOf(bundleName, System.StringComparison.OrdinalIgnoreCase) >= 0)
                                     {
                                         found = true;
                                         break;
