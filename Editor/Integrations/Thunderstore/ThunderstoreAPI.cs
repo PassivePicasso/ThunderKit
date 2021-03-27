@@ -52,15 +52,27 @@ namespace ThunderKit.Integrations.Thunderstore
         public static void ReloadPages()
         {
             var packages = new List<PackageListing>();
-            using (WebClient client = new WebClient())
+            var webRequest = UnityWebRequest.Get(PackageListApi);
+            var asyncOpRequest = webRequest.SendWebRequest();
+            
+            asyncOpRequest.completed += (obj) =>
             {
-                var address = new Uri(PackageListApi);
-                var response = client.DownloadString(address);
+                var response = string.Empty;
+
+#if UNITY_2020_1_OR_NEWER
+                if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+#else
+                if (webRequest.isNetworkError || webRequest.isHttpError)
+#endif
+                    Debug.Log(webRequest.error);
+                else
+                    response = webRequest.downloadHandler.text;
+
                 var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
                 packages.AddRange(resultSet.results);
-            }
-            loadedPackages = packages;
-            //Debug.Log($"Package listing update: {PackageListApi}");
+                loadedPackages = packages;
+                Debug.Log($"Package listing update: {PackageListApi}");
+            };
         }
 
         public static IEnumerable<PackageListing> LookupPackage(string name, int pageIndex = 1, bool logStart = true) => loadedPackages.Where(package => IsMatch(package, name)).ToArray();
