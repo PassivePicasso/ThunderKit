@@ -44,9 +44,8 @@ namespace ThunderKit.Core.Data
             {
                 var fileName = Path.GetFileName(file);
                 var outputPath = Combine("Library", "ScriptAssemblies", fileName);
-                if (File.Exists(outputPath)) File.Delete(outputPath);
 
-                File.Copy(file, outputPath, true);
+                FileUtil.ReplaceFile(file, outputPath);
             }
         }
 
