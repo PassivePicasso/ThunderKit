@@ -23,7 +23,7 @@ namespace ThunderKit.Core.UIElements
 
         private readonly static string[] SearchFolders = new string[] { "Assets", "Packages" };
 
-        static Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>();
+        static Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
 
         public static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");
 
