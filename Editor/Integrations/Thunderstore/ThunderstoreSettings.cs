@@ -23,6 +23,9 @@ namespace ThunderKit.Integrations.Thunderstore
         [SerializeField]
         public string ThunderstoreUrl = "https://thunderstore.io";
 
+        [SerializeField]
+        public List<PackageListing> LoadedPages;
+
         public class StringValueChangeArgs : EventArgs
         {
             public string newValue;

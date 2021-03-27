@@ -20,29 +20,27 @@ namespace ThunderKit.Integrations.Thunderstore
     {
         static string PackageListApi => ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl + "/api/v1/package";
 
-        internal static List<PackageListing> loadedPackages;
-
         [InitializeOnLoadMethod]
         public static void LoadPages()
         {
-            ThunderstoreSettings.OnThunderstoreUrlChanged -= LoadPages;
-            ThunderstoreSettings.OnThunderstoreUrlChanged += LoadPages;
+            OnThunderstoreUrlChanged -= LoadPages;
+            OnThunderstoreUrlChanged += LoadPages;
             ReloadPages();
         }
 
-        static double timeSinceStartup;
+        static double lastLoadRequestTime;
 
         public static void LoadPages(object sender, StringValueChangeArgs value)
         {
-            timeSinceStartup = EditorApplication.timeSinceStartup;
+            lastLoadRequestTime = EditorApplication.timeSinceStartup;
             EditorApplication.update -= WaitUpdate;
             EditorApplication.update += WaitUpdate;
         }
 
         private static void WaitUpdate()
         {
-            var timeElapsed = EditorApplication.timeSinceStartup - timeSinceStartup;
-            if (timeElapsed > 2)
+            var timeElapsed = EditorApplication.timeSinceStartup - lastLoadRequestTime;
+            if (timeElapsed > 60)
             {
                 EditorApplication.update -= WaitUpdate;
                 ReloadPages();
@@ -70,12 +68,18 @@ namespace ThunderKit.Integrations.Thunderstore
 
                 var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
                 packages.AddRange(resultSet.results);
-                loadedPackages = packages;
+                var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
+                settings.LoadedPages = packages;
+                EditorUtility.SetDirty(settings);
                 Debug.Log($"Package listing update: {PackageListApi}");
             };
         }
 
-        public static IEnumerable<PackageListing> LookupPackage(string name, int pageIndex = 1, bool logStart = true) => loadedPackages.Where(package => IsMatch(package, name)).ToArray();
+        public static IEnumerable<PackageListing> LookupPackage(string name, int pageIndex = 1, bool logStart = true)
+        {
+            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
+            return settings.LoadedPages.Where(package => IsMatch(package, name)).ToArray();
+        }
 
         static bool IsMatch(PackageListing package, string name)
         {
