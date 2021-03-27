@@ -8,7 +8,7 @@ using Debug = UnityEngine.Debug;
 
 namespace ThunderKit.Core.Config
 {
-    using static ThunderKit.Core.Editor.Extensions;
+    using static ThunderKit.Common.PathExtensions;
     internal struct SwapPair
     {
         public string newFile;

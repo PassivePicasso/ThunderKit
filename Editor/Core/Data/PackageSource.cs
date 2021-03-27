@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
+using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests;
@@ -186,7 +188,7 @@ namespace ThunderKit.Core.Data
                 foreach (var assemblyPath in Directory.GetFiles(installable.group.PackageDirectory, "*.dll", SearchOption.AllDirectories))
                     PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
             }
-            var tempRoot = Path.Combine(Path.Combine("Assets", "ThunderKitSettings"), "Temp");
+            var tempRoot = PathExtensions.Combine("Assets", "ThunderKitSettings", "Temp");
             Directory.CreateDirectory(tempRoot);
             foreach (var installableForManifestCreation in installSet)
             {
@@ -220,7 +222,7 @@ namespace ThunderKit.Core.Data
                     var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetTempPath);
                     if (!manifest)
                     {
-                        var dependencyAssetPackagePath = Path.Combine(Path.Combine("Packages", installableDependency.dependencyId), $"{installableDependency.group.PackageName}.asset");
+                        var dependencyAssetPackagePath = PathExtensions.Combine("Packages", installableDependency.dependencyId, $"{installableDependency.group.PackageName}.asset");
                         manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetPackagePath);
                     }
                     if (!manifest)
