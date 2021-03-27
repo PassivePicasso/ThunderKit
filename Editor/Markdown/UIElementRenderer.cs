@@ -21,7 +21,7 @@ namespace ThunderKit.Markdown
     using static Helpers.VisualElementFactory;
     public class UIElementRenderer : RendererBase
     {
-        private static Regex LiteralSplitter = new Regex("^([\\S]+\\b\\S?)|^\\s+", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static Regex LiteralSplitter = new Regex(@"([\S]+\b)\S?", RegexOptions.Singleline | RegexOptions.Compiled);
         private readonly Stack<VisualElement> stack = new Stack<VisualElement>(128);
 
         public UIElementRenderer()
@@ -88,22 +88,17 @@ namespace ThunderKit.Markdown
         {
             AddInline(stack.Peek(), inline);
         }
-        public void WriteText(ref StringSlice initial)
+        public void WriteText(ref StringSlice slice)
         {
-            var slice = initial;
-            int safetyBreak = 0;
+            if (slice.IsEmpty)
+                return;
 
-            while (++safetyBreak < 10 && !slice.IsEmpty)
+            var match = LiteralSplitter.Match(slice.Text, slice.Start, slice.Length);
+            while (match.Success)
             {
-                var match = LiteralSplitter.Match(slice.Text, slice.Start, slice.Length);
-
-                while (match.Success)
+                string value = match.Value;
+                if (!string.IsNullOrEmpty(value))
                 {
-                    string value = match.Value;
-
-                    safetyBreak = 0;
-                    slice.Start += value.Length;
-
                     var element = GetTextElement<Label>(value, "inline");
 
                     match = match.NextMatch();
@@ -112,8 +107,6 @@ namespace ThunderKit.Markdown
 
                     WriteInline(element);
                 }
-
-                slice.Start += 1;
             }
         }
 
