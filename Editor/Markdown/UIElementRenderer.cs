@@ -92,24 +92,28 @@ namespace ThunderKit.Markdown
         {
             var slice = initial;
             int safetyBreak = 0;
+
             while (++safetyBreak < 10 && !slice.IsEmpty)
             {
                 var match = LiteralSplitter.Match(slice.Text, slice.Start, slice.Length);
-                string value = match.Success ? match.Value : null;
 
-                if (!string.IsNullOrEmpty(value))
+                while (match.Success)
                 {
+                    string value = match.Value;
+
                     safetyBreak = 0;
-                    slice = new StringSlice(slice.Text, slice.Start + value.Length, slice.End);
+                    slice.Start += value.Length;
 
                     var element = GetTextElement<Label>(value, "inline");
-                    if (slice.IsEmpty || !LiteralSplitter.Match(slice.Text, slice.Start, slice.Length).Success)
+
+                    match = match.NextMatch();
+                    if (match.Success == false)
                         element.AddToClassList("last-inline");
 
                     WriteInline(element);
                 }
-                else
-                    slice = new StringSlice(slice.Text, slice.Start + 1, slice.End);
+
+                slice.Start += 1;
             }
         }
 
