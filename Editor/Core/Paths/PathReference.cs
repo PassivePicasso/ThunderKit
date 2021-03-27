@@ -23,8 +23,8 @@ namespace ThunderKit.Core.Paths
         {
             var result = input;
             var pathReferenceGuids = AssetDatabase.FindAssets($"t:{nameof(PathReference)}", Constants.AssetDatabaseFindFolders);
-            var pathReferencePaths = pathReferenceGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
-            var pathReferences = pathReferencePaths.Select(AssetDatabase.LoadAssetAtPath<PathReference>).ToArray();
+            var pathReferencePaths = pathReferenceGuids.Select(x => AssetDatabase.GUIDToAssetPath(x)).ToArray();
+            var pathReferences = pathReferencePaths.Select(x => AssetDatabase.LoadAssetAtPath<PathReference>(x)).ToArray();
             var pathReferenceDictionary = pathReferences.ToDictionary(pr => pr.name);
 
             Match match = referenceIdentifier.Match(result);
