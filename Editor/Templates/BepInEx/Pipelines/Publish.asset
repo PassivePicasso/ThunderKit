@@ -31,9 +31,7 @@ MonoBehaviour:
   m_Name: Package
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114192568730498312}
-  - {fileID: 114532665349920082}
-  - {fileID: 114367727377661556}
+  - {fileID: 114698388137127062}
   - {fileID: 114110618437809084}
   manifest: {fileID: 0}
 --- !u!114 &114110618437809084
@@ -53,11 +51,11 @@ MonoBehaviour:
   Active: 1
   PerManifest: 1
   ExcludedManifests: []
-  Compression: 0
+  ArchiveType: 1
   IncludeBaseDirectory: 0
-  Source: 
-  Output: 
---- !u!114 &114192568730498312
+  Source: <ManifestPluginStaging>
+  Output: <ManifestPluginStaging>.zip
+--- !u!114 &114698388137127062
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -66,48 +64,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5b20fac9c71fd64183cb7a8f359d73a, type: 3}
-  m_Name: StageAssemblies
+  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
+  m_Name: ExecutePipeline
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
   Active: 1
-  stageDebugDatabases: 0
-  preferPlayerBuilds: 0
---- !u!114 &114367727377661556
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b4f4581088b47744a114c282abc085d, type: 3}
-  m_Name: StageDependencies
-  m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  Active: 1
-  StagingPath: 
-  ExcludedManifests: []
---- !u!114 &114532665349920082
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 924ee63e6c016f14d8a1560b288f15a3, type: 3}
-  m_Name: StageAssetBundles
-  m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  Active: 1
-  AssetBundleBuildOptions: 1
-  buildTarget: 5
-  recurseDirectories: 0
-  simulate: 0
-  BundleArtifactPath: <AssetBundleStaging>
+  InheritRootManifest: 0
+  executePipeline: {fileID: 11400000, guid: de415cdbd4e965a45918136f9d614d1d, type: 2}
