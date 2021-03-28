@@ -24,7 +24,7 @@ namespace ThunderKit.Core.Editor.Windows
 
         private VisualElement packageView;
         //private Button searchBoxCancel;
-        private Button filtersButton;
+        private Button filtersButton, refreshButton;
         private TextField searchBox;
 
         private string targetVersion;
@@ -81,6 +81,7 @@ namespace ThunderKit.Core.Editor.Windows
             searchBox = rootVisualElement.Q<TextField>("tkpm-search-textfield");
             //searchBoxCancel = rootVisualElement.Q<Button>("tkpm-search-cancelbutton");
             filtersButton = rootVisualElement.Q<Button>("tkpm-filters-selector");
+            refreshButton = rootVisualElement.Q<Button>("tkpm-refresh-button");
 
             searchBox.RegisterCallback<ChangeEvent<string>>(OnSearchText);
             searchBox.SetValueWithoutNotify(SearchString);
@@ -88,11 +89,19 @@ namespace ThunderKit.Core.Editor.Windows
             filtersButton.clickable.clicked -= FiltersClicked;
             filtersButton.clickable.clicked += FiltersClicked;
 
+            refreshButton.clickable.clicked -= RefreshClicked;
+            refreshButton.clickable.clicked += RefreshClicked;
+
             GetTemplateInstance("PackageView", packageView);
             ConstructPackageSourceList(packageSources);
 
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssets();
+        }
+
+        private void RefreshClicked()
+        {
+            PackageSource.LoadAllSources();
         }
 
         private void ConstructPackageSourceList(PackageSource[] packageSources)
