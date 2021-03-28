@@ -56,7 +56,29 @@ MonoBehaviour:
   - {fileID: -5465487307450690123}
   - {fileID: 7527256621150178074}
   - {fileID: 2078919326612615040}
+  - {fileID: 114803605343111210}
   manifest: {fileID: 0}
+--- !u!114 &114803605343111210
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 0
+  PerManifest: 0
+  ExcludedManifests: []
+  Recursive: 0
+  SourceRequired: 0
+  Source: <BepInExConfig>
+  Destination: <BepInEx_Config_Output>
 --- !u!114 &2078919326612615040
 MonoBehaviour:
   m_ObjectHideFlags: 1
