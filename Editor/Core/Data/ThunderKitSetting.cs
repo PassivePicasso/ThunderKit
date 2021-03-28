@@ -19,7 +19,6 @@ namespace ThunderKit.Core.Data
     {
         public static T GetOrCreateSettings<T>() where T : ThunderKitSetting
         {
-
             string assetPath = $"Assets/ThunderKitSettings/{typeof(T).Name}.asset";
             Directory.CreateDirectory(Path.GetDirectoryName(assetPath));
             return ScriptableHelper.EnsureAsset<T>(assetPath, settings => settings.Initialize());

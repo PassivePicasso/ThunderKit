@@ -31,7 +31,6 @@ namespace ThunderKit.Editor.Core.Data
         private static void ShowSettings()
         {
             EditorApplication.update -= ShowSettings;
-            var window = EditorWindow.GetWindow<Settings>();
             Settings.ShowSettings();
             var settings = GetOrCreateSettings<SettingsWindowData>();
             settings.FirstLoad = false;

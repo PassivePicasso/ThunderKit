@@ -53,7 +53,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         {
             Directory.CreateDirectory(outputPath);
             var targetFiles = from pattern in patterns
-                              from file in Directory.EnumerateFiles(path, pattern, SearchOption.AllDirectories)
+                              from file in Directory.GetFiles(path, pattern, SearchOption.AllDirectories)
                               select file;
             foreach (var file in targetFiles)
             {

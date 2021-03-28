@@ -36,10 +36,13 @@ namespace ThunderKit.Core.Windows
             base.OnEnable();
 
             var pageList = rootVisualElement.Q("page-list");
-            var pageFiles = Directory.EnumerateFiles($"{DocumentationRoot}/topics", "*.uxml", SearchOption.AllDirectories)
-                                     .OrderBy(dir => Path.GetDirectoryName(dir))
-                                     .ThenBy(path => Path.GetFileNameWithoutExtension(path))
-                                     .ToArray();
+            var topicsFileGuids = AssetDatabase.FindAssets($"t:{nameof(VisualTreeAsset)}", new string[] { $"{DocumentationRoot}/topics" });
+            var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            var uxmlTopics = topicsFilePaths.Distinct().ToArray();
+            var pageFiles = uxmlTopics
+                .OrderBy(dir => Path.GetDirectoryName(dir))
+                .ThenBy(path => Path.GetFileNameWithoutExtension(path))
+                .ToArray();
             pageList.RegisterCallback<KeyDownEvent>(OnNavigate);
             pageList.Clear();
 
@@ -53,7 +56,7 @@ namespace ThunderKit.Core.Windows
 
                 var fullParentPageName = GetPageName(containingDirectory);
                 var fullPageName = GetPageName(pageNamePath);
-                var parentPage = pages.ContainsKey(fullParentPageName) ? pages[fullParentPageName] : null;
+                var parentPage = pages.TryGetValue(fullParentPageName, out var tempPage) ? tempPage : null;
 
                 int pageDepth = 0;
                 if (parentPage != null) pageDepth = parentPage.depth + 1;

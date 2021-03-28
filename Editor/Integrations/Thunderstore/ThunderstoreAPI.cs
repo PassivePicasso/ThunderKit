@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
@@ -19,50 +19,39 @@ namespace ThunderKit.Integrations.Thunderstore
     {
         static string PackageListApi => ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl + "/api/v1/package";
 
-        internal static List<PackageListing> loadedPackages;
-
-        [InitializeOnLoadMethod]
-        public static void LoadPages()
-        {
-            ThunderstoreSettings.OnThunderstoreUrlChanged -= LoadPages;
-            ThunderstoreSettings.OnThunderstoreUrlChanged += LoadPages;
-            _ = ReloadPages();
-        }
-
-        static double timeSinceStartup;
-
-        public static void LoadPages(object sender, (string newValue, string oldValue) value)
-        {
-            timeSinceStartup = EditorApplication.timeSinceStartup;
-            EditorApplication.update -= WaitUpdate;
-            EditorApplication.update += WaitUpdate;
-        }
-
-        private static void WaitUpdate()
-        {
-            var timeElapsed = EditorApplication.timeSinceStartup - timeSinceStartup;
-            if (timeElapsed > 2)
-            {
-                EditorApplication.update -= WaitUpdate;
-                _ = ReloadPages();
-            }
-        }
-
-        public static async Task ReloadPages()
+        public static void ReloadPages()
         {
             var packages = new List<PackageListing>();
-            using (WebClient client = new WebClient())
+            var webRequest = UnityWebRequest.Get(PackageListApi);
+            var asyncOpRequest = webRequest.SendWebRequest();
+            
+            asyncOpRequest.completed += (obj) =>
             {
-                var address = new Uri(PackageListApi);
-                var response = await client.DownloadStringTaskAsync(address);
+                var response = string.Empty;
+
+#if UNITY_2020_1_OR_NEWER
+                if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+#else
+                if (webRequest.isNetworkError || webRequest.isHttpError)
+#endif
+                    Debug.Log(webRequest.error);
+                else
+                    response = webRequest.downloadHandler.text;
+
                 var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
                 packages.AddRange(resultSet.results);
-            }
-            loadedPackages = packages;
-            //Debug.Log($"Package listing update: {PackageListApi}");
+                var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
+                settings.LoadedPages = packages;
+                EditorUtility.SetDirty(settings);
+                Debug.Log($"Package listing update: {PackageListApi}");
+            };
         }
 
-        public static IEnumerable<PackageListing> LookupPackage(string name, int pageIndex = 1, bool logStart = true) => loadedPackages.Where(package => IsMatch(package, name)).ToArray();
+        public static IEnumerable<PackageListing> LookupPackage(string name, int pageIndex = 1, bool logStart = true)
+        {
+            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
+            return settings.LoadedPages.Where(package => IsMatch(package, name)).ToArray();
+        }
 
         static bool IsMatch(PackageListing package, string name)
         {
@@ -76,25 +65,14 @@ namespace ThunderKit.Integrations.Thunderstore
             return nameMatch || fullNameMatch || latestFullNameMatch;
         }
 
-        public static Task<string> DownloadPackageAsync(PackageListing package, string filePath)
-        {
-            using (WebClient WebClient = new WebClient())
-            {
-                var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
-
-                return WebClient.DownloadFileTaskAsync(latest.download_url, filePath).ContinueWith(t => filePath);
-            }
-        }
-
         public static void DownloadLatestPackage(PackageListing package, string filePath)
         {
             DownloadPackage(package.versions.OrderByDescending(pck => pck.version_number).First(), filePath);
         }
 
-        public static void DownloadPackage(PackageVersion package, string filePath)
+        public static UnityWebRequestAsyncOperation DownloadPackage(PackageVersion package, string filePath)
         {
-            PackageHelper.DownloadPackage(package.download_url, filePath);
+            return PackageHelper.DownloadPackage(package.download_url, filePath);
         }
-
     }
 }

@@ -90,10 +90,11 @@ namespace ThunderKit.Core.Editor.Windows
         {
             if (scriptList != null)
             {
+                string searchString = SearchString ?? string.Empty;
 
                 monoScripts = Resources.FindObjectsOfTypeAll<MonoScript>()
                                            .Where(filter)
-                                           .Where(ms => ms.name.ToLower().Contains((SearchString ?? string.Empty).ToLower()))
+                                           .Where(ms => ms.name.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0)
                                            .OrderBy(ms => ms.name)
                                            .ToArray();
                 scriptList.itemsSource = monoScripts;
@@ -233,7 +234,7 @@ namespace ThunderKit.Core.Editor.Windows
         {
             string targetPath = string.IsNullOrEmpty(ScriptPath) ? "Assets" : Path.Combine("Assets", ScriptPath);
             var folder = AssetDatabase.IsValidFolder(targetPath) ? targetPath : Path.GetDirectoryName(targetPath);
-            folderList.itemsSource = Directory.EnumerateDirectories(folder, "*", SearchOption.TopDirectoryOnly).Select(Path.GetFileName).Where(f => !f.StartsWith(".")).ToArray();
+            folderList.itemsSource = Directory.GetDirectories(folder, "*", SearchOption.TopDirectoryOnly).Select(Path.GetFileName).Where(f => !f.StartsWith(".")).ToArray();
         }
 
         VisualElement MakeFolderView()
@@ -244,17 +245,18 @@ namespace ThunderKit.Core.Editor.Windows
             {
                 ScriptPath = $"{ScriptPath}{label.text}/";
                 nameField.value = ScriptPath;
-                nameField.RegisterCallback<FocusEvent>(OnNameFieldFocus);
-                void OnNameFieldFocus(FocusEvent evt)
+
+                EventCallback<FocusEvent> onNameFieldFocus = null;
+                onNameFieldFocus = (FocusEvent evt) =>
                 {
-                    nameField.UnregisterCallback<FocusEvent>(OnNameFieldFocus);
+                    nameField.UnregisterCallback(onNameFieldFocus);
                     nameField.SelectRange(nameField.value.Length, 0);
-                }
+                };
+                nameField.RegisterCallback(onNameFieldFocus);
                 nameField.Focus();
             }));
             return folderView;
         }
-
 
         private void OnCreateScript(EventBase obj)
         {

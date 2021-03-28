@@ -1,8 +1,7 @@
-﻿using System.IO;
-using System.IO.Compression;
+﻿using SharpCompress.Archives;
+using SharpCompress.Readers;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor;
 using UnityEditor;
@@ -13,10 +12,19 @@ namespace ThunderKit.Integrations.Thunderstore
     public class ThunderstoreSource : PackageSource
     {
         private static string CachePath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
+
         [InitializeOnLoadMethod]
-        public static async Task Initialize()
+        public static void SetupInitialization()
         {
-            await ThunderstoreAPI.ReloadPages();
+            PackageSource.InitializeSources -= PackageSource_InitializeSources;
+            PackageSource.InitializeSources += PackageSource_InitializeSources;
+        }
+
+        [InitializeOnLoadMethod]
+        public static void Initialize()
+        {
+            AssetDatabase.DeleteAsset(CachePath);
+            ThunderstoreAPI.ReloadPages();
 
             var isNew = false;
             var source = ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath, so =>
@@ -25,18 +33,14 @@ namespace ThunderKit.Integrations.Thunderstore
             });
             if (isNew)
             {
-                source.LoadPackages();
                 source.hideFlags = UnityEngine.HideFlags.NotEditable;
-                EditorUtility.SetDirty(source);
-                AssetDatabase.SaveAssets();
+                source.LoadPackages();
             }
         }
 
-        [MenuItem("Tools/ThunderKit/Regenerate Thunderstore PackageSource")]
-        public static async Task Regenerate()
+        private static void PackageSource_InitializeSources(object sender, System.EventArgs e)
         {
-            AssetDatabase.DeleteAsset(CachePath);
-            await Initialize();
+            Initialize();
         }
 
         public override string Name => "Thunderstore";
@@ -51,41 +55,32 @@ namespace ThunderKit.Integrations.Thunderstore
             var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
             foreach (var tsp in orderByPinThenName)
             {
-                var versions = tsp.versions.Select(v => (v.version_number, v.full_name, v.dependencies));
+                var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies));
                 AddPackageGroup(tsp.owner, tsp.name, tsp.latest.description, tsp.full_name, tsp.categories, versions);
             }
         }
 
-        public override async Task OnInstallPackageFiles(PV version, string packageDirectory)
+        public override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
             var tsPackage = ThunderstoreAPI.LookupPackage(version.group.DependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
             var filePath = Path.Combine(packageDirectory, $"{tsPackageVersion.full_name}.zip");
 
-            ThunderstoreAPI.DownloadPackage(tsPackageVersion, filePath);
+            var asyncOp = ThunderstoreAPI.DownloadPackage(tsPackageVersion, filePath);
 
-            while (!File.Exists(filePath))
-                await Task.Delay(1);
-
-            using (var fileStream = File.OpenRead(filePath))
-            using (var archive = new ZipArchive(fileStream))
-                foreach (var entry in archive.Entries)
+            asyncOp.completed += (op) =>
+            {
+                using (var archive = ArchiveFactory.Open(filePath))
                 {
-                    var outputPath = Path.Combine(packageDirectory, entry.FullName);
-                    var outputDir = Path.GetDirectoryName(outputPath);
-                    if (entry.FullName.ToLower().EndsWith("/") || entry.FullName.ToLower().EndsWith("\\"))
-                    {
-                        if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
-                        continue;
-                    }
+                    foreach (var entry in archive.Entries.Where(entry => entry.IsDirectory))
+                        Directory.CreateDirectory(Path.Combine(packageDirectory, entry.Key));
 
-                    if (!Directory.Exists(outputDir)) Directory.CreateDirectory(outputDir);
-
-                    entry.ExtractToFile(outputPath);
+                    var extractOptions = new ExtractionOptions { ExtractFullPath = true, Overwrite = true };
+                    foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
+                        entry.WriteToDirectory(packageDirectory, extractOptions);
                 }
-
-            File.Delete(filePath);
+                File.Delete(filePath);
+            };
         }
-
     }
 }

@@ -35,7 +35,9 @@ namespace ThunderKit.Core.Editor.Inspectors
         {
             try
             {
+#pragma warning disable 0219
                 var targetObject = target as ComposableObject;
+#pragma warning restore 0219
                 Editors = new Dictionary<UnityEngine.Object, UnityEditor.Editor>();
             }
             catch
@@ -60,14 +62,10 @@ namespace ThunderKit.Core.Editor.Inspectors
             for (int i = 0; i < dataArray.arraySize; i++)
             {
                 var step = dataArray.GetArrayElementAtIndex(i);
-                var stepSo = new SerializedObject(step.objectReferenceValue);
                 var stepType = step.objectReferenceValue.GetType();
                 var element = step.objectReferenceValue as ComposableElement;
 
-                UnityEditor.Editor editor;
-                if (Editors.ContainsKey(step.objectReferenceValue))
-                    editor = Editors[step.objectReferenceValue];
-                else
+                if (!Editors.TryGetValue(step.objectReferenceValue, out var editor))
                     Editors[step.objectReferenceValue] = editor = CreateEditor(step.objectReferenceValue);
 
                 try
@@ -274,17 +272,7 @@ namespace ThunderKit.Core.Editor.Inspectors
         AddComposableElementWindow popup;
         void OnAddElementGUI(Rect rect, ComposableObject composableObject)
         {
-            bool Filter(MonoScript script)
-            {
-                var scriptClass = script.GetClass();
-                if (scriptClass == null) return false;
-                if (scriptClass.IsAbstract) return false;
-                if (scriptClass.GetCustomAttributes<HideFromScriptWindow>().Any()) return false;
-                if (!composableObject.SupportsType(scriptClass)) return false;
-
-                return true;
-            }
-            ScriptableObject CreateFromScript(MonoScript script)
+            var createFromScript = new Func<MonoScript, ScriptableObject>((script) =>
             {
                 if (!script) return null;
                 if (script.GetClass() == null) return null;
@@ -293,14 +281,14 @@ namespace ThunderKit.Core.Editor.Inspectors
                 instance.name = script.GetClass().Name;
                 composableObject.InsertElement(instance, dataArray.arraySize);
                 return instance;
-            }
+            });
 
             if (AddComposableElementWindow.HasAssetToAdd())
-                AddComposableElementWindow.Backup(CreateFromScript);
+                AddComposableElementWindow.Backup(createFromScript);
 
             if (GUI.Button(rect, $"Add {ObjectNames.NicifyVariableName(composableObject.ElementType.Name)}"))
             {
-                if (popup && Event.current.modifiers.HasFlag(EventModifiers.Control))
+                if (popup && HasFlag(Event.current.modifiers, EventModifiers.Control))
                 {
                     popup.StaysOpen = false;
                     popup.Focus();
@@ -314,10 +302,19 @@ namespace ThunderKit.Core.Editor.Inspectors
                 windowRect = new Rect(minXY.x, minXY.y, windowRect.width, windowRect.height);
                 popup = CreateInstance<AddComposableElementWindow>();
                 popup.position = windowRect;
-                popup.StaysOpen = Event.current.modifiers.HasFlag(EventModifiers.Control);
+                popup.StaysOpen = HasFlag(Event.current.modifiers, EventModifiers.Control);
                 popup.ScriptTemplate = composableObject.ElementTemplate;
-                popup.Filter = Filter;
-                popup.Create = CreateFromScript;
+                popup.Filter = (MonoScript script) =>
+                {
+                    var scriptClass = script.GetClass();
+                    if (scriptClass == null) return false;
+                    if (scriptClass.IsAbstract) return false;
+                    if (scriptClass.GetCustomAttributes(true).OfType<HideFromScriptWindow>().Any()) return false;
+                    if (!composableObject.SupportsType(scriptClass)) return false;
+
+                    return true;
+                };
+                popup.Create = createFromScript;
 
                 var IconName = $"TK_{composableObject.GetType().Name}_Icon";
                 var icon = AssetDatabase.FindAssets($"t:Texture2D {IconName}", searchFolders)
@@ -328,6 +325,10 @@ namespace ThunderKit.Core.Editor.Inspectors
                 popup.ScriptIcon = icon;
                 popup.ShowPopup();
             }
+        }
+        public static bool HasFlag(EventModifiers source, EventModifiers flag)
+        {
+            return (source & flag) == flag;
         }
     }
 }

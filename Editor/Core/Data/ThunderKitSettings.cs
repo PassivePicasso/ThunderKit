@@ -20,6 +20,7 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.Data
 {
+    using static ThunderKit.Common.PathExtensions;
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ThunderKitSetting
     {
@@ -37,15 +38,14 @@ namespace ThunderKit.Core.Data
         static void LoadAllAssemblies(string somevalue, CompilerMessage[] message)
         {
             var targetFiles = from pattern in CopyFilePatterns
-                              from file in Directory.EnumerateFiles("Packages", pattern, SearchOption.AllDirectories)
+                              from file in Directory.GetFiles("Packages", pattern, SearchOption.AllDirectories)
                               select file;
             foreach (var file in targetFiles)
             {
                 var fileName = Path.GetFileName(file);
-                var outputPath = Path.Combine("Library", "ScriptAssemblies", fileName);
-                if (File.Exists(outputPath)) File.Delete(outputPath);
+                var outputPath = Combine("Library", "ScriptAssemblies", fileName);
 
-                File.Copy(file, outputPath, true);
+                FileUtil.ReplaceFile(file, outputPath);
             }
         }
 
