@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Stage
   m_EditorClassIdentifier: 
   Data:
-  - {fileID: 114643622350610336}
   - {fileID: 114520525572577756}
+  - {fileID: 114643622350610336}
   - {fileID: 114537630434205182}
   - {fileID: 114366308522735304}
   - {fileID: 114888345249068578}
@@ -51,7 +51,7 @@ MonoBehaviour:
   Active: 1
   AssetBundleBuildOptions: 1
   buildTarget: 5
-  recurseDirectories: 0
+  recurseDirectories: 1
   simulate: 0
   BundleArtifactPath: <AssetBundleStaging>
 --- !u!114 &114537630434205182
@@ -86,7 +86,7 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  stageDebugDatabases: 0
+  stageDebugDatabases: 1
   preferPlayerBuilds: 0
 --- !u!114 &114888345249068578
 MonoBehaviour:
