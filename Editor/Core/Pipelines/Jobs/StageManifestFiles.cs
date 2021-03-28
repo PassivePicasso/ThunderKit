@@ -21,20 +21,19 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
                 foreach (var outputPath in resolvedPaths)
                 {
-                    if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
-
                     foreach (var file in files.files)
                     {
                         if (typeof(Texture2D).IsAssignableFrom(file.GetType()))
                         {
                             var texture = file as Texture2D;
                             var textureAssetPath = AssetDatabase.GetAssetPath(file);
-                            File.WriteAllBytes(Path.Combine(outputPath, Path.GetFileName(textureAssetPath)), texture.EncodeToPNG());
+                            FileUtil.ReplaceFile(textureAssetPath, Path.Combine(outputPath, Path.GetFileName(textureAssetPath)));
+                            //File.WriteAllBytes(Path.Combine(outputPath, Path.GetFileName(textureAssetPath)), texture.EncodeToPNG());
                         }
                         else
                         {
                             var textAssetPath = AssetDatabase.GetAssetPath(file);
-                            File.Copy(textAssetPath, Path.Combine(outputPath, Path.GetFileName(textAssetPath)), true);
+                            FileUtil.ReplaceFile(textAssetPath, Path.Combine(outputPath, Path.GetFileName(textAssetPath)));
                         }
                     }
                 }
