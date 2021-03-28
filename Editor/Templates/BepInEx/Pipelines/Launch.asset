@@ -34,8 +34,8 @@ MonoBehaviour:
   ExcludedManifests: []
   Recursive: 1
   SourceRequired: 0
-  Source: <ManifestStagingRoot>/patchers
-  Destination: <BepInExPackDestination>/BepInEx/patchers
+  Source: <ManifestStagingRoot>/patchers/<ManifestName>
+  Destination: <BepInEx_Patchers>
 --- !u!114 &-1363876913999848018
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -155,8 +155,8 @@ MonoBehaviour:
   ExcludedManifests: []
   Recursive: 1
   SourceRequired: 0
-  Source: <ManifestStagingRoot>/plugins
-  Destination: <BepInExPackDestination>/BepInEx/plugins
+  Source: <ManifestStagingRoot>/plugins/<ManifestName>
+  Destination: <BepInEx_Plugins>
 --- !u!114 &2935167292843794703
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -212,8 +212,8 @@ MonoBehaviour:
   ExcludedManifests: []
   Recursive: 1
   SourceRequired: 0
-  Source: <ManifestStagingRoot>/monomod
-  Destination: <BepInExPackDestination>/BepInEx/monomod
+  Source: <ManifestStagingRoot>/monomod/<ManifestName>
+  Destination: <BepInEx_Monomod>
 --- !u!114 &8695962743389497748
 MonoBehaviour:
   m_ObjectHideFlags: 1
