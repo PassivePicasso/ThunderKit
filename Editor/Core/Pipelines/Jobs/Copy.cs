@@ -4,6 +4,7 @@ using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Editor;
 using UnityEditor;
+using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -11,6 +12,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     public class Copy : FlowPipelineJob
     {
         public bool Recursive;
+        [Tooltip("While enabled, will error when the source is not found")]
         public bool SourceRequired;
 
         [PathReferenceResolver]
@@ -30,7 +32,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (SourceRequired) throw e;
 
             }
-            if (SourceRequired && string.IsNullOrEmpty(source)) return;
+            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"Required {nameof(Source)} is empty");
+            if (!SourceRequired && string.IsNullOrEmpty(source)) return;
 
             var destination = Destination.Resolve(pipeline, this);
 

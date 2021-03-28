@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   PerManifest: 1
   ExcludedManifests: []
   Recursive: 1
@@ -70,8 +70,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
   m_Name: Copy
   m_EditorClassIdentifier: 
-  Errored: 1
-  ErrorMessage: No PathReference named "BepInExConfig" found in AssetDatabase
+  Errored: 0
+  ErrorMessage: 
   Active: 1
   PerManifest: 0
   ExcludedManifests: []
@@ -93,7 +93,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   PerManifest: 0
   ExcludedManifests: []
   Recursive: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   PerManifest: 1
   ExcludedManifests: []
   Recursive: 1
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   PerManifest: 0
   ExcludedManifests: []
   Recursive: 1
@@ -156,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   PerManifest: 1
   ExcludedManifests: []
   Recursive: 1
