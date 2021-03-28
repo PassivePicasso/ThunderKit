@@ -47,7 +47,7 @@ namespace ThunderKit.Integrations.Thunderstore
             };
         }
 
-        public static IEnumerable<PackageListing> LookupPackage(string name, int pageIndex = 1, bool logStart = true)
+        public static IEnumerable<PackageListing> LookupPackage(string name)
         {
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
             return settings.LoadedPages.Where(package => IsMatch(package, name)).ToArray();

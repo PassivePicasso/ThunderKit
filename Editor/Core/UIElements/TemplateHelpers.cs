@@ -19,11 +19,11 @@ namespace ThunderKit.Core.UIElements
 {
     public static class TemplateHelpers
     {
-        static bool IsTemplatePath(string path) => path.Contains("Packages/com.passivepicasso.thunderkit");
+        private static bool IsTemplatePath(string path) => path.Contains("Packages/com.passivepicasso.thunderkit");
 
         private readonly static string[] SearchFolders = new string[] { "Assets", "Packages" };
 
-        static Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
 
         public static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");
 

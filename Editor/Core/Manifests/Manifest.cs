@@ -25,7 +25,7 @@ namespace ThunderKit.Core.Manifests
 
         public IEnumerable<Manifest> EnumerateManifests()
         {
-            if (this?.Identity?.Dependencies == null)
+            if (!Identity || Identity.Dependencies == null)
                 return Enumerable.Empty<Manifest>();
 
             HashSet<Manifest> returned = new HashSet<Manifest>(this.Identity.Dependencies.SelectMany(x => x.EnumerateManifests()));

@@ -20,8 +20,8 @@ namespace ThunderKit.Core.Pipelines
 
         public Manifest manifest;
 
-        public Manifest[] manifests { get; private set; }
-        public IEnumerable<ManifestDatum> Datums => manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
+        public Manifest[] Manifests { get; private set; }
+        public IEnumerable<ManifestDatum> Datums => Manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
 
         public IEnumerable<PipelineJob> Jobs => Data.OfType<PipelineJob>();
 
@@ -45,11 +45,11 @@ namespace {0}
         private PipelineJob[] currentJobs;
         public int JobIndex { get; protected set; }
         public int ManifestIndex { get; set; }
-        public Manifest Manifest => manifests[ManifestIndex];
+        public Manifest Manifest => Manifests[ManifestIndex];
 
         public virtual void Execute()
         {
-            manifests = manifest.EnumerateManifests().ToArray();
+            Manifests = manifest.EnumerateManifests().ToArray();
             currentJobs = Jobs.Where(SupportsType).ToArray();
             for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
             {

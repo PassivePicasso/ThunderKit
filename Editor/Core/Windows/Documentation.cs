@@ -59,7 +59,7 @@ namespace ThunderKit.Core.Windows
                 var parentPage = pages.TryGetValue(fullParentPageName, out var tempPage) ? tempPage : null;
 
                 int pageDepth = 0;
-                if (parentPage != null) pageDepth = parentPage.depth + 1;
+                if (parentPage != null) pageDepth = parentPage.Depth + 1;
 
                 var pageEntry = new PageEntry(fileName, fullPageName, pagePath, pageDepth);
                 pageEntry.FoldOut.RegisterCallback<ChangeEvent<bool>>(OnToggle);
@@ -106,11 +106,11 @@ namespace ThunderKit.Core.Windows
             public Label Label;
             public string PagePath;
             public int ChildPageCount;
-            public int depth { get; private set; }
+            public int Depth { get; private set; }
             public PageEntry(string templateName, string name, string pagePath, int depth)
             {
                 this.name = name;
-                this.depth = depth;
+                this.Depth = depth;
                 PagePath = pagePath;
 
                 FoldOut = new Foldout();
@@ -133,7 +133,7 @@ namespace ThunderKit.Core.Windows
             protected override void OnStyleResolved(ICustomStyle style)
             {
                 base.OnStyleResolved(style);
-                float left = depth * 12;
+                float left = Depth * 12;
                 var paddingLeft = new StyleValue<float>(left);
                 this.style.paddingLeft = paddingLeft;
             }
@@ -169,7 +169,7 @@ namespace ThunderKit.Core.Windows
                 var newSelectedPage = pageList[newSelectedIndex];
                 while (newSelectedPage.ClassListContains(HiddenClass) && newSelectedIndex > -1 && newSelectedIndex < pageList.childCount)
                 {
-                    newSelectedIndex = newSelectedIndex + modifier;
+                    newSelectedIndex += modifier;
                     newSelectedPage = pageList[newSelectedIndex];
                 }
                 selectedPage.RemoveFromClassList(SelectedClass);
