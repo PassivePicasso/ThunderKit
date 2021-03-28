@@ -16,11 +16,12 @@ namespace ThunderKit.Core.Editor
             InternalEditorUtility.OpenFileAtLineExternal(scriptPath, -1);
 
         }
-        public static (string destinationPath, string nameSpace, string fileName) GetDetails(string typeFullName) => (
-                          destinationPath: Path.Combine("Assets", $"{typeFullName}.cs").Replace("\\", "/"),
-                          nameSpace: Path.GetDirectoryName(typeFullName).Replace('/', '.').Replace('\\', '.'),
-                          fileName: Path.GetFileNameWithoutExtension(typeFullName)
-                      );
+        public static void GetDetails(string typeFullName, out string destinationPath, out string nameSpace, out string fileName)
+        {
+            destinationPath = Path.Combine("Assets", $"{typeFullName}.cs").Replace("\\", "/");
+            nameSpace = Path.GetDirectoryName(typeFullName).Replace('/', '.').Replace('\\', '.');
+            fileName = Path.GetFileNameWithoutExtension(typeFullName);
+        }
 
         /// <summary>
         /// Generates a new script at the specified path.
@@ -30,7 +31,7 @@ namespace ThunderKit.Core.Editor
         /// <param name="newScriptPath">Path relative to the project's Assets folder</param>
         public static void GenerateAndLoadScript(string template, string newScriptPath)
         {
-            var (destinationPath, ns, fileName) = GetDetails(newScriptPath);
+            GetDetails(newScriptPath, out var destinationPath, out var ns, out var fileName);
 
             if (string.IsNullOrEmpty(template)) return;
 

@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Experimental.UIElements;
+using System.Linq;
 #if UNITY_2019
 using UnityEngine.UIElements;
 #elif UNITY_2018
@@ -12,6 +13,7 @@ using UnityEngine.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements.StyleSheets;
 #endif
 
+#pragma warning disable 0414
 namespace ThunderKit.Core.UIElements
 {
     internal static class PolyFillConstants
@@ -162,10 +164,9 @@ namespace ThunderKit.Core.UIElements
         UxmlStringAttributeDescription m_Path = new UxmlStringAttributeDescription { name = "path" };
         UxmlStringAttributeDescription m_Src = new UxmlStringAttributeDescription { name = "src" };
 
-        public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
-        {
-            get { yield break; }
-        }
+        public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
+            Enumerable.Empty<UxmlChildElementDescription>();
     }
 }
 #endif
+#pragma warning restore 0414

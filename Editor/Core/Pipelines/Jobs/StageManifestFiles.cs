@@ -13,26 +13,43 @@ namespace ThunderKit.Core.Pipelines.Jobs
     {
         public override void Execute(Pipeline pipeline)
         {
-            var query = from files in pipeline.Manifest.Data.OfType<Files>()
-                        from outputPath in files.StagingPaths.Select(path => path.Resolve(pipeline, this))
-                        select (files.files, outputPath);
+            var filesDatums = pipeline.Manifest.Data.OfType<Files>().ToArray();
 
-            foreach (var (files, outputPath) in query)
+            foreach (var files in filesDatums)
             {
-                if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+                var resolvedPaths = files.StagingPaths.Select(path => path.Resolve(pipeline, this)).ToArray();
 
-                foreach (var file in files)
+                foreach (var outputPath in resolvedPaths)
                 {
-                    switch (file)
+                    foreach (var file in files.files)
                     {
-                        case Texture2D texture:
-                            var textureAssetPath = AssetDatabase.GetAssetPath(file);
-                            File.WriteAllBytes(Path.Combine(outputPath, Path.GetFileName(textureAssetPath)), texture.EncodeToPNG());
-                            break;
-                        default:
-                            var textAssetPath = AssetDatabase.GetAssetPath(file);
-                            File.Copy(textAssetPath, Path.Combine(outputPath, Path.GetFileName(textAssetPath)), true);
-                            break;
+                        var sourcePath = AssetDatabase.GetAssetPath(file);
+                        string destPath = Path.Combine(outputPath, Path.GetFileName(sourcePath)).Replace("\\", "/");
+                        var isDirectory = AssetDatabase.IsValidFolder(sourcePath);
+                        if (isDirectory)
+                        {
+                            Directory.CreateDirectory(destPath);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                File.Delete(destPath);
+                            }
+                            catch { }//probably should rethrow some cases, such as access denied
+                            Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+                        }
+
+                        if (typeof(Texture2D).IsAssignableFrom(file.GetType()))
+                        {
+                            var texture = file as Texture2D;
+                            FileUtil.CopyFileOrDirectory(sourcePath, destPath);
+                            //File.WriteAllBytes(Path.Combine(outputPath, Path.GetFileName(textureAssetPath)), texture.EncodeToPNG());
+                        }
+                        else
+                        {
+                            FileUtil.CopyFileOrDirectory(sourcePath, destPath);
+                        }
                     }
                 }
             }

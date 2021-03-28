@@ -14,7 +14,8 @@ namespace ThunderKit.Core.Paths.Components
         public override string GetPath(PathReference output, Pipeline pipeline)
         {
             string resolvedPath = PathReference.ResolvePath(path, pipeline, this);
-            string first = Directory.EnumerateDirectories(resolvedPath, searchPattern, searchOption).First();
+
+            string first = Directory.GetDirectories(resolvedPath, searchPattern, searchOption).First();
             return first;
         }
     }

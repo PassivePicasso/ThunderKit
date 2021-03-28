@@ -34,7 +34,7 @@ namespace ThunderKit.Core.Editor.Windows
                                .GetProperty("rootVisualContainer", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if (rvc == null)
-                    rvc = rvcField.GetValue(this) as VisualElement;
+                    rvc = rvcField.GetValue(this, null) as VisualElement;
 
                 return rvc;
             }

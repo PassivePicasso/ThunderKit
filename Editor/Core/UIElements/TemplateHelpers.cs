@@ -23,9 +23,7 @@ namespace ThunderKit.Core.UIElements
 
         private readonly static string[] SearchFolders = new string[] { "Assets", "Packages" };
 
-        private static Regex versionRegex = new Regex("(\\d{4}\\.\\d+\\.\\d+)");
-
-        static Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>();
+        static Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
 
         public static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");
 
@@ -61,30 +59,25 @@ namespace ThunderKit.Core.UIElements
             return instance;
         }
 
-
+        const string editorVersion =
+#if UNITY_2020_1_OR_NEWER
+            "2020";
+#elif UNITY_2019_1_OR_NEWER
+            "2019";
+#elif UNITY_2018_1_OR_NEWER
+            "2018";
+#endif
         public static void AddSheet(VisualElement element, string templatePath, string modifier = "")
         {
-            var versionString = versionRegex.Match(Application.unityVersion).Groups[1].Value;
-            var version = new Version(versionString);
-            switch (version.Major)
+            string path = templatePath.Replace(".uxml", $"{modifier}_{editorVersion}.uss");
+            if (!File.Exists(path))
             {
-                case 2020 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2020.uss")):
-                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2020.uss"));
-                    break;
-
-                case 2019 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2019.uss")):
-                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2019.uss"));
-                    break;
-
-                case 2018 when File.Exists(templatePath.Replace(".uxml", $"{modifier}_2018.uss")):
-                    MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}_2018.uss"));
-                    break;
-
-                default:
-                    if (File.Exists(templatePath.Replace(".uxml", $"{modifier}.uss")))
-                        MultiVersionLoadStyleSheet(element, templatePath.Replace(".uxml", $"{modifier}.uss"));
-                    break;
+                path = templatePath.Replace(".uxml", $"{modifier}.uss");
+                if (!File.Exists(path))
+                    return;
             }
+            MultiVersionLoadStyleSheet(element, path);
+
         }
 
         private static void MultiVersionLoadStyleSheet(VisualElement element, string sheetPath)
@@ -99,18 +92,22 @@ namespace ThunderKit.Core.UIElements
 
         private static VisualTreeAsset LoadTemplate(string name, Func<string, bool> isTemplatePath)
         {
-            if (!templateCache.ContainsKey(name) || templateCache[name] == null)
-            {
-                var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
-                var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
-                var templatePath = assetPaths
-                    .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))
-                    .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
-                    .Where(isTemplatePath)
-                    .FirstOrDefault();
-                templateCache[name] = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
-            }
-            return templateCache[name];
+            if (templateCache.TryGetValue(name, out var asset) && asset != null)
+                return asset;
+
+            return templateCache[name] = CreateTemplate(name, isTemplatePath);
+        }
+
+        static VisualTreeAsset CreateTemplate(string name, Func<string, bool> isTemplatePath)
+        {
+            var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
+            var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
+            var templatePath = assetPaths
+                .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))
+                .Where(path => Path.GetExtension(path).Equals(".uxml", StringComparison.CurrentCultureIgnoreCase))
+                .Where(isTemplatePath)
+                .FirstOrDefault();
+            return AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(templatePath);
         }
 
 

@@ -43,8 +43,8 @@ namespace ThunderKit.Markdown.ObjectRenderers
             {
                 linkLabel.RegisterCallback<MouseUpEvent>(evt =>
                 {
-                    if (LinkInlineRenderer.SchemeLinkHandlers.ContainsKey(lowerScheme))
-                        LinkInlineRenderer.SchemeLinkHandlers[lowerScheme]?.Invoke(url);
+                    if (LinkInlineRenderer.SchemeLinkHandlers.TryGetValue(lowerScheme, out var handler))
+                        handler?.Invoke(url);
                 });
             }
             linkLabel.tooltip = url;

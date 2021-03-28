@@ -2,6 +2,9 @@ using System;
 using System.IO;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
+using ThunderKit.Core.Editor;
+using UnityEditor;
+using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -9,6 +12,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     public class Copy : FlowPipelineJob
     {
         public bool Recursive;
+        [Tooltip("While enabled, will error when the source is not found")]
         public bool SourceRequired;
 
         [PathReferenceResolver]
@@ -18,11 +22,22 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override void ExecuteInternal(Pipeline pipeline)
         {
-            var source = Source.Resolve(pipeline, this);
+            var source = string.Empty;
+            try
+            {
+                source = Source.Resolve(pipeline, this);
+            }
+            catch (Exception e)
+            {
+                if (SourceRequired) throw e;
+
+            }
+            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"Required {nameof(Source)} is empty");
+            if (!SourceRequired && string.IsNullOrEmpty(source)) return;
+
             var destination = Destination.Resolve(pipeline, this);
 
-            bool sourceIsFile = false,
-            destinationIsFile = false;
+            bool sourceIsFile = false;
 
             try
             {
@@ -32,36 +47,17 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 if (SourceRequired) throw e;
             }
-            try
-            {
-                destinationIsFile = !File.GetAttributes(destination).HasFlag(FileAttributes.Directory);
-            }
-            catch { /* A catch is a valid result of this check */ }
 
             if (Recursive)
             {
                 if (!Directory.Exists(source)) return;
                 else if (sourceIsFile)
                     throw new ArgumentException($"Source Error: Expected Directory, Recieved File {source}");
-                else if (destinationIsFile)
-                    throw new ArgumentException($"Destination Error: Expected Directory, Recieved File {source}");
             }
 
-            if (!destinationIsFile) Directory.CreateDirectory(destination);
+            if (Recursive) FileUtil.ReplaceDirectory(source, destination);
             else
-                Directory.CreateDirectory(Path.GetDirectoryName(destination));
-
-            if (Recursive) CopyFilesRecursively(pipeline, source, destination);
-            else
-                File.Copy(source, destination, true);
-        }
-        public static void CopyFilesRecursively(Pipeline pipeline, string source, string destination)
-        {
-            foreach (string dirPath in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
-                Directory.CreateDirectory(dirPath.Replace(source, destination));
-
-            foreach (string newPath in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
-                File.Copy(newPath, newPath.Replace(source, destination), true);
+                FileUtil.ReplaceFile(source, destination);
         }
     }
 }

@@ -20,9 +20,11 @@ namespace ThunderKit.Core.Editor.Windows
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class PackageManager : TemplatedWindow
     {
+        private static readonly PackageVersion[] EmptyPackages = new PackageVersion[0];
+
         private VisualElement packageView;
-        private Button searchBoxCancel;
-        private Button filtersButton;
+        //private Button searchBoxCancel;
+        private Button filtersButton, refreshButton;
         private TextField searchBox;
 
         private string targetVersion;
@@ -37,10 +39,38 @@ namespace ThunderKit.Core.Editor.Windows
 
         public override void OnEnable()
         {
-            Construct();
+            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
+                                  .Select(AssetDatabase.GUIDToAssetPath)
+                                  .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
+                                  .ToArray();
+
+
+            Construct(packageSources);
+
+            PackageSource.SourcesInitialized += PackageSource_SourceInitialized;
+            PackageSource.LoadAllSources();
         }
 
-        private void Construct()
+        private void OnDestroy()
+        {
+            PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
+        }
+
+        private void PackageSource_SourceInitialized(object sender, EventArgs e)
+        {
+            if(rootVisualElement == null)
+            {
+                PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
+                return;
+            }
+            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
+                      .Select(AssetDatabase.GUIDToAssetPath)
+                      .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
+                      .ToArray();
+            ConstructPackageSourceList(packageSources);
+        }
+
+        private void Construct(PackageSource[] packageSources)
         {
             titleContent = new GUIContent("Packages", ThunderKitIcon, "");
             rootVisualElement.Clear();
@@ -49,8 +79,9 @@ namespace ThunderKit.Core.Editor.Windows
 
             packageView = rootVisualElement.Q("tkpm-package-view");
             searchBox = rootVisualElement.Q<TextField>("tkpm-search-textfield");
-            searchBoxCancel = rootVisualElement.Q<Button>("tkpm-search-cancelbutton");
+            //searchBoxCancel = rootVisualElement.Q<Button>("tkpm-search-cancelbutton");
             filtersButton = rootVisualElement.Q<Button>("tkpm-filters-selector");
+            refreshButton = rootVisualElement.Q<Button>("tkpm-refresh-button");
 
             searchBox.RegisterCallback<ChangeEvent<string>>(OnSearchText);
             searchBox.SetValueWithoutNotify(SearchString);
@@ -58,13 +89,26 @@ namespace ThunderKit.Core.Editor.Windows
             filtersButton.clickable.clicked -= FiltersClicked;
             filtersButton.clickable.clicked += FiltersClicked;
 
-            GetTemplateInstance("PackageView", packageView);
+            refreshButton.clickable.clicked -= RefreshClicked;
+            refreshButton.clickable.clicked += RefreshClicked;
 
+            GetTemplateInstance("PackageView", packageView);
+            ConstructPackageSourceList(packageSources);
+
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+        }
+
+        private void RefreshClicked()
+        {
+            PackageSource.LoadAllSources();
+        }
+
+        private void ConstructPackageSourceList(PackageSource[] packageSources)
+        {
             var packageSourceList = rootVisualElement.Q(name = "tkpm-package-source-list");
-            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
-                                              .Select(AssetDatabase.GUIDToAssetPath)
-                                              .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
-                                              .ToArray();
+
+            packageSourceList.Clear();
 
             for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
             {
@@ -75,14 +119,13 @@ namespace ThunderKit.Core.Editor.Windows
                 var groupName = $"tkpm-package-source-{source.Name}";
                 packageSource.RemoveFromClassList("grow");
                 foldOut.value = false;
-                foldOut.RegisterCallback<ChangeEvent<bool>>(OnFold);
-                void OnFold(ChangeEvent<bool> evt)
+                foldOut.RegisterCallback<ChangeEvent<bool>>((evt) =>
                 {
                     if (evt.newValue)
                         packageSource.AddToClassList("grow");
                     else
                         packageSource.RemoveFromClassList("grow");
-                }
+                });
 
                 packageSource.AddToClassList("tkpm-package-source");
                 packageSource.name = groupName;
@@ -98,22 +141,18 @@ namespace ThunderKit.Core.Editor.Windows
                 packageList.onSelectionChanged += PackageList_onSelectionChanged;
 #endif
 
-                packageList.makeItem = MakePackage;
-                VisualElement MakePackage()
+                packageList.makeItem = () =>
                 {
                     var packageInstance = GetTemplateInstance("Package");
                     packageInstance.userData = packageList;
                     packageInstance.AddToClassList("tkpm-package-option");
                     return packageInstance;
-                }
+                };
                 packageList.bindItem = BindPackage;
 
                 packageSourceList.Add(packageSource);
             }
             UpdatePackageList();
-
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssets();
         }
 
         private void FiltersClicked()
@@ -183,7 +222,7 @@ namespace ThunderKit.Core.Editor.Windows
                 .Select(kvp => kvp.Key.Substring(kvp.Key.LastIndexOf('/') + 1))
                 .ToArray();
 
-            var hasTags = enabledTags.Any() ? packages.Where(pkg => enabledTags.All(tag => pkg.Tags.Contains(tag))) : packages;
+            var hasTags = enabledTags.Any() ? packages.Where(pkg => enabledTags.All(tag => ArrayUtility.Contains(pkg.Tags, tag))) : packages;
 
             var hasString = hasTags.Where(pkg => pkg.HasString(SearchString ?? string.Empty));
 
@@ -215,7 +254,7 @@ namespace ThunderKit.Core.Editor.Windows
         }
         private void PackageList_onSelectionChanged(IEnumerable<object> obj)
         {
-            var selection = obj.OfType<PackageGroup>().First();
+            var selection = obj.OfType<PackageGroup>().FirstOrDefault();
             if (selection == null) return;
             BindPackageView(selection);
         }
@@ -233,7 +272,7 @@ namespace ThunderKit.Core.Editor.Windows
             RepopulateLabels(packageView.Q("tkpm-package-tags"), selection.Tags, "tag");
 
             var selectedVersion = selection[targetVersion];
-            var pvDependencies = selectedVersion.dependencies ?? Array.Empty<PackageVersion>();
+            var pvDependencies = selectedVersion.dependencies ?? EmptyPackages;
             var dependencyIds = new List<string>();
             foreach (var pvd in pvDependencies)
             {
@@ -294,7 +333,7 @@ namespace ThunderKit.Core.Editor.Windows
                 AssetDatabase.Refresh();
             }
             else
-                _ = selection.Source.InstallPackage(selection, targetVersion);
+                selection.Source.InstallPackage(selection, targetVersion);
         }
         private void OnInspectorUpdate()
         {
@@ -328,16 +367,27 @@ namespace ThunderKit.Core.Editor.Windows
             var menu = new GenericMenu();
             foreach (var version in selection.Versions)
             {
-                menu.AddItem(new GUIContent(version.version), version.Equals(targetVersion), SelectVersion, (version.version, versionButton));
+                menu.AddItem(new GUIContent(version.version), version.Equals(targetVersion), SelectVersion, new SelectData(version.version, versionButton));
             }
             menu.ShowAsContext();
         }
 
+        private class SelectData
+        {
+            public string version;
+            public Button versionButton;
+            public SelectData(string version, Button versionButton)
+            {
+                this.version = version;
+                this.versionButton = versionButton;
+            }
+        }
+
         void SelectVersion(object userData)
         {
-            var (version, versionButton) = ((string, Button))userData;
+            var selectData = (SelectData)userData;
 
-            versionButton.text = targetVersion = version;
+            selectData.versionButton.text = targetVersion = selectData.version;
         }
         #endregion
 
