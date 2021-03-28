@@ -20,33 +20,6 @@ namespace ThunderKit.Integrations.Thunderstore
     {
         static string PackageListApi => ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl + "/api/v1/package";
 
-        [InitializeOnLoadMethod]
-        public static void LoadPages()
-        {
-            OnThunderstoreUrlChanged -= LoadPages;
-            OnThunderstoreUrlChanged += LoadPages;
-            ReloadPages();
-        }
-
-        static double lastLoadRequestTime;
-
-        public static void LoadPages(object sender, StringValueChangeArgs value)
-        {
-            lastLoadRequestTime = EditorApplication.timeSinceStartup;
-            EditorApplication.update -= WaitUpdate;
-            EditorApplication.update += WaitUpdate;
-        }
-
-        private static void WaitUpdate()
-        {
-            var timeElapsed = EditorApplication.timeSinceStartup - lastLoadRequestTime;
-            if (timeElapsed > 60)
-            {
-                EditorApplication.update -= WaitUpdate;
-                ReloadPages();
-            }
-        }
-
         public static void ReloadPages()
         {
             var packages = new List<PackageListing>();
@@ -71,7 +44,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
                 settings.LoadedPages = packages;
                 EditorUtility.SetDirty(settings);
-                //Debug.Log($"Package listing update: {PackageListApi}");
+                Debug.Log($"Package listing update: {PackageListApi}");
             };
         }
 
