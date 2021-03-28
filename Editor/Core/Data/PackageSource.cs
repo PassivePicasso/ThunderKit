@@ -15,6 +15,15 @@ namespace ThunderKit.Core.Data
 {
     public abstract class PackageSource : ScriptableObject, IEquatable<PackageSource>
     {
+        public static event EventHandler SourcesInitialized;
+        public static event EventHandler InitializeSources;
+
+        public static void LoadAllSources()
+        {
+            InitializeSources?.Invoke(null, EventArgs.Empty);
+            SourcesInitialized?.Invoke(null, EventArgs.Empty);
+        }
+
         [Serializable]
         public class PackageVersionInfo
         {
@@ -53,6 +62,8 @@ namespace ThunderKit.Core.Data
                 return sourceGroups;
             }
         }
+
+        
 
         public DateTime lastUpdateTime;
         public abstract string Name { get; }
@@ -126,12 +137,28 @@ namespace ThunderKit.Core.Data
         /// <param name="dependencyId">Versioned Dependency Id</param>
         /// <returns>Group DependencyId which dependencyId is mapped to</returns>
         protected abstract string VersionIdToGroupId(string dependencyId);
+
+
+        internal void Clear()
+        {
+            if (Packages == null) return;
+            foreach (var package in Packages)
+            {
+                AssetDatabase.RemoveObjectFromAsset(package);
+                DestroyImmediate(package);
+            }
+            Packages.Clear();
+        }
+
         public void LoadPackages()
         {
+            Clear();
             OnLoadPackages();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            var versionMap = Packages.Where(pkgGrp => pkgGrp?.Versions != null).SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => new KeyValuePair<PackageGroup, PackageVersion>(pkgGrp, pkgVer))).ToDictionary(ver => ver.Value.dependencyId);
+            var validVersions = Packages.Where(pkgGrp => pkgGrp?.Versions != null);
+            var versionGroupMaps = validVersions.SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => new KeyValuePair<PackageGroup, PackageVersion>(pkgGrp, pkgVer)));
+            var versionMap = versionGroupMaps.Distinct().ToDictionary(ver => ver.Value.dependencyId);
 
             foreach (var packageGroup in Packages)
             {
