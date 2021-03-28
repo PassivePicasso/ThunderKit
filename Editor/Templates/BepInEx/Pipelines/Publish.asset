@@ -70,5 +70,5 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  InheritRootManifest: 0
+  OverrideManifest: 1
   executePipeline: {fileID: 11400000, guid: de415cdbd4e965a45918136f9d614d1d, type: 2}
