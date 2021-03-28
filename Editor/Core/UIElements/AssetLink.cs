@@ -38,8 +38,8 @@ namespace ThunderKit.Core.UIElements
 
         public new class UxmlTraits : Label.UxmlTraits
         {
-            private UxmlStringAttributeDescription m_assetPath = new UxmlStringAttributeDescription { name = "asset-path" };
-            private UxmlBoolAttributeDescription m_selectAsset = new UxmlBoolAttributeDescription { name = "select-asset" };
+            private readonly UxmlStringAttributeDescription m_assetPath = new UxmlStringAttributeDescription { name = "asset-path" };
+            private readonly UxmlBoolAttributeDescription m_selectAsset = new UxmlBoolAttributeDescription { name = "select-asset" };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {

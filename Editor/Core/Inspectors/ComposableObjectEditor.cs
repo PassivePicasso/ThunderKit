@@ -17,7 +17,7 @@ namespace ThunderKit.Core.Editor.Inspectors
     {
         protected static GUISkin EditorSkin;
 
-        static string[] searchFolders = new[] { "Assets", "Packages" };
+        static readonly string[] searchFolders = new[] { "Assets", "Packages" };
         public class StepData
         {
             public SerializedProperty step;
@@ -35,9 +35,7 @@ namespace ThunderKit.Core.Editor.Inspectors
         {
             try
             {
-#pragma warning disable 0219
                 var targetObject = target as ComposableObject;
-#pragma warning restore 0219
                 Editors = new Dictionary<UnityEngine.Object, UnityEditor.Editor>();
             }
             catch
@@ -154,8 +152,8 @@ namespace ThunderKit.Core.Editor.Inspectors
 
             if (ClipboardItem && currentroot.ElementType.IsAssignableFrom(ClipboardItem.GetType()))
             {
-                menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem?.name)} above"), false, PasteNewAbove, stepData);
-                menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem?.name)}"), false, PasteNew, stepData);
+                menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem.name)} above"), false, PasteNewAbove, stepData);
+                menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem.name)}"), false, PasteNew, stepData);
             }
             else
                 menu.AddDisabledItem(new GUIContent($"Paste"));
@@ -173,7 +171,7 @@ namespace ThunderKit.Core.Editor.Inspectors
         {
             for (int i = 0; i < dataArray.arraySize; i++)
             {
-                SerializedProperty step = null;
+                SerializedProperty step;
                 do
                 {
                     step = dataArray.GetArrayElementAtIndex(i);

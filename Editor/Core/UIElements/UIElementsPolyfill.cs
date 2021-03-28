@@ -160,9 +160,9 @@ namespace ThunderKit.Core.UIElements
 
     public class UxmlStyleTraits : UxmlTraits
     {
-        UxmlStringAttributeDescription m_Name = new UxmlStringAttributeDescription { name = "name" };
-        UxmlStringAttributeDescription m_Path = new UxmlStringAttributeDescription { name = "path" };
-        UxmlStringAttributeDescription m_Src = new UxmlStringAttributeDescription { name = "src" };
+        readonly UxmlStringAttributeDescription m_Name = new UxmlStringAttributeDescription { name = "name" };
+        readonly UxmlStringAttributeDescription m_Path = new UxmlStringAttributeDescription { name = "path" };
+        readonly UxmlStringAttributeDescription m_Src = new UxmlStringAttributeDescription { name = "src" };
 
         public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
             Enumerable.Empty<UxmlChildElementDescription>();

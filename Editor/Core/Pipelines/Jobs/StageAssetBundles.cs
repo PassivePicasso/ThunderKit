@@ -117,7 +117,7 @@ namespace ThunderKit.Pipelines.Jobs
             {
                 var allBuilds = builds.ToArray();
                 BuildPipeline.BuildAssetBundles(bundleArtifactPath, allBuilds, AssetBundleBuildOptions, buildTarget);
-                for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
+                for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.Manifests.Length; pipeline.ManifestIndex++)
                 {
                     var manifest = pipeline.Manifest;
                     foreach(var assetBundleDef in manifest.Data.OfType<AssetBundleDefinitions>())

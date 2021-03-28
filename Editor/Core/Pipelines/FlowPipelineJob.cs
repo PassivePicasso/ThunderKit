@@ -12,7 +12,7 @@ namespace ThunderKit.Core.Pipelines
             if (PerManifest)
             {
                 for (pipeline.ManifestIndex = 0;
-                     pipeline.ManifestIndex < pipeline.manifests.Length;
+                     pipeline.ManifestIndex < pipeline.Manifests.Length;
                      pipeline.ManifestIndex++)
                 {
                     if (ExcludedManifests.Contains(pipeline.Manifest)) continue;

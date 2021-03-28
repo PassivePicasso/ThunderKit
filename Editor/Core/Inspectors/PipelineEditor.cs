@@ -28,7 +28,7 @@ namespace ThunderKit.Core.Editor.Inspectors
             var offset = 16;
             rect.x += offset;
             rect.width -= offset;
-            return rect ;
+            return rect;
         }
         public override void OnInspectorGUI()
         {
@@ -41,7 +41,8 @@ namespace ThunderKit.Core.Editor.Inspectors
             if (GUI.Button(rect, "Execute"))
             {
                 var pipeline = target as Pipeline;
-                pipeline?.Execute();
+                if (pipeline)
+                    pipeline.Execute();
             }
         }
     }

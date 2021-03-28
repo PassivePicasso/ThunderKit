@@ -50,7 +50,6 @@ namespace ThunderKit.Editor.Core.Data
         [SerializeField]
         private bool FirstLoad = true;
 
-        [SerializeField]
         public bool ShowOnStartup = true;
         public override void CreateSettingsUI(VisualElement rootElement)
         {
