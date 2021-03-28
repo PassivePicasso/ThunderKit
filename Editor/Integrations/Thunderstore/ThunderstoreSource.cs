@@ -4,8 +4,6 @@ using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor;
 using UnityEditor;
 using SharpCompress.Archives;
-using SharpCompress.Common;
-using SharpCompress.Writers;
 using SharpCompress.Readers;
 
 namespace ThunderKit.Integrations.Thunderstore
