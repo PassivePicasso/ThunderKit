@@ -106,7 +106,7 @@ namespace ThunderKit.Core.Config
                 .Where(asm =>
                 {
                     if (asm.ManifestModule is System.Reflection.Emit.ModuleBuilder mb)
-                        return mb.IsTransient();
+                        return !mb.IsTransient();
 
                     return true;
                 })
