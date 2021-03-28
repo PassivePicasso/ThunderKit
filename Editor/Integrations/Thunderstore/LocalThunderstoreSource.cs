@@ -1,11 +1,8 @@
-﻿using System;
+﻿using SharpCompress.Archives;
+using SharpCompress.Readers;
 using System.IO;
 using System.Linq;
-using SharpCompress;
-using SharpCompress.Archives;
-using SharpCompress.Readers;
 using ThunderKit.Common;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor;
 using UnityEditor;
@@ -19,6 +16,15 @@ namespace ThunderKit.Integrations.Thunderstore
         private static string[] EmptyStringArray = new string[0];
         private static string CachePath = $"Assets/ThunderKitSettings/{nameof(LocalThunderstoreSource)}.asset";
 
+        [InitializeOnLoadMethod]
+        public static void SetupInitialization()
+        {
+            PackageSource.InitializeSources -= InitializeSource;
+            PackageSource.InitializeSources += InitializeSource;
+        }
+        
+        private static void InitializeSource(object sender, System.EventArgs e) => Initialize();
+
         [MenuItem(Constants.ThunderKitContextRoot + "Refresh Local Thunderstore sources", priority = Constants.ThunderKitMenuPriority)]
         [InitializeOnLoadMethod]
         private static void Initialize()
@@ -30,7 +36,6 @@ namespace ThunderKit.Integrations.Thunderstore
                 .ToArray();
             foreach (var drySource in localSources)
                 drySource.LoadPackages();
-
         }
 
         [MenuItem(Constants.ThunderKitContextRoot + "Create Local Thunderstore PackageSource", priority = Constants.ThunderKitMenuPriority)]
