@@ -8,7 +8,6 @@ using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using static ThunderKit.Integrations.Thunderstore.ThunderstoreSettings;
 
 namespace ThunderKit.Integrations.Thunderstore
 {

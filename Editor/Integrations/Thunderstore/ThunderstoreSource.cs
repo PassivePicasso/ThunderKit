@@ -1,10 +1,10 @@
-﻿using System.IO;
+﻿using SharpCompress.Archives;
+using SharpCompress.Readers;
+using System.IO;
 using System.Linq;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor;
 using UnityEditor;
-using SharpCompress.Archives;
-using SharpCompress.Readers;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
@@ -12,9 +12,18 @@ namespace ThunderKit.Integrations.Thunderstore
     public class ThunderstoreSource : PackageSource
     {
         private static string CachePath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
+
+        [InitializeOnLoadMethod]
+        public static void SetupInitialization()
+        {
+            PackageSource.InitializeSources -= PackageSource_InitializeSources;
+            PackageSource.InitializeSources += PackageSource_InitializeSources;
+        }
+
         [InitializeOnLoadMethod]
         public static void Initialize()
         {
+            AssetDatabase.DeleteAsset(CachePath);
             ThunderstoreAPI.ReloadPages();
 
             var isNew = false;
@@ -24,17 +33,13 @@ namespace ThunderKit.Integrations.Thunderstore
             });
             if (isNew)
             {
-                source.LoadPackages();
                 source.hideFlags = UnityEngine.HideFlags.NotEditable;
-                EditorUtility.SetDirty(source);
-                AssetDatabase.SaveAssets();
+                source.LoadPackages();
             }
         }
 
-        [MenuItem("Tools/ThunderKit/Regenerate Thunderstore PackageSource")]
-        public static void Regenerate()
+        private static void PackageSource_InitializeSources(object sender, System.EventArgs e)
         {
-            AssetDatabase.DeleteAsset(CachePath);
             Initialize();
         }
 

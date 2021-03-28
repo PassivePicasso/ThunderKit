@@ -39,10 +39,38 @@ namespace ThunderKit.Core.Editor.Windows
 
         public override void OnEnable()
         {
-            Construct();
+            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
+                                  .Select(AssetDatabase.GUIDToAssetPath)
+                                  .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
+                                  .ToArray();
+
+
+            Construct(packageSources);
+
+            PackageSource.SourcesInitialized += PackageSource_SourceInitialized;
+            PackageSource.LoadAllSources();
         }
 
-        private void Construct()
+        private void OnDestroy()
+        {
+            PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
+        }
+
+        private void PackageSource_SourceInitialized(object sender, EventArgs e)
+        {
+            if(rootVisualElement == null)
+            {
+                PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
+                return;
+            }
+            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
+                      .Select(AssetDatabase.GUIDToAssetPath)
+                      .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
+                      .ToArray();
+            ConstructPackageSourceList(packageSources);
+        }
+
+        private void Construct(PackageSource[] packageSources)
         {
             titleContent = new GUIContent("Packages", ThunderKitIcon, "");
             rootVisualElement.Clear();
@@ -61,12 +89,17 @@ namespace ThunderKit.Core.Editor.Windows
             filtersButton.clickable.clicked += FiltersClicked;
 
             GetTemplateInstance("PackageView", packageView);
+            ConstructPackageSourceList(packageSources);
 
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+        }
+
+        private void ConstructPackageSourceList(PackageSource[] packageSources)
+        {
             var packageSourceList = rootVisualElement.Q(name = "tkpm-package-source-list");
-            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
-                                              .Select(AssetDatabase.GUIDToAssetPath)
-                                              .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
-                                              .ToArray();
+
+            packageSourceList.Clear();
 
             for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
             {
@@ -111,9 +144,6 @@ namespace ThunderKit.Core.Editor.Windows
                 packageSourceList.Add(packageSource);
             }
             UpdatePackageList();
-
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssets();
         }
 
         private void FiltersClicked()
