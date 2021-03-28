@@ -27,13 +27,15 @@ namespace ThunderKit.Core.Pipelines.Jobs
                         {
                             var texture = file as Texture2D;
                             var textureAssetPath = AssetDatabase.GetAssetPath(file);
-                            FileUtil.ReplaceFile(textureAssetPath, Path.Combine(outputPath, Path.GetFileName(textureAssetPath)));
+                            string dst = Path.Combine(outputPath, Path.GetFileName(textureAssetPath)).Replace("\\", "/");
+                            FileUtil.ReplaceFile(textureAssetPath, dst);
                             //File.WriteAllBytes(Path.Combine(outputPath, Path.GetFileName(textureAssetPath)), texture.EncodeToPNG());
                         }
                         else
                         {
                             var textAssetPath = AssetDatabase.GetAssetPath(file);
-                            FileUtil.ReplaceFile(textAssetPath, Path.Combine(outputPath, Path.GetFileName(textAssetPath)));
+                            string dst = Path.Combine(outputPath, Path.GetFileName(textAssetPath)).Replace("\\", "/");
+                            FileUtil.ReplaceFile(textAssetPath, dst);
                         }
                     }
                 }
