@@ -15,7 +15,8 @@ namespace ThunderKit.Common.Package
         {
             var webRequest = UnityWebRequest.Get(url);
             var asyncOpRequest = webRequest.SendWebRequest();
-            Action<object> onDownloaded = (obj) =>
+            Action<object> onDownloaded = null;
+            onDownloaded = (obj) =>
             {
                 asyncOpRequest.completed -= onDownloaded;
 
