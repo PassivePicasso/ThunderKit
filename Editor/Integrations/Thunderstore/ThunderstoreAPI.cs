@@ -71,7 +71,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
                 settings.LoadedPages = packages;
                 EditorUtility.SetDirty(settings);
-                Debug.Log($"Package listing update: {PackageListApi}");
+                //Debug.Log($"Package listing update: {PackageListApi}");
             };
         }
 
