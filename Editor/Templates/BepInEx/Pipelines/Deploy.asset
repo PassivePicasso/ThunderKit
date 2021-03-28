@@ -57,7 +57,7 @@ MonoBehaviour:
   - {fileID: 7527256621150178074}
   - {fileID: 2078919326612615040}
   - {fileID: 114803605343111210}
-  manifest: {fileID: 11400000, guid: 11b2a0674328cba49a4d393132865908, type: 2}
+  manifest: {fileID: 0}
 --- !u!114 &114803605343111210
 MonoBehaviour:
   m_ObjectHideFlags: 1
