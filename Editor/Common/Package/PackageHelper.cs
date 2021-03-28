@@ -2,7 +2,6 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-//using System.Threading.Tasks;
 using ThunderKit.Common.Configuration;
 using UnityEditor;
 using UnityEngine;
@@ -12,14 +11,13 @@ namespace ThunderKit.Common.Package
 {
     public static class PackageHelper
     {
-        public static string nl => Environment.NewLine;
-
         public static UnityWebRequestAsyncOperation DownloadPackage(string url, string filePath)
         {
             var webRequest = UnityWebRequest.Get(url);
             var asyncOpRequest = webRequest.SendWebRequest();
-            asyncOpRequest.completed += (obj) =>
+            Action<object> onDownloaded = (obj) =>
             {
+                asyncOpRequest.completed -= onDownloaded;
 
 #if UNITY_2020_1_OR_NEWER
                 if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
@@ -33,6 +31,7 @@ namespace ThunderKit.Common.Package
                 if (File.Exists(filePath)) File.Delete(filePath);
                 File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
             };
+            asyncOpRequest.completed += onDownloaded;
             return asyncOpRequest;
         }
 
