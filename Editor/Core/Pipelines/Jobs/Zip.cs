@@ -10,8 +10,7 @@ namespace ThunderKit.Core.Pipelines.Jops
     [PipelineSupport(typeof(Pipeline))]
     public class Zip : FlowPipelineJob
     {
-        //public CompressionLevel Compression;
-        public ArchiveType ArchiveType;
+        public ArchiveType ArchiveType = ArchiveType.Zip;
         public bool IncludeBaseDirectory;
         [PathReferenceResolver]
         public string Source;
@@ -27,10 +26,10 @@ namespace ThunderKit.Core.Pipelines.Jops
             File.Delete(output);
 
             Directory.CreateDirectory(outputDir);
-
-            using (var archive = ArchiveFactory.Create(ArchiveType.Zip))
+            
+            using (var archive = ArchiveFactory.Create(ArchiveType))
             {
-                archive.AddAllFromDirectory(source, searchOption: SearchOption.AllDirectories);
+               archive.AddAllFromDirectory(source, searchOption: SearchOption.AllDirectories);
                 var options = new WriterOptions(CompressionType.Deflate);
                 archive.SaveTo(output, options);
             }
