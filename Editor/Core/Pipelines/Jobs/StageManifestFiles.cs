@@ -23,19 +23,32 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 {
                     foreach (var file in files.files)
                     {
+                        var sourcePath = AssetDatabase.GetAssetPath(file);
+                        string destPath = Path.Combine(outputPath, Path.GetFileName(sourcePath)).Replace("\\", "/");
+                        var isDirectory = AssetDatabase.IsValidFolder(sourcePath);
+                        if (isDirectory)
+                        {
+                            Directory.CreateDirectory(destPath);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                File.Delete(destPath);
+                            }
+                            catch { }//probably should rethrow some cases, such as access denied
+                            Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+                        }
+
                         if (typeof(Texture2D).IsAssignableFrom(file.GetType()))
                         {
                             var texture = file as Texture2D;
-                            var textureAssetPath = AssetDatabase.GetAssetPath(file);
-                            string dst = Path.Combine(outputPath, Path.GetFileName(textureAssetPath)).Replace("\\", "/");
-                            FileUtil.ReplaceFile(textureAssetPath, dst);
+                            FileUtil.CopyFileOrDirectory(sourcePath, destPath);
                             //File.WriteAllBytes(Path.Combine(outputPath, Path.GetFileName(textureAssetPath)), texture.EncodeToPNG());
                         }
                         else
                         {
-                            var textAssetPath = AssetDatabase.GetAssetPath(file);
-                            string dst = Path.Combine(outputPath, Path.GetFileName(textAssetPath)).Replace("\\", "/");
-                            FileUtil.ReplaceFile(textAssetPath, dst);
+                            FileUtil.CopyFileOrDirectory(sourcePath, destPath);
                         }
                     }
                 }
