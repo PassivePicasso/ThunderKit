@@ -84,9 +84,6 @@ namespace ThunderKit.Core.Config
 
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
-            //var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
-            //var windowsStandalonePath = Combine(editorPath, "Data", "PlaybackEngines", "windowsstandalonesupport");
-
             var regs = new Regex("(\\d\\d\\d\\d\\.\\d+\\.\\d+).*");
 
             var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
@@ -103,7 +100,17 @@ namespace ThunderKit.Core.Config
         {
             Debug.Log("Acquiring references");
             var blackList = AppDomain.CurrentDomain.GetAssemblies()
-                //.Where(asm => !asm.IsDynamic)
+#if NET_4_6
+                .Where(asm => !asm.IsDynamic)
+#else 
+                .Where(asm =>
+                {
+                    if (asm.ManifestModule is System.Reflection.Emit.ModuleBuilder mb)
+                        return mb.IsTransient();
+
+                    return true;
+                })
+#endif
                 .Select(asm =>
                 {
                     try
