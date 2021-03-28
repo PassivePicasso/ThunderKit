@@ -20,7 +20,18 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override void ExecuteInternal(Pipeline pipeline)
         {
-            var source = Source.Resolve(pipeline, this);
+            var source = string.Empty;
+            try
+            {
+                source = Source.Resolve(pipeline, this);
+            }
+            catch (Exception e)
+            {
+                if (SourceRequired) throw e;
+
+            }
+            if (SourceRequired && string.IsNullOrEmpty(source)) return;
+
             var destination = Destination.Resolve(pipeline, this);
 
             bool sourceIsFile = false;
