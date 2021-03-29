@@ -16,7 +16,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         public override void Execute(Pipeline pipeline)
         {
-            for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.manifests.Length; pipeline.ManifestIndex++)
+            for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.Manifests.Length; pipeline.ManifestIndex++)
             {
                 if (ArrayUtility.Contains(ExcludedManifests, pipeline.Manifest)) continue;
                 if (AssetDatabase.GetAssetPath(pipeline.Manifest).StartsWith("Assets")) continue;

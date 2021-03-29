@@ -21,7 +21,7 @@ namespace ThunderKit.Markdown
     using static Helpers.VisualElementFactory;
     public class UIElementRenderer : RendererBase
     {
-        private static Regex LiteralSplitter = new Regex(@"([\S]+\b)\S?", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static readonly Regex LiteralSplitter = new Regex(@"([\S]+\b)\S?", RegexOptions.Singleline | RegexOptions.Compiled);
         private readonly Stack<VisualElement> stack = new Stack<VisualElement>(128);
 
         public UIElementRenderer()

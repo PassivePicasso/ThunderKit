@@ -34,7 +34,7 @@ namespace ThunderKit.Core.Data
         }
 
 
-        private static string[] CopyFilePatterns = new[] { "*.dll", "*.mdb", "*.pdb" };
+        private static readonly string[] CopyFilePatterns = new[] { "*.dll", "*.mdb", "*.pdb" };
         static void LoadAllAssemblies(string somevalue, CompilerMessage[] message)
         {
             var targetFiles = from pattern in CopyFilePatterns
@@ -50,13 +50,10 @@ namespace ThunderKit.Core.Data
         }
 
 
-        [SerializeField]
         public string GameExecutable;
 
-        [SerializeField]
         public string GamePath;
 
-        [SerializeField]
         public bool Is64Bit;
 
         public override void Initialize() => GamePath = "";

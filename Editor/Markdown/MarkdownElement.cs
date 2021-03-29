@@ -23,7 +23,7 @@ namespace ThunderKit.Markdown
     public enum MarkdownDataType { Implicit, Source, Text }
     public class MarkdownElement : VisualElement
     {
-        private static UIElementRenderer renderer;
+        private static readonly UIElementRenderer renderer;
         private string data;
 
         static MarkdownElement()
@@ -61,7 +61,10 @@ namespace ThunderKit.Markdown
                     if (!".md".Equals(Path.GetExtension(Source))) break;
 
                     var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Source);
-                    markdown = asset?.text ?? string.Empty;
+                    if (asset)
+                        markdown = asset.text;
+                    else
+                        markdown = string.Empty;
 
                     break;
                 case MarkdownDataType.Text:
@@ -103,14 +106,14 @@ namespace ThunderKit.Markdown
         {
             static string NormalizeName(string text) => ObjectNames.NicifyVariableName(text).ToLower();
 
-            private UxmlStringAttributeDescription m_text = new UxmlStringAttributeDescription { name = "data" };
-            private UxmlEnumAttributeDescription<MarkdownDataType> m_dataType = new UxmlEnumAttributeDescription<MarkdownDataType> { name = "markdown-data-type" };
-            private UxmlBoolAttributeDescription m_EmptyLineAfterCodeBlock = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.EmptyLineAfterCodeBlock)), defaultValue = true };
-            private UxmlBoolAttributeDescription m_EmptyLineAfterHeading = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.EmptyLineAfterHeading)), defaultValue = true };
-            private UxmlBoolAttributeDescription m_EmptyLineAfterThematicBreak = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.EmptyLineAfterThematicBreak)), defaultValue = true };
-            private UxmlBoolAttributeDescription m_ExpandAutoLinks = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.ExpandAutoLinks)), defaultValue = true };
-            private UxmlStringAttributeDescription m_ListItemCharacter = new UxmlStringAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.ListItemCharacter)), defaultValue = "*" };
-            private UxmlBoolAttributeDescription m_SpaceAfterQuoteBlock = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.SpaceAfterQuoteBlock)), defaultValue = true };
+            private readonly UxmlStringAttributeDescription m_text = new UxmlStringAttributeDescription { name = "data" };
+            private readonly UxmlEnumAttributeDescription<MarkdownDataType> m_dataType = new UxmlEnumAttributeDescription<MarkdownDataType> { name = "markdown-data-type" };
+            private readonly UxmlBoolAttributeDescription m_EmptyLineAfterCodeBlock = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.EmptyLineAfterCodeBlock)), defaultValue = true };
+            private readonly UxmlBoolAttributeDescription m_EmptyLineAfterHeading = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.EmptyLineAfterHeading)), defaultValue = true };
+            private readonly UxmlBoolAttributeDescription m_EmptyLineAfterThematicBreak = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.EmptyLineAfterThematicBreak)), defaultValue = true };
+            private readonly UxmlBoolAttributeDescription m_ExpandAutoLinks = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.ExpandAutoLinks)), defaultValue = true };
+            private readonly UxmlStringAttributeDescription m_ListItemCharacter = new UxmlStringAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.ListItemCharacter)), defaultValue = "*" };
+            private readonly UxmlBoolAttributeDescription m_SpaceAfterQuoteBlock = new UxmlBoolAttributeDescription { name = NormalizeName(nameof(NormalizeOptions.SpaceAfterQuoteBlock)), defaultValue = true };
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
                 base.Init(ve, bag, cc);

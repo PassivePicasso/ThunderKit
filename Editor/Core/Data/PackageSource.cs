@@ -156,7 +156,7 @@ namespace ThunderKit.Core.Data
             OnLoadPackages();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            var validVersions = Packages.Where(pkgGrp => pkgGrp?.Versions != null);
+            var validVersions = Packages.Where(pkgGrp => pkgGrp).Where(pkgGrp => pkgGrp.Versions != null);
             var versionGroupMaps = validVersions.SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => new KeyValuePair<PackageGroup, PackageVersion>(pkgGrp, pkgVer)));
             var versionMap = versionGroupMaps.Distinct().ToDictionary(ver => ver.Value.dependencyId);
 

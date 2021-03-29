@@ -7,7 +7,7 @@ namespace ThunderKit.Core.Attributes
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class RequiresManifestDatumTypeAttribute : Attribute
     {
-        Type[] datumTypes;
+        readonly Type[] datumTypes;
         public RequiresManifestDatumTypeAttribute(params Type[] datumTypes)
         {
             this.datumTypes = datumTypes;

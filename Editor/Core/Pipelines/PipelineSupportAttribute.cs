@@ -7,7 +7,7 @@ namespace ThunderKit.Core.Pipelines
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class PipelineSupportAttribute : Attribute
     {
-        Type[] pipelineTypes;
+        readonly Type[] pipelineTypes;
         public PipelineSupportAttribute(params Type[] pipelineTypes)
         {
             this.pipelineTypes = pipelineTypes;

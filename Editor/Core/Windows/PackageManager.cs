@@ -28,11 +28,12 @@ namespace ThunderKit.Core.Editor.Windows
         private TextField searchBox;
 
         private string targetVersion;
-        Dictionary<string, bool> tagEnabled = new Dictionary<string, bool>();
+        private readonly Dictionary<string, bool> tagEnabled = new Dictionary<string, bool>();
 
         [SerializeField] private DeletePackage deletePackage;
         [SerializeField] private string SearchString;
-        [SerializeField] public bool InProject;
+        
+        public bool InProject;
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Packages")]
         public static void ShowExample() => GetWindow<PackageManager>();
