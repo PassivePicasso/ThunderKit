@@ -53,8 +53,8 @@ MonoBehaviour:
   ExcludedManifests: []
   ArchiveType: 1
   IncludeBaseDirectory: 0
-  Source: <ManifestPluginStaging>
-  Output: <ManifestPluginStaging>.zip
+  Source: <ManifestStagingRoot>
+  Output: <ManifestStagingRoot>.zip
 --- !u!114 &114698388137127062
 MonoBehaviour:
   m_ObjectHideFlags: 1

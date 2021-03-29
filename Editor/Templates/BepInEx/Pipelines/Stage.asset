@@ -69,7 +69,7 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  StagingPath: 
+  StagingPath: <StagingRoot>
   ExcludedManifests: []
 --- !u!114 &114643622350610336
 MonoBehaviour:
