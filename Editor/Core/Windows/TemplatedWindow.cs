@@ -25,7 +25,9 @@ namespace ThunderKit.Core.Editor.Windows
 #elif UNITY_2018_1_OR_NEWER
         PropertyInfo rvcField;
         VisualElement rvc;
+#pragma warning disable IDE1006 // Naming Styles This is a compatibility layer and the casing is required
         protected VisualElement rootVisualElement
+#pragma warning restore IDE1006 // Naming Styles
         {
             get
             {
@@ -41,7 +43,7 @@ namespace ThunderKit.Core.Editor.Windows
         }
 #endif
 
-        [SerializeField] public Texture2D ThunderKitIcon;
+        public Texture2D ThunderKitIcon;
 
         public virtual void OnEnable()
         {

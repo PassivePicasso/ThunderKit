@@ -19,7 +19,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
         {
             var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
             var identity = pipeline.Manifest.Data.OfType<ManifestIdentity>().First();
-            var manifestJson = RenderJson(identity, thunderstoreData, pipeline.Manifest.name);
+            var manifestJson = RenderJson(identity, thunderstoreData);
 
             foreach (var outputPath in thunderstoreData.StagingPaths.Select(path => path.Resolve(pipeline, this)))
             {
@@ -29,7 +29,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
             }
         }
 
-        public string RenderJson(ManifestIdentity identity, ThunderstoreData manifest, string name)
+        public string RenderJson(ManifestIdentity identity, ThunderstoreData manifest)
         {
             var dependencies = identity.Dependencies.Select(man =>
             {

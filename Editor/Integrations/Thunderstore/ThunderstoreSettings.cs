@@ -20,10 +20,7 @@ namespace ThunderKit.Integrations.Thunderstore
     // Create a new type of Settings Asset.
     public class ThunderstoreSettings : ThunderKitSetting
     {
-        [SerializeField]
         public string ThunderstoreUrl = "https://thunderstore.io";
-
-        [SerializeField]
         public List<PackageListing> LoadedPages;
 
         public class StringValueChangeArgs : EventArgs
@@ -56,7 +53,7 @@ namespace ThunderKit.Integrations.Thunderstore
             container.Bind(serializedSettings);
         }
 
-        string[] keywords = new string[] { nameof(ThunderstoreUrl) };
+        readonly string[] keywords = new string[] { nameof(ThunderstoreUrl) };
         public override IEnumerable<string> Keywords() => keywords;
     }
 }
