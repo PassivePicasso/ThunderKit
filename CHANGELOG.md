@@ -1,4 +1,64 @@
-﻿## 3.0.0 
+## 3.1.0 
+
+This update implements support for .NET 3.5 and includes a number of general improvements and fixes
+
+## New Features
+
+### Optimization
+
+Special thanks to Therzok for doing an optimization pass to clean up a number of cases where the code could be more efficient and cleaner.
+
+### Package Manager
+* Now updates when package sources are refreshed.
+* Now refreshes package sources when opened.
+* Now has a Refresh button next to the Filters button which will refresh all available PackageSources
+* PackageSources now invoke the SourcesInitialized event when a source has been updated
+* PackageSources can register an event handler on the InitializeSources event to be informed when it should update
+* Thunderstore API no longer automatically updates on a timer
+
+### 3.5 Migration changes
+
+* Added csc.rsp and mcs.rsp to AssemblyDefinition containing folders to ensure that the correct language version is used for ThunderKit regardless of Scripting Back End choice.
+* Removed Async/Await as its not available in 3.5
+  * Some cases were replaced with other asynchronous mechanisms.
+  * More cases will be moved to asynchronous mechanisms in the future, however there are currently a few that were migrated to synchronous execution.
+* Migrate to Directory.GetFiles and Directory.GetDirectories over Directory.EnumerateFiles and Directory.EnumerateDirectories due to lack of support in .NET 3.5
+
+
+### Zip Changes
+
+* Migrated to SharpCompress from System.IO.Compression
+* Updated zip handling in ThunderstoreSource and LocalThunderstoreSource
+* Updated Zip PipelineJob to use SharpCompress
+
+### Markdown / Documentation changes
+* Improved method of locating Documentation assets
+* Significant improvements made to the UIElementRenderer allocations
+* Improvements to Regex Usage
+
+### File System changes
+* Migrated many file system management facilities to use FileUtil instead of System.IO types
+* Updated Copy PipelineJob to use FileUtil  This changes how Copy works, A recursive copy will Replace the designated destination directory, not fill its contents
+* Stage Manifest Files now uses FileUtil to deploy files
+
+### BepInEx Template Changes
+
+The BepInEx template has been updated to use some new features that arose out of the .NET 3.5 changes.
+First, the template is somewhat large so it has been broken up into 4 Pipelines
+1. Stage:  This pipeline executes StageAssetBundles, StageAssemblies, StageDependencies, StageManifestFiles and finally StageThunderstoreManifest.
+2. Deploy: Conducts the following Copy jobs
+    1. Copy BepInEx to ProjectRoot/ThunderKit/BepInExPack
+    2. Copy plugins to ProjectRoot/ThunderKit/BepInExPack/BepInEx/plugins
+    3. Copy patchers to ProjectRoot/ThunderKit/BepInExPack/BepInEx/patchers
+    4. Copy monomods to ProjectRoot/ThunderKit/BepInExPack/BepInEx/monomod
+    5. Copy winhttp.dll to the Games root directory
+    6. Copy a BepInEx config targeted by the PathReference named BepInExConfig if it is defined in the project to ProjectRoot/ThunderKit/BepInExPack/BepInEx/config
+3. Launch:  Executes the games executable with the necessary command line parameters to load BepInEx
+4. Rebuild and Launch:  Executes the 3 prior Pipelines in order.
+
+To get started on a new mod project you only need to copy the Rebuild and Launch pipeline into your Assets folder and then populate the Manifest field.
+
+## 3.0.0 
 
 #### Initial Setup
 A Welcome window has been added to ThunderKit to help users set up their project.
