@@ -160,9 +160,11 @@ namespace ThunderKit.Core.UIElements
 
     public class UxmlStyleTraits : UxmlTraits
     {
+#pragma warning disable IDE0052 // These are required by the unity uxml parser (i think)
         readonly UxmlStringAttributeDescription m_Name = new UxmlStringAttributeDescription { name = "name" };
         readonly UxmlStringAttributeDescription m_Path = new UxmlStringAttributeDescription { name = "path" };
         readonly UxmlStringAttributeDescription m_Src = new UxmlStringAttributeDescription { name = "src" };
+#pragma warning restore IDE0052 
 
         public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
             Enumerable.Empty<UxmlChildElementDescription>();
