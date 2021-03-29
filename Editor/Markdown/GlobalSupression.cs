@@ -9,4 +9,5 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "Not supported in unity with .net 3.5", Scope = "module")]
 [assembly: SuppressMessage("Style", "IDE0039:Use local function", Justification = "Not supported in unity with .net 3.5", Scope = "module")]
 [assembly: SuppressMessage("Style", "IDE0019:Use pattern matching", Justification = "Not supported in unity with .net 3.5", Scope = "module")]
+[assembly: SuppressMessage("Style", "IDE0083:Use pattern matching", Justification = "Not supported in unity with .net 3.5", Scope = "module")]
 [assembly: SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "Not supported in unity with .net 3.5", Scope = "module")]

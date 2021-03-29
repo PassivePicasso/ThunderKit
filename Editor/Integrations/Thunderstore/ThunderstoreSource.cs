@@ -11,7 +11,7 @@ namespace ThunderKit.Integrations.Thunderstore
     using PV = Core.Data.PackageVersion;
     public class ThunderstoreSource : PackageSource
     {
-        private static string CachePath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
+        private readonly static string CachePath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
 
         [InitializeOnLoadMethod]
         public static void SetupInitialization()

@@ -8,7 +8,7 @@ namespace ThunderKit.Core.Editor
 {
     public static class ScriptableHelper
     {
-        static object[] findTextureParams = new object[1];
+        readonly static object[] findTextureParams = new object[1];
         public static void SelectNewAsset<T>(Func<string> overrideName = null, Action<T> afterCreated = null) where T : ScriptableObject
         {
             T asset = ScriptableObject.CreateInstance<T>();

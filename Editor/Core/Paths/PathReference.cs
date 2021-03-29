@@ -11,7 +11,7 @@ using static System.IO.Path;
 
 namespace ThunderKit.Core.Paths
 {
-    public class PathReference : ComposableObject/*, ISerializationCallbackReceiver*/
+    public class PathReference : ComposableObject
     {
         [MenuItem(Constants.ThunderKitContextRoot + nameof(PathReference), false, priority = Constants.ThunderKitMenuPriority)]
         public static void Create() => ScriptableHelper.SelectNewAsset<PathReference>();
@@ -44,7 +44,6 @@ namespace ThunderKit.Core.Paths
             return result.Replace("\\", "/");
         }
 
-
         public override Type ElementType => typeof(PathComponent);
 
         public override bool SupportsType(Type type) => ElementType.IsAssignableFrom(type);
@@ -61,32 +60,6 @@ namespace ThunderKit.Core.Paths
                 throw e;
             }
         }
-
-        //[SerializeField, HideInInspector]
-        //private string lastName;
-        private bool UpdateReferences;
-
-        //void OnEnable()
-        //{
-        //    if (lastName != name)
-        //    {
-        //    }
-        //    lastName = name;
-        //}
-        //public void OnBeforeSerialize()
-        //{
-        //    if (lastName != name)
-        //    {
-        //        Debug.Log($"PathReference: {lastName} changed to {name}");
-        //        lastName = name;
-
-        //    }
-        //}
-
-        //public void OnAfterDeserialize()
-        //{
-
-        //}
 
         public override string ElementTemplate =>
 $@"using ThunderKit.Core.Pipelines;
