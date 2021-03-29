@@ -36,9 +36,10 @@ namespace ThunderKit.Markdown.Helpers
 
         public static T GetClassedElement<T>(string className) where T : VisualElement, new()
         {
-            T element = new T();
-
-            element.name = className;
+            T element = new T
+            {
+                name = className
+            };
             element.AddToClassList(className);
 
             return element;
