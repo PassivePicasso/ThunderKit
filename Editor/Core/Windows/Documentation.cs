@@ -118,8 +118,10 @@ namespace ThunderKit.Core.Windows
                 FoldOut.AddToClassList(HiddenClass);
                 FoldOut.value = false;
 
-                Label = new Label();
-                Label.text = ObjectNames.NicifyVariableName(templateName);
+                Label = new Label
+                {
+                    text = ObjectNames.NicifyVariableName(templateName)
+                };
                 Label.AddToClassList(PageClass);
 
                 Add(FoldOut);
