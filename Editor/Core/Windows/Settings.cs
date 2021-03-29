@@ -20,7 +20,7 @@ namespace ThunderKit.Core.Windows
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class Settings : TemplatedWindow
     {
-        static string[] searchFolders = new[] { "Assets", "Packages" };
+        readonly static string[] searchFolders = new[] { "Assets", "Packages" };
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Settings")]
         public static void ShowSettings() => GetWindow<Settings>();

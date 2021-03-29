@@ -53,7 +53,7 @@ namespace ThunderKit.Integrations.Thunderstore
             container.Bind(serializedSettings);
         }
 
-        string[] keywords = new string[] { nameof(ThunderstoreUrl) };
+        readonly string[] keywords = new string[] { nameof(ThunderstoreUrl) };
         public override IEnumerable<string> Keywords() => keywords;
     }
 }

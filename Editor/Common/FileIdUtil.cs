@@ -11,7 +11,7 @@ public class MD4 : HashAlgorithm
     private uint _b;
     private uint _c;
     private uint _d;
-    private uint[] _x;
+    private readonly uint[] _x;
     private int _bytesProcessed;
 
     public MD4()
