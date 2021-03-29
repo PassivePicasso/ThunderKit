@@ -1,4 +1,4 @@
-## 3.1.0 
+## 3.1.1
 
 This update implements support for .NET 3.5 and includes a number of general improvements and fixes
 
