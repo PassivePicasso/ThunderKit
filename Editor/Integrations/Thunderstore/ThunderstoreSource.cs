@@ -56,7 +56,7 @@ namespace ThunderKit.Integrations.Thunderstore
             foreach (var tsp in orderByPinThenName)
             {
                 var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies));
-                AddPackageGroup(tsp.owner, tsp.name, tsp.latest.description, tsp.full_name, tsp.categories, versions);
+                AddPackageGroup(tsp.owner, tsp.name, tsp.Latest.description, tsp.full_name, tsp.categories, versions);
             }
         }
 

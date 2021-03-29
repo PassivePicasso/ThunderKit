@@ -67,9 +67,8 @@ namespace ThunderKit.Core.Config
         private static void LoadGame(ThunderKitSettings settings)
         {
             string currentDir = Directory.GetCurrentDirectory();
-            var foundExecutable = string.IsNullOrEmpty(settings.GamePath)
-                                ? false
-                                : Directory.GetFiles(settings.GamePath ?? currentDir, Path.GetFileName(settings.GameExecutable)).Any();
+            var foundExecutable = !string.IsNullOrEmpty(settings.GamePath) 
+                               && Directory.GetFiles(settings.GamePath ?? currentDir, Path.GetFileName(settings.GameExecutable)).Any();
 
             while (!foundExecutable)
             {

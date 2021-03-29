@@ -20,6 +20,6 @@ namespace ThunderKit.Integrations.Thunderstore
         public PackageVersion[] versions;
         public bool has_nsfw_content;
         public string[] categories;
-        public PackageVersion latest => versions.First();
+        public PackageVersion Latest => versions.First();
     }
 }
