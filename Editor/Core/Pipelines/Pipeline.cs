@@ -49,7 +49,7 @@ namespace {0}
 
         public virtual void Execute()
         {
-            Manifests = manifest.EnumerateManifests().ToArray();
+            Manifests = manifest.EnumerateManifests().Distinct().ToArray();
             currentJobs = Jobs.Where(SupportsType).ToArray();
             for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
             {
@@ -90,8 +90,7 @@ namespace {0}
 
         void ExecuteManifestLoop()
         {
-            var manifests = manifest.EnumerateManifests().ToArray();
-            for (ManifestIndex = 0; ManifestIndex < manifests.Length; ManifestIndex++)
+            for (ManifestIndex = 0; ManifestIndex < Manifests.Length; ManifestIndex++)
                 if (Manifest && JobCanProcessManifest())
                     ExecuteJob();
 
