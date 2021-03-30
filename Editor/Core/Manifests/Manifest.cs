@@ -26,11 +26,15 @@ namespace ThunderKit.Core.Manifests
         public IEnumerable<Manifest> EnumerateManifests()
         {
             if (!Identity || Identity.Dependencies == null)
-                return Enumerable.Empty<Manifest>();
+            {
+                yield return this;
+                yield break;
+            }
 
-            HashSet<Manifest> returned = new HashSet<Manifest>(this.Identity.Dependencies.SelectMany(x => x.EnumerateManifests()));
+            var returned = new HashSet<Manifest>(this.Identity.Dependencies.SelectMany(x => x.EnumerateManifests()));
             returned.Add(this);
-            return returned;
+            foreach (var ret in returned)
+                yield return ret;
         }
 
         [HideInInspector]
