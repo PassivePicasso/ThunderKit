@@ -85,7 +85,7 @@ namespace ThunderKit.Integrations.Thunderstore
             }
         }
 
-        public override void OnInstallPackageFiles(PV version, string packageDirectory)
+        protected override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
             var potentialPackages = Directory.GetFiles(LocalRepositoryPath, "*.zip", SearchOption.TopDirectoryOnly);
             foreach (var filePath in potentialPackages)
