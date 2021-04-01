@@ -302,7 +302,7 @@ namespace ThunderKit.Core.Data
         /// <param name="version">The version of the Package which should be installed</param>
         /// <param name="packageDirectory">Root directory which files should be extracted into</param>
         /// <returns></returns>
-        public abstract void OnInstallPackageFiles(PackageVersion version, string packageDirectory);
+        protected abstract void OnInstallPackageFiles(PackageVersion version, string packageDirectory);
 
 
         public override bool Equals(object obj)
