@@ -109,7 +109,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         private static List<DownloadData> ActiveOperations = new List<DownloadData>();
 
-        public override void OnInstallPackageFiles(PV version, string packageDirectory)
+        protected override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
             var tsPackage = ThunderstoreAPI.LookupPackage(version.group.DependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
