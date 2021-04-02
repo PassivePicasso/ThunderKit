@@ -97,17 +97,17 @@ namespace {0}
             ManifestIndex = -1;
         }
 
-        [OnOpenAsset]
-#pragma warning disable IDE0060 // Parameter is part of Unity design
-        public static bool DoubleClickDeploy(int instanceID, int line)
-#pragma warning restore IDE0060 //  
-        {
-            if (!(EditorUtility.InstanceIDToObject(instanceID) is Pipeline instance)) return false;
+//        [OnOpenAsset]
+//#pragma warning disable IDE0060 // Parameter is part of Unity design
+//        public static bool DoubleClickDeploy(int instanceID, int line)
+//#pragma warning restore IDE0060 //  
+//        {
+//            if (!(EditorUtility.InstanceIDToObject(instanceID) is Pipeline instance)) return false;
 
-            instance.Execute();
+//            instance.Execute();
 
-            return true;
-        }
+//            return true;
+//        }
 
         public bool SupportsType(PipelineJob job) => SupportsType(job.GetType());
         public override bool SupportsType(Type type)
