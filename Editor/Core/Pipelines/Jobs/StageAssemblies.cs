@@ -4,6 +4,8 @@ using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
+using UnityEditor;
+using UnityEditor.Build.Player;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -13,7 +15,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
     public class StageAssemblies : PipelineJob
     {
         public bool stageDebugDatabases;
-        public bool preferPlayerBuilds;
+        public BuildTargetGroup Group;
+        public ScriptCompilationOptions ScriptCompilationOptions;
+        public BuildTarget Target;
 
         public override void Execute(Pipeline pipeline)
         {
@@ -27,24 +31,27 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var scriptAssemblies = Path.Combine("Library", "ScriptAssemblies");
             var playerScriptAssemblies = Path.Combine("Library", "PlayerScriptAssemblies");
 
+            var buildPath = (ScriptCompilationOptions & ScriptCompilationOptions.DevelopmentBuild) == ScriptCompilationOptions.DevelopmentBuild
+                          ? scriptAssemblies
+                          : playerScriptAssemblies;
+
+            PlayerBuildInterface.CompilePlayerScripts(new ScriptCompilationSettings
+            {
+                group = Group,
+                options = ScriptCompilationOptions,
+                target = Target
+            }, buildPath);
+
             foreach (var definition in assemblyDefs)
             {
                 var assemblyDef = JsonUtility.FromJson<AssemblyDef>(definition.text);
                 var fileOutputBase = Path.Combine(outputPath, assemblyDef.name);
                 var fileName = Path.GetFileName(fileOutputBase);
                 Directory.CreateDirectory(outputPath);
+                CopyFiles(buildPath, outputPath, $"{fileName}*.dll");
+
                 if (stageDebugDatabases)
-                {
-                    CopyFiles(scriptAssemblies, outputPath, $"{fileName}*.pdb", $"{fileName}*.mdb", $"{fileName}*.dll");
-                    if (preferPlayerBuilds)
-                        CopyFiles(playerScriptAssemblies, outputPath, $"{fileName}*.pdb", $"{fileName}*.mdb", $"{fileName}*.dll");
-                }
-                else
-                {
-                    CopyFiles(scriptAssemblies, outputPath, $"{fileName}*.dll");
-                    if (preferPlayerBuilds)
-                        CopyFiles(playerScriptAssemblies, outputPath, $"{fileName}*.dll");
-                }
+                    CopyFiles(buildPath, outputPath, $"{fileName}*.pdb", $"{fileName}*.mdb", $"{fileName}*.dll");
             }
         }
 
