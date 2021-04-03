@@ -17,7 +17,6 @@ MonoBehaviour:
   - {fileID: 114643622350610336}
   - {fileID: 114537630434205182}
   - {fileID: 114366308522735304}
-  - {fileID: 114888345249068578}
   manifest: {fileID: 0}
 --- !u!114 &114366308522735304
 MonoBehaviour:
@@ -87,7 +86,8 @@ MonoBehaviour:
   ErrorMessage: 
   Active: 1
   stageDebugDatabases: 1
-  preferPlayerBuilds: 0
+  Group: 1
+  ScriptCompilationOptions: 0
 --- !u!114 &114888345249068578
 MonoBehaviour:
   m_ObjectHideFlags: 1
