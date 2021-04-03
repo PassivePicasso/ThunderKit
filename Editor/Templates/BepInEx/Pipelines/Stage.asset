@@ -88,6 +88,7 @@ MonoBehaviour:
   stageDebugDatabases: 1
   Group: 1
   ScriptCompilationOptions: 0
+  Target: 5
 --- !u!114 &114888345249068578
 MonoBehaviour:
   m_ObjectHideFlags: 1
