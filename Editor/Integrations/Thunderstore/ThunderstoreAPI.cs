@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
@@ -65,14 +62,5 @@ namespace ThunderKit.Integrations.Thunderstore
             return nameMatch || fullNameMatch || latestFullNameMatch;
         }
 
-        public static void DownloadLatestPackage(PackageListing package, string filePath)
-        {
-            DownloadPackage(package.versions.OrderByDescending(pck => pck.version_number).First(), filePath);
-        }
-
-        public static UnityWebRequestAsyncOperation DownloadPackage(PackageVersion package, string filePath)
-        {
-            return PackageHelper.DownloadPackage(package.download_url, filePath);
-        }
     }
 }
