@@ -12,6 +12,8 @@ namespace ThunderKit.Core.Manifests
 {
     public class Manifest : ComposableObject
     {
+        [SerializeField] private ManifestIdentity identity;
+
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Manifest), priority = Constants.ThunderKitMenuPriority)]
         public static void Create()
         {
@@ -37,8 +39,22 @@ namespace ThunderKit.Core.Manifests
                 yield return ret;
         }
 
-        [HideInInspector]
-        public ManifestIdentity Identity;
+        public ManifestIdentity Identity
+        {
+            get
+            {
+                if (identity)
+                    return identity;
+                else
+                {
+                    identity = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(this)).OfType<ManifestIdentity>().FirstOrDefault();
+                    EditorUtility.SetDirty(this);
+                }
+                return identity;
+            }
+
+            set => identity = value;
+        }
 
         public override Type ElementType => typeof(ManifestDatum);
 

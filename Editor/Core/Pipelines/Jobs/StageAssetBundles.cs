@@ -56,7 +56,7 @@ namespace ThunderKit.Pipelines.Jobs
                     var build = builds[buildsIndex];
 
                     var assets = new List<string>();
-                    
+
                     logBuilder.AppendLine($"Building bundle: {def.assetBundleName}");
 
                     var firstAsset = def.assets.FirstOrDefault(x => x is SceneAsset);
@@ -120,7 +120,7 @@ namespace ThunderKit.Pipelines.Jobs
                 for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.Manifests.Length; pipeline.ManifestIndex++)
                 {
                     var manifest = pipeline.Manifest;
-                    foreach(var assetBundleDef in manifest.Data.OfType<AssetBundleDefinitions>())
+                    foreach (var assetBundleDef in manifest.Data.OfType<AssetBundleDefinitions>())
                     {
                         var bundleNames = assetBundleDef.assetBundles.Select(ab => ab.assetBundleName).ToArray();
                         foreach (var outputPath in assetBundleDef.StagingPaths.Select(path => path.Resolve(pipeline, this)))
@@ -142,12 +142,12 @@ namespace ThunderKit.Pipelines.Jobs
                                 if (!found) continue;
                                 string destFileName = filePath.Replace(bundleArtifactPath, outputPath);
                                 Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
-                                File.Copy(filePath, destFileName, true);
+                                FileUtil.ReplaceFile(filePath, destFileName);
                             }
 
-                            File.Copy(Path.Combine(bundleArtifactPath, $"{Path.GetFileName(bundleArtifactPath)}.manifest"),
-                                      Path.Combine(outputPath, $"{manifest.Identity.Name}.manifest"),
-                                      true);
+                            var manifestSource = Path.Combine(bundleArtifactPath, $"{Path.GetFileName(bundleArtifactPath)}.manifest");
+                            var manifestDestination = Path.Combine(outputPath, $"{manifest.Identity.Name}.manifest");
+                            FileUtil.ReplaceFile(manifestSource, manifestDestination);
                         }
                     }
                 }
