@@ -12,7 +12,7 @@ namespace ThunderKit.Core.Manifests
 {
     public class Manifest : ComposableObject
     {
-        [SerializeField] private ManifestIdentity identity;
+        [SerializeField, HideInInspector] private ManifestIdentity identity;
 
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Manifest), priority = Constants.ThunderKitMenuPriority)]
         public static void Create()
