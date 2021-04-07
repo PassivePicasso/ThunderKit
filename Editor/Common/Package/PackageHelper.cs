@@ -11,31 +11,6 @@ namespace ThunderKit.Common.Package
 {
     public static class PackageHelper
     {
-        public static UnityWebRequestAsyncOperation DownloadPackage(string url, string filePath)
-        {
-            var webRequest = UnityWebRequest.Get(url);
-            var asyncOpRequest = webRequest.SendWebRequest();
-            Action<object> onDownloaded = null;
-            onDownloaded = (obj) =>
-            {
-                asyncOpRequest.completed -= onDownloaded;
-
-#if UNITY_2020_1_OR_NEWER
-                if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
-#else
-                if (webRequest.isNetworkError || webRequest.isHttpError)
-#endif
-                    Debug.Log(webRequest.error);
-                else
-                    File.WriteAllBytes(Path.ChangeExtension(filePath, "dl"), webRequest.downloadHandler.data);
-
-                if (File.Exists(filePath)) File.Delete(filePath);
-                File.Move(Path.ChangeExtension(filePath, "dl"), filePath);
-            };
-            asyncOpRequest.completed += onDownloaded;
-            return asyncOpRequest;
-        }
-
         public static void GeneratePackageManifest(string packageName, string outputDir, string modName, string authorAlias, string modVersion, string description = null)
         {
             string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
