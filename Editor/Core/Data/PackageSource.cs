@@ -63,7 +63,7 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        
+
 
         public DateTime lastUpdateTime;
         public abstract string Name { get; }
@@ -218,7 +218,7 @@ namespace ThunderKit.Core.Data
             foreach (var installableForManifestCreation in installSet)
             {
                 var installableGroup = installableForManifestCreation.group;
-                var assetTempPath = Path.Combine(tempRoot, $"{installableGroup.PackageName}.asset");
+                var assetTempPath = PathExtensions.Combine(tempRoot, $"{installableGroup.PackageName}.asset");
                 if (AssetDatabase.LoadAssetAtPath<Manifest>(assetTempPath))
                     AssetDatabase.DeleteAsset(assetTempPath);
 
@@ -235,35 +235,34 @@ namespace ThunderKit.Core.Data
             }
             foreach (var installableForDependencies in installSet)
             {
-                var manifestAssetPath = Path.Combine(tempRoot, $"{installableForDependencies.group.PackageName}.asset");
-                var allReps = AssetDatabase.LoadAllAssetsAtPath(manifestAssetPath);
-                var allIdents = allReps.OfType<ManifestIdentity>();
-                var identity = allIdents.First();
+                var manifestAssetPath = PathExtensions.Combine(tempRoot, $"{installableForDependencies.group.PackageName}.asset");
+                var installableManifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestAssetPath);
+                var identity = installableManifest.Identity;
                 identity.Dependencies = new Manifest[installableForDependencies.dependencies.Length];
                 for (int i = 0; i < installableForDependencies.dependencies.Length; i++)
                 {
                     var installableDependency = installableForDependencies.dependencies[i];
-                    var dependencyAssetTempPath = Path.Combine(tempRoot, $"{installableDependency.group.PackageName}.asset");
+                    var manifestFileName = $"{installableDependency.group.PackageName}.asset";
+                    var dependencyAssetTempPath = PathExtensions.Combine(tempRoot, manifestFileName);
                     var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetTempPath);
-                    if (!manifest)
-                    {
-                        var dependencyAssetPackagePath = PathExtensions.Combine("Packages", installableDependency.dependencyId, $"{installableDependency.group.PackageName}.asset");
-                        manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetPackagePath);
-                    }
-                    if (!manifest)
-                    {
-                        string[] manifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)} {installableDependency.group.PackageName}",
-                                                              new string[] { "Assets", "Packages" });
+                    string[] packageManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", new string[] { "Assets", "Packages" }).Select(x => AssetDatabase.GUIDToAssetPath(x)).ToArray();
 
-                        manifest = manifests.Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<Manifest>).First();
-                    }
+                    if (!manifest)
+                        manifest = AssetDatabase.LoadAssetAtPath<Manifest>(PathExtensions.Combine(installableDependency.group.PackageDirectory, manifestFileName));
+
+                    if (!manifest)
+                        manifest = packageManifests.Where(x => x.Contains(manifestFileName)).Select(x => AssetDatabase.LoadAssetAtPath<Manifest>(x)).FirstOrDefault();
+
                     identity.Dependencies[i] = manifest;
+                    EditorUtility.SetDirty(installableManifest);
+                    EditorUtility.SetDirty(identity);
                 }
             }
+            AssetDatabase.SaveAssets();
             foreach (var installableForManifestMove in installSet)
             {
-                var assetTempPath = Path.Combine(tempRoot, $"{installableForManifestMove.group.PackageName}.asset");
-                var assetPackagePath = Path.Combine(installableForManifestMove.group.PackageDirectory, $"{installableForManifestMove.group.PackageName}.asset");
+                var assetTempPath = PathExtensions.Combine(tempRoot, $"{installableForManifestMove.group.PackageName}.asset");
+                var assetPackagePath = PathExtensions.Combine(installableForManifestMove.group.PackageDirectory, $"{installableForManifestMove.group.PackageName}.asset");
 
                 var fileData = File.ReadAllText(assetTempPath);
 
