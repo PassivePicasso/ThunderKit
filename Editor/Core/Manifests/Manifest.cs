@@ -43,13 +43,14 @@ namespace ThunderKit.Core.Manifests
         {
             get
             {
-                if (identity)
-                    return identity;
-                else
+                if (identity == null)
                 {
-                    identity = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(this)).OfType<ManifestIdentity>().FirstOrDefault();
+                    var path = AssetDatabase.GetAssetPath(this);
+                    var reps = AssetDatabase.LoadAllAssetsAtPath(path);
+                    identity = reps.OfType<ManifestIdentity>().FirstOrDefault();
                     EditorUtility.SetDirty(this);
                 }
+
                 return identity;
             }
 
