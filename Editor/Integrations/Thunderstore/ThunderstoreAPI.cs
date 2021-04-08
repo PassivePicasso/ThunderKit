@@ -21,7 +21,7 @@ namespace ThunderKit.Integrations.Thunderstore
             var packages = new List<PackageListing>();
             var webRequest = UnityWebRequest.Get(PackageListApi);
             var asyncOpRequest = webRequest.SendWebRequest();
-            
+
             asyncOpRequest.completed += (obj) =>
             {
                 var response = string.Empty;
@@ -47,7 +47,10 @@ namespace ThunderKit.Integrations.Thunderstore
         public static IEnumerable<PackageListing> LookupPackage(string name)
         {
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
-            return settings.LoadedPages.Where(package => IsMatch(package, name)).ToArray();
+            if (settings == null || settings.LoadedPages == null || settings.LoadedPages.Count == 0)
+                return Enumerable.Empty<PackageListing>();
+            else
+                return settings.LoadedPages.Where(package => IsMatch(package, name)).ToArray();
         }
 
         static bool IsMatch(PackageListing package, string name)
