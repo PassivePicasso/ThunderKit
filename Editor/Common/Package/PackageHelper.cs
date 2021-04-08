@@ -50,12 +50,15 @@ namespace ThunderKit.Common.Package
         /// </summary>
         /// <param name="assemblyPath">Path to asset to generate meta file for</param>
         /// <param name="metadataPath">Path to write meta file to</param>
-        public static void WriteAssetMetaData(string assetPath, string metadataPath)
+        public static void WriteAssetMetaData(string assetPath)
         {
             string guid = GetFileNameHash(assetPath);
             string metaData = DefaultAssemblyMetaData(guid);
+
+            var metadataPath = $"{assetPath}.meta";
             if (File.Exists(metadataPath)) File.Delete(metadataPath);
             File.WriteAllText(metadataPath, metaData);
+
         }
 
         public static string GetFileNameHash(string assemblyPath)

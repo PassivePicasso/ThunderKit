@@ -203,7 +203,10 @@ namespace ThunderKit.Core.Data
             var installSet = EnumerateDependencies(package).Where(dep => !dep.group.Installed).ToArray();
             var progress = 0.01f;
             var stepSize = 0.33f / installSet.Length;
+
+            //Wait till all files are put in place to load new assemblies to make installation more consistent and faster
             EditorApplication.LockReloadAssemblies();
+
             EditorUtility.DisplayProgressBar("Loading Packages", $"{installSet.Length} packages", progress);
             foreach (var installable in installSet)
             {
@@ -229,6 +232,8 @@ namespace ThunderKit.Core.Data
             }
 
             AssetDatabase.SaveAssets();
+            //Refresh here to update the AssetDatabase so that it can manage the creation of Manifests in the packages via the Unity Package path notation
+            //e.g Packages/com.passivepicasso.thunderkit/Editor
             AssetDatabase.Refresh();
 
             EditorUtility.DisplayProgressBar("Loading Packages", $"Creating {installSet.Length} manifests", progress);
@@ -246,17 +251,20 @@ namespace ThunderKit.Core.Data
                 identity.Description = installableGroup.Description;
                 identity.Name = installableGroup.PackageName;
                 identity.Version = version;
+
                 var manifest = ScriptableHelper.EnsureAsset<Manifest>(manifestPath);
                 manifest.InsertElement(identity, 0);
                 manifest.Identity = identity;
-                PackageHelper.WriteAssetMetaData(manifestPath, $"{manifestPath}.meta");
+                PackageHelper.WriteAssetMetaData(manifestPath);
             }
+            //Refresh here to update the AssetDatabase's representation of the Assets with ThunderKit managed Meta files
+            AssetDatabase.Refresh();
 
             EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installSet.Length} manifests", progress);
             foreach (var installable in installSet)
             {
-                var manifestAssetPath = PathExtensions.Combine(installable.group.PackageDirectory, $"{installable.group.PackageName}.asset");
-                var installableManifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestAssetPath);
+                var manifestPath = PathExtensions.Combine(installable.group.PackageDirectory, $"{installable.group.PackageName}.asset");
+                var installableManifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath);
                 var identity = installableManifest.Identity;
                 EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installable.group.PackageName}", progress);
                 identity.Dependencies = new Manifest[installable.dependencies.Length];
