@@ -32,7 +32,8 @@ namespace ThunderKit.Core.Data
         public string[] Tags;
         public PackageSource Source;
         public PackageVersion[] Versions;
-        public string PackageDirectory => Path.Combine("Packages", PackageName);
+        public string InstallDirectory => Path.Combine("Packages", PackageName);
+        public string PackageDirectory => Path.Combine("Packages", DependencyId);
         public bool HasString(string value)
         {
             var compareInfo = CultureInfo.InvariantCulture.CompareInfo;
@@ -58,9 +59,9 @@ namespace ThunderKit.Core.Data
         {
             get
             {
-                if (!File.Exists(Path.Combine(PackageDirectory, "package.json"))) return null;
+                if (!File.Exists(Path.Combine(InstallDirectory, "package.json"))) return null;
 
-                var pmm = PackageHelper.GetPackageManagerManifest(PackageDirectory);
+                var pmm = PackageHelper.GetPackageManagerManifest(InstallDirectory);
                 return pmm.version;
             }
         }
@@ -69,11 +70,9 @@ namespace ThunderKit.Core.Data
         {
             get
             {
-                if (!File.Exists(Path.Combine(PackageDirectory, "package.json"))) return false;
+                if (!File.Exists(Path.Combine(InstallDirectory, "package.json"))) return false;
 
-                var pmm = PackageHelper.GetPackageManagerManifest(PackageDirectory);
-                //var packageVersion = this[pmm.version];
-
+                var pmm = PackageHelper.GetPackageManagerManifest(InstallDirectory);
                 return pmm.name.Equals(DependencyId, StringComparison.OrdinalIgnoreCase);
             }
         }
