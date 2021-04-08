@@ -263,7 +263,7 @@ namespace ThunderKit.Core.Editor.Windows
         private void BindPackageView(PackageGroup selection)
         {
             if (selection.Installed)
-                targetVersion = PackageHelper.GetPackageManagerManifest(selection.PackageDirectory).version;
+                targetVersion = PackageHelper.GetPackageManagerManifest(selection.InstallDirectory).version;
             else
                 targetVersion = selection["latest"].version;
 
@@ -329,7 +329,7 @@ namespace ThunderKit.Core.Editor.Windows
             if (selection.Installed)
             {
                 deletePackage = CreateInstance<DeletePackage>();
-                deletePackage.directory = selection.PackageDirectory;
+                deletePackage.directory = selection.InstallDirectory;
                 TryDelete();
                 AssetDatabase.Refresh();
             }

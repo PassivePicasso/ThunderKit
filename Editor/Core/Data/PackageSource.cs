@@ -197,93 +197,100 @@ namespace ThunderKit.Core.Data
 
         public void InstallPackage(PackageGroup group, string version)
         {
+            if (EditorApplication.isCompiling) return;
             var package = group[version];
 
             var installSet = EnumerateDependencies(package).Where(dep => !dep.group.Installed).ToArray();
-
+            var progress = 0.01f;
+            var stepSize = 0.33f / installSet.Length;
+            EditorApplication.LockReloadAssemblies();
+            EditorUtility.DisplayProgressBar("Loading Packages", $"{installSet.Length} packages", progress);
             foreach (var installable in installSet)
             {
+                EditorUtility.DisplayProgressBar("Loading Packages", $"Downloading {installable.group.PackageName}", progress += stepSize / 2);
+
                 //This will cause repeated installation of dependencies
-                if (Directory.Exists(installable.group.PackageDirectory)) Directory.Delete(installable.group.PackageDirectory, true);
-                Directory
-                    .CreateDirectory(installable.group.PackageDirectory);
+                string packageDirectory = installable.group.InstallDirectory;
 
-                installable.group.Source.OnInstallPackageFiles(installable, installable.group.PackageDirectory);
+                if (Directory.Exists(packageDirectory)) Directory.Delete(packageDirectory, true);
+                Directory.CreateDirectory(packageDirectory);
 
-                foreach (var assemblyPath in Directory.GetFiles(installable.group.PackageDirectory, "*.dll", SearchOption.AllDirectories))
+                installable.group.Source.OnInstallPackageFiles(installable, packageDirectory);
+
+                foreach (var assemblyPath in Directory.GetFiles(packageDirectory, "*.dll", SearchOption.AllDirectories))
                     PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
-            }
-            var tempRoot = PathExtensions.Combine("Assets", "ThunderKitSettings", "Temp");
-            Directory.CreateDirectory(tempRoot);
-            foreach (var installableForManifestCreation in installSet)
-            {
-                var installableGroup = installableForManifestCreation.group;
-                var assetTempPath = PathExtensions.Combine(tempRoot, $"{installableGroup.PackageName}.asset");
-                if (AssetDatabase.LoadAssetAtPath<Manifest>(assetTempPath))
-                    AssetDatabase.DeleteAsset(assetTempPath);
 
+                EditorUtility.DisplayProgressBar("Loading Packages", $"Creating package.json for {installable.group.PackageName}", progress += stepSize / 2);
+                PackageHelper.GeneratePackageManifest(
+                      installable.group.DependencyId.ToLower(), installable.group.InstallDirectory,
+                      installable.group.PackageName, installable.group.Author,
+                      installable.version,
+                      installable.group.Description);
+            }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            EditorUtility.DisplayProgressBar("Loading Packages", $"Creating {installSet.Length} manifests", progress);
+            foreach (var installable in installSet)
+            {
+                var installableGroup = installable.group;
+                var manifestPath = PathExtensions.Combine(installableGroup.PackageDirectory, $"{installableGroup.PackageName}.asset");
+                if (AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath))
+                    AssetDatabase.DeleteAsset(manifestPath);
+
+                EditorUtility.DisplayProgressBar("Loading Packages", $"Creating manifest for {installable.group.PackageName}", progress += stepSize);
                 var identity = CreateInstance<ManifestIdentity>();
                 identity.name = nameof(ManifestIdentity);
                 identity.Author = installableGroup.Author;
                 identity.Description = installableGroup.Description;
                 identity.Name = installableGroup.PackageName;
                 identity.Version = version;
-                var manifest = ScriptableHelper.EnsureAsset<Manifest>(assetTempPath);
+                var manifest = ScriptableHelper.EnsureAsset<Manifest>(manifestPath);
                 manifest.InsertElement(identity, 0);
                 manifest.Identity = identity;
-                PackageHelper.WriteAssetMetaData(assetTempPath, $"{assetTempPath}.meta");
+                PackageHelper.WriteAssetMetaData(manifestPath, $"{manifestPath}.meta");
             }
-            foreach (var installableForDependencies in installSet)
+
+            EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installSet.Length} manifests", progress);
+            foreach (var installable in installSet)
             {
-                var manifestAssetPath = PathExtensions.Combine(tempRoot, $"{installableForDependencies.group.PackageName}.asset");
+                var manifestAssetPath = PathExtensions.Combine(installable.group.PackageDirectory, $"{installable.group.PackageName}.asset");
                 var installableManifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestAssetPath);
                 var identity = installableManifest.Identity;
-                identity.Dependencies = new Manifest[installableForDependencies.dependencies.Length];
-                for (int i = 0; i < installableForDependencies.dependencies.Length; i++)
+                EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installable.group.PackageName}", progress);
+                identity.Dependencies = new Manifest[installable.dependencies.Length];
+                for (int i = 0; i < installable.dependencies.Length; i++)
                 {
-                    var installableDependency = installableForDependencies.dependencies[i];
+                    var installableDependency = installable.dependencies[i];
+
+                    EditorUtility.DisplayProgressBar("Loading Packages",
+                                                     $"Assigning {installableDependency.group.PackageName} to {identity.Name}",
+                                                     progress += stepSize / installable.dependencies.Length);
+
                     var manifestFileName = $"{installableDependency.group.PackageName}.asset";
-                    var dependencyAssetTempPath = PathExtensions.Combine(tempRoot, manifestFileName);
+                    var dependencyAssetTempPath = PathExtensions.Combine(installableDependency.group.PackageDirectory, manifestFileName);
                     var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetTempPath);
-                    string[] packageManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", new string[] { "Assets", "Packages" }).Select(x => AssetDatabase.GUIDToAssetPath(x)).ToArray();
 
                     if (!manifest)
-                        manifest = AssetDatabase.LoadAssetAtPath<Manifest>(PathExtensions.Combine(installableDependency.group.PackageDirectory, manifestFileName));
-
-                    if (!manifest)
+                    {
+                        var packageManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", new string[] { "Assets", "Packages" }).Select(x => AssetDatabase.GUIDToAssetPath(x)).ToArray();
                         manifest = packageManifests.Where(x => x.Contains(manifestFileName)).Select(x => AssetDatabase.LoadAssetAtPath<Manifest>(x)).FirstOrDefault();
+                    }
 
                     identity.Dependencies[i] = manifest;
-                    EditorUtility.SetDirty(installableManifest);
-                    EditorUtility.SetDirty(identity);
                 }
+                EditorUtility.SetDirty(installable);
+                EditorUtility.SetDirty(identity);
             }
+
+            EditorUtility.ClearProgressBar();
             AssetDatabase.SaveAssets();
-            foreach (var installableForManifestMove in installSet)
-            {
-                var assetTempPath = PathExtensions.Combine(tempRoot, $"{installableForManifestMove.group.PackageName}.asset");
-                var assetPackagePath = PathExtensions.Combine(installableForManifestMove.group.PackageDirectory, $"{installableForManifestMove.group.PackageName}.asset");
-
-                var fileData = File.ReadAllText(assetTempPath);
-
-                AssetDatabase.DeleteAsset(assetTempPath);
-
-                File.WriteAllText(assetPackagePath, fileData);
-                PackageHelper.WriteAssetMetaData(assetPackagePath, $"{assetPackagePath}.meta");
-            }
-            foreach (var installable in installSet)
-                PackageHelper.GeneratePackageManifest(
-                    installable.group.DependencyId.ToLower(), installable.group.PackageDirectory,
-                    installable.group.PackageName, installable.group.Author,
-                    installable.version,
-                    installable.group.Description);
-
-            Directory.Delete(tempRoot);
-            File.Delete($"{tempRoot}.meta");
 
             EditorApplication.update += OneRefresh;
 
             RefreshWait = EditorApplication.timeSinceStartup;
+            EditorApplication.UnlockReloadAssemblies();
         }
 
         double RefreshWait = 0;
