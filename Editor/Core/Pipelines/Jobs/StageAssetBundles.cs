@@ -35,7 +35,18 @@ namespace ThunderKit.Pipelines.Jobs
             var bundleArtifactPath = BundleArtifactPath.Resolve(pipeline, this);
             Directory.CreateDirectory(bundleArtifactPath);
 
+            var explicitAssets = assetBundleDefs
+                                .SelectMany(abd => abd.assetBundles)
+                                .SelectMany(ab => ab.assets)
+                                .ToArray();
+
+            var explicitAssetPaths = new List<string>();
+            PopulateWithExplicitAssets(explicitAssets, explicitAssetPaths);
+
+            var logBuilder = new StringBuilder();
             var builds = new AssetBundleBuild[assetBundleDefs.Sum(abd => abd.assetBundles.Length)];
+            logBuilder.AppendLine($"Defining {builds.Length} AssetBundleBuilds");
+
             var buildsIndex = 0;
             for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
             {
@@ -45,56 +56,36 @@ namespace ThunderKit.Pipelines.Jobs
                 var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
 
                 var fileCount = 0;
-
-                var logBuilder = new StringBuilder();
-                logBuilder.AppendLine("Constructing AssetBundles");
                 for (int i = 0; i < assetBundleDef.assetBundles.Length; i++)
                 {
                     var def = assetBundleDef.assetBundles[i];
 
-                    var explicitAssets = assetBundleDef.assetBundles.Where((ab, abi) => abi != i).SelectMany(ab => ab.assets).Select(asset => AssetDatabase.GetAssetPath(asset)).ToArray();
+
                     var build = builds[buildsIndex];
 
                     var assets = new List<string>();
 
-                    logBuilder.AppendLine($"Building bundle: {def.assetBundleName}");
+                    logBuilder.AppendLine("--------------------------------------------------");
+                    logBuilder.AppendLine($"Defining bundle: {def.assetBundleName}");
+                    logBuilder.AppendLine();
 
                     var firstAsset = def.assets.FirstOrDefault(x => x is SceneAsset);
 
                     if (firstAsset != null) assets.Add(AssetDatabase.GetAssetPath(firstAsset));
                     else
-                        foreach (var asset in def.assets)
-                        {
-                            var assetPath = AssetDatabase.GetAssetPath(asset);
+                    {
+                        PopulateWithExplicitAssets(def.assets, assets);
 
-                            if (AssetDatabase.IsValidFolder(assetPath))
-                                assets.AddRange(Directory.GetFiles(assetPath, "*", SearchOption.AllDirectories)
-                                      .SelectMany(ap => AssetDatabase.GetDependencies(ap).Union(new[] { ap })));
-
-                            else if (asset is UnityPackage up)
-                            {
-                                if (up.exportPackageOptions.HasFlag(ExportPackageOptions.Recurse))
-                                    foreach (var upAsset in up.AssetFiles)
-                                    {
-                                        var path = AssetDatabase.GetAssetPath(upAsset);
-                                        if (AssetDatabase.IsValidFolder(path))
-                                            assets.AddRange(Directory.GetFiles(path, "*", SearchOption.AllDirectories)
-                                                  .SelectMany(ap => AssetDatabase.GetDependencies(ap).Union(new[] { ap })));
-                                        else
-                                            assets.Add(path);
-                                    }
-                            }
-                            else
-                                assets.AddRange(AssetDatabase.GetDependencies(assetPath)
-                                    .Where(ap => AssetDatabase.GetMainAssetTypeAtPath(ap) != typeof(UnityPackage))
-                                    .Union(new[] { assetPath }));
-                        }
+                        var dependencies = assets
+                            .SelectMany(assetPath => AssetDatabase.GetDependencies(assetPath))
+                            .Where(dap => !explicitAssetPaths.Contains(dap))
+                            .ToArray();
+                        assets.AddRange(dependencies);
+                    }
 
                     build.assetNames = assets
                         .Select(ap => ap.Replace("\\", "/"))
-                        //.Where(dap => !explicitDownstreamAssets.Contains(dap))
-                        .Where(dap => !ArrayUtility.Contains(explicitAssets, dap) &&
-                                      !ArrayUtility.Contains(excludedExtensions, Path.GetExtension(dap)) &&
+                        .Where(dap => !ArrayUtility.Contains(excludedExtensions, Path.GetExtension(dap)) &&
                                       !ArrayUtility.Contains(sourceFiles, dap) &&
                                       !ArrayUtility.Contains(assemblyFiles, dap) &&
                                       !AssetDatabase.IsValidFolder(dap))
@@ -104,19 +95,18 @@ namespace ThunderKit.Pipelines.Jobs
                     builds[buildsIndex] = build;
                     buildsIndex++;
 
-                    fileCount += build.assetNames.Length;
                     foreach (var asset in build.assetNames)
                         logBuilder.AppendLine(asset);
-                }
-                logBuilder.AppendLine($"Constructed {builds.Length} AssetBundleBuilds with {fileCount} files.");
 
-                Debug.Log(logBuilder.ToString());
+                    logBuilder.AppendLine("--------------------------------------------------");
+                    logBuilder.AppendLine();
+                }
             }
+            Debug.Log(logBuilder.ToString());
 
             if (!simulate)
             {
-                var allBuilds = builds.ToArray();
-                BuildPipeline.BuildAssetBundles(bundleArtifactPath, allBuilds, AssetBundleBuildOptions, buildTarget);
+                BuildPipeline.BuildAssetBundles(bundleArtifactPath, builds, AssetBundleBuildOptions, buildTarget);
                 for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.Manifests.Length; pipeline.ManifestIndex++)
                 {
                     var manifest = pipeline.Manifest;
@@ -152,6 +142,29 @@ namespace ThunderKit.Pipelines.Jobs
                     }
                 }
                 pipeline.ManifestIndex = -1;
+            }
+        }
+
+        private static void PopulateWithExplicitAssets(IEnumerable<Object> inputAssets, List<string> outputAssets)
+        {
+            foreach (var asset in inputAssets)
+            {
+                var assetPath = AssetDatabase.GetAssetPath(asset);
+
+                if (AssetDatabase.IsValidFolder(assetPath))
+                {
+                    var files = Directory.GetFiles(assetPath, "*", SearchOption.AllDirectories);
+                    var assets = files.Select(path => AssetDatabase.LoadAssetAtPath<Object>(path));
+                    PopulateWithExplicitAssets(assets, outputAssets);
+                }
+                else if (asset is UnityPackage up)
+                {
+                    PopulateWithExplicitAssets(up.AssetFiles, outputAssets);
+                }
+                else
+                {
+                    outputAssets.Add(assetPath);
+                }
             }
         }
     }
