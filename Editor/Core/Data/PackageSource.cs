@@ -246,19 +246,20 @@ namespace ThunderKit.Core.Data
                         AssetDatabase.DeleteAsset(manifestPath);
 
                     EditorUtility.DisplayProgressBar("Loading Packages", $"Creating manifest for {installable.group.PackageName}", progress += stepSize);
-                    var identity = CreateInstance<ManifestIdentity>();
+
+                    var manifest = ScriptableObject.CreateInstance<Manifest>();
+                    AssetDatabase.CreateAsset(manifest, manifestPath);
+                    PackageHelper.WriteAssetMetaData(manifestPath);
+                    AssetDatabase.Refresh();
+
+                    var identity = ScriptableObject.CreateInstance<ManifestIdentity>();
                     identity.name = nameof(ManifestIdentity);
                     identity.Author = installableGroup.Author;
                     identity.Description = installableGroup.Description;
                     identity.Name = installableGroup.PackageName;
                     identity.Version = version;
-
-                    var manifest = ScriptableHelper.EnsureAsset<Manifest>(manifestPath);
                     manifest.InsertElement(identity, 0);
                     manifest.Identity = identity;
-                    PackageHelper.WriteAssetMetaData(manifestPath);
-                    EditorUtility.SetDirty(manifest);
-                    EditorUtility.SetDirty(identity);
                 }
                 //Refresh here to update the AssetDatabase's representation of the Assets with ThunderKit managed Meta files
                 AssetDatabase.SaveAssets();
