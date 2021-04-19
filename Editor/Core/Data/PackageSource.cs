@@ -257,8 +257,11 @@ namespace ThunderKit.Core.Data
                     manifest.InsertElement(identity, 0);
                     manifest.Identity = identity;
                     PackageHelper.WriteAssetMetaData(manifestPath);
+                    EditorUtility.SetDirty(manifest);
+                    EditorUtility.SetDirty(identity);
                 }
                 //Refresh here to update the AssetDatabase's representation of the Assets with ThunderKit managed Meta files
+                AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
 
                 EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installSet.Length} manifests", progress);
@@ -289,7 +292,7 @@ namespace ThunderKit.Core.Data
 
                         identity.Dependencies[i] = manifest;
                     }
-                    EditorUtility.SetDirty(installable);
+                    EditorUtility.SetDirty(installableManifest);
                     EditorUtility.SetDirty(identity);
                 }
             }
