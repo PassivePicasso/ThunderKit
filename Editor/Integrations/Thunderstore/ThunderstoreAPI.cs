@@ -14,10 +14,11 @@ namespace ThunderKit.Integrations.Thunderstore
     /// </summary>
     public class ThunderstoreAPI
     {
-        static string PackageListApi => ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl + "/api/v1/package";
+        static string PackageListApi => ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl + "/api/v1/package/";
 
         public static void ReloadPages()
         {
+            Debug.Log($"Updating Package listing against {PackageListApi}");
             var packages = new List<PackageListing>();
             var webRequest = UnityWebRequest.Get(PackageListApi);
             var asyncOpRequest = webRequest.SendWebRequest();
@@ -33,14 +34,16 @@ namespace ThunderKit.Integrations.Thunderstore
 #endif
                     Debug.Log(webRequest.error);
                 else
+                {
                     response = webRequest.downloadHandler.text;
 
-                var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
-                packages.AddRange(resultSet.results);
-                var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
-                settings.LoadedPages = packages;
-                EditorUtility.SetDirty(settings);
-                Debug.Log($"Package listing update: {PackageListApi}");
+                    var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
+                    packages.AddRange(resultSet.results);
+                    var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
+                    settings.LoadedPages = packages;
+                    EditorUtility.SetDirty(settings);
+                    Debug.Log($"Package listing update: {PackageListApi}");
+                }
             };
         }
 
