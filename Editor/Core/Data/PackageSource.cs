@@ -206,99 +206,103 @@ namespace ThunderKit.Core.Data
 
             //Wait till all files are put in place to load new assemblies to make installation more consistent and faster
             EditorApplication.LockReloadAssemblies();
-
-            EditorUtility.DisplayProgressBar("Loading Packages", $"{installSet.Length} packages", progress);
-            foreach (var installable in installSet)
+            try
             {
-                EditorUtility.DisplayProgressBar("Loading Packages", $"Downloading {installable.group.PackageName}", progress += stepSize / 2);
-
-                //This will cause repeated installation of dependencies
-                string packageDirectory = installable.group.InstallDirectory;
-
-                if (Directory.Exists(packageDirectory)) Directory.Delete(packageDirectory, true);
-                Directory.CreateDirectory(packageDirectory);
-
-                installable.group.Source.OnInstallPackageFiles(installable, packageDirectory);
-
-                foreach (var assemblyPath in Directory.GetFiles(packageDirectory, "*.dll", SearchOption.AllDirectories))
-                    PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
-
-                EditorUtility.DisplayProgressBar("Loading Packages", $"Creating package.json for {installable.group.PackageName}", progress += stepSize / 2);
-                PackageHelper.GeneratePackageManifest(
-                      installable.group.DependencyId.ToLower(), installable.group.InstallDirectory,
-                      installable.group.PackageName, installable.group.Author,
-                      installable.version,
-                      installable.group.Description);
-            }
-
-            AssetDatabase.SaveAssets();
-            //Refresh here to update the AssetDatabase so that it can manage the creation of Manifests in the packages via the Unity Package path notation
-            //e.g Packages/com.passivepicasso.thunderkit/Editor
-            AssetDatabase.Refresh();
-
-            EditorUtility.DisplayProgressBar("Loading Packages", $"Creating {installSet.Length} manifests", progress);
-            foreach (var installable in installSet)
-            {
-                var installableGroup = installable.group;
-                var manifestPath = PathExtensions.Combine(installableGroup.PackageDirectory, $"{installableGroup.PackageName}.asset");
-                if (AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath))
-                    AssetDatabase.DeleteAsset(manifestPath);
-
-                EditorUtility.DisplayProgressBar("Loading Packages", $"Creating manifest for {installable.group.PackageName}", progress += stepSize);
-                var identity = CreateInstance<ManifestIdentity>();
-                identity.name = nameof(ManifestIdentity);
-                identity.Author = installableGroup.Author;
-                identity.Description = installableGroup.Description;
-                identity.Name = installableGroup.PackageName;
-                identity.Version = version;
-
-                var manifest = ScriptableHelper.EnsureAsset<Manifest>(manifestPath);
-                manifest.InsertElement(identity, 0);
-                manifest.Identity = identity;
-                PackageHelper.WriteAssetMetaData(manifestPath);
-            }
-            //Refresh here to update the AssetDatabase's representation of the Assets with ThunderKit managed Meta files
-            AssetDatabase.Refresh();
-
-            EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installSet.Length} manifests", progress);
-            foreach (var installable in installSet)
-            {
-                var manifestPath = PathExtensions.Combine(installable.group.PackageDirectory, $"{installable.group.PackageName}.asset");
-                var installableManifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath);
-                var identity = installableManifest.Identity;
-                EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installable.group.PackageName}", progress);
-                identity.Dependencies = new Manifest[installable.dependencies.Length];
-                for (int i = 0; i < installable.dependencies.Length; i++)
+                EditorUtility.DisplayProgressBar("Loading Packages", $"{installSet.Length} packages", progress);
+                foreach (var installable in installSet)
                 {
-                    var installableDependency = installable.dependencies[i];
+                    EditorUtility.DisplayProgressBar("Loading Packages", $"Downloading {installable.group.PackageName}", progress += stepSize / 2);
 
-                    EditorUtility.DisplayProgressBar("Loading Packages",
-                                                     $"Assigning {installableDependency.group.PackageName} to {identity.Name}",
-                                                     progress += stepSize / installable.dependencies.Length);
+                    //This will cause repeated installation of dependencies
+                    string packageDirectory = installable.group.InstallDirectory;
 
-                    var manifestFileName = $"{installableDependency.group.PackageName}.asset";
-                    var dependencyAssetTempPath = PathExtensions.Combine(installableDependency.group.PackageDirectory, manifestFileName);
-                    var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetTempPath);
+                    if (Directory.Exists(packageDirectory)) Directory.Delete(packageDirectory, true);
+                    Directory.CreateDirectory(packageDirectory);
 
-                    if (!manifest)
-                    {
-                        var packageManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", new string[] { "Assets", "Packages" }).Select(x => AssetDatabase.GUIDToAssetPath(x)).ToArray();
-                        manifest = packageManifests.Where(x => x.Contains(manifestFileName)).Select(x => AssetDatabase.LoadAssetAtPath<Manifest>(x)).FirstOrDefault();
-                    }
+                    installable.group.Source.OnInstallPackageFiles(installable, packageDirectory);
 
-                    identity.Dependencies[i] = manifest;
+                    foreach (var assemblyPath in Directory.GetFiles(packageDirectory, "*.dll", SearchOption.AllDirectories))
+                        PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
+
+                    EditorUtility.DisplayProgressBar("Loading Packages", $"Creating package.json for {installable.group.PackageName}", progress += stepSize / 2);
+                    PackageHelper.GeneratePackageManifest(
+                          installable.group.DependencyId.ToLower(), installable.group.InstallDirectory,
+                          installable.group.PackageName, installable.group.Author,
+                          installable.version,
+                          installable.group.Description);
                 }
-                EditorUtility.SetDirty(installable);
-                EditorUtility.SetDirty(identity);
+
+                AssetDatabase.SaveAssets();
+                //Refresh here to update the AssetDatabase so that it can manage the creation of Manifests in the packages via the Unity Package path notation
+                //e.g Packages/com.passivepicasso.thunderkit/Editor
+                AssetDatabase.Refresh();
+
+                EditorUtility.DisplayProgressBar("Loading Packages", $"Creating {installSet.Length} manifests", progress);
+                foreach (var installable in installSet)
+                {
+                    var installableGroup = installable.group;
+                    var manifestPath = PathExtensions.Combine(installableGroup.PackageDirectory, $"{installableGroup.PackageName}.asset");
+                    if (AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath))
+                        AssetDatabase.DeleteAsset(manifestPath);
+
+                    EditorUtility.DisplayProgressBar("Loading Packages", $"Creating manifest for {installable.group.PackageName}", progress += stepSize);
+                    var identity = CreateInstance<ManifestIdentity>();
+                    identity.name = nameof(ManifestIdentity);
+                    identity.Author = installableGroup.Author;
+                    identity.Description = installableGroup.Description;
+                    identity.Name = installableGroup.PackageName;
+                    identity.Version = version;
+
+                    var manifest = ScriptableHelper.EnsureAsset<Manifest>(manifestPath);
+                    manifest.InsertElement(identity, 0);
+                    manifest.Identity = identity;
+                    PackageHelper.WriteAssetMetaData(manifestPath);
+                }
+                //Refresh here to update the AssetDatabase's representation of the Assets with ThunderKit managed Meta files
+                AssetDatabase.Refresh();
+
+                EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installSet.Length} manifests", progress);
+                foreach (var installable in installSet)
+                {
+                    var manifestPath = PathExtensions.Combine(installable.group.PackageDirectory, $"{installable.group.PackageName}.asset");
+                    var installableManifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath);
+                    var identity = installableManifest.Identity;
+                    EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installable.group.PackageName}", progress);
+                    identity.Dependencies = new Manifest[installable.dependencies.Length];
+                    for (int i = 0; i < installable.dependencies.Length; i++)
+                    {
+                        var installableDependency = installable.dependencies[i];
+
+                        EditorUtility.DisplayProgressBar("Loading Packages",
+                                                         $"Assigning {installableDependency.group.PackageName} to {identity.Name}",
+                                                         progress += stepSize / installable.dependencies.Length);
+
+                        var manifestFileName = $"{installableDependency.group.PackageName}.asset";
+                        var dependencyAssetTempPath = PathExtensions.Combine(installableDependency.group.PackageDirectory, manifestFileName);
+                        var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(dependencyAssetTempPath);
+
+                        if (!manifest)
+                        {
+                            var packageManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", new string[] { "Assets", "Packages" }).Select(x => AssetDatabase.GUIDToAssetPath(x)).ToArray();
+                            manifest = packageManifests.Where(x => x.Contains(manifestFileName)).Select(x => AssetDatabase.LoadAssetAtPath<Manifest>(x)).FirstOrDefault();
+                        }
+
+                        identity.Dependencies[i] = manifest;
+                    }
+                    EditorUtility.SetDirty(installable);
+                    EditorUtility.SetDirty(identity);
+                }
             }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+                AssetDatabase.SaveAssets();
 
-            EditorUtility.ClearProgressBar();
-            AssetDatabase.SaveAssets();
+                EditorApplication.update += OneRefresh;
 
-            EditorApplication.update += OneRefresh;
-
-            RefreshWait = EditorApplication.timeSinceStartup;
-            EditorApplication.UnlockReloadAssemblies();
+                RefreshWait = EditorApplication.timeSinceStartup;
+                EditorApplication.UnlockReloadAssemblies();
+            }
         }
 
         double RefreshWait = 0;
