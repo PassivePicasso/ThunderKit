@@ -33,7 +33,7 @@ namespace ThunderKit.Core.Data
         public PackageSource Source;
         public PackageVersion[] Versions;
         public string InstallDirectory => Path.Combine("Packages", PackageName);
-        public string PackageDirectory => Path.Combine("Packages", DependencyId);
+        public string PackageDirectory => Path.Combine("Packages", DependencyId.ToLower());
         public bool HasString(string value)
         {
             var compareInfo = CultureInfo.InvariantCulture.CompareInfo;
