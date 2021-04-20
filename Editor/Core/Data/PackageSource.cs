@@ -208,23 +208,16 @@ namespace ThunderKit.Core.Data
             EditorApplication.LockReloadAssemblies();
             try
             {
-                EditorUtility.DisplayProgressBar("Loading Packages", $"{installSet.Length} packages", progress);
+                EditorUtility.DisplayProgressBar("Creating Packages", $"{installSet.Length} packages", progress);
                 foreach (var installable in installSet)
                 {
-                    EditorUtility.DisplayProgressBar("Loading Packages", $"Downloading {installable.group.PackageName}", progress += stepSize / 2);
-
                     //This will cause repeated installation of dependencies
                     string packageDirectory = installable.group.InstallDirectory;
 
                     if (Directory.Exists(packageDirectory)) Directory.Delete(packageDirectory, true);
                     Directory.CreateDirectory(packageDirectory);
 
-                    installable.group.Source.OnInstallPackageFiles(installable, packageDirectory);
-
-                    foreach (var assemblyPath in Directory.GetFiles(packageDirectory, "*.dll", SearchOption.AllDirectories))
-                        PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
-
-                    EditorUtility.DisplayProgressBar("Loading Packages", $"Creating package.json for {installable.group.PackageName}", progress += stepSize / 2);
+                    EditorUtility.DisplayProgressBar("Creating Packages", $"Creating package.json for {installable.group.PackageName}", progress += stepSize / 2);
                     PackageHelper.GeneratePackageManifest(
                           installable.group.DependencyId.ToLower(), installable.group.InstallDirectory,
                           installable.group.PackageName, installable.group.Author,
@@ -233,11 +226,15 @@ namespace ThunderKit.Core.Data
                 }
 
                 AssetDatabase.SaveAssets();
-                //Refresh here to update the AssetDatabase so that it can manage the creation of Manifests in the packages via the Unity Package path notation
-                //e.g Packages/com.passivepicasso.thunderkit/Editor
-                AssetDatabase.Refresh();
+                try
+                {
+                    //Refresh here to update the AssetDatabase so that it can manage the creation of Manifests in the packages via the Unity Package path notation
+                    //e.g Packages/com.passivepicasso.thunderkit/Editor
+                    AssetDatabase.Refresh();
+                }
+                catch { }
 
-                EditorUtility.DisplayProgressBar("Loading Packages", $"Creating {installSet.Length} manifests", progress);
+                EditorUtility.DisplayProgressBar("Creating Package Manifests", $"Creating {installSet.Length} manifests", progress);
                 foreach (var installable in installSet)
                 {
                     var installableGroup = installable.group;
@@ -245,13 +242,14 @@ namespace ThunderKit.Core.Data
                     if (AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath))
                         AssetDatabase.DeleteAsset(manifestPath);
 
-                    EditorUtility.DisplayProgressBar("Loading Packages", $"Creating manifest for {installable.group.PackageName}", progress += stepSize);
+                    EditorUtility.DisplayProgressBar("Creating Package Manifests", $"Creating manifest for {installable.group.PackageName}", progress += stepSize);
 
                     var manifest = ScriptableObject.CreateInstance<Manifest>();
                     AssetDatabase.CreateAsset(manifest, manifestPath);
                     PackageHelper.WriteAssetMetaData(manifestPath);
                     AssetDatabase.Refresh();
 
+                    manifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath);
                     var identity = ScriptableObject.CreateInstance<ManifestIdentity>();
                     identity.name = nameof(ManifestIdentity);
                     identity.Author = installableGroup.Author;
@@ -265,19 +263,19 @@ namespace ThunderKit.Core.Data
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
 
-                EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installSet.Length} manifests", progress);
+                EditorUtility.DisplayProgressBar("Defining Package Dependencies", $"Assigning dependencies for {installSet.Length} manifests", progress);
                 foreach (var installable in installSet)
                 {
                     var manifestPath = PathExtensions.Combine(installable.group.PackageDirectory, $"{installable.group.PackageName}.asset");
                     var installableManifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath);
                     var identity = installableManifest.Identity;
-                    EditorUtility.DisplayProgressBar("Loading Packages", $"Assigning dependencies for {installable.group.PackageName}", progress);
+                    EditorUtility.DisplayProgressBar("Defining Package Dependencies", $"Assigning dependencies for {installable.group.PackageName}", progress);
                     identity.Dependencies = new Manifest[installable.dependencies.Length];
                     for (int i = 0; i < installable.dependencies.Length; i++)
                     {
                         var installableDependency = installable.dependencies[i];
 
-                        EditorUtility.DisplayProgressBar("Loading Packages",
+                        EditorUtility.DisplayProgressBar("Defining Package Dependencies",
                                                          $"Assigning {installableDependency.group.PackageName} to {identity.Name}",
                                                          progress += stepSize / installable.dependencies.Length);
 
@@ -295,6 +293,20 @@ namespace ThunderKit.Core.Data
                     }
                     EditorUtility.SetDirty(installableManifest);
                     EditorUtility.SetDirty(identity);
+                }
+
+                EditorUtility.DisplayProgressBar("Installing Package Files", $"{installSet.Length} packages", progress);
+                foreach (var installable in installSet)
+                {
+                    string packageDirectory = installable.group.InstallDirectory;
+
+                    EditorUtility.DisplayProgressBar("Installing Package Files", $"Downloading {installable.group.PackageName}", progress += stepSize / 2);
+
+                    installable.group.Source.OnInstallPackageFiles(installable, packageDirectory);
+
+                    foreach (var assemblyPath in Directory.GetFiles(packageDirectory, "*.dll", SearchOption.AllDirectories))
+                        PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
+
                 }
             }
             finally
