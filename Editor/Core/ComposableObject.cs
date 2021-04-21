@@ -34,7 +34,7 @@ namespace ThunderKit.Core
             stepField.serializedObject.SetIsDifferentCacheDirty();
             stepField.serializedObject.ApplyModifiedProperties();
 
-            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(this));
+            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(instance));
             AssetDatabase.SaveAssets();
         }
 
