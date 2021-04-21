@@ -224,8 +224,12 @@ namespace ThunderKit.Core.Editor.Windows
                 .ToArray();
 
             var hasTags = enabledTags.Any() ? packages.Where(pkg => enabledTags.All(tag => ArrayUtility.Contains(pkg.Tags, tag))) : packages;
+            if (!hasTags.Any())
+                return hasTags.ToList();
 
             var hasString = hasTags.Where(pkg => pkg.HasString(SearchString ?? string.Empty));
+            if (!hasString.Any())
+                return hasString.ToList();
 
             var filteredByInstall = !InProject ? hasString : hasString.Where(pkg => pkg.Installed);
 
