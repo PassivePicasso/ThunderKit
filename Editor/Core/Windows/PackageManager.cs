@@ -40,14 +40,6 @@ namespace ThunderKit.Core.Editor.Windows
 
         public override void OnEnable()
         {
-            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
-                                  .Select(AssetDatabase.GUIDToAssetPath)
-                                  .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
-                                  .ToArray();
-
-
-            Construct(packageSources);
-
             PackageSource.SourcesInitialized += PackageSource_SourceInitialized;
             PackageSource.LoadAllSources();
         }
@@ -59,7 +51,7 @@ namespace ThunderKit.Core.Editor.Windows
 
         private void PackageSource_SourceInitialized(object sender, EventArgs e)
         {
-            if(rootVisualElement == null)
+            if (rootVisualElement == null)
             {
                 PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
                 return;
@@ -68,7 +60,8 @@ namespace ThunderKit.Core.Editor.Windows
                       .Select(AssetDatabase.GUIDToAssetPath)
                       .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
                       .ToArray();
-            ConstructPackageSourceList(packageSources);
+
+            Construct(packageSources);
         }
 
         private void Construct(PackageSource[] packageSources)
