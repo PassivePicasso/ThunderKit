@@ -21,16 +21,18 @@ namespace ThunderKit.Integrations.Thunderstore
             InitializeSources += PackageSource_InitializeSources;
         }
 
-        public static void Initialize()
+        private static void PackageSource_InitializeSources(object sender, System.EventArgs e)
         {
             AssetDatabase.DeleteAsset(CachePath);
             ThunderstoreAPI.ReloadPages();
-            ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath);
-        }
+            var tss = ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath, source =>
+            {
+                source.hideFlags = UnityEngine.HideFlags.NotEditable;
+            });
 
-        private static void PackageSource_InitializeSources(object sender, System.EventArgs e)
-        {
-            Initialize();
+            tss.LoadPackages();
+            EditorUtility.SetDirty(tss);
+            AssetDatabase.SaveAssets();
         }
 
         public override string Name => "Thunderstore";
