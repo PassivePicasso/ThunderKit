@@ -21,23 +21,11 @@ namespace ThunderKit.Integrations.Thunderstore
             InitializeSources += PackageSource_InitializeSources;
         }
 
-        [InitializeOnLoadMethod]
         public static void Initialize()
         {
             AssetDatabase.DeleteAsset(CachePath);
             ThunderstoreAPI.ReloadPages();
-
-            var isNew = false;
-            var source = ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath, so =>
-            {
-                isNew = true;
-            });
-            if (isNew)
-            {
-                source.hideFlags = UnityEngine.HideFlags.NotEditable;
-                source.LoadPackages();
-                //EditorApplication.update += ProcessDownloads;
-            }
+            ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath);
         }
 
         private static void PackageSource_InitializeSources(object sender, System.EventArgs e)
