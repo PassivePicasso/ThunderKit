@@ -23,7 +23,6 @@ namespace ThunderKit.Core
             if (!SupportsType(instance.GetType())) return;
 
             AssetDatabase.AddObjectToAsset(instance, this);
-            instance.hideFlags = HideFlags.HideInHierarchy;
 
             var so = new SerializedObject(this);
             var dataArray = so.FindProperty(nameof(Data));
@@ -35,7 +34,6 @@ namespace ThunderKit.Core
             stepField.serializedObject.ApplyModifiedProperties();
 
             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(instance));
-            AssetDatabase.SaveAssets();
         }
 
         public void RemoveElement(ComposableElement instance, int index)
@@ -61,8 +59,6 @@ namespace ThunderKit.Core
 
             so.SetIsDifferentCacheDirty();
             so.ApplyModifiedProperties();
-
-            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(this));
             AssetDatabase.SaveAssets();
         }
     }
