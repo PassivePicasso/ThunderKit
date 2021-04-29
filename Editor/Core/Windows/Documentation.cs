@@ -93,7 +93,7 @@ namespace ThunderKit.Core.Windows
             var root = evt.currentTarget as VisualElement;
             foreach (var pageEntry in root.Query<PageEntry>().Build().ToList())
             {
-                float left = pageEntry.depth * 12;
+                float left = pageEntry.Depth * 12;
                 pageEntry.style.paddingLeft = new StyleLength(new Length(left, LengthUnit.Pixel));
             }
 
