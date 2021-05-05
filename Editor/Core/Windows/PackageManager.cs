@@ -34,6 +34,7 @@ namespace ThunderKit.Core.Editor.Windows
         [SerializeField] private string SearchString;
         
         public bool InProject;
+        private PackageSource[] packageSources;
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Packages")]
         public static void ShowExample() => GetWindow<PackageManager>();
@@ -56,16 +57,11 @@ namespace ThunderKit.Core.Editor.Windows
                 PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
                 return;
             }
-            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
+            packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
                       .Select(AssetDatabase.GUIDToAssetPath)
                       .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
                       .ToArray();
 
-            Construct(packageSources);
-        }
-
-        private void Construct(PackageSource[] packageSources)
-        {
             titleContent = new GUIContent("Packages", ThunderKitIcon, "");
             rootVisualElement.Clear();
 
@@ -172,16 +168,10 @@ namespace ThunderKit.Core.Editor.Windows
         {
             SearchString = evt.newValue;
             UpdatePackageList();
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssets();
         }
 
         void UpdatePackageList()
         {
-            var packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
-                                              .Select(AssetDatabase.GUIDToAssetPath)
-                                              .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
-                                              .ToArray();
             for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
             {
                 var source = packageSources[sourceIndex];
@@ -206,7 +196,6 @@ namespace ThunderKit.Core.Editor.Windows
                         tagEnabled[tag] = false;
 
                 headerLabel.text = $"{source.Name} ({packageList.itemsSource.Count} packages) ({source.Packages.Count - packageList.itemsSource.Count} hidden)";
-
             }
         }
 
