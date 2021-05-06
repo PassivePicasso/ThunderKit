@@ -50,6 +50,8 @@ namespace ThunderKit.Core.Data
         }
 
 
+        private SerializedObject thunderKitSettingsSO;
+
         public string GameExecutable;
 
         public string GamePath;
@@ -100,7 +102,9 @@ $@"
             configureButton.text = "Locate Game";
             rootElement.Add(configureButton);
 
-            rootElement.Bind(new SerializedObject(this));
+            if (thunderKitSettingsSO == null)
+                thunderKitSettingsSO = new SerializedObject(this);
+            rootElement.Bind(thunderKitSettingsSO);
         }
     }
 }

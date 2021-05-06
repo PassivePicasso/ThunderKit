@@ -51,6 +51,8 @@ namespace ThunderKit.Editor.Core.Data
         private bool FirstLoad = true;
 
         public bool ShowOnStartup = true;
+        private SerializedObject settingsWindowDataSo;
+
         public override void CreateSettingsUI(VisualElement rootElement)
         {
             MarkdownElement markdown = new MarkdownElement
@@ -75,7 +77,10 @@ If this is your first time using ThunderKit, [Click Here](menulink://Tools/Thund
             rootElement.Add(child);
             rootElement.Add(markdown);
 
-            rootElement.Bind(new SerializedObject(this));
+            if (settingsWindowDataSo == null)
+                settingsWindowDataSo = new SerializedObject(this);
+
+            rootElement.Bind(settingsWindowDataSo);
         }
     }
 }

@@ -14,6 +14,8 @@ namespace ThunderKit.Integrations.Thunderstore
     /// </summary>
     public class ThunderstoreAPI
     {
+        public static List<PackageListing> LoadedPages;
+
         static string PackageListApi => ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>().ThunderstoreUrl + "/api/v1/package/";
 
         public static void ReloadPages()
@@ -39,9 +41,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
                     var resultSet = JsonUtility.FromJson<PackagesResponse>($"{{ \"{nameof(PackagesResponse.results)}\": {response} }}");
                     packages.AddRange(resultSet.results);
-                    var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
-                    settings.LoadedPages = packages;
-                    EditorUtility.SetDirty(settings);
+                    LoadedPages = packages;
                     Debug.Log($"Package listing update: {PackageListApi}");
                 }
             };
@@ -49,11 +49,10 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public static IEnumerable<PackageListing> LookupPackage(string name)
         {
-            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderstoreSettings>();
-            if (settings == null || settings.LoadedPages == null || settings.LoadedPages.Count == 0)
+            if (LoadedPages == null || LoadedPages.Count == 0)
                 return Enumerable.Empty<PackageListing>();
             else
-                return settings.LoadedPages.Where(package => IsMatch(package, name)).ToArray();
+                return LoadedPages.Where(package => IsMatch(package, name)).ToArray();
         }
 
         static bool IsMatch(PackageListing package, string name)
