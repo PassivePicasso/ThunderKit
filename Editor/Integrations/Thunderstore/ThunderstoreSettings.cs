@@ -21,7 +21,7 @@ namespace ThunderKit.Integrations.Thunderstore
     public class ThunderstoreSettings : ThunderKitSetting
     {
         public string ThunderstoreUrl = "https://thunderstore.io";
-        public List<PackageListing> LoadedPages;
+        private SerializedObject thunderStoreSettingsSO;
 
         public class StringValueChangeArgs : EventArgs
         {
@@ -34,7 +34,6 @@ namespace ThunderKit.Integrations.Thunderstore
         public override void CreateSettingsUI(VisualElement rootElement)
         {
             var settingsobject = GetOrCreateSettings<ThunderstoreSettings>();
-            var serializedSettings = new SerializedObject(settingsobject);
             var container = new VisualElement();
             var label = new Label(ObjectNames.NicifyVariableName(nameof(ThunderstoreUrl)));
             var field = new TextField { bindingPath = nameof(ThunderstoreUrl) };
@@ -50,7 +49,9 @@ namespace ThunderKit.Integrations.Thunderstore
             label.AddToClassList("thunderkit-field-label");
             rootElement.Add(container);
 
-            container.Bind(serializedSettings);
+            if (thunderStoreSettingsSO == null) 
+                thunderStoreSettingsSO = new SerializedObject(settingsobject);
+            container.Bind(thunderStoreSettingsSO);
         }
 
         readonly string[] keywords = new string[] { nameof(ThunderstoreUrl) };
