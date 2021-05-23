@@ -165,10 +165,9 @@
 
 .unity-foldout-toggle {
     margin-left: 0;
-    margin-top: 0;
+    margin-top: 4;
     margin-right: 0;
     margin-bottom: 0;
-    position: absolute;
     left: 0;
     top: 0;
     right: 0;
