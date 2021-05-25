@@ -12,7 +12,6 @@ using UnityEditor.Experimental.UIElements;
 namespace ThunderKit.Markdown.ObjectRenderers
 {
     using static Helpers.VisualElementFactory;
-    using static Helpers.VisualElementUtility;
     using static Helpers.UnityPathUtility;
     public class AutolinkInlineRenderer : UIElementObjectRenderer<AutolinkInline>
     {

@@ -1,6 +1,6 @@
 ## Integrated Links
 
-The ThunderKit Documentation is enhanced by multiple types of links that enhances the documentation with Unity integration.
+The ThunderKit Documentation is enhanced by multiple types of links that add Unity integration features.
 
 This Documentation is best viewed in Unity with ThunderKit's Markdown system.
 

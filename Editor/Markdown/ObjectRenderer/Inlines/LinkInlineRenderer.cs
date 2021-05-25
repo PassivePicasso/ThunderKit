@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Collections;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -16,11 +17,13 @@ using UnityEditor.Experimental.UIElements;
 
 namespace ThunderKit.Markdown.ObjectRenderers
 {
+
     using static Helpers.VisualElementFactory;
-    using static Helpers.VisualElementUtility;
     using static Helpers.UnityPathUtility;
     public class LinkInlineRenderer : UIElementObjectRenderer<LinkInline>
     {
+        internal class ImageLoadBehaviour : MonoBehaviour { }
+
         internal static Regex SchemeCheck = new Regex("^([\\w]+)://.*", RegexOptions.Singleline | RegexOptions.Compiled);
         internal static readonly Dictionary<string, Action<string>> SchemeLinkHandlers = new Dictionary<string, Action<string>>
         {
@@ -60,6 +63,32 @@ namespace ThunderKit.Markdown.ObjectRenderers
             }
         };
 
+        IEnumerator LoadImage(string url, Image imageElement)
+        {
+            var request = UnityWebRequestTexture.GetTexture(url);
+            yield return request.SendWebRequest();
+
+#if UNITY_2020_1_OR_NEWER
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+#else
+            if (request.isNetworkError || request.isHttpError)
+#endif
+                Debug.Log(request.error);
+            else
+                SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
+        }
+
+        public static void SetupImage(Image imageElement, Texture texture)
+        {
+            imageElement.image = texture;
+#if UNITY_2019_1_OR_NEWER
+            imageElement.style.width = texture.width;
+            imageElement.style.height = texture.height;
+#else
+            imageElement.style.width = new StyleValue<float>(texture.width);
+            imageElement.style.height = new StyleValue<float>(texture.height);
+#endif
+        }
 
         protected override void Write(UIElementRenderer renderer, LinkInline link)
         {
@@ -75,26 +104,9 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 }
                 else
                 {
-                    UnityWebRequest request = UnityWebRequestTexture.GetTexture(link.Url);
-                    var asyncOp = request.SendWebRequest();
-                    asyncOp.completed += (obj) =>
-                    {
-                        var req = ((UnityWebRequestAsyncOperation)obj).webRequest;
-#if UNITY_2020_1_OR_NEWER
-                        if (req.result == UnityWebRequest.Result.ConnectionError || req.result == UnityWebRequest.Result.ProtocolError)
-#else
-                        if (req.isNetworkError || req.isHttpError)
-#endif
-                            Debug.Log(req.error);
-                        else
-                            SetupImage(imageElement, ((DownloadHandlerTexture)req.downloadHandler).texture);
-                    };
-
-                    imageElement.RegisterCallback<DetachFromPanelEvent, UnityWebRequest>((evt, webRequest) =>
-                    {
-                        webRequest.Abort();
-                        webRequest.Dispose();
-                    }, request);
+                    var imageLoaderObject = new GameObject("MarkdownImageLoader", typeof(ImageLoadBehaviour)) { isStatic = true, hideFlags = HideFlags.HideAndDontSave };
+                    var imageLoader = imageLoaderObject.GetComponent<ImageLoadBehaviour>();
+                    var c = imageLoader.StartCoroutine(LoadImage(url, imageElement));
                 }
 
                 renderer.Push(imageElement);
