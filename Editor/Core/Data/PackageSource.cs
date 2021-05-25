@@ -156,33 +156,36 @@ namespace ThunderKit.Core.Data
             OnLoadPackages();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            var validVersions = Packages.Where(pkgGrp => pkgGrp).Where(pkgGrp => pkgGrp.Versions != null);
-            var versionGroupMaps = validVersions.SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => new KeyValuePair<PackageGroup, PackageVersion>(pkgGrp, pkgVer)));
-            var versionMap = versionGroupMaps.Distinct().ToDictionary(ver => ver.Value.dependencyId);
-
-            foreach (var packageGroup in Packages)
+            if (Packages != null && Packages.Any())
             {
-                foreach (var version in packageGroup.Versions)
+                var validVersions = Packages.Where(pkgGrp => pkgGrp).Where(pkgGrp => pkgGrp.Versions != null);
+                var versionGroupMaps = validVersions.SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => new KeyValuePair<PackageGroup, PackageVersion>(pkgGrp, pkgVer)));
+                var versionMap = versionGroupMaps.Distinct().ToDictionary(ver => ver.Value.dependencyId);
+
+                foreach (var packageGroup in Packages)
                 {
-                    var dependencies = dependencyMap[version.name].ToArray();
-                    version.dependencies = new PackageVersion[dependencies.Length];
-                    for (int i = 0; i < dependencies.Length; i++)
+                    foreach (var version in packageGroup.Versions)
                     {
-                        string dependencyId = dependencies[i];
-                        string groupId = VersionIdToGroupId(dependencyId);
-                        if (versionMap.TryGetValue(dependencyId, out var packageDep))
+                        var dependencies = dependencyMap[version.name].ToArray();
+                        version.dependencies = new PackageVersion[dependencies.Length];
+                        for (int i = 0; i < dependencies.Length; i++)
                         {
-                            version.dependencies[i] = packageDep.Value;
-                        }
-                        else if (groupMap.TryGetValue(groupId, out var groupDep))
-                        {
-                            version.dependencies[i] = groupDep["latest"];
+                            string dependencyId = dependencies[i];
+                            string groupId = VersionIdToGroupId(dependencyId);
+                            if (versionMap.TryGetValue(dependencyId, out var packageDep))
+                            {
+                                version.dependencies[i] = packageDep.Value;
+                            }
+                            else if (groupMap.TryGetValue(groupId, out var groupDep))
+                            {
+                                version.dependencies[i] = groupDep["latest"];
+                            }
                         }
                     }
                 }
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
             }
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
         }
 
         IEnumerable<PackageVersion> EnumerateDependencies(PackageVersion package)
