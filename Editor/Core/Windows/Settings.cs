@@ -39,7 +39,9 @@ namespace ThunderKit.Core.Windows
             foreach(var setting in settings)
             {
                 var settingSection = GetTemplateInstance("ThunderKitSettingSection");
-                settingSection.Q<Label>("title").text = setting.name;
+                var title = settingSection.Q<Label>("title");
+                if (title != null)
+                    title.text = setting.name;
                 var properties = settingSection.Q<VisualElement>("properties");
                 setting.CreateSettingsUI(properties);
                 settingsArea.Add(settingSection);

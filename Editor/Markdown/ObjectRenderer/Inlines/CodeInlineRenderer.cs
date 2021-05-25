@@ -34,7 +34,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
             codeInline.RegisterCallback<MouseUpEvent>(CopyToClipboard);
         }
 
-        private void CopyToClipboard(MouseUpEvent evt)
+        private static void CopyToClipboard(MouseUpEvent evt)
         {
             var target = evt.currentTarget as VisualElement;
             var builder = new StringBuilder();
