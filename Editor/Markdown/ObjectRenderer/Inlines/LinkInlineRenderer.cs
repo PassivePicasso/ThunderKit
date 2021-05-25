@@ -79,15 +79,22 @@ namespace ThunderKit.Markdown.ObjectRenderers
                     var asyncOp = request.SendWebRequest();
                     asyncOp.completed += (obj) =>
                     {
+                        var req = ((UnityWebRequestAsyncOperation)obj).webRequest;
 #if UNITY_2020_1_OR_NEWER
-                        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+                        if (req.result == UnityWebRequest.Result.ConnectionError || req.result == UnityWebRequest.Result.ProtocolError)
 #else
-                        if (request.isNetworkError || request.isHttpError)
+                        if (req.isNetworkError || req.isHttpError)
 #endif
-                            Debug.Log(request.error);
+                            Debug.Log(req.error);
                         else
-                            SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
+                            SetupImage(imageElement, ((DownloadHandlerTexture)req.downloadHandler).texture);
                     };
+
+                    imageElement.RegisterCallback<DetachFromPanelEvent, UnityWebRequest>((evt, webRequest) =>
+                    {
+                        webRequest.Abort();
+                        webRequest.Dispose();
+                    }, request);
                 }
 
                 renderer.Push(imageElement);
