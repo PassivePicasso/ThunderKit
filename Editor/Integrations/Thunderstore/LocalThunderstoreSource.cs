@@ -32,7 +32,7 @@ namespace ThunderKit.Integrations.Thunderstore
             var localSources = AssetDatabase.FindAssets($"t:{nameof(LocalThunderstoreSource)}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<LocalThunderstoreSource>)
-                .Where(source => source.Packages == null || !source.Packages.Any())
+                .Where(source => !source.Packages.Any())
                 .ToArray();
             foreach (var drySource in localSources)
                 drySource.LoadPackages();

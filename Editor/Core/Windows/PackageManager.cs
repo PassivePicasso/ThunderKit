@@ -32,7 +32,7 @@ namespace ThunderKit.Core.Editor.Windows
 
         [SerializeField] private DeletePackage deletePackage;
         [SerializeField] private string SearchString;
-        
+
         public bool InProject;
         private PackageSource[] packageSources;
 
@@ -41,8 +41,14 @@ namespace ThunderKit.Core.Editor.Windows
 
         public override void OnEnable()
         {
+            PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
             PackageSource.SourcesInitialized += PackageSource_SourceInitialized;
             PackageSource.LoadAllSources();
+        }
+
+        private void OnInspectorUpdate()
+        {
+            TryDelete();
         }
 
         private void OnDestroy()
@@ -189,7 +195,7 @@ namespace ThunderKit.Core.Editor.Windows
                     BindPackageView(packageList.selectedItem as PackageGroup);
                 }
 
-                var tags = source.Packages.SelectMany(pkg => pkg.Tags).Distinct().Select(tag => $"{source.Name}/{tag}");
+                var tags = source.Packages?.SelectMany(pkg => pkg.Tags)?.Distinct()?.Select(tag => $"{source.Name}/{tag}") ?? Enumerable.Empty<string>();
                 foreach (var tag in tags)
                     if (tagEnabled.ContainsKey(tag)) tagEnabled[tag] = tagEnabled[tag];
                     else
@@ -321,10 +327,6 @@ namespace ThunderKit.Core.Editor.Windows
             }
             else
                 selection.Source.InstallPackage(selection, targetVersion);
-        }
-        private void OnInspectorUpdate()
-        {
-            TryDelete();
         }
 
         private void TryDelete()
