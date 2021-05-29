@@ -24,6 +24,8 @@ namespace ThunderKit.Core.Data
             SourcesInitialized?.Invoke(null, EventArgs.Empty);
         }
 
+        public static void SourceUpdated() => SourcesInitialized?.Invoke(null, EventArgs.Empty);
+
         [Serializable]
         public class PackageVersionInfo
         {
@@ -74,6 +76,13 @@ namespace ThunderKit.Core.Data
         private Dictionary<string, HashSet<string>> dependencyMap;
         private Dictionary<string, PackageGroup> groupMap;
 
+        void Awake()
+        {
+            Packages = new List<PackageGroup>();
+
+
+        }
+
         /// <summary>
         /// Generates a new PackageGroup for this PackageSource
         /// </summary>
@@ -87,7 +96,6 @@ namespace ThunderKit.Core.Data
         {
             if (groupMap == null) groupMap = new Dictionary<string, PackageGroup>();
             if (dependencyMap == null) dependencyMap = new Dictionary<string, HashSet<string>>();
-            if (Packages == null) Packages = new List<PackageGroup>();
             var group = CreateInstance<PackageGroup>();
 
             group.Author = author;
@@ -141,7 +149,6 @@ namespace ThunderKit.Core.Data
 
         internal void Clear()
         {
-            if (Packages == null) return;
             foreach (var package in Packages)
             {
                 AssetDatabase.RemoveObjectFromAsset(package);
@@ -156,7 +163,7 @@ namespace ThunderKit.Core.Data
             OnLoadPackages();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            if (Packages != null && Packages.Any())
+            if (Packages.Any())
             {
                 var validVersions = Packages.Where(pkgGrp => pkgGrp).Where(pkgGrp => pkgGrp.Versions != null);
                 var versionGroupMaps = validVersions.SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => new KeyValuePair<PackageGroup, PackageVersion>(pkgGrp, pkgVer)));
@@ -183,8 +190,6 @@ namespace ThunderKit.Core.Data
                         }
                     }
                 }
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
             }
         }
 

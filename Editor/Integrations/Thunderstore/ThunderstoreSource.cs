@@ -23,16 +23,20 @@ namespace ThunderKit.Integrations.Thunderstore
 
         private static void PackageSource_InitializeSources(object sender, System.EventArgs e)
         {
-            AssetDatabase.DeleteAsset(CachePath);
+            //AssetDatabase.DeleteAsset(CachePath);
+            ThunderstoreAPI.PagesLoaded -= ThunderstoreAPI_PagesLoaded;
+            ThunderstoreAPI.PagesLoaded += ThunderstoreAPI_PagesLoaded;
             ThunderstoreAPI.ReloadPages();
+        }
+
+        private static void ThunderstoreAPI_PagesLoaded(object sender, System.EventArgs e)
+        {
+            ThunderstoreAPI.PagesLoaded -= ThunderstoreAPI_PagesLoaded;
             var tss = ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath, source =>
             {
                 source.hideFlags = UnityEngine.HideFlags.NotEditable;
             });
-
             tss.LoadPackages();
-            EditorUtility.SetDirty(tss);
-            AssetDatabase.SaveAssets();
         }
 
         public override string Name => "Thunderstore";
@@ -42,14 +46,16 @@ namespace ThunderKit.Integrations.Thunderstore
 
         protected override void OnLoadPackages()
         {
-            var loadedPackages = ThunderstoreAPI.LookupPackage(string.Empty);
+            var loadedPackages = ThunderstoreAPI.PackageListings;
             var realMods = loadedPackages.Where(tsp => !tsp.categories.Contains("Modpacks"));
-            var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
-            foreach (var tsp in orderByPinThenName)
+            //var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
+            foreach (var tsp in realMods)
             {
                 var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies));
                 AddPackageGroup(tsp.owner, tsp.name, tsp.Latest.description, tsp.full_name, tsp.categories, versions);
             }
+
+            SourceUpdated();
         }
 
         protected override void OnInstallPackageFiles(PV version, string packageDirectory)
