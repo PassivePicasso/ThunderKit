@@ -1,3 +1,37 @@
+## 3.2.0
+
+### New Feature: PathComponent: Registry Lookup
+
+the Registry Lookup path component has been added to support cases where values from the registry are needed to complete Pipeline efforts.
+For example, some games require steam to execute them, and you may need to do so using the Steam executable.  
+The installed Steam executable can easily be located by looking up the value in the registry, and this provides a path to that.
+
+#### Performance Improvements
+
+* ThunderstoreAPI has been updated to utilize gzip compression in order to greatly increase the speed of acquiring package listings.
+* Fixed MarkdownRenderer's LinkInlineRenderer leaking handles and memory
+* Fix an issue with SettingsWindowData and ThunderstoreSettings that would cause the settings window to have poor responsiveness
+
+#### Bugs
+
+* Fix a pageEntry.depth to be pageEntry.Depth in Documentation.cs for Unity 2019+
+* Fix a NullReferenceException that could show up on the Settings window sometimes
+* Fix cases in PackageManager that could cause a null reference and fail to load the manager UI
+* Fix a problem that would cause a PackageSource to have no packages and be unable to be populated
+
+## 3.1.7
+
+## Fixes and Improvements
+
+* Improve the Package Manager search responsiveness
+
+## 3.1.6
+
+## Fixes and Improvements
+
+* Improve package import process with better ProgressBar status messages
+* Install packages as final step of import process
+
 ## 3.1.1
 
 This update implements support for .NET 3.5 and includes a number of general improvements and fixes
