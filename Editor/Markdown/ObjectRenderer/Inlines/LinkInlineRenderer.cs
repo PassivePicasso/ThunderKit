@@ -65,18 +65,26 @@ namespace ThunderKit.Markdown.ObjectRenderers
 
         IEnumerator LoadImage(string url, Image imageElement)
         {
-            var request = UnityWebRequestTexture.GetTexture(url);
-            yield return request.SendWebRequest();
+            using (var request = UnityWebRequestTexture.GetTexture(url))
+            {
+                imageElement.RegisterCallback<DetachFromPanelEvent, UnityWebRequest>(CancelRequest, request);
+
+                yield return request.SendWebRequest();
 
 #if UNITY_2020_1_OR_NEWER
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+                if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
 #else
-            if (request.isNetworkError || request.isHttpError)
+                if (request.isNetworkError || request.isHttpError)
 #endif
-                Debug.Log(request.error);
-            else
-                SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
+                    Debug.Log(request.error);
+                else
+                    SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
+
+                imageElement.UnregisterCallback<DetachFromPanelEvent, UnityWebRequest>(CancelRequest);
+            }
         }
+
+        static void CancelRequest(DetachFromPanelEvent evt, UnityWebRequest webRequest) => webRequest.Abort();
 
         public static void SetupImage(Image imageElement, Texture texture)
         {
