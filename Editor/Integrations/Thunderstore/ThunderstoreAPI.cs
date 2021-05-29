@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
@@ -16,11 +17,18 @@ namespace ThunderKit.Integrations.Thunderstore
     /// </summary>
     public class ThunderstoreAPI
     {
+        class GZipWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                return request;
+            }
+        }
         internal class ThunderstoreLoadBehaviour : MonoBehaviour { }
 
         private static PackageListing[] packageListings;
-        private static UnityWebRequest webRequest;
-        private static UnityWebRequestAsyncOperation request;
 
         public static IEnumerable<PackageListing> PackageListings => packageListings.ToList();
 
@@ -29,42 +37,22 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public static void ReloadPages()
         {
-            if (request != null)
-            {
-                request.completed -= Completed;
-                if (webRequest != null)
-                {
-                    webRequest?.Dispose();
-                }
-            }
             Debug.Log($"Updating Package listing: {PackageListApi}");
-            webRequest = UnityWebRequest.Get(PackageListApi);
-            request = webRequest.SendWebRequest();
-            request.completed += Completed;
+            using (var client = new GZipWebClient())
+            {
+                client.DownloadStringCompleted += Client_DownloadStringCompleted;
+                var address = new Uri(PackageListApi);
+                client.DownloadStringAsync(address);
+            }
         }
 
-        static void Completed(AsyncOperation aop)
+        private static void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            if (!(aop is UnityWebRequestAsyncOperation requestOperation)) return;
-            request.completed -= Completed;
-#if UNITY_2020_1_OR_NEWER
-            if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
-#else
-            if (webRequest.isNetworkError || webRequest.isHttpError)
-#endif
-            {
-                Debug.Log(webRequest.error);
-            }
-            else
-            {
-                var json = $"{{ \"{nameof(PackagesResponse.results)}\": {webRequest.downloadHandler.text} }}";
-                var response = JsonUtility.FromJson<PackagesResponse>(json);
-                packageListings = response.results;
-                PagesLoaded?.Invoke(null, EventArgs.Empty);
-                Debug.Log($"Package listing updated: {PackageListApi}");
-
-            }
-            webRequest.Dispose();
+            var json = $"{{ \"{nameof(PackagesResponse.results)}\": {e.Result} }}";
+            var response = JsonUtility.FromJson<PackagesResponse>(json);
+            packageListings = response.results;
+            PagesLoaded?.Invoke(null, EventArgs.Empty);
+            Debug.Log($"Package listing updated: {PackageListApi}");
         }
 
         public static IEnumerable<PackageListing> LookupPackage(string name)
