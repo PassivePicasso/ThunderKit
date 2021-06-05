@@ -205,14 +205,14 @@ namespace ThunderKit.Core.Editor.Inspectors
             var stepData = data as StepData;
 
             if (ClipboardItem)
-                InsertClipboard(stepData, -1);
+                InsertClipboard(stepData, 0);
         }
         static void PasteNew(object data)
         {
             var stepData = data as StepData;
 
             if (ClipboardItem)
-                InsertClipboard(stepData, 0);
+                InsertClipboard(stepData, 1);
         }
         private static void InsertClipboard(StepData stepData, int offset)
         {
