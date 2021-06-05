@@ -22,19 +22,17 @@ namespace ThunderKit.Integrations.Thunderstore
             PackageSource.InitializeSources -= InitializeSource;
             PackageSource.InitializeSources += InitializeSource;
         }
-        
+
         private static void InitializeSource(object sender, System.EventArgs e) => Initialize();
 
         [MenuItem(Constants.ThunderKitContextRoot + "Refresh Local Thunderstore sources", priority = Constants.ThunderKitMenuPriority)]
         [InitializeOnLoadMethod]
         private static void Initialize()
         {
-            var localSources = AssetDatabase.FindAssets($"t:{nameof(LocalThunderstoreSource)}")
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(AssetDatabase.LoadAssetAtPath<LocalThunderstoreSource>)
-                .Where(source => !source.Packages.Any())
-                .ToArray();
-            foreach (var drySource in localSources)
+            var localThunderstoreSourceAssetGuids = AssetDatabase.FindAssets($"t:{nameof(LocalThunderstoreSource)}");
+            var paths = localThunderstoreSourceAssetGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            var sourceAssets = paths.Select(path => AssetDatabase.LoadAssetAtPath<LocalThunderstoreSource>(path));
+            foreach (var drySource in sourceAssets)
                 drySource.LoadPackages();
         }
 

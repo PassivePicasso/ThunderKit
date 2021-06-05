@@ -267,7 +267,7 @@ namespace ThunderKit.Core.Editor.Windows
             var selectedVersion = selection[targetVersion];
             var pvDependencies = selectedVersion.dependencies ?? EmptyPackages;
             var dependencyIds = new List<string>();
-            foreach (var pvd in pvDependencies)
+            foreach (var pvd in pvDependencies.Where(pv => pv != null))
             {
                 dependencyIds.Add(pvd.dependencyId);
             }

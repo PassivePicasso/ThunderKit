@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using ThunderKit.Common;
 using ThunderKit.Common.Package;
-using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
@@ -151,10 +149,14 @@ namespace ThunderKit.Core.Data
         {
             foreach (var package in Packages)
             {
-                AssetDatabase.RemoveObjectFromAsset(package);
-                DestroyImmediate(package);
+                if (package)
+                {
+                    AssetDatabase.RemoveObjectFromAsset(package);
+                    DestroyImmediate(package);
+                }
             }
             Packages.Clear();
+            AssetDatabase.SaveAssets();
         }
 
         public void LoadPackages()
@@ -252,13 +254,13 @@ namespace ThunderKit.Core.Data
 
                     EditorUtility.DisplayProgressBar("Creating Package Manifests", $"Creating manifest for {installable.group.PackageName}", progress += stepSize);
 
-                    var manifest = ScriptableObject.CreateInstance<Manifest>();
+                    var manifest = CreateInstance<Manifest>();
                     AssetDatabase.CreateAsset(manifest, manifestPath);
                     PackageHelper.WriteAssetMetaData(manifestPath);
                     AssetDatabase.Refresh();
 
                     manifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath);
-                    var identity = ScriptableObject.CreateInstance<ManifestIdentity>();
+                    var identity = CreateInstance<ManifestIdentity>();
                     identity.name = nameof(ManifestIdentity);
                     identity.Author = installableGroup.Author;
                     identity.Description = installableGroup.Description;
