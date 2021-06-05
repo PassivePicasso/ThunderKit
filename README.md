@@ -1,5 +1,7 @@
 ## _**ThunderKit Crash Course**_
 
+If you like ThunderKit consider donating through [GitHub Sponsors](https://github.com/sponsors/PassivePicasso)
+
 Welcome and thank you for your interest in ThunderKit. ThunderKit is a Unity extension that provides an expansive and expandable environment for mod development.
 
 ThunderKit can help you develop multiple mods in a single project and streamline your building and testing efforts through automation.
@@ -11,8 +13,6 @@ ThunderKit comes with a template for a simple BepInEx setup that will help you g
 
 If you need to build a custom setup, ThunderKit has with integrated documentation that will help you understand how the BepInEx template works with a Tear down guide, so that you can start building a setup that works for your environment.
 
-If you like ThunderKit consider donating through [GitHub Sponsors](https://github.com/sponsors/PassivePicasso)
-
 ### Initial Setup
 
 These initial steps are the universal basic setup for any ThunderKit project.
@@ -22,17 +22,22 @@ These initial steps are the universal basic setup for any ThunderKit project.
     - In Windows you can check the file and product version of the executable by navigating to it in Windows Explorer, right clicking on the executable and selecting properties. The file and product version information is on the Details tab.
     - Download specific versions of Unity from the [Unity Download Archive](https://unity3d.com/get-unity/download/archive)
     - Unity Hub cannot install all versions of Unity directly, however it can install them from links on the Unity Download Archive page.
-2. Create a new Unity Project with the installed version of Unity
-3. Install ThunderKit
+2. (Unity 2018 only)  [Install Git for Windows](https://git-scm.com/download/win)
+    - Unity 2018 does not full integration for Git and operates on an installed version
+3. Create a new Unity Project with the installed version of Unity
+4. Install ThunderKit
       - Navigate to the Project folder with your file explorer and open the Packages folder 
       - Open the manifest.json file in this folder and add the following to the top of dependencies
       `"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git",` 
       - Save and close the manifest.json file and focus Unity to complete the process.
-4. Open the [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) window
-5. Click on Locate Game under the ThunderKit settings to locate and select the games executable
+
+5. Verify that the [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) window opened automatically.
+    - If the ThunderKit Settings window did not open after the installation completes, check the Console for errors
+
+6. Click on Locate Game under the ThunderKit settings to locate and select the games executable
       * It may take some time for ThunderKit and Unity to complete the configuration
-6. Open the project window from the main menu via Windows/General/Project
-7. Create a Manifest by right clicking in any folder under assets and selecting ThunderKit/Manifest
+7. Open the project window from the main menu via Windows/General/Project
+8. Create a Manifest by right clicking in any folder under assets and selecting ThunderKit/Manifest
 
 ### Next Steps
 
