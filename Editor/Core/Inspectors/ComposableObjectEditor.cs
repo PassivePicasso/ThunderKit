@@ -152,8 +152,8 @@ namespace ThunderKit.Core.Editor.Inspectors
 
             if (ClipboardItem && currentroot.ElementType.IsAssignableFrom(ClipboardItem.GetType()))
             {
-                menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem.name)} above"), false, PasteNewAbove, stepData);
-                menu.AddItem(new GUIContent($"Paste new {ObjectNames.NicifyVariableName(ClipboardItem.name)}"), false, PasteNew, stepData);
+                menu.AddItem(new GUIContent($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} above"), false, PasteNewAbove, stepData);
+                menu.AddItem(new GUIContent($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} below"), false, PasteNew, stepData);
             }
             else
                 menu.AddDisabledItem(new GUIContent($"Paste"));
