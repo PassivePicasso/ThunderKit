@@ -2,12 +2,13 @@
 
 ## Steam Launch support
 
-Some Unity games require that Steam launches them in order to successfully start up, to support this requirement previous updated added the RegistryLookup PathComponent.
+Some Unity games require that Steam launches them in order to successfully start up, to support this requirement the previous update added the RegistryLookup PathComponent.
 This update builds upon that by adding a Steam.exe PathReference asset which locates the Steam.exe using the Windows Registry via the RegistryLookup PathComponent.
 
 To improve the coverage and usability of the BepInEx Template, the template now includes a SteamBepInExLaunch Pipeline and the Launch Pipeline was renamed to BepInExLaunch
 
-In Order to use the SteamBepInExLaunch Pipeline, copy it over the BepInExLaunch pipeline in your Build and Launch Pipeline, or replace BepInExLaunch anywhere you used the Launch Pipeline.
+In Order to use the SteamBepInExLaunch Pipeline, copy it over the BepInExLaunch pipeline in your Build and Launch Pipeline, or replace BepInExLaunch anywhere you used it with the SteamBepInExLaunch pipeline.
+
 References to the Launch Pipeline will be automatically updated to BepInExLaunch.
 
 ## Templates
@@ -37,6 +38,7 @@ After Completing these steups you're seting to use Steam Launching.
 * Fixed LocalThunderstoreSource not updating its listing when it already has Packages listed
 * Fixed PackageSource.Clear Failing to clear Packages successfully under some conditions
 * Fixed PackageManager failing to render correctly when a Package has invalid dependency information
+
 
 
 ## 3.2.0
