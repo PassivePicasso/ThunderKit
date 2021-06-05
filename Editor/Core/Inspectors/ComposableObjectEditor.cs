@@ -154,6 +154,7 @@ namespace ThunderKit.Core.Editor.Inspectors
             {
                 menu.AddItem(new GUIContent($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} above"), false, PasteNewAbove, stepData);
                 menu.AddItem(new GUIContent($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} below"), false, PasteNew, stepData);
+                menu.AddItem(new GUIContent($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} values"), false, PasteValues, stepData);
             }
             else
                 menu.AddDisabledItem(new GUIContent($"Paste"));
@@ -167,6 +168,7 @@ namespace ThunderKit.Core.Editor.Inspectors
             menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(EditScript))), false, EditScript, stepData);
             menu.ShowAsContext();
         }
+
         private void CleanDataArray()
         {
             for (int i = 0; i < dataArray.arraySize; i++)
@@ -213,6 +215,18 @@ namespace ThunderKit.Core.Editor.Inspectors
 
             if (ClipboardItem)
                 InsertClipboard(stepData, 1);
+        }
+        static void PasteValues(object data)
+        {
+            var stepData = data as StepData;
+            var targetProperty = stepData.dataArray.GetArrayElementAtIndex(stepData.index);
+            var target = targetProperty.objectReferenceValue;
+            if (ClipboardItem && ClipboardItem.GetType().IsAssignableFrom(target.GetType()))
+            {
+                Undo.RecordObject(target, "Overwrite values");
+                var clipboardJson = JsonUtility.ToJson(ClipboardItem);
+                JsonUtility.FromJsonOverwrite(clipboardJson, target);
+            }
         }
         private static void InsertClipboard(StepData stepData, int offset)
         {
