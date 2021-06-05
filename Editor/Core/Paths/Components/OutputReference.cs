@@ -1,4 +1,3 @@
-using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Pipelines;
 
 namespace ThunderKit.Core.Paths.Components
