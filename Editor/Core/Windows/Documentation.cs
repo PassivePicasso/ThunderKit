@@ -26,17 +26,17 @@ namespace ThunderKit.Core.Windows
         private const string SelectedClass = "selected";
         private const string HiddenClass = "hidden";
         private const string MinimizeClass = "minimize";
-        private const string DocumentationRoot = "Packages/com.passivepicasso.thunderkit/Documentation";
+        public string DocumentationRoot = "Packages/com.passivepicasso.thunderkit/Documentation/topics";
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Documentation")]
-        public static void ShowDocumentation() => GetWindow<Documentation>();
+        public static void ShowThunderKitDocumentation() => GetWindow<Documentation>();
 
         public override void OnEnable()
         {
             base.OnEnable();
 
             var pageList = rootVisualElement.Q("page-list");
-            var topicsFileGuids = AssetDatabase.FindAssets($"t:{nameof(VisualTreeAsset)}", new string[] { $"{DocumentationRoot}/topics" });
+            var topicsFileGuids = AssetDatabase.FindAssets($"t:{nameof(VisualTreeAsset)}", new string[] { DocumentationRoot });
             var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
             var uxmlTopics = topicsFilePaths.Distinct().ToArray();
             var pageFiles = uxmlTopics
