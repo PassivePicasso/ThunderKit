@@ -1,3 +1,44 @@
+## 3.3.0
+
+## Steam Launch support
+
+Some Unity games require that Steam launches them in order to successfully start up, to support this requirement previous updated added the RegistryLookup PathComponent.
+This update builds upon that by adding a Steam.exe PathReference asset which locates the Steam.exe using the Windows Registry via the RegistryLookup PathComponent.
+
+To improve the coverage and usability of the BepInEx Template, the template now includes a SteamBepInExLaunch Pipeline and the Launch Pipeline was renamed to BepInExLaunch
+
+In Order to use the SteamBepInExLaunch Pipeline, copy it over the BepInExLaunch pipeline in your Build and Launch Pipeline, or replace BepInExLaunch anywhere you used the Launch Pipeline.
+References to the Launch Pipeline will be automatically updated to BepInExLaunch.
+
+## Templates
+
+Two new Templates have been added to ThunderKit under ThunderKit/Editor/Templates
+DirectLaunch is a new pre-configured Launch pipeline which directly executes the game's Executable in its working directory.
+SteamLaunch is a new pre-configured Launch pipeline which executes the game's Executable in its working directory using Steam and the applaunch command line argument.
+
+## GameAppId and Steam Launching
+
+In order to use any of the pre-configured Steam launching pipelines you will need to provide ThunderKit with the games Steam App Id.
+
+Follow these Steps to setup Steam Launching
+1. Create a new PathReference under your Assets directory and name it GameAppId
+2. Add the Constant PathComponent to the newly created PathReference
+3. Find the Steam App Id for the game you're modding
+  * You can find the SteamAppId easily by copying it from the game's Steam Store page url
+
+After Completing these steups you're seting to use Steam Launching.
+
+## Fixes and Improvements
+
+* Recently a ManifestIdentity data loss issue was re-discovered, this has not yet been resolved but some pieces of code have been updated in response while a proper resolution is pending
+* Some PipelineJobs and PathComponents referenced a Manifests's ManifestIdentity by using LINQ to query for it in the Manifest's Data elements, these have been updated to use the Manifest's cached Identity reference.
+* StageThunderstoreManifest has been updated to provide a clearer error when a dependency is missing its ManifestIdentity
+* Some minor code cleanup was done against commented out code and unnecessary usings
+* Fixed LocalThunderstoreSource not updating its listing when it already has Packages listed
+* Fixed PackageSource.Clear Failing to clear Packages successfully under some conditions
+* Fixed PackageManager failing to render correctly when a Package has invalid dependency information
+
+
 ## 3.2.0
 
 ### New Feature: PathComponent: Registry Lookup
