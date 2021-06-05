@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using ThunderKit.Core.Data;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
