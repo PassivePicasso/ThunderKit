@@ -1,7 +1,5 @@
 using System.IO;
-using System.Linq;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
 using UnityEditor;
 
@@ -21,7 +19,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (ArrayUtility.Contains(ExcludedManifests, pipeline.Manifest)) continue;
                 if (AssetDatabase.GetAssetPath(pipeline.Manifest).StartsWith("Assets")) continue;
 
-                var manifestIdentity = pipeline.Manifest.Data.OfType<ManifestIdentity>().First();
+                var manifestIdentity = pipeline.Manifest.Identity;
                 var dependencyPath = Path.Combine("Packages", manifestIdentity.Name);
                 CopyFilesRecursively(dependencyPath, StagingPath.Resolve(pipeline, this));
             }
