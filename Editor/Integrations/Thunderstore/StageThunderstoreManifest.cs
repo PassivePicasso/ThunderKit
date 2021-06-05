@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datum;
@@ -18,7 +19,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
         public override void Execute(Pipeline pipeline)
         {
             var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
-            var identity = pipeline.Manifest.Data.OfType<ManifestIdentity>().First();
+            var identity = pipeline.Manifest.Identity;
             var manifestJson = RenderJson(identity, thunderstoreData);
 
             foreach (var outputPath in thunderstoreData.StagingPaths.Select(path => path.Resolve(pipeline, this)))
@@ -33,8 +34,14 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
         {
             var dependencies = identity.Dependencies.Select(man =>
             {
-                var id = man.Data.OfType<ManifestIdentity>().First();
-                return $"{id.Author}-{id.Name}-{id.Version}";
+                if (man.Identity)
+                    return $"{man.Identity.Author}-{man.Identity.Name}-{man.Identity.Version}";
+                else
+                {
+                    var errorMessage = $"Cannot locate ManifestIdentity on Manifest Asset \"{Path.Combine(AssetDatabase.GetAssetPath(man), man.name)}\"";
+                    throw new ArgumentException(errorMessage);
+
+                }
             });
             var stub = new ThunderstoreManifestStub
             {
