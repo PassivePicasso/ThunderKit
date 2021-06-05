@@ -2,6 +2,8 @@
 
 If you like ThunderKit consider donating through [GitHub Sponsors](https://github.com/sponsors/PassivePicasso)
 
+Join the [ThunderKit Discord Server](https://discord.gg/Xzf9qFj6WA) to get help and interact with other ThunderKit users.
+
 Welcome and thank you for your interest in ThunderKit. ThunderKit is a Unity extension that provides an expansive and expandable environment for mod development.
 
 ThunderKit can help you develop multiple mods in a single project and streamline your building and testing efforts through automation.
