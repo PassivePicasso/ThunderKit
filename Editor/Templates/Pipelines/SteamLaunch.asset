@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3695521163bdd74fa2845bbd3438240, type: 3}
-  m_Name: Launch
+  m_Name: SteamLaunch
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114525731783530820}
@@ -30,8 +30,8 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   Active: 1
-  workingDirectory: <BepInExPackDestination>
-  executable: <GameExecutable>
+  workingDirectory: <GamePath>
+  executable: <Steam.exe>
   arguments:
-  - --doorstop-enable true
-  - --doorstop-target "<PWD>/<BepInEx.Preloader.dll>"
+  - -applaunch
+  - <GameAppId>
