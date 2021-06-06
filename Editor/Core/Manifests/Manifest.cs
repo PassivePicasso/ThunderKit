@@ -47,8 +47,11 @@ namespace ThunderKit.Core.Manifests
                 {
                     var path = AssetDatabase.GetAssetPath(this);
                     var reps = AssetDatabase.LoadAllAssetsAtPath(path);
-                    identity = reps.OfType<ManifestIdentity>().FirstOrDefault();
-                    EditorUtility.SetDirty(this);
+                    var so = new SerializedObject(this);
+                    var identProperty = so.FindProperty("identity");
+                    identProperty.objectReferenceValue = reps.OfType<ManifestIdentity>().FirstOrDefault();
+                    so.SetIsDifferentCacheDirty();
+                    so.ApplyModifiedProperties();
                 }
 
                 return identity;
