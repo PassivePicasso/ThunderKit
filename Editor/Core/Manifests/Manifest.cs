@@ -51,7 +51,7 @@ namespace ThunderKit.Core.Manifests
                     var identProperty = so.FindProperty("identity");
                     identProperty.objectReferenceValue = reps.OfType<ManifestIdentity>().FirstOrDefault();
                     so.SetIsDifferentCacheDirty();
-                    so.ApplyModifiedProperties();
+                    so.ApplyModifiedPropertiesWithoutUndo();
                 }
 
                 return identity;
