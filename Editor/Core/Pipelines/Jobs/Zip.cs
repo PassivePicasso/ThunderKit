@@ -11,7 +11,7 @@ namespace ThunderKit.Core.Pipelines.Jops
     public class Zip : FlowPipelineJob
     {
         public ArchiveType ArchiveType = ArchiveType.Zip;
-        public bool IncludeBaseDirectory;
+
         [PathReferenceResolver]
         public string Source;
         [PathReferenceResolver]
