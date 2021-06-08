@@ -15,7 +15,6 @@ MonoBehaviour:
   Data:
   - {fileID: 114479067402122698}
   - {fileID: 114974057467109836}
-  lastName: BepInExPackSource
 --- !u!114 &114479067402122698
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -30,8 +29,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  searchOption: 0
-  searchPattern: '*BepInExPack*'
+  searchOption: 1
+  searchPattern: BepInEx
   path: Packages
 --- !u!114 &114974057467109836
 MonoBehaviour:
@@ -47,4 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Value: BepInExPack
+  Value: ..

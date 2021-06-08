@@ -1,0 +1,20 @@
+{
+    "name": "ThunderKit.MarkdownEditor",
+    "rootNamespace": "",
+    "references": [
+        "ThunderKit.Common",
+        "ThunderKit.Core",
+        "ThunderKit.Markdown"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

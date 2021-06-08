@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
 using ThunderKit.Core.Editor.Windows;
 using UnityEditor;
-using UnityEngine;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;

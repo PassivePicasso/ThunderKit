@@ -13,7 +13,7 @@ namespace ThunderKit.Core.Documentation
     {
         readonly static object[] findTextureParams = new object[1];
 
-        [MenuItem(Constants.ThunderKitContextRoot + "Documentation Folder", priority = Constants.ThunderKitMenuPriority)]
+        [MenuItem(Constants.ThunderKitExtensionContextRoot + "Documentation Folder", priority = Constants.ThunderKitMenuPriority)]
         public static void CreateFolder()
         {
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);
@@ -54,7 +54,7 @@ namespace ThunderKit.Core.Documentation
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, endAction, assetPathAndName, icon, null);
         }
 
-        [MenuItem(Constants.ThunderKitContextRoot + "Documentation Page", priority = Constants.ThunderKitMenuPriority)]
+        [MenuItem(Constants.ThunderKitExtensionContextRoot + "Documentation Page", priority = Constants.ThunderKitMenuPriority)]
         public static void CreatePage()
         {
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);

@@ -102,7 +102,7 @@
 }
 
 .list-item {
-    margin-left: 29px;
+    margin-left: 10px;
 }
 
 .code {
@@ -121,8 +121,8 @@
 }
 
 .last-inline {
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .link {
@@ -132,14 +132,15 @@
     border-bottom-width: 1px;
     border-bottom-color: rgba(0, 0, 128, 0.75);
     border-color: rgba(0, 0, 128, 0.75);
-    margin-left: 1px;
+    margin-left: 3px;
     margin-right: 2px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin-top: 0;
+    margin-bottom: 0;
     height: 17px;
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-left: 0;
+    padding-right: 0;
 }
+
 .link .inline {
     color: rgba(0, 0, 128, 0.75);
 }
@@ -160,11 +161,11 @@
     visibility: visible;
 }
 
-.bold .italic .inline  {
+.bold .italic .inline {
     -unity-font-style: bold-and-italic;
 }
 
-.italic .bold .inline  {
+.italic .bold .inline {
     -unity-font-style: bold-and-italic;
 }
 
@@ -172,7 +173,7 @@
     -unity-font-style: bold;
 }
 
-.italic .inline  {
+.italic .inline {
     -unity-font-style: italic;
 }
 
@@ -185,6 +186,10 @@
 }
 
 .bullet {
-    padding-top: 4px;
-    height: 8px;
+    padding-top: 2px;
+    padding-bottom: 0px;
+    margin-top: 3px;
+    margin-right: 2px;
+    margin-bottom: 0px;
+    height: 11px;
 }

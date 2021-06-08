@@ -9,6 +9,7 @@ namespace ThunderKit.Common
 
         public const int ThunderKitMenuPriority = 18;
         public const string ThunderKitContextRoot = "Assets/ThunderKit/";
+        public const string ThunderKitExtensionContextRoot = "Assets/ThunderKit/Extension/";
         public const string ThunderKitMenuRoot = "Tools/ThunderKit/";
         public const string ThunderKitSettingsRoot = "Assets/ThunderKitSettings/";
 

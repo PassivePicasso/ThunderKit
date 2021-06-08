@@ -1,0 +1,52 @@
+.unity-text-field TextInput {
+    -unity-text-align: upper-left;
+}
+
+.markdown-renderer {
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-left-color: rgba(0, 0, 0, 255);
+    border-right-color: rgba(0, 0, 0, 255);
+    border-top-color: rgba(0, 0, 0, 255);
+    border-bottom-color: rgba(0, 0, 0, 255);
+    margin-left: 1px;
+    margin-right: 1px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.text-editor {
+    flex-grow: 0.5;
+}
+
+.horizontal-panel {
+    flex-direction: row;
+}
+
+.toolbar {
+	height: 18px;
+	border-color: rgb(128,128,128);
+	border-bottom-width: 1px;
+	background-image: resource("Builtin Skins/LightSkin/Images/Toolbar.png");
+}
+.toolbar-button {
+	height: 18px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+
+}
