@@ -41,7 +41,7 @@ namespace ThunderKit.Core.Data
         [EnumFlag]
         public IncludedSettings IncludedSettings;
         [EnumFlag]
-        public ExportPackageOptions exportPackageOptions;
+        public ExportPackageOptions exportPackageOptions = ExportPackageOptions.Recurse;
 
         public Object[] AssetFiles;
 
