@@ -67,7 +67,7 @@ namespace ThunderKit.Core.Config
         private static void LoadGame(ThunderKitSettings settings)
         {
             string currentDir = Directory.GetCurrentDirectory();
-            var foundExecutable = !string.IsNullOrEmpty(settings.GamePath) 
+            var foundExecutable = !string.IsNullOrEmpty(settings.GamePath)
                                && Directory.GetFiles(settings.GamePath ?? currentDir, Path.GetFileName(settings.GameExecutable)).Any();
 
             while (!foundExecutable)
@@ -124,15 +124,17 @@ namespace ThunderKit.Core.Config
                 .ToArray();
 
             var managedPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
-            var pluginsPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
             var packagePath = Path.Combine("Packages", packageName);
-            var packagePluginsPath = Path.Combine(packagePath, "plugins");
-
             var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
-            var plugins = Directory.GetFiles(pluginsPath, "*.dll");
-
             GetReferences(packagePath, managedAssemblies, blackList);
-            GetReferences(packagePluginsPath, plugins, Enumerable.Empty<string>());
+
+            var pluginsPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
+            if (Directory.Exists(pluginsPath))
+            {
+                var packagePluginsPath = Path.Combine(packagePath, "plugins");
+                var plugins = Directory.GetFiles(pluginsPath, "*.dll");
+                GetReferences(packagePluginsPath, plugins, Enumerable.Empty<string>());
+            }
         }
 
         private static void GetReferences(string destinationFolder, IEnumerable<string> assemblies, IEnumerable<string> blackList)
