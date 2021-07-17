@@ -7,7 +7,7 @@ using ThunderKit.Core.Editor;
 using System;
 using System.Linq;
 using ThunderKit.Core.Data;
-#if UNITY_2019 || UNITY_2020
+#if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #else
