@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114282711146063368}
-  lastName: GamePath
 --- !u!114 &114282711146063368
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -27,3 +26,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df39480b01ece8c459c9db887486877f, type: 3}
   m_Name: GamePath
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 

@@ -1,3 +1,8 @@
+## 3.3.1
+
+### Markdown editor update
+This update adds a simple minimalistic Markdown editor with Preview.
+
 ## 3.3.0
 
 ## Steam Launch support

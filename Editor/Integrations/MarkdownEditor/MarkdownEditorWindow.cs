@@ -5,13 +5,12 @@ using ThunderKit.Markdown;
 using UnityEditor;
 using System.IO;
 using UnityEditor.Callbacks;
-using UnityEditor.Experimental.UIElements;
+using UnityEngine;
 #if UNITY_2019_1_OR_NEWER
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #else
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
+using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements.StyleEnums;
 #endif
 
@@ -19,9 +18,6 @@ namespace ThunderKit.Core.Windows
 {
     public class MarkdownEditorWindow : TemplatedWindow
     {
-
-
-
         [OnOpenAsset]
 #pragma warning disable IDE0060 // Parameter is part of Unity design
         public static bool DoubleClickDeploy(int instanceID, int line)
@@ -35,6 +31,7 @@ namespace ThunderKit.Core.Windows
 
             var window = GetWindow<MarkdownEditorWindow>();
             window.markdownFile = textAsset;
+            window.RefreshContent();
             window.Show();
 
             return true;
@@ -43,60 +40,96 @@ namespace ThunderKit.Core.Windows
         [MenuItem(Constants.ThunderKitMenuRoot + "Markdown Editor Window")]
         public static void ShowMarkdownEditorWindow() => GetWindow<MarkdownEditorWindow>();
 
-        TextAsset markdownFile;
-        VisualElement editorArea;
-        MarkdownElement renderer;
-        TextField textfield;
+        private TextAsset markdownFile;
+
+        private VisualElement editorArea;
+
+        private MarkdownElement renderer;
+        private ScrollView rendererScroll;
+        private ScrollView editorScroll;
+        private TextField textfield;
+        private Label loadedFileLabel;
+
+        Scroller EditorScroller => editorScroll.verticalScroller;
+        Scroller RendererScroller => rendererScroll.verticalScroller;
         public override void OnEnable()
         {
             base.OnEnable();
+            RefreshContent();
+        }
 
+        private void Initialize()
+        {
             editorArea = rootVisualElement.Q("editor-area");
+            textfield = rootVisualElement.Q("markdown-textfield") as TextField;// new TextField(int.MaxValue, true, false, '*');
+            renderer = rootVisualElement.Q("markdown-renderer") as MarkdownElement;
+            rendererScroll = rootVisualElement.Q("renderer-scroll") as ScrollView;
+            editorScroll = rootVisualElement.Q("editor-scroll") as ScrollView;
+            loadedFileLabel = rootVisualElement.Q("loaded-file-label") as Label;
 
-            textfield = new TextField(int.MaxValue, true, false, '*');
-#if UNITY_2019_1_OR_NEWER
-            textfield.style.position = Position.Absolute;
-            textfield.style.left =
-            textfield.style.top =
-            textfield.style.bottom = 0;
-#else
-            textfield.style.wordWrap = true;
-            textfield.style.positionType = PositionType.Absolute;
-            textfield.style.positionLeft =
-            textfield.style.positionTop =
-            textfield.style.positionBottom = 0f;
-#endif
-            renderer = new MarkdownElement();
-#if UNITY_2019_1_OR_NEWER
-            textfield.style.position = Position.Absolute;
-            textfield.style.right =
-            textfield.style.top =
-            textfield.style.bottom = 0;
-#else
-            renderer.style.positionType = PositionType.Absolute;
-            renderer.style.positionRight =
-            renderer.style.positionTop =
-            renderer.style.positionBottom = 0;
-#endif
+            editorScroll.verticalScroller.valueChanged -= OnEditorScrollChanged;
+            editorScroll.verticalScroller.valueChanged += OnEditorScrollChanged;
+            rendererScroll.verticalScroller.valueChanged -= OnRendererScrollChanged;
+            rendererScroll.verticalScroller.valueChanged += OnRendererScrollChanged;
+            textfield.labelElement.RemoveFromHierarchy();
+            textfield.tripleClickSelectsLine = true;
+            textfield.doubleClickSelectsWord = true;
+            //Re-assert callbacks
+            rootVisualElement.UnregisterCallback<KeyDownEvent>(OnSave);
+            textfield.UnregisterCallback<KeyDownEvent>(OnSave);
+            editorArea.UnregisterCallback<KeyDownEvent>(OnSave);
+            renderer.UnregisterCallback<KeyDownEvent>(OnSave);
 
-            editorArea.Add(textfield);
-            editorArea.Add(renderer);
+            rootVisualElement.RegisterCallback<KeyDownEvent>(OnSave);
+            textfield.RegisterCallback<KeyDownEvent>(OnSave);
+            editorArea.RegisterCallback<KeyDownEvent>(OnSave);
+            renderer.RegisterCallback<KeyDownEvent>(OnSave);
 
-            editorArea.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 #if UNITY_2019_1_OR_NEWER
-            textfield.RegisterValueChangedCallback(OnTextChanged); 
+            textfield.UnregisterValueChangedCallback(OnTextChanged);
+            textfield.RegisterValueChangedCallback(OnTextChanged);
 #else
+            textfield.RemoveOnValueChanged(OnTextChanged);
             textfield.OnValueChanged(OnTextChanged);
 #endif
+        }
+
+        void OnRendererScrollChanged(float value) => UpdateScrollers(RendererScroller, EditorScroller, value);
+        void OnEditorScrollChanged(float value) => UpdateScrollers(EditorScroller, RendererScroller, value);
+        void UpdateScrollers(Scroller master, Scroller slave, float value)
+        {
+            var newPercentage = value / master.highValue;
+            var currentPercentage = slave.value / slave.highValue;
+            if (Mathf.Abs(newPercentage - currentPercentage) > .0001f)
+            {
+                slave.value = slave.highValue * newPercentage;
+            }
+        }
+
+        private void RefreshContent()
+        {
+            if(editorArea == null)
+                Initialize();
 
             if (markdownFile)
             {
-                textfield.SetValueAndNotify(markdownFile.text);
-                rootVisualElement.RegisterCallback<KeyDownEvent>(OnSave);
-                textfield.RegisterCallback<KeyDownEvent>(OnSave);
-                editorArea.RegisterCallback<KeyDownEvent>(OnSave);
-                renderer.RegisterCallback<KeyDownEvent>(OnSave);
+                loadedFileLabel.text = markdownFile.name;
+                textfield.value = markdownFile.text;
+                renderer.Data = markdownFile.text;
+                renderer.RefreshContent();
             }
+            UpdateTextFieldHeight();
+        }
+
+        private void UpdateTextFieldHeight()
+        {
+            var textSize = textfield.MeasureTextSize(textfield.text,
+                textfield.contentRect.width,
+                VisualElement.MeasureMode.AtMost,
+                float.PositiveInfinity,
+                VisualElement.MeasureMode.Undefined
+                );
+            textfield.style.height = textSize.y;
         }
 
         private void OnSave(KeyDownEvent evt)
@@ -107,21 +140,6 @@ namespace ThunderKit.Core.Windows
             var markdownPath = AssetDatabase.GetAssetPath(markdownFile);
             File.WriteAllText(markdownPath, textfield.text);
             AssetDatabase.ImportAsset(markdownPath, ImportAssetOptions.ForceUpdate);
-        }
-
-        private void OnGeometryChanged(GeometryChangedEvent evt)
-        {
-            var rect = evt.newRect;
-            float width = rect.width / 2;
-            //var height = rect.height - (textfield.style.marginTop + textfield.style.marginBottom);
-            //renderer.style.positionLeft = new StyleValue<float>(rect.width / 2);
-#if UNITY_2019_1_OR_NEWER
-            textfield.style.right = width;
-            renderer.style.left = width;
-#else
-            textfield.style.positionRight = width;
-            renderer.style.positionLeft = width;
-#endif
         }
 
         public void OnDisable()

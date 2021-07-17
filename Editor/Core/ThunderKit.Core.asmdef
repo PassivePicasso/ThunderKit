@@ -1,10 +1,10 @@
 {
     "name": "ThunderKit.Core",
+    "rootNamespace": "",
     "references": [
         "ThunderKit.Common",
         "ThunderKit.Markdown"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -15,5 +15,7 @@
         "SharpCompress.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

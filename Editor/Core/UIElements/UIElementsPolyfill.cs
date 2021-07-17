@@ -1,16 +1,12 @@
 ﻿#if UNITY_2018 || UNITY_2019
-using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
-using UnityEngine;
-using UnityEditor.Experimental.UIElements;
 using System.Linq;
-#if UNITY_2019
+#if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #elif UNITY_2018
 using UnityEngine.Experimental.UIElements;
-using UnityEngine.Experimental.UIElements.StyleSheets;
 #endif
 
 #pragma warning disable 0414

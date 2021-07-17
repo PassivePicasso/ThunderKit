@@ -15,7 +15,6 @@ MonoBehaviour:
   Data:
   - {fileID: 114515980546917854}
   - {fileID: 114499106009027092}
-  lastName: BepInExPackDestination
 --- !u!114 &114499106009027092
 MonoBehaviour:
   m_ObjectHideFlags: 1

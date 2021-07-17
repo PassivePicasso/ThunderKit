@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114466755582540086}
+  identity: {fileID: 0}
 --- !u!114 &114466755582540086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26,6 +27,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dda4ac7962f04724eacfeb26af5e2b75, type: 3}
   m_Name: UnityPackages
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
   StagingPaths:
   - <StagingRoot>
   unityPackages:

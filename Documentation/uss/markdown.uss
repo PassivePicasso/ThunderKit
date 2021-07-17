@@ -187,9 +187,9 @@
 
 .bullet {
     padding-top: 2px;
-    padding-bottom: 0px;
+    padding-bottom: 0;
     margin-top: 3px;
     margin-right: 2px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     height: 11px;
 }

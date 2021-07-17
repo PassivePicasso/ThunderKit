@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114049497066950108}
-  lastName: ManifestVersion
 --- !u!114 &114049497066950108
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -27,3 +26,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41b82db3744610d4ba6a7edd9df00836, type: 3}
   m_Name: ManifestVersion
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 

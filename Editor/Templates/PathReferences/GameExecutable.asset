@@ -15,7 +15,6 @@ MonoBehaviour:
   Data:
   - {fileID: 114877556266927788}
   - {fileID: 114979852580270194}
-  lastName: GameExecutable
 --- !u!114 &114877556266927788
 MonoBehaviour:
   m_ObjectHideFlags: 1

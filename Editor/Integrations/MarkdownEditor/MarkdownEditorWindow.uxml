@@ -3,13 +3,17 @@
     <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
     <Style src="uss/markdown_editor.uss" />
     <ui:VisualElement name="markdown-editor-window-area" class="grow">
-        <ui:VisualElement name="toolbar" class="horizontal-panel toolbar">
-            <ui:Button text="Button" display-tooltip-when-elided="true" class="toolbar-button"/>
-            <ui:Button text="Button" display-tooltip-when-elided="true" class="toolbar-button"/>
-            <ui:Button text="Button" display-tooltip-when-elided="true" class="toolbar-button"/>
-            <ui:Button text="Button" display-tooltip-when-elided="true" class="toolbar-button"/>
-            <ui:Button text="Button" display-tooltip-when-elided="true" class="toolbar-button"/>
+        <uie:Toolbar>
+            <ui:Label text="File: " />
+            <ui:Label name="loaded-file-label" text="Markdown.md" style="flex-grow: 1;" />
+        </uie:Toolbar>
+        <ui:VisualElement name="editor-area" class="horizontal-panel grow">
+            <ui:ScrollView name="editor-scroll" style="position: absolute; left: 0; top: 0; right: 50%; bottom: 0;">
+                <ui:TextField picking-mode="Ignore" name="markdown-textfield" multiline="true" focusable="true" class="inline" style="position: absolute; left: 0; top: 0; right: 0; flex-wrap: wrap; white-space: normal;" />
+            </ui:ScrollView>
+            <ui:ScrollView name="renderer-scroll" style="position: absolute; left: 50%; top: 0; right: 0; bottom: 0;">
+                <ThunderKit.Markdown.MarkdownElement name="markdown-renderer" empty-line-after-code-block="false" markdown-data-type="Text" />
+            </ui:ScrollView>
         </ui:VisualElement>
-        <ui:VisualElement name="editor-area" class="horizontal-panel grow"/>
     </ui:VisualElement>
 </ui:UXML>

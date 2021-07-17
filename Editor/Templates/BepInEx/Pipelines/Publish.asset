@@ -52,7 +52,6 @@ MonoBehaviour:
   PerManifest: 1
   ExcludedManifests: []
   ArchiveType: 1
-  IncludeBaseDirectory: 0
   Source: <ManifestStagingRoot>
   Output: <ManifestStagingRoot>.zip
 --- !u!114 &114698388137127062

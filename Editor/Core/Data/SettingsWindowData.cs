@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using ThunderKit.Core.Data;
+﻿using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
 using ThunderKit.Markdown;
 using ThunderKit.Core.Windows;
-#if UNITY_2019 || UNITY_2020
+#if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #else

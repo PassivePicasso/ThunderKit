@@ -60,7 +60,9 @@ namespace ThunderKit.Core.UIElements
         }
 
         const string editorVersion =
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2021_1_OR_NEWER
+            "2021";
+#elif UNITY_2020_1_OR_NEWER
             "2020";
 #elif UNITY_2019_1_OR_NEWER
             "2019";

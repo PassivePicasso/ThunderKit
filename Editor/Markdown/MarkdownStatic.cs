@@ -20,7 +20,7 @@ namespace ThunderKit.Markdown
             }
         }
 
-        [MenuItem("Assets/Create/Markdown File")]
+        [MenuItem("Assets/ThunderKit/Markdown File")]
         public static void Create()
         {
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);

@@ -16,7 +16,7 @@ MonoBehaviour:
   - {fileID: 114211852988908172}
   - {fileID: 114107831304456238}
   - {fileID: 114431642618062350}
-  Identity: {fileID: 0}
+  identity: {fileID: 0}
 --- !u!114 &114107831304456238
 MonoBehaviour:
   m_ObjectHideFlags: 1
