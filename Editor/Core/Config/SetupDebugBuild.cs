@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using ThunderKit.Common;
+using ThunderKit.Common.Logging;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
@@ -68,41 +69,54 @@ namespace ThunderKit.Core.Config
                 Debug.LogError($"Unity Editor Version: {editorVersion} does not match {settings.GameExecutable} Unity version: {gameVersion}");
                 return;
             }
-
-            Overwrite(new SwapPair { newFile = winPlayer, originalFile = gamePlayer });
-            Overwrite(crashHandler);
-            Overwrite(player);
-            Overwrite(playerLib);
-            Overwrite(playerPdb);
-            Overwrite(releasePdb);
-            if (File.Exists(winPix.newFile))
-                Overwrite(winPix);
-
-            CopyFolder(monoBleedingEdgePath, gameMonoPath);
-            CopyFolder(dataManagedPath, gameManagedPath);
-
-            if (File.Exists(gameBootConfigFile))
+            if (EditorUtility.DisplayDialog("Setup Debug Build",
+                $@"Setup Debug Build will replace files in ""{gamePath}""
+This action cannot be undone, continue?",
+                "Continue", "Cancel"))
             {
-                bool foundConnectionDebug = false;
-                using (var sr = File.OpenText(gameBootConfigFile))
+                using (var progressBar = new ProgressBar("Setting up Debug Build"))
                 {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
+                    Overwrite(new SwapPair { newFile = winPlayer, originalFile = gamePlayer });
+                    Overwrite(crashHandler);
+                    Overwrite(player);
+                    Overwrite(playerLib);
+                    Overwrite(playerPdb);
+                    Overwrite(releasePdb);
+                    if (File.Exists(winPix.newFile))
+                        Overwrite(winPix);
+
+                    CopyFolder(monoBleedingEdgePath, gameMonoPath);
+                    CopyFolder(dataManagedPath, gameManagedPath);
+
+                    if (File.Exists(gameBootConfigFile))
                     {
-                        if (line.Contains(playerConnectionDebug1))
+                        progressBar.Update("Configuring debugging server");
+                        bool foundConnectionDebug = false;
+                        using (var sr = File.OpenText(gameBootConfigFile))
                         {
-                            foundConnectionDebug = true;
-                            break;
+                            string line;
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                if (line.Contains(playerConnectionDebug1))
+                                {
+                                    foundConnectionDebug = true;
+                                    break;
+                                }
+                            }
+
                         }
+
+                        progressBar.Update("Writing debugging server configuration");
+                        if (!foundConnectionDebug)
+                            File.AppendAllText(gameBootConfigFile, playerConnectionDebug1);
                     }
-
+                    else
+                    {
+                        progressBar.Update("Writing debugging server configuration");
+                        File.WriteAllText(gameBootConfigFile, playerConnectionDebug1);
+                    }
                 }
-
-                if (!foundConnectionDebug)
-                    File.AppendAllText(gameBootConfigFile, playerConnectionDebug1);
             }
-            else
-                File.WriteAllText(gameBootConfigFile, playerConnectionDebug1);
         }
 
         private static SwapPair GetSwapPair(string sourceRoot, string destRoot, string fileName)
@@ -110,7 +124,15 @@ namespace ThunderKit.Core.Config
             return new SwapPair { newFile = Path.Combine(sourceRoot, fileName), originalFile = Path.Combine(destRoot, fileName) };
         }
 
-        private static void Overwrite(SwapPair swapPair) => Overwrite(swapPair.newFile, swapPair.originalFile);
+        private static void Overwrite(SwapPair swapPair)
+        {
+            using (var pb = new ProgressBar("Writing"))
+            {
+                pb.Update($"Writing {swapPair.newFile} over {swapPair.originalFile}");
+                Overwrite(swapPair.newFile, swapPair.originalFile);
+            }
+        }
+
         private static void Overwrite(string newFile, string originalFile)
         {
             if (File.Exists(originalFile)) File.Delete(originalFile);
@@ -119,13 +141,18 @@ namespace ThunderKit.Core.Config
 
         private static void CopyFolder(string sourcePath, string destinationPath)
         {
-            foreach (var dir in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
-                Directory.CreateDirectory(Path.Combine(destinationPath, dir.Substring(sourcePath.Length + 1)));
-
-            foreach (var fileName in Directory.GetFiles(sourcePath, "*", SearchOption.AllDirectories))
+            using (var pb = new ProgressBar("Writing"))
             {
-                var original = Path.Combine(destinationPath, fileName.Substring(sourcePath.Length + 1));
-                Overwrite(fileName, original);
+                pb.Update($"Ensuring output folders");
+                foreach (var dir in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+                    Directory.CreateDirectory(Path.Combine(destinationPath, dir.Substring(sourcePath.Length + 1)));
+
+                foreach (var fileName in Directory.GetFiles(sourcePath, "*", SearchOption.AllDirectories))
+                {
+                    var original = Path.Combine(destinationPath, fileName.Substring(sourcePath.Length + 1));
+                    pb.Update($"Copying {fileName} to {original}");
+                    Overwrite(fileName, original);
+                }
             }
         }
     }
