@@ -1,12 +1,36 @@
 ﻿.thunderstore-source {
-    background-color: rgba(128, 128, 128, 0.5);
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 2px;
+    background-color: rgba(0, 0, 0, 0.15);
+    height: 28px;
     margin-bottom: 2px;
+    position-type: relative;
+}
+.source-header {
+    margin-top: 4px;
+    flex-direction: row;
 }
 .source-name {
     color: #FFF;
     font-size: 12px;
+    width: 150px;
     -unity-font-style: bold;
+}
+
+#package-count {
+    width: 150px;
+}
+
+#thunderstore-sources-list {
+    flex-grow: 1;
+    min-height: 122px;
+    border-top: 1px;
+    border-left: 1px;
+    border-right: 1px;
+    border-bottom: 1px;
+    border-color: #888;
+}
+.thunderkit-field {
+    width: 150px;
+}
+.unity-property-field-label {
+    flex-grow: 0.25;
 }

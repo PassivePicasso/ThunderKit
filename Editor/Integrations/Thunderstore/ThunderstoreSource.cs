@@ -17,6 +17,18 @@ namespace ThunderKit.Integrations.Thunderstore
     using PV = Core.Data.PackageVersion;
     public class ThunderstoreSource : PackageSource
     {
+        [Serializable]
+        public struct SDateTime
+        {
+            public long ticks;
+            public SDateTime(long ticks)
+            {
+                this.ticks = ticks;
+            }
+            public static implicit operator DateTime(SDateTime sdt) => new DateTime(sdt.ticks);
+            public static implicit operator SDateTime(DateTime sdt) => new SDateTime(sdt.Ticks);
+        }
+
         class GZipWebClient : WebClient
         {
             protected override WebRequest GetWebRequest(Uri address)
@@ -38,6 +50,8 @@ namespace ThunderKit.Integrations.Thunderstore
         public override string Name => name;
         public string PackageListApi => Url + "/api/v1/package/";
         public override string SourceGroup => "Thunderstore";
+        [SerializeField, HideInInspector]
+        private SDateTime LastUpdate;
 
         private void OnEnable()
         {
@@ -86,8 +100,11 @@ namespace ThunderKit.Integrations.Thunderstore
             File.Delete(filePath);
         }
 
-        public void ReloadPages()
+        public void ReloadPages(bool force = false)
         {
+            if (!force && DateTime.Now - LastUpdate < TimeSpan.FromMinutes(5)) return;
+            LastUpdate = DateTime.Now;
+
             Debug.Log($"Updating Package listing: {PackageListApi}");
             using (var client = new GZipWebClient())
             {

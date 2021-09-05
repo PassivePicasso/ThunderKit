@@ -21,36 +21,51 @@ namespace ThunderKit.Integrations.Thunderstore
     // Create a new type of Settings Asset.
     public class ThunderstoreSettings : ThunderKitSetting
     {
-        const string StylePath = "Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreStyle.uss";
         const string TemplatePath = "Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreTemplate.uxml";
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
-            TemplateHelpers.MultiVersionLoadStyleSheet(rootElement, StylePath);
+            var thunderstoreSettingsTemplate = TemplateHelpers.LoadTemplateInstance(TemplatePath);
+
+            var sourceList = thunderstoreSettingsTemplate.Q<ListView>("thunderstore-sources-list");
 
             var sources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
                       .Select(AssetDatabase.GUIDToAssetPath)
                       .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
                       .OfType<ThunderstoreSource>()
                       .ToArray();
-            foreach (var source in sources)
+            sourceList.selectionType = SelectionType.None;
+            sourceList.makeItem = () =>
             {
-                var container = new VisualElement();
+                var subcontainer = new VisualElement();
+                subcontainer.AddToClassList("thunderstore-source");
 
-                var sourceNameLabel = new Label($"{source.Name}");
+                var sourceNameLabel = new Label { name = "source-name" };
                 sourceNameLabel.AddToClassList("source-name");
-                container.Add(sourceNameLabel);
 
-                var urlField = CreateStandardField("Url");
-                container.Add(urlField);
+                var packageCount = new Label() { name = "package-count"};
+                var sourceHeader = new VisualElement();
+                sourceHeader.AddToClassList("source-header");
 
-                rootElement.Add(container);
-                container.AddToClassList("thunderstore-source");
+                sourceHeader.Add(sourceNameLabel);
+                sourceHeader.Add(packageCount);
+                sourceHeader.Add(CreateStandardField("Url"));
 
-                container.Bind(new SerializedObject(source));
-            }
+                subcontainer.Add(sourceHeader);
 
-            var thunderstoreSettingsTemplate = TemplateHelpers.LoadTemplateInstance(TemplatePath);
+                return new VisualElement { subcontainer };
+            };
+
+            sourceList.bindItem = (ve, i) =>
+            {
+                var source = sources[i];
+                var nameLabel = ve.Q<Label>("source-name");
+                var packageCount = ve.Q<Label>("package-count");
+                nameLabel.text = source.Name;
+                packageCount.text = $"Packages: {source.Packages.Count}";
+                ve.Bind(new SerializedObject(source));
+            };
+            sourceList.itemsSource = sources;
             rootElement.Add(thunderstoreSettingsTemplate);
         }
 
