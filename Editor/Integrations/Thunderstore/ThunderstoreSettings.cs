@@ -7,6 +7,7 @@ using ThunderKit.Core.Editor;
 using System;
 using System.Linq;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.UIElements;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -20,41 +21,40 @@ namespace ThunderKit.Integrations.Thunderstore
     // Create a new type of Settings Asset.
     public class ThunderstoreSettings : ThunderKitSetting
     {
-        public string ThunderstoreUrl = "https://thunderstore.io";
-        private SerializedObject thunderStoreSettingsSO;
-
-        public class StringValueChangeArgs : EventArgs
-        {
-            public string newValue;
-            public string previousValue;
-        }
-
-        public static event EventHandler<StringValueChangeArgs> OnThunderstoreUrlChanged;
+        const string StylePath = "Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreStyle.uss";
+        const string TemplatePath = "Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreTemplate.uxml";
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
-            var settingsobject = GetOrCreateSettings<ThunderstoreSettings>();
-            var container = new VisualElement();
-            var label = new Label(ObjectNames.NicifyVariableName(nameof(ThunderstoreUrl)));
-            var field = new TextField { bindingPath = nameof(ThunderstoreUrl) };
-            field.RegisterCallback<ChangeEvent<string>>(ce =>
-            {
-                if (ce.newValue != ce.previousValue)
-                    OnThunderstoreUrlChanged?.Invoke(field, new StringValueChangeArgs { newValue = ce.newValue, previousValue = ce.previousValue });
-            });
-            container.Add(label);
-            container.Add(field);
-            container.AddToClassList("thunderkit-field");
-            field.AddToClassList("thunderkit-field-input");
-            label.AddToClassList("thunderkit-field-label");
-            rootElement.Add(container);
+            TemplateHelpers.MultiVersionLoadStyleSheet(rootElement, StylePath);
 
-            if (thunderStoreSettingsSO == null) 
-                thunderStoreSettingsSO = new SerializedObject(settingsobject);
-            container.Bind(thunderStoreSettingsSO);
+            var sources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
+                      .Select(AssetDatabase.GUIDToAssetPath)
+                      .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
+                      .OfType<ThunderstoreSource>()
+                      .ToArray();
+            foreach (var source in sources)
+            {
+                var container = new VisualElement();
+
+                var sourceNameLabel = new Label($"{source.Name}");
+                sourceNameLabel.AddToClassList("source-name");
+                container.Add(sourceNameLabel);
+
+                var urlField = CreateStandardField("Url");
+                container.Add(urlField);
+
+                rootElement.Add(container);
+                container.AddToClassList("thunderstore-source");
+
+                container.Bind(new SerializedObject(source));
+            }
+
+            var thunderstoreSettingsTemplate = TemplateHelpers.LoadTemplateInstance(TemplatePath);
+            rootElement.Add(thunderstoreSettingsTemplate);
         }
 
-        readonly string[] keywords = new string[] { nameof(ThunderstoreUrl) };
+        readonly string[] keywords = new string[] { nameof(ThunderstoreSource.Url) };
         public override IEnumerable<string> Keywords() => keywords;
     }
 }

@@ -1,53 +1,54 @@
 ﻿using SharpCompress.Archives;
 using SharpCompress.Readers;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using ThunderKit.Common;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor;
 using UnityEditor;
+using UnityEngine;
 
 namespace ThunderKit.Integrations.Thunderstore
 {
     using PV = Core.Data.PackageVersion;
     public class ThunderstoreSource : PackageSource
     {
-        internal readonly static string CachePath = $"Assets/ThunderKitSettings/{typeof(ThunderstoreSource).Name}.asset";
-
-        [InitializeOnLoadMethod]
-        public static void SetupInitialization()
+        class GZipWebClient : WebClient
         {
-            InitializeSources -= PackageSource_InitializeSources;
-            InitializeSources += PackageSource_InitializeSources;
-        }
-
-        private static void PackageSource_InitializeSources(object sender, System.EventArgs e)
-        {
-            //AssetDatabase.DeleteAsset(CachePath);
-            ThunderstoreAPI.PagesLoaded -= ThunderstoreAPI_PagesLoaded;
-            ThunderstoreAPI.PagesLoaded += ThunderstoreAPI_PagesLoaded;
-            ThunderstoreAPI.ReloadPages();
-        }
-
-        private static void ThunderstoreAPI_PagesLoaded(object sender, System.EventArgs e)
-        {
-            ThunderstoreAPI.PagesLoaded -= ThunderstoreAPI_PagesLoaded;
-            var tss = ScriptableHelper.EnsureAsset<ThunderstoreSource>(CachePath, source =>
+            protected override WebRequest GetWebRequest(Uri address)
             {
-                source.hideFlags = UnityEngine.HideFlags.NotEditable;
-            });
-            tss.LoadPackages();
+                HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                return request;
+            }
+        }
+        internal class ThunderstoreLoadBehaviour : MonoBehaviour { }
+
+        [MenuItem(Constants.ThunderKitContextRoot + "Thunderstore PackageSource", priority = Constants.ThunderKitMenuPriority)]
+        public static void Create() => ScriptableHelper.SelectNewAsset<ThunderstoreSource>();
+
+        private PackageListing[] packageListings;
+
+        public string Url = "https://thunderstore.io";
+
+        public override string Name => name;
+        public string PackageListApi => Url + "/api/v1/package/";
+        public override string SourceGroup => "Thunderstore";
+
+        private void OnEnable()
+        {
+            ReloadPages();
         }
 
-        public override string Name => "Thunderstore";
-
-        public override string SourceGroup => "Thunderstore";
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
 
         protected override void OnLoadPackages()
         {
-            var loadedPackages = ThunderstoreAPI.PackageListings;
-            var realMods = loadedPackages.Where(tsp => !tsp.categories.Contains("Modpacks"));
+            var realMods = packageListings.Where(tsp => !tsp.categories.Contains("Modpacks"));
             //var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
             foreach (var tsp in realMods)
             {
@@ -60,7 +61,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         protected override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
-            var tsPackage = ThunderstoreAPI.LookupPackage(version.group.DependencyId).First();
+            var tsPackage = LookupPackage(version.group.DependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
             var filePath = Path.Combine(packageDirectory, $"{tsPackageVersion.full_name}.zip");
 
@@ -84,5 +85,45 @@ namespace ThunderKit.Integrations.Thunderstore
 
             File.Delete(filePath);
         }
+
+        public void ReloadPages()
+        {
+            Debug.Log($"Updating Package listing: {PackageListApi}");
+            using (var client = new GZipWebClient())
+            {
+                client.DownloadStringCompleted += Client_DownloadStringCompleted;
+                var address = new Uri(PackageListApi);
+                client.DownloadStringAsync(address);
+            }
+        }
+
+        private void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            var json = $"{{ \"{nameof(PackagesResponse.results)}\": {e.Result} }}";
+            var response = JsonUtility.FromJson<PackagesResponse>(json);
+            packageListings = response.results;
+            LoadPackages();
+        }
+
+        public IEnumerable<PackageListing> LookupPackage(string name)
+        {
+            if (packageListings.Length == 0)
+                return Enumerable.Empty<PackageListing>();
+            else
+                return packageListings.Where(package => IsMatch(package, name)).ToArray();
+        }
+
+        bool IsMatch(PackageListing package, string name)
+        {
+            CompareInfo comparer = CultureInfo.CurrentCulture.CompareInfo;
+            var compareOptions = CompareOptions.IgnoreCase;
+            var nameMatch = comparer.IndexOf(package.name, name, compareOptions) >= 0;
+            var fullNameMatch = comparer.IndexOf(package.full_name, name, compareOptions) >= 0;
+
+            var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
+            var latestFullNameMatch = comparer.IndexOf(latest.full_name, name, compareOptions) >= 0;
+            return nameMatch || fullNameMatch || latestFullNameMatch;
+        }
+
     }
 }
