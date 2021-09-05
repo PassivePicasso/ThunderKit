@@ -46,7 +46,7 @@ namespace {0}
 
         public virtual void Execute()
         {
-            Manifests = manifest.EnumerateManifests().Distinct().ToArray();
+            Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
             currentJobs = Jobs.Where(SupportsType).ToArray();
             for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
             {
