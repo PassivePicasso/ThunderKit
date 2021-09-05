@@ -41,7 +41,10 @@ namespace ThunderKit.Integrations.Thunderstore
         internal class ThunderstoreLoadBehaviour : MonoBehaviour { }
 
         [MenuItem(Constants.ThunderKitContextRoot + "Thunderstore PackageSource", priority = Constants.ThunderKitMenuPriority)]
-        public static void Create() => ScriptableHelper.SelectNewAsset<ThunderstoreSource>(afterCreated: ts => ts.ReloadPages());
+        public static void Create()
+        {
+            ScriptableHelper.SelectNewAsset<ThunderstoreSource>();
+        }
 
         private PackageListing[] packageListings;
 
@@ -52,6 +55,17 @@ namespace ThunderKit.Integrations.Thunderstore
         public override string SourceGroup => "Thunderstore";
         [SerializeField, HideInInspector]
         private SDateTime LastUpdate;
+
+        private void OnEnable()
+        {
+            InitializeSources -= Initialize;
+            InitializeSources += Initialize;
+        }
+
+        private void Initialize(object sender, EventArgs e)
+        {
+            ReloadPages();
+        }
 
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
 
