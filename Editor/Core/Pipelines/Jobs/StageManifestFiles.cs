@@ -4,7 +4,6 @@ using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
 using UnityEditor;
-using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -16,43 +15,25 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var filesDatums = pipeline.Manifest.Data.OfType<Files>().ToArray();
 
             foreach (var files in filesDatums)
-            {
-                var resolvedPaths = files.StagingPaths.Select(path => path.Resolve(pipeline, this)).ToArray();
-
-                foreach (var outputPath in resolvedPaths)
-                {
+                foreach (var outputPath in files.StagingPaths.Select(path => path.Resolve(pipeline, this)))
                     foreach (var file in files.files)
                     {
                         var sourcePath = AssetDatabase.GetAssetPath(file);
                         string destPath = Path.Combine(outputPath, Path.GetFileName(sourcePath)).Replace("\\", "/");
                         var isDirectory = AssetDatabase.IsValidFolder(sourcePath);
-                        if (isDirectory)
+                        if (!isDirectory)
                         {
-                            Directory.CreateDirectory(destPath);
-                        }
-                        else
-                        {
-                            try
-                            {
-                                File.Delete(destPath);
-                            }
-                            catch { }//probably should rethrow some cases, such as access denied
-                            Directory.CreateDirectory(Path.GetDirectoryName(destPath));
-                        }
+                            if (!Directory.Exists(Path.GetDirectoryName(destPath)))
+                                Directory.CreateDirectory(Path.GetDirectoryName(destPath));
 
-                        if (typeof(Texture2D).IsAssignableFrom(file.GetType()))
-                        {
-                            var texture = file as Texture2D;
-                            FileUtil.CopyFileOrDirectory(sourcePath, destPath);
-                            //File.WriteAllBytes(Path.Combine(outputPath, Path.GetFileName(textureAssetPath)), texture.EncodeToPNG());
+                            FileUtil.ReplaceFile(sourcePath, destPath);
                         }
                         else
                         {
-                            FileUtil.CopyFileOrDirectory(sourcePath, destPath);
+                            if (!Directory.Exists(destPath)) Directory.CreateDirectory(destPath);
+                            FileUtil.ReplaceDirectory(sourcePath, destPath);
                         }
                     }
-                }
-            }
         }
     }
 }
