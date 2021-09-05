@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4f773cd2b7463d44aa153647e991b43, type: 3}
-  m_Name: BepInEx_Config_Output
+  m_Name: BepInEx_Config_Folder
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114773762682154536}
-  - {fileID: 114263441948834570}
---- !u!114 &114263441948834570
+  - {fileID: 114121893264633666}
+  - {fileID: 114954740859992488}
+--- !u!114 &114121893264633666
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -29,7 +30,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Value: BepInEx.cfg
+  Value: BepInEx
 --- !u!114 &114773762682154536
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -44,4 +45,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  reference: {fileID: 11400000, guid: 39638b89964c2a64b9230547006591ba, type: 2}
+  reference: {fileID: 11400000, guid: f09ef0d1102d0d941877f27a623c8b04, type: 2}
+--- !u!114 &114954740859992488
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
+  m_Name: Constant
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Value: config
