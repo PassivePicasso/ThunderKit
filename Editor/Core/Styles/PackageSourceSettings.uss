@@ -2,18 +2,23 @@
     background-color: rgba(0, 0, 0, 0.15);
     height: 28px;
     margin-bottom: 2px;
-    position-type: relative;
+    position: relative;
 }
 .source-header {
     margin-top: 4px;
     flex-direction: row;
 }
 #source-name-item {
-    font-size: 11px;
+    font-size: 12px;
     width: 200px;
     padding-top: 5px;
     padding-left: 5px;
 }
+#source-name-item.unity-list-view__item--selected {
+    color: #fff;
+    background-color: rgba(0,0,0,.5);
+}
+
 #button-tray{
     flex-direction: row;
 }
@@ -22,23 +27,23 @@
     flex-grow: 1;
     background-color: #888;
     background-image: none;
-    border-top: 1px;
-    border-left: 1px;
-    border-right: 1px;
-    border-bottom: 1px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
     margin-top: 0px;
     margin-left: 0px;
     margin-right: 1px;
     margin-bottom: 0px;
+    color: #000;
     border-color: #888;
+    border-radius: 0px;
 }
 #button-tray Button:hover {
     color: #ddd;
-    background-color: #777;
-    border-color: #ccc;
+    background-color: #666;
 }
 #button-tray Button:active {
-    border-color: #000;
     color: #000;
 }
 
@@ -52,10 +57,10 @@
 #sources-list {
     width: 200px;
     min-height: 122px;
-    border-top: 1px;
-    border-left: 1px;
-    border-right: 1px;
-    border-bottom: 1px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
     border-color: #888;
 }
 .unity-property-field-label {
@@ -64,17 +69,17 @@
 
 #selected-source-settings {
     flex-grow: 1;
-    border-top: 1px;
+    border-top-width: 1px;
     margin-left: -1px;
-    border-left: 1px;
-    border-right: 1px;
-    border-bottom: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
     border-color: #888;
 }
 #package-source {
     flex-grow: 1;
     margin-bottom: 1px;
-    border-bottom: 1px;
+    border-bottom-width: 1px;
     border-color: #888;
 }
 

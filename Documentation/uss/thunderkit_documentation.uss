@@ -82,6 +82,7 @@
     padding-top: 3px;
     padding-bottom: 3px;
     margin-bottom: 2px;
+    flex-direction: row;
 }
 
 .settings-background {
@@ -164,10 +165,10 @@
 }
 
 .unity-foldout-toggle {
-    margin-left: 0;
-    margin-top: 4;
-    margin-right: 0;
-    margin-bottom: 0;
+    margin-left: 0px;
+    margin-top: 4px;
+    margin-right: 0px;
+    margin-bottom: 0px;
     left: 0;
     top: 0;
     right: 0;
