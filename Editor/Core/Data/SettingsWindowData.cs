@@ -33,7 +33,7 @@ namespace ThunderKit.Editor.Core.Data
         private static void ShowSettings()
         {
             EditorApplication.update -= ShowSettings;
-            Settings.ShowSettings();
+            SettingsWindow.ShowSettings();
             var settings = GetOrCreateSettings<SettingsWindowData>();
             settings.FirstLoad = false;
             EditorUtility.SetDirty(settings);

@@ -41,9 +41,7 @@
     border-color: #000;
     color: #000;
 }
-#package-count {
-    width: 150px;
-}
+
 #package-source-settings {
     flex-direction: row;
 }
@@ -75,11 +73,11 @@
 }
 #package-source {
     flex-grow: 1;
+    margin-bottom: 1px;
+    border-bottom: 1px;
+    border-color: #888;
 }
 
-.thunderkit-field-input {
-    min-width: 250px;
-}
 #list-section{
     flex-direction: column;
 }

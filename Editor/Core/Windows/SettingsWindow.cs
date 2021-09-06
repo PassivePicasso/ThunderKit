@@ -1,29 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
 using ThunderKit.Core.Editor.Windows;
 using UnityEditor;
-using UnityEngine;
+using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #else
-using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
 namespace ThunderKit.Core.Windows
 {
     using static ThunderKit.Core.UIElements.TemplateHelpers;
-    public class Settings : TemplatedWindow
+    public class SettingsWindow : TemplatedWindow
     {
         readonly static string[] searchFolders = new[] { "Assets", "Packages" };
 
+        public static event Action OnSettingsLoading;
+
         [MenuItem(Constants.ThunderKitMenuRoot + "Settings")]
-        public static void ShowSettings() => GetWindow<Settings>();
+        public static void ShowSettings()
+        {
+            OnSettingsLoading?.Invoke();
+            GetWindow<SettingsWindow>();
+        }
 
         public override void OnEnable()
         {

@@ -29,10 +29,14 @@ namespace ThunderKit.Core.Data
         private Button refreshButton;
         private ScrollView selectedSourceSettings;
 
-        [InitializeOnLoadMethod]
-        static void Ensure()
+        public override void Initialize()
         {
-            GetOrCreateSettings<PackageSourceSettings>();
+            var sources = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
+                .ToArray();
+
+            PackageSources = sources;
         }
 
         public override void CreateSettingsUI(VisualElement rootElement)
@@ -54,7 +58,7 @@ namespace ThunderKit.Core.Data
 
             addSourceButton.clickable.clicked += OpenAddSourceMenu;
 
-            sourceList.selectionType = SelectionType.Single;
+            sourceList.selectionType = SelectionType.Multiple;
             sourceList.makeItem = () => new Label() { name = "source-name-item" };
             sourceList.bindItem = (ve, i) =>
             {
@@ -106,6 +110,7 @@ namespace ThunderKit.Core.Data
                     Debug.LogError(e);
                 }
             }
+            selectedSourceSettings.stretchContentWidth = true;
         }
 
         private void RemoveSourceClicked()
