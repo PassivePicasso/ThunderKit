@@ -62,7 +62,7 @@ namespace ThunderKit.Core.Data
                 if (label != null)
                 {
                     label.text = PackageSources[i].name;
-                    label.tooltip = $"Type: {PackageSources[i].Name}\r\nGroup: {PackageSources[i].SourceGroup}";
+                    //label.tooltip = $"Type: {PackageSources[i].Name}\r\nGroup: {PackageSources[i].SourceGroup}";
                 }
             };
             sourceList.itemsSource = PackageSources;
@@ -95,8 +95,8 @@ namespace ThunderKit.Core.Data
                     if (nameField != null)
                     {
                         nameField.userData = source;
-                        nameField.RegisterCallback<BlurEvent>(OnSourceNameBlur, Capture.NoCapture);
-                        nameField.SetValueAndNotify(source.name);
+                        nameField.RegisterCallback<BlurEvent>(OnSourceNameBlur, TrickleDown.NoTrickleDown);
+                        nameField.value = source.name;
                     }
                     settingsInstance.Bind(new SerializedObject(source));
                 }
