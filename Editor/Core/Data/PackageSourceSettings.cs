@@ -76,6 +76,7 @@ namespace ThunderKit.Core.Data
             var source = sourceName.userData as PackageSource;
             string path = AssetDatabase.GetAssetPath(source);
             var result = AssetDatabase.RenameAsset(path, sourceName.text);
+            sourceList.Refresh();
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
