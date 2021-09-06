@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="/Packages/com.passivepicasso.thunderkit/Editor/Core/Styles/PackageSourceSettings.uss" />
+    <ui:VisualElement name="package-source-settings">
+        <ui:ListView name="sources-list" item-height="24" />
+        <ui:ScrollView name="selected-source-settings">
+        </ui:ScrollView>
+        <ui:VisualElement name="button-tray">
+            <ui:Button name="add-source-button" text="+" tooltip="Add new package source."/>
+            <ui:Button name="remove-source-button" text="-" tooltip="Remove selected package sources."/>
+            <ui:Button name="refresh-button" text="R" tooltip="Refresh package sources."/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

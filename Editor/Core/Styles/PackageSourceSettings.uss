@@ -1,0 +1,64 @@
+﻿.thunderstore-source {
+    background-color: rgba(0, 0, 0, 0.15);
+    height: 28px;
+    margin-bottom: 2px;
+    position-type: relative;
+}
+.source-header {
+    margin-top: 4px;
+    flex-direction: row;
+}
+#source-name-item {
+    font-size: 11px;
+    width: 200px;
+    padding-top: 5px;
+    padding-left: 5px;
+}
+Button {
+    height: 20px;
+    width: 20px;
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+}
+#button-tray{
+    width: 80px;
+}
+#package-count {
+    width: 150px;
+}
+#package-source-settings {
+    flex-direction: row;
+}
+#add-source-button {
+    flex-shrink: 1;
+}
+#sources-list {
+    width: 200px;
+    min-height: 122px;
+    border-top: 1px;
+    border-left: 1px;
+    border-right: 1px;
+    border-bottom: 1px;
+    border-color: #888;
+}
+.unity-property-field-label {
+    flex-grow: 0.25;
+}
+
+#selected-source-settings {
+    flex-grow: 1;
+    border-top: 1px;
+    border-left: 0px;
+    border-right: 1px;
+    border-bottom: 1px;
+    border-color: #888;
+}
+#package-source {
+    flex-grow: 1;
+}
+
+.thunderkit-field-input {
+    min-width: 250px;
+}

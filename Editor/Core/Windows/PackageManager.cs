@@ -34,7 +34,7 @@ namespace ThunderKit.Core.Editor.Windows
         [SerializeField] private string SearchString;
 
         public bool InProject;
-        private PackageSource[] packageSources;
+        private PackageSourceSettings settings;
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Packages")]
         public static void ShowExample() => GetWindow<PackageManager>();
@@ -63,10 +63,8 @@ namespace ThunderKit.Core.Editor.Windows
                 PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
                 return;
             }
-            packageSources = AssetDatabase.FindAssets("t:PackageSource", new[] { "Assets", "Packages" })
-                      .Select(AssetDatabase.GUIDToAssetPath)
-                      .Select(AssetDatabase.LoadAssetAtPath<PackageSource>)
-                      .ToArray();
+            settings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
+
 
             titleContent = new GUIContent("Packages", ThunderKitIcon, "");
             rootVisualElement.Clear();
@@ -89,10 +87,7 @@ namespace ThunderKit.Core.Editor.Windows
             refreshButton.clickable.clicked += RefreshClicked;
 
             GetTemplateInstance("PackageView", packageView);
-            ConstructPackageSourceList(packageSources);
-
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssets();
+            ConstructPackageSourceList(settings.PackageSources);
         }
 
         private void RefreshClicked()
@@ -112,7 +107,7 @@ namespace ThunderKit.Core.Editor.Windows
                 var packageSource = GetTemplateInstance("PackageSource");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
                 var foldOut = packageSource.Q<Foldout>();
-                var groupName = $"tkpm-package-source-{source.Name}";
+                var groupName = $"tkpm-package-source-{NormalizeName(source.name)}";
                 packageSource.RemoveFromClassList("grow");
                 foldOut.value = false;
                 foldOut.RegisterCallback<ChangeEvent<bool>>((evt) =>
@@ -176,12 +171,13 @@ namespace ThunderKit.Core.Editor.Windows
             UpdatePackageList();
         }
 
+        string NormalizeName(string name) => name.Replace(" ", "-").ToLower();
         void UpdatePackageList()
         {
-            for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
+            for (int sourceIndex = 0; sourceIndex < settings.PackageSources.Length; sourceIndex++)
             {
-                var source = packageSources[sourceIndex];
-                var packageSource = rootVisualElement.Q($"tkpm-package-source-{source.Name}");
+                var source = settings.PackageSources[sourceIndex];
+                var packageSource = rootVisualElement.Q($"tkpm-package-source-{NormalizeName(source.name)}");
                 var headerLabel = packageSource.Q<Label>("tkpm-package-source-label");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
 
@@ -201,7 +197,7 @@ namespace ThunderKit.Core.Editor.Windows
                     else
                         tagEnabled[tag] = false;
 
-                headerLabel.text = $"{source.Name} ({packageList.itemsSource.Count} packages) ({source.Packages.Count - packageList.itemsSource.Count} hidden)";
+                headerLabel.text = $"{source.name} ({packageList.itemsSource.Count} packages) ({source.Packages.Count - packageList.itemsSource.Count} hidden)";
             }
         }
 
