@@ -110,7 +110,11 @@ namespace ThunderKit.Core.Data
                     Debug.LogError(e);
                 }
             }
+#if UNITY_2019_1_OR_NEWER
+            selectedSourceSettings.contentContainer.StretchToParentWidth();
+#elif UNITY_2018_1_OR_NEWER
             selectedSourceSettings.stretchContentWidth = true;
+#endif
         }
 
         private void RemoveSourceClicked()
