@@ -1,3 +1,20 @@
+## 3.4.0
+
+## PackageSource Management
+
+PackageSources have been updated with central management and the ability to setup multiple sources of the same types.
+
+You can now manage your Package Sources in the [ThunderKit Settings Window](menulink://Tools/ThunderKit/Settings).
+In the ThunderKit Settings window you will be able to Add, Remove, Configure, Rename and Refresh your PackageSources.
+
+## ThunderKit Extensions Thunderstore
+
+With the ability to add multiple PackageSources to your project, you can now add the ThunderKit Extensions Thunderstore as a source. 
+Like all Thunderstores, this provides the ability for the community to add resources that help grow the platform in a modular way.
+
+If you would like to take advantage of the ThunderKit Extensions Thunderstore, Add a new ThunderstoreSource to your PackageSources and set the url to ``` https://thunderkit.thunderstore.io ```
+
+
 ## 3.3.0
 
 ## Steam Launch support
