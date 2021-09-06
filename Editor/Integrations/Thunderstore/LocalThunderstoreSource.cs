@@ -19,9 +19,16 @@ namespace ThunderKit.Integrations.Thunderstore
 
         private void OnEnable()
         {
-            PackageSource.InitializeSources -= InitializeSource;
-            PackageSource.InitializeSources += InitializeSource;
-
+            InitializeSources -= InitializeSource;
+            InitializeSources += InitializeSource;
+        }
+        private void OnDisable()
+        {
+            InitializeSources -= InitializeSource;
+        }
+        private void OnDestroy()
+        {
+            InitializeSources -= InitializeSource;
         }
 
         public string LocalRepositoryPath;
