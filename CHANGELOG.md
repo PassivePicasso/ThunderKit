@@ -1,3 +1,9 @@
+## 3.4.1
+
+## Fixes
+
+* Fix an issue where scanning some assemblies would result in a ReflectionTypeLoadException preventing the settings window from loading.
+
 ## 3.4.0
 
 ## PackageSource Management
