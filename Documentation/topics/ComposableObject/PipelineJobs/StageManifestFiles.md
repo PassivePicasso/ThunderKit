@@ -6,6 +6,6 @@
 
 ## Remarks
 
-Use this pipeline job when you need to copy additional assets directly to output folders
+This pipeline will copy all assets from each Files ManifestDatum attached to Manifests being processed by the current pipeline.
 
-Some changes to files may occur, see the [StageManifestFiles](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageManifestFiles.cs) source for up to date details.
+This can be used to copy any files in that are assets under the Assets folder of hte project out to locations specified in the Files ManifestDatum's Staging Paths.

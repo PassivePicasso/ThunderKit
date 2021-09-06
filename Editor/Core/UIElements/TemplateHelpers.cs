@@ -80,7 +80,7 @@ namespace ThunderKit.Core.UIElements
 
         }
 
-        private static void MultiVersionLoadStyleSheet(VisualElement element, string sheetPath)
+        public static void MultiVersionLoadStyleSheet(VisualElement element, string sheetPath)
         {
 #if UNITY_2019_1_OR_NEWER
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath);

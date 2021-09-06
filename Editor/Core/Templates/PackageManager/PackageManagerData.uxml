@@ -17,8 +17,8 @@ xsi:schemaLocation="    UnityEngine.Experimental.UIElements ../../../../../../UI
     <engine:VisualElement class="tkpm-toolbar horizontal-stack" >
       <engine:VisualElement class="tkpm-sidebar-width horizontal-stack">
         <!--<engine:Button text="Packages" />-->
-        <engine:Button name="tkpm-filters-selector" text="Filters" class="toolbar-button noMargin" />
-        <engine:Button name="tkpm-refresh-button" text="Refresh" class="toolbar-button noMargin" />
+        <engine:Button name="tkpm-filters-selector" text="Filters" class="toolbar-button noMargin tkpm-menubutton" />
+        <engine:Button name="tkpm-refresh-button" text="Refresh" class="toolbar-button noMargin tkpm-menubutton" />
       </engine:VisualElement>
       <engine:VisualElement class="horizontal-stack justifyend grow">
         <engine:Label name="search-label" text="Search" class="tkpm-toolbar noMargin"/>
