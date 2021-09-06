@@ -1,7 +1,10 @@
-Implementing a PackageSource is designed to take care of all the management of the Unity systems. Therefore an implementation of a PackageSource requires that you write 2 pieces of code.
+PackageSources provide the ThunderKit PackageManager with package listings that can be downloaded and installed into a ThunderKit Project.
+You can manage your PackageSources from [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) where you can Add, Remove and Refresh your PackageSources.
 
-First you will need to acquire the list of available packages to download from the mod distribution system in question. Using this information you will populate the PackageSource data by calling and providing the requested data to the AddPackageGroup method in the PackageSource base class.
+Currently, ThunderKit provides two PackageSources, ThunderstoreSource and LocalThunderstoreSource as part of the Thunderstore integration for ThunderKit.
 
-Next you will need to implement the OnInstallPackageFiles method.  In this method you will need to download the data from the mod distribution system and then write out the content in the layout required by your project conventions to the packageDirectory parametery provided in the method arguments.
+Additional sources can be developed to support other stores, see the source code for [ThunderstoreSource](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreSource.cs) and [LocalThunderstoreSource](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/LocalThunderstoreSource.cs) for some examples.
 
-If you would like to look at some examples, look at the [ThunderstoreSource](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreSource.cs) and the [LocalThunderstoreSource](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/LocalThunderstoreSource.cs) files.
+### PackageSource Management
+
+![Empty PackageSource]()
