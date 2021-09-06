@@ -6,10 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using ThunderKit.Common;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
-using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.Integrations.Thunderstore
