@@ -40,26 +40,26 @@ namespace ThunderKit.Integrations.Thunderstore
         }
         internal class ThunderstoreLoadBehaviour : MonoBehaviour { }
 
-        [MenuItem(Constants.ThunderKitContextRoot + "Thunderstore PackageSource", priority = Constants.ThunderKitMenuPriority)]
-        public static void Create()
-        {
-            ScriptableHelper.SelectNewAsset<ThunderstoreSource>();
-        }
-
         private PackageListing[] packageListings;
 
         public string Url = "https://thunderstore.io";
 
-        public override string Name => name;
+        public override string Name => "Thunderstore Source";
         public string PackageListApi => Url + "/api/v1/package/";
         public override string SourceGroup => "Thunderstore";
-        [SerializeField, HideInInspector]
-        private SDateTime LastUpdate;
 
         private void OnEnable()
         {
             InitializeSources -= Initialize;
             InitializeSources += Initialize;
+        }
+        private void OnDisable()
+        {
+            InitializeSources -= Initialize;
+        }
+        private void OnDestroy()
+        {
+            InitializeSources -= Initialize;
         }
 
         private void Initialize(object sender, EventArgs e)
@@ -78,6 +78,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies));
                 AddPackageGroup(tsp.owner, tsp.name, tsp.Latest.description, tsp.full_name, tsp.categories, versions);
             }
+
 
             SourceUpdated();
         }
@@ -111,9 +112,6 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public void ReloadPages(bool force = false)
         {
-            if (!force && DateTime.Now - LastUpdate < TimeSpan.FromMinutes(5)) return;
-            LastUpdate = DateTime.Now;
-
             Debug.Log($"Updating Package listing: {PackageListApi}");
             using (var client = new GZipWebClient())
             {

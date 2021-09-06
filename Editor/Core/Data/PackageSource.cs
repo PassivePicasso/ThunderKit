@@ -77,9 +77,8 @@ namespace ThunderKit.Core.Data
 
         void Awake()
         {
+            if (Packages != null) return;
             Packages = new List<PackageGroup>();
-
-
         }
 
         /// <summary>
@@ -157,15 +156,12 @@ namespace ThunderKit.Core.Data
                 }
             }
             Packages.Clear();
-            AssetDatabase.SaveAssets();
         }
 
         public void LoadPackages()
         {
             Clear();
             OnLoadPackages();
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
             if (Packages.Any())
             {
                 var validVersions = Packages.Where(pkgGrp => pkgGrp).Where(pkgGrp => pkgGrp.Versions != null);

@@ -1,7 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <Style src="/Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreStyle.uss" />
-    <ui:VisualElement >
-        <ui:ListView name="thunderstore-sources-list" item-height="30" />
-
-    </ui:VisualElement>
-</ui:UXML>
