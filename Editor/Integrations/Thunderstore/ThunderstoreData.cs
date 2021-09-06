@@ -1,5 +1,4 @@
 ﻿using ThunderKit.Core.Manifests;
-using UnityEngine;
 
 namespace ThunderKit.Integrations.Thunderstore
 {

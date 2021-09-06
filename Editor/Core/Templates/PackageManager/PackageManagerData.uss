@@ -95,7 +95,7 @@
 	border-right-width: 1px;
 	flex-grow: 1;
 }
-#tkpm-filters-selector {
+.tkpm-menubutton {
 	margin-left: 1px;
 	padding-top: 0px;
 	padding-left: 4px;

@@ -89,5 +89,19 @@ namespace ThunderKit.Core.Editor
             }
             return settings;
         }
+        public static object EnsureAsset(string assetPath, Type type, Action<object> initializer = null)
+        {
+            if (!typeof(ScriptableObject).IsAssignableFrom(type)) throw new ArgumentException("Paramater Type type must be of type ScriptableObject");
+
+            var settings = AssetDatabase.LoadAssetAtPath(assetPath, type);
+            if (settings == null)
+            {
+                settings = ScriptableObject.CreateInstance(type);
+                initializer?.Invoke(settings);
+                AssetDatabase.CreateAsset(settings, assetPath);
+                AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(settings), ImportAssetOptions.ForceUpdate);
+            }
+            return settings;
+        }
     }
 }

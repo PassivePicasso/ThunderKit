@@ -2,10 +2,7 @@
 using SharpCompress.Readers;
 using System.IO;
 using System.Linq;
-using ThunderKit.Common;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
-using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.Integrations.Thunderstore
@@ -14,41 +11,21 @@ namespace ThunderKit.Integrations.Thunderstore
     public class LocalThunderstoreSource : PackageSource
     {
         private static readonly string[] EmptyStringArray = new string[0];
-        private static readonly string CachePath = $"Assets/ThunderKitSettings/{nameof(LocalThunderstoreSource)}.asset";
 
-        [InitializeOnLoadMethod]
-        public static void SetupInitialization()
+        private void InitializeSource(object sender, System.EventArgs e) => LoadPackages();
+
+        private void OnEnable()
         {
-            PackageSource.InitializeSources -= InitializeSource;
-            PackageSource.InitializeSources += InitializeSource;
+            InitializeSources -= InitializeSource;
+            InitializeSources += InitializeSource;
         }
-
-        private static void InitializeSource(object sender, System.EventArgs e) => Initialize();
-
-        [MenuItem(Constants.ThunderKitContextRoot + "Refresh Local Thunderstore sources", priority = Constants.ThunderKitMenuPriority)]
-        [InitializeOnLoadMethod]
-        private static void Initialize()
+        private void OnDisable()
         {
-            var localThunderstoreSourceAssetGuids = AssetDatabase.FindAssets($"t:{nameof(LocalThunderstoreSource)}");
-            var paths = localThunderstoreSourceAssetGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
-            var sourceAssets = paths.Select(path => AssetDatabase.LoadAssetAtPath<LocalThunderstoreSource>(path));
-            foreach (var drySource in sourceAssets)
-                drySource.LoadPackages();
+            InitializeSources -= InitializeSource;
         }
-
-        [MenuItem(Constants.ThunderKitContextRoot + "Create Local Thunderstore PackageSource", priority = Constants.ThunderKitMenuPriority)]
-        public static void Create()
+        private void OnDestroy()
         {
-            var isNew = false;
-            var source = ScriptableHelper.EnsureAsset<LocalThunderstoreSource>(CachePath, so =>
-            {
-                isNew = true;
-            });
-            if (isNew)
-            {
-                EditorUtility.SetDirty(source);
-                AssetDatabase.SaveAssets();
-            }
+            InitializeSources -= InitializeSource;
         }
 
         public string LocalRepositoryPath;
