@@ -25,15 +25,32 @@ namespace ThunderKit.Core.Data
             SettingsWindow.OnSettingsLoading -= Ensure;
             SettingsWindow.OnSettingsLoading += Ensure;
 
-            if(thunderKitSettingsTypes == null)
-                thunderKitSettingsTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(asm => asm.GetTypes())
-                .Where(t => !t.IsAbstract && t != typeof(ThunderKitSetting) && typeof(ThunderKitSetting).IsAssignableFrom(t))
-                .Distinct()
-                .ToArray();
+            if (thunderKitSettingsTypes == null)
+                try
+                {
+                    var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    var allTypes = assemblies.SelectMany(asm =>
+                    {
+                        try
+                        {
+                            return asm.GetTypes();
+                        }
+                        catch
+                        {
+                            return Array.Empty<Type>();
+                        }
+                    }).ToArray();
+                    var concreteTypes = allTypes.Where(t => !t.IsAbstract).ToArray();
+                    thunderKitSettingsTypes = concreteTypes.Where(t => typeof(ThunderKitSetting).IsAssignableFrom(t)).ToArray();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
 
-            foreach (var settingType in thunderKitSettingsTypes) 
-                GetOrCreateSettings(settingType);
+            if (thunderKitSettingsTypes != null)
+                foreach (var settingType in thunderKitSettingsTypes)
+                    GetOrCreateSettings(settingType);
         }
 
         public static T GetOrCreateSettings<T>() where T : ThunderKitSetting
@@ -42,7 +59,7 @@ namespace ThunderKit.Core.Data
             Directory.CreateDirectory(Path.GetDirectoryName(assetPath));
             return ScriptableHelper.EnsureAsset<T>(assetPath, settings => settings.Initialize());
         }
-        static object GetOrCreateSettings(Type t) 
+        static object GetOrCreateSettings(Type t)
         {
             if (!typeof(ThunderKitSetting).IsAssignableFrom(t)) throw new ArgumentException($"parameter t is typeof({t.Name}), t must be assignable to typeof({typeof(ThunderKitSetting).Name}");
             string assetPath = $"Assets/ThunderKitSettings/{t.Name}.asset";
