@@ -2,10 +2,7 @@
 using SharpCompress.Readers;
 using System.IO;
 using System.Linq;
-using ThunderKit.Common;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
-using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.Integrations.Thunderstore
