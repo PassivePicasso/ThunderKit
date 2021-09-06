@@ -11,4 +11,4 @@
 
 Acquire a value from the windows registry.
 
-This can be used to locate applications to execute that registry their installation location with the windows registry.
+This can be used to locate applications to execute that register their installation location with the windows registry.
