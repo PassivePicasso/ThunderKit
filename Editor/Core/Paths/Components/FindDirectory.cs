@@ -11,7 +11,7 @@ namespace ThunderKit.Core.Paths.Components
         public string searchPattern;
         [PathReferenceResolver]
         public string path;
-        public override string GetPath(PathReference output, Pipeline pipeline)
+        protected override string GetPathInternal(PathReference output, Pipeline pipeline)
         {
             string resolvedPath = PathReference.ResolvePath(path, pipeline, this);
 

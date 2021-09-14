@@ -8,6 +8,8 @@ namespace ThunderKit.Core
         public bool Errored;
         [HideInInspector]
         public string ErrorMessage;
+        [HideInInspector]
+        public string ErrorStacktrace;
 
         private void Awake()
         {
