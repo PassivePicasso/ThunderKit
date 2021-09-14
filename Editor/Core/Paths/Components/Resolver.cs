@@ -5,6 +5,6 @@ namespace ThunderKit.Core.Paths.Components
     public class Resolver : PathComponent
     {
         public string value;
-        public override string GetPath(PathReference output, Pipeline pipeline) => value.Resolve(pipeline, this);
+        protected override string GetPathInternal(PathReference output, Pipeline pipeline) => value.Resolve(pipeline, this);
     }
 }

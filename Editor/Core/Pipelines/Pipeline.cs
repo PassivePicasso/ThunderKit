@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ThunderKit.Common;
+using ThunderKit.Common.Logging;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests;
@@ -38,41 +39,60 @@ namespace {0}
     }}
 }}
 ";
-
         private PipelineJob[] currentJobs;
+        public ProgressBar progressBar { get; private set; }
+
         public int JobIndex { get; protected set; }
         public int ManifestIndex { get; set; }
-        public Manifest Manifest => Manifests[ManifestIndex];
+        public Manifest Manifest => Manifests?[ManifestIndex];
+
+        string ProgressTitle => $"Pipeline: {name}, {(Manifests != null && Manifests.Length > 0 ? $"Manifest: {Manifests[ManifestIndex]?.Identity?.name ?? "Error Manifest Not Found"}" : string.Empty)}";
+
 
         public virtual void Execute()
         {
-            Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
-            currentJobs = Jobs.Where(SupportsType).ToArray();
-            for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
+            using (progressBar = new ProgressBar())
             {
-                Job().Errored = false;
-                Job().ErrorMessage = string.Empty;
-            }
-            for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
-                try
+                Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
+                currentJobs = Jobs.Where(SupportsType).ToArray();
+
+                if ((currentJobs.Any(j => j.GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any())
+                  || currentJobs.OfType<FlowPipelineJob>().Any(fpj => fpj.PerManifest))
+                  && (Manifests == null || Manifests.Length == 0))
                 {
-                    if (!Job().Active) continue;
-                    if (JobIsManifestProcessor())
-                        ExecuteManifestLoop();
-                    else
-                        ExecuteJob();
-                }
-                catch (Exception e)
-                {
-                    Job().Errored = true;
-                    Job().ErrorMessage = e.Message;
-                    EditorGUIUtility.PingObject(Job());
-                    Debug.LogError($"Error Invoking {Job().name} Job on Pipeline {name}\r\n{e}", this);
-                    JobIndex = currentJobs.Length;
-                    break;
+                    throw new InvalidOperationException($"Pipeline {name} has PipelineJobs that require a Manifest but no Manifest is assigned");
                 }
 
-            JobIndex = -1;
+                    ManifestIndex = 0;
+                progressBar.Update(title: ProgressTitle);
+                for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
+                {
+                    progressBar.Update($"Clearing PipelineJob state: {Job().name}");
+                    Job().Errored = false;
+                    Job().ErrorMessage = string.Empty;
+                }
+                for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
+                    try
+                    {
+                        if (!Job().Active) continue;
+                        progressBar.Update($"Executing PipelineJob {Job().name}");
+                        if (JobIsManifestProcessor())
+                            ExecuteManifestLoop();
+                        else
+                            ExecuteJob();
+                    }
+                    catch (Exception e)
+                    {
+                        Job().Errored = true;
+                        Job().ErrorMessage = e.Message;
+                        EditorGUIUtility.PingObject(Job());
+                        Debug.LogError($"Error Invoking {Job().name} Job on Pipeline {name}\r\n{e}", this);
+                        JobIndex = currentJobs.Length;
+                        break;
+                    }
+                ManifestIndex =
+                JobIndex = -1;
+            }
         }
 
         PipelineJob Job() => currentJobs[JobIndex];
@@ -89,7 +109,10 @@ namespace {0}
         {
             for (ManifestIndex = 0; ManifestIndex < Manifests.Length; ManifestIndex++)
                 if (Manifest && JobCanProcessManifest())
+                {
+                    progressBar?.Update(title: ProgressTitle);
                     ExecuteJob();
+                }
 
             ManifestIndex = -1;
         }
@@ -100,7 +123,8 @@ namespace {0}
             {
                 var customAttributes = type.GetCustomAttributes(true);
                 var pipelineSupportAttributes = customAttributes.OfType<PipelineSupportAttribute>();
-                if (pipelineSupportAttributes.Any(psa => psa.HandlesPipeline(GetType())))
+                var thisType = GetType();
+                if (pipelineSupportAttributes.Any(psa => psa.HandlesPipeline(thisType)))
                     return true;
             }
             return false;

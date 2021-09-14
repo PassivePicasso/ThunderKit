@@ -6,6 +6,6 @@ namespace ThunderKit.Core.Paths.Components
 {
     public class GameExecutable : PathComponent
     {
-        public override string GetPath(PathReference output, Pipeline pipeline) => ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>().GameExecutable;
+        protected override string GetPathInternal(PathReference output, Pipeline pipeline) => ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>().GameExecutable;
     }
 }

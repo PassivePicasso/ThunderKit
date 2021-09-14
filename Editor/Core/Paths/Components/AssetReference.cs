@@ -7,6 +7,6 @@ namespace ThunderKit.Core.Paths.Components
     public class AssetReference : PathComponent
     {
         public DefaultAsset Asset;
-        public override string GetPath(PathReference output, Pipeline pipeline) => AssetDatabase.GetAssetPath(Asset);
+        protected override string GetPathInternal(PathReference output, Pipeline pipeline) => AssetDatabase.GetAssetPath(Asset);
     }
 }

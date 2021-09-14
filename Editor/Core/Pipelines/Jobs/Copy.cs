@@ -12,8 +12,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
     public class Copy : FlowPipelineJob
     {
         public bool Recursive;
-        [Tooltip("While enabled, will error when the source is not found")]
-        public bool SourceRequired;
+        [Tooltip("While enabled, will error when the source is not found (default: true)")]
+        public bool SourceRequired = true;
 
         [PathReferenceResolver]
         public string Source;
@@ -30,7 +30,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
             catch (Exception e)
             {
                 if (SourceRequired) throw e;
-
             }
             if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"Required {nameof(Source)} is empty");
             if (!SourceRequired && string.IsNullOrEmpty(source)) return;

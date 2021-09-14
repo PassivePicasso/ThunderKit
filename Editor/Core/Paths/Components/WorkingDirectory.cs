@@ -5,6 +5,6 @@ namespace ThunderKit.Core.Paths.Components
 {
     public class WorkingDirectory : PathComponent
     {
-        public override string GetPath(PathReference output, Pipeline pipeline) => System.IO.Directory.GetCurrentDirectory();
+        protected override string GetPathInternal(PathReference output, Pipeline pipeline) => System.IO.Directory.GetCurrentDirectory();
     }
 }
