@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
 using ThunderKit.Core.Editor;
@@ -37,6 +38,7 @@ namespace ThunderKit.Core.Paths
                     throw new KeyNotFoundException($"No PathReference named \"{matchValue}\" found in AssetDatabase");
                 }
                 var replacement = pathReferenceDictionary[matchValue].GetPath(pipeline);
+                if (replacement == null) throw new NullReferenceException("PathReference returned null. Error may have been encountered");
                 result = result.Replace(match.Value, replacement);
                 match = match.NextMatch();
             }
@@ -50,15 +52,19 @@ namespace ThunderKit.Core.Paths
 
         public string GetPath(Pipeline pipeline)
         {
-            try
+            string result = string.Empty;
+            foreach (var pc in Data.OfType<PathComponent>())
             {
-                return Data.OfType<PathComponent>().Select(d => d.GetPath(this, pipeline)).Aggregate(Combine);
+                try
+                {
+                    result = Combine(result, pc.GetPath(this, pipeline));
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidOperationException($"Error Resolving PathReference: {name}", e);
+                }
             }
-            catch (Exception e)
-            {
-                Debug.LogError($"Unable to resolve PathReference {this.name}", this);
-                throw e;
-            }
+            return result;
         }
 
         public override string ElementTemplate =>

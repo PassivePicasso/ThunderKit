@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;

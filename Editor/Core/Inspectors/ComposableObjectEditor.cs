@@ -75,18 +75,33 @@ namespace ThunderKit.Core.Editor.Inspectors
                     if (element.Errored)
                         boxSkin = EditorSkin.GetStyle("error-box");
 
-                    GUI.Box(new Rect(foldoutRect.x - 24, foldoutRect.y - 1, foldoutRect.width + 30, foldoutRect.height + 1), string.Empty, boxSkin);
+                    GUI.Box(new Rect(foldoutRect.x - 24, foldoutRect.y - 1, foldoutRect.width + 30, foldoutRect.height + 1), new GUIContent(string.Empty, element.ErrorMessage), boxSkin);
 
                     var standardSize = singleLineHeight + standardVerticalSpacing;
-
                     Rect menuRect = new Rect(foldoutRect.x + 1 + foldoutRect.width - standardSize, foldoutRect.y + 1, standardSize, standardSize);
+                    Rect clearErrorRect = new Rect(foldoutRect.x + 1 + foldoutRect.width - standardSize * 2, foldoutRect.y + 1, standardSize, standardSize);
 
                     var popupIcon = IconContent("_Popup");
-                    if (Event.current.type == EventType.Repaint)
-                        GUIStyle.none.Draw(menuRect, popupIcon, false, false, false, false);
+                    var stopIcon = IconContent("console.warnicon.sml");
 
-                    if (Event.current.type == EventType.MouseUp && menuRect.Contains(Event.current.mousePosition))
-                        ShowContextMenu(i, step);
+                    switch (Event.current.type)
+                    {
+                        case EventType.Repaint:
+                            GUIStyle.none.Draw(menuRect, popupIcon, false, false, false, false);
+
+                            if (element.Errored)
+                                GUIStyle.none.Draw(clearErrorRect, stopIcon, false, false, false, false);
+                            break;
+                        case EventType.MouseUp when menuRect.Contains(Event.current.mousePosition):
+                            ShowContextMenu(i, step);
+                            break;
+
+                        case EventType.MouseUp when clearErrorRect.Contains(Event.current.mousePosition):
+                            element.Errored = false;
+                            element.ErrorMessage = null;
+                            element.ErrorStacktrace = null;
+                            break;
+                    }
 
                     foldoutRect = OnBeforeElementHeaderGUI(foldoutRect, element, ref title);
 
