@@ -41,20 +41,22 @@ namespace ThunderKit.Core.Windows
 
             foreach (var setting in settings)
             {
+                var settingSection = GetTemplateInstance("ThunderKitSettingSection");
+                var title = settingSection.Q<Label>("title");
+                if (title != null)
+                    title.text = setting.name;
+                var properties = settingSection.Q<VisualElement>("properties");
                 try
                 {
-                    var settingSection = GetTemplateInstance("ThunderKitSettingSection");
-                    var title = settingSection.Q<Label>("title");
-                    if (title != null)
-                        title.text = setting.name;
-                    var properties = settingSection.Q<VisualElement>("properties");
                     setting.CreateSettingsUI(properties);
-                    settingsArea.Add(settingSection);
                 }
                 catch
                 {
-                    Debug.LogError($"Failed to load settings user interface for {setting.name}", setting);
+                    var errorLabel = new Label($"Failed to load settings user interface");
+                    errorLabel.AddToClassList("thunderkit-error");
+                    properties.Add(errorLabel);
                 }
+                settingsArea.Add(settingSection);
             }
         }
     }

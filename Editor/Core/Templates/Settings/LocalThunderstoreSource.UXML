@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <Style src="/Packages/com.passivepicasso.thunderkit/Editor/Core/Styles/PackageSourceSettings.uss" />
-    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss" />
     <ui:VisualElement name="package-source">
         <ui:VisualElement class="thunderkit-field">
             <ui:Label text="Package Source:" class="thunderkit-field-label"/>
