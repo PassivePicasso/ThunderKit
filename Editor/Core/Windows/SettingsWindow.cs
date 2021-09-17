@@ -4,6 +4,7 @@ using ThunderKit.Core.Data;
 using ThunderKit.Core.Editor.Windows;
 using UnityEditor;
 using System;
+using UnityEngine;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -37,16 +38,23 @@ namespace ThunderKit.Core.Windows
                 .Select(AssetDatabase.LoadAssetAtPath<ThunderKitSetting>)
                 .ToArray();
 
-            
-            foreach(var setting in settings)
+
+            foreach (var setting in settings)
             {
-                var settingSection = GetTemplateInstance("ThunderKitSettingSection");
-                var title = settingSection.Q<Label>("title");
-                if (title != null)
-                    title.text = setting.name;
-                var properties = settingSection.Q<VisualElement>("properties");
-                setting.CreateSettingsUI(properties);
-                settingsArea.Add(settingSection);
+                try
+                {
+                    var settingSection = GetTemplateInstance("ThunderKitSettingSection");
+                    var title = settingSection.Q<Label>("title");
+                    if (title != null)
+                        title.text = setting.name;
+                    var properties = settingSection.Q<VisualElement>("properties");
+                    setting.CreateSettingsUI(properties);
+                    settingsArea.Add(settingSection);
+                }
+                catch
+                {
+                    Debug.LogError($"Failed to load settings user interface for {setting.name}", setting);
+                }
             }
         }
     }
