@@ -70,7 +70,11 @@ namespace ThunderKit.Core.Data
                 }
             };
             sourceList.itemsSource = PackageSources;
+#if UNITY_2022_1_OR_NEWER
+            sourceList.onSelectionChange += OnSelectionChanged;
+#else
             sourceList.onSelectionChanged += OnSelectionChanged;
+#endif
             rootElement.Add(settingsElement);
         }
 
@@ -84,8 +88,12 @@ namespace ThunderKit.Core.Data
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
+#if UNITY_2022_1_OR_NEWER
+        private void OnSelectionChanged(IEnumerable<object> sources)
+#else
 
         private void OnSelectionChanged(List<object> sources)
+#endif
         {
             if (removeSourceButton == null || sources == null) return;
             removeSourceButton.userData = sources;
