@@ -157,7 +157,11 @@ namespace ThunderKit.Core.Data
         private void OpenAddSourceMenu()
         {
             var sourceTypes = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(asm => asm.GetTypes())
+                    .SelectMany(asm =>
+                    {
+                        try { return asm.GetTypes(); }
+                        catch { return Array.Empty<Type>(); }
+                    })
                     .Where(t => typeof(PackageSource).IsAssignableFrom(t) && t != typeof(PackageSource) && !t.IsAbstract)
                     .ToArray();
 
