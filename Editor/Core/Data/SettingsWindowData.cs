@@ -18,7 +18,7 @@ namespace ThunderKit.Editor.Core.Data
     public class SettingsWindowData : ThunderKitSetting
     {
         const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
-        const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss";
+        const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
         [InitializeOnLoadMethod]
         static void SettingsWindowSetup()
         {

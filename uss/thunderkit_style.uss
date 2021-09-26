@@ -214,9 +214,9 @@
 }
 
 .thunderkit-error {
-    opacity: 0.25;
-    background-color: rgb(255, 0, 0);
-    border-color: rgb(255, 0, 0);
+    color: rgb(0, 0, 0);
+    background-color: rgba(255, 0, 0, 0.1);
+    border-color: rgba(128, 0, 0, 1);
     border-left-width: 1px;
     border-top-width: 1px;
     border-right-width: 1px;

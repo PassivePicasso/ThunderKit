@@ -25,7 +25,7 @@ namespace ThunderKit.Core.Data
     public class ThunderKitSettings : ThunderKitSetting
     {
         const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
-        const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss";
+        const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
 
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
