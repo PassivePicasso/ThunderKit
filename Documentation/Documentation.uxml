@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <Style src="/Packages/com.passivepicasso.thunderkit/Documentation/uss/thunderkit_documentation.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss" />
     <ui:VisualElement name="thunderkit-home" style="flex-grow: 1; flex-direction: row;">
         <ui:Box name="topic-bar" style="flex-basis: 250px;">
             <ui:ScrollView name="content-scroller" show-horizontal-scroller="False" stretch-content-width="true" style="flex-grow: 1; flex-shrink: 1;">
