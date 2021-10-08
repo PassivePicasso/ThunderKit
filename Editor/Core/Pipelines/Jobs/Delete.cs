@@ -1,6 +1,6 @@
 using System.IO;
 using ThunderKit.Core.Paths;
-using ThunderKit.Core.Editor;
+using ThunderKit.Core;
 using System;
 
 namespace ThunderKit.Core.Pipelines.Jobs

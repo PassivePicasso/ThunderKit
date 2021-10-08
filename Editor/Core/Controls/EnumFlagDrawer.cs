@@ -1,4 +1,4 @@
-﻿namespace ThunderKit.Core.Editor
+﻿namespace ThunderKit.Core
 {
     using System;
     using System.Reflection;

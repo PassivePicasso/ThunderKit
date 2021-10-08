@@ -12,7 +12,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         public string workingDirectory;
         [PathReferenceResolver]
         public string executable;
-        [PathReferenceResolver]
+        [PathReferenceResolver, Reorderable]
         public string[] arguments;
 
         public override void Execute(Pipeline pipeline)

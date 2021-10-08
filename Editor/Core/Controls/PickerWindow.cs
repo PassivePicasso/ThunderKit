@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using EGU = UnityEditor.EditorGUIUtility;
 
-namespace ThunderKit.Core.Editor
+namespace ThunderKit.Core.Controls
 {
     public class PickerWindow : EditorWindow
     {

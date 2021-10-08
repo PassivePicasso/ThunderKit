@@ -1,10 +1,10 @@
 ﻿using System.IO;
-using ThunderKit.Core.Editor.Controls;
+using ThunderKit.Core.Controls;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace ThunderKit.Core.Editor
+namespace ThunderKit.Core
 {
     public static class ScriptEditorHelper
     {

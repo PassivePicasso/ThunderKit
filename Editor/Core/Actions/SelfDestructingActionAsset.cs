@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEditor.ProjectWindowCallback;
 
-namespace ThunderKit.Core.Editor.Actions
+namespace ThunderKit.Core.Actions
 {
     public class SelfDestructingActionAsset : EndNameEditAction
     {

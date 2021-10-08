@@ -3,7 +3,7 @@ using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor.Actions;
+using ThunderKit.Core.Actions;
 using UnityEditor;
 using UnityEngine;
 using PackageSource = ThunderKit.Core.Data.PackageSource;
@@ -15,7 +15,7 @@ using UnityEngine.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-namespace ThunderKit.Core.Editor.Windows
+namespace ThunderKit.Core.Windows
 {
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class PackageManager : TemplatedWindow
