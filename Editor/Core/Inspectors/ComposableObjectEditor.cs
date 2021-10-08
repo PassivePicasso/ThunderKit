@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Editor.Windows;
+using ThunderKit.Core.Windows;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 using Debug = UnityEngine.Debug;
 
-namespace ThunderKit.Core.Editor.Inspectors
+namespace ThunderKit.Core.Inspectors
 {
     [CustomEditor(typeof(ComposableObject), true)]
     public class ComposableObjectEditor : UnityEditor.Editor

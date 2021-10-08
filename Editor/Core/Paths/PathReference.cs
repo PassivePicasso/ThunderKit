@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
-using ThunderKit.Core.Editor;
+using ThunderKit.Core;
 using ThunderKit.Core.Pipelines;
 using UnityEditor;
 using UnityEngine;

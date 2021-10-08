@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using ThunderKit.Core.UIElements;
 using System.Reflection;
-using ThunderKit.Core.Editor;
+using ThunderKit.Core;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;

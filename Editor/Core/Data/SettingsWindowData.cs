@@ -13,7 +13,7 @@ using UnityEngine.Experimental.UIElements;
 #endif
 
 
-namespace ThunderKit.Editor.Core.Data
+namespace ThunderKit.Core.Data
 {
     public class SettingsWindowData : ThunderKitSetting
     {
