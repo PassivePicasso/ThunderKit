@@ -4,7 +4,7 @@ using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Common.Logging;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Editor;
+using ThunderKit.Core;
 using ThunderKit.Core.Manifests;
 using UnityEditor;
 using UnityEngine;

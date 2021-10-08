@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Editor;
+using ThunderKit.Core;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
