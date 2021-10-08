@@ -1,5 +1,5 @@
 ﻿using ThunderKit.Common;
-using ThunderKit.Core.Editor.Windows;
+using ThunderKit.Core.Windows;
 using ThunderKit.Core.UIElements;
 using UnityEditor;
 using System.IO;

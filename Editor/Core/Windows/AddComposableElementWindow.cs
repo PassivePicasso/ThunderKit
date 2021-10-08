@@ -3,7 +3,7 @@ using System;
 using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
-using ThunderKit.Core.Editor.Controls;
+using ThunderKit.Core.Controls;
 using System.IO;
 using System.Reflection;
 #if UNITY_2019_1_OR_NEWER
@@ -14,9 +14,9 @@ using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-using static ThunderKit.Core.Editor.ScriptEditorHelper;
+using static ThunderKit.Core.ScriptEditorHelper;
 
-namespace ThunderKit.Core.Editor.Windows
+namespace ThunderKit.Core.Windows
 {
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class AddComposableElementWindow : TemplatedWindow

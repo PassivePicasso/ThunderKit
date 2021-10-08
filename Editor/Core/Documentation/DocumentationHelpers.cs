@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using ThunderKit.Common;
-using ThunderKit.Core.Editor.Actions;
+using ThunderKit.Core.Actions;
 using UnityEditor;
 using UnityEngine;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace ThunderKit.Core.Editor.Controls
+namespace ThunderKit.Core.Controls
 {
     [Serializable]
     class NewScriptInfo : ScriptableObject

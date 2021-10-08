@@ -6,7 +6,7 @@ using ThunderKit.Common;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
-using static ThunderKit.Core.Editor.ScriptableHelper;
+using static ThunderKit.Core.ScriptableHelper;
 
 namespace ThunderKit.Core.Manifests
 {
