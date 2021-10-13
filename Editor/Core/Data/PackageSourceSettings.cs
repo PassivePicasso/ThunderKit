@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using ThunderKit.Core.UIElements;
 using System.Reflection;
-using ThunderKit.Core;
+using ThunderKit.Core.Editor;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -70,7 +70,11 @@ namespace ThunderKit.Core.Data
                 }
             };
             sourceList.itemsSource = PackageSources;
+#if UNITY_2021_1_OR_NEWER
+            sourceList.onSelectionChange += OnSelectionChanged;
+#else
             sourceList.onSelectionChanged += OnSelectionChanged;
+#endif
             rootElement.Add(settingsElement);
         }
 
@@ -84,8 +88,12 @@ namespace ThunderKit.Core.Data
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
+#if UNITY_2021_1_OR_NEWER
+        private void OnSelectionChanged(IEnumerable<object> sources)
+#else
 
         private void OnSelectionChanged(List<object> sources)
+#endif
         {
             if (removeSourceButton == null || sources == null) return;
             removeSourceButton.userData = sources;
@@ -149,7 +157,11 @@ namespace ThunderKit.Core.Data
         private void OpenAddSourceMenu()
         {
             var sourceTypes = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(asm => asm.GetTypes())
+                    .SelectMany(asm =>
+                    {
+                        try { return asm.GetTypes(); }
+                        catch { return Array.Empty<Type>(); }
+                    })
                     .Where(t => typeof(PackageSource).IsAssignableFrom(t) && t != typeof(PackageSource) && !t.IsAbstract)
                     .ToArray();
 
