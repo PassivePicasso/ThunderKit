@@ -83,16 +83,21 @@ namespace ThunderKit.Core.Config
 
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
-            var regs = new Regex("(\\d\\d\\d\\d\\.\\d+\\.\\d+).*");
+            var regs = new Regex(".*?(\\d{1,4}\\.\\d+\\.\\d+).*");
 
             var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
 
-            var playerVersion = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable)).ProductVersion;
-            playerVersion = regs.Replace(playerVersion, match => match.Groups[1].Value);
+            var dataPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data");
+            var globalGameManager = Path.Combine(dataPath, "globalgamemanagers");
+
+            var firstGrand = File.ReadLines(globalGameManager).First();
+
+            var playerVersion = regs.Replace(firstGrand, match => match.Groups[1].Value);
 
             var versionMatch = unityVersion.Equals(playerVersion);
-            Debug.Log($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}){(versionMatch ? "" : ", aborting setup.\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.")}");
-            return versionMatch;
+            var result = versionMatch ? "" : ", aborting setup.\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.";
+            Debug.Log($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}){result}");
+            return false;
         }
 
         private static void GetReferences(string packageName, ThunderKitSettings settings)
