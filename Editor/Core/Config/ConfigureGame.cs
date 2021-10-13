@@ -97,7 +97,7 @@ namespace ThunderKit.Core.Config
             var versionMatch = unityVersion.Equals(playerVersion);
             var result = versionMatch ? "" : ", aborting setup.\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.";
             Debug.Log($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}){result}");
-            return false;
+            return versionMatch;
         }
 
         private static void GetReferences(string packageName, ThunderKitSettings settings)
