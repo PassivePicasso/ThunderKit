@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using UnityEditor;
@@ -20,6 +18,21 @@ namespace ThunderKit.Core.Pipelines.Jobs
         public static readonly HashSet<AssemblyBuilder> BuildStatus = new HashSet<AssemblyBuilder>();
         static string Combine(params string[] component) => Path.Combine(component).Replace('\\', '/');
 #pragma warning disable CS0649 
+
+        [Serializable]
+        struct AsmDef
+        {
+            public string name;
+            public bool allowUnsafeCode;
+            public bool overrideReferences;
+            public bool autoReferenced;
+            public string[] optionalUnityReferences;
+            public string[] includePlatforms;
+            public string[] excludePlatforms;
+            public string[] precompiledReferences;
+            public string[] defineConstraints;
+        }
+
         struct AsmBuildData : IEquatable<AsmBuildData>
         {
             public string Directory;
@@ -71,10 +84,20 @@ namespace ThunderKit.Core.Pipelines.Jobs
             Directory.CreateDirectory(resolvedArtifactPath);
 
             var assemblies = CompilationPipeline.GetAssemblies();
-            var definitions = pipeline.Manifest.Data
-                .OfType<AssemblyDefinitions>()
-                .SelectMany(def => def.definitions.Select(d => (asm: assemblies.FirstOrDefault(asm => d.name == asm.name), asmDefs: def)))
-                .Where(def => def.asm != null)
+            var definitionDatums = pipeline.Manifest.Data.OfType<AssemblyDefinitions>().ToArray();
+            var deserializedAsmDefs = definitionDatums.SelectMany(datum =>
+                datum.definitions.Select(asmDefAsset =>
+                    (asmDef: JsonUtility.FromJson<AsmDef>(asmDefAsset.text),
+                     asmDefAsset: asmDefAsset,
+                     datum: datum)
+                ));
+
+            var definitions = deserializedAsmDefs.Select(dataSet =>
+                    (asm: assemblies.FirstOrDefault(asm => dataSet.asmDef.name == asm.name),
+                     asmDefAsset: dataSet.asmDefAsset,
+                     asmDef: dataSet.asmDef,
+                     datum: dataSet.datum )
+                ).Where(def => def.asm != null)
                 .ToArray();
 
             foreach (var definition in definitions)
@@ -88,7 +111,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 };
                 builder.excludeReferences = builder.defaultReferences.Where(rf => rf.Contains(assemblyName)).ToArray();
                 builder.buildTargetGroup = buildTargetGroup;
-                
+
                 var index = pipeline.ManifestIndex;
                 void OnBuildStarted(string path) => Debug.Log($"Building : {path}");
                 void OnBuildFinished(string path, CompilerMessage[] messages)
@@ -113,7 +136,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     Debug.Log($"Resolving Paths: {path}");
                     var prevIndex = pipeline.ManifestIndex;
                     pipeline.ManifestIndex = index;
-                    var resolvedPaths = definition.asmDefs.StagingPaths
+                    var resolvedPaths = definition.datum.StagingPaths
                         .Select(p => PathReference.ResolvePath(p, pipeline, this)).ToArray();
                     pipeline.ManifestIndex = prevIndex;
                     Debug.Log($"Resolved Paths: {path}");
@@ -145,8 +168,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
         {
             Directory.CreateDirectory(outputPath);
             var targetFiles = (from pattern in patterns
-                              from file in Directory.GetFiles(sourcePath, pattern, SearchOption.AllDirectories)
-                              select file).ToArray();
+                               from file in Directory.GetFiles(sourcePath, pattern, SearchOption.AllDirectories)
+                               select file).ToArray();
             foreach (var source in targetFiles)
             {
                 var fileName = Path.GetFileName(source);
