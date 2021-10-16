@@ -5,6 +5,7 @@ using ThunderKit.Common.Package;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Presets;
 using UnityEngine;
@@ -55,7 +56,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
     public class StageUnityPackages : PipelineJob
     {
-        public override void Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {
             var unityPackageData = pipeline.Manifest.Data.OfType<UnityPackages>().ToArray();
             var unityObjects = unityPackageData
@@ -138,6 +139,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 fileText = map.ToScriptReference.Replace(fileText, map.ScriptReference);
                 File.WriteAllText(map.Path, fileText);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

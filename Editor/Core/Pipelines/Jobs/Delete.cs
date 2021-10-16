@@ -2,6 +2,7 @@ using System.IO;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core;
 using System;
+using System.Threading.Tasks;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -12,7 +13,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         public bool IsFatal;
         public string Path;
 
-        protected override void ExecuteInternal(Pipeline pipeline)
+        protected override Task ExecuteInternal(Pipeline pipeline)
         {
             var path = Path.Resolve(pipeline, this);
             var pathIsFile = false;
@@ -22,7 +23,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             }
             catch (Exception e)
             {
-                if (IsFatal) 
+                if (IsFatal)
                     throw e;
             }
 
@@ -37,6 +38,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (IsFatal)
                     throw e;
             }
+
+            return Task.CompletedTask;
         }
     }
 }

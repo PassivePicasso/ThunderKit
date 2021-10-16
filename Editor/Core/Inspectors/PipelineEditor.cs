@@ -42,7 +42,7 @@ namespace ThunderKit.Core.Inspectors
             {
                 var pipeline = target as Pipeline;
                 if (pipeline)
-                    pipeline.Execute();
+                    _ = pipeline.Execute();
             }
         }
     }

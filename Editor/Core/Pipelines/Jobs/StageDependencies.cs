@@ -1,5 +1,6 @@
 using System.IO;
 using ThunderKit.Core.Attributes;
+using System.Threading.Tasks;
 using ThunderKit.Core.Paths;
 using UnityEditor;
 
@@ -12,7 +13,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         public string StagingPath;
         public Manifests.Manifest[] ExcludedManifests;
 
-        public override void Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {
             for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.Manifests.Length; pipeline.ManifestIndex++)
             {
@@ -24,6 +25,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 CopyFilesRecursively(dependencyPath, StagingPath.Resolve(pipeline, this));
             }
             pipeline.ManifestIndex = -1;
+            return Task.CompletedTask;
         }
 
         public static void CopyFilesRecursively(string source, string destination)

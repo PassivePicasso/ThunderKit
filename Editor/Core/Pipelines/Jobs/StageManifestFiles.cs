@@ -3,6 +3,7 @@ using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
+using System.Threading.Tasks;
 using UnityEditor;
 
 namespace ThunderKit.Core.Pipelines.Jobs
@@ -10,7 +11,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(Files))]
     public class StageManifestFiles : PipelineJob
     {
-        public override void Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {
             var filesDatums = pipeline.Manifest.Data.OfType<Files>().ToArray();
 
@@ -34,6 +35,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                             FileUtil.ReplaceDirectory(sourcePath, destPath);
                         }
                     }
+
+            return Task.CompletedTask;
         }
     }
 }

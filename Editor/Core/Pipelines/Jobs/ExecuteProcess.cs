@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using ThunderKit.Core.Attributes;
+using System.Threading.Tasks;
 using ThunderKit.Core.Paths;
 
 namespace ThunderKit.Core.Pipelines.Jobs
@@ -15,7 +16,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         [PathReferenceResolver]
         public string[] arguments;
 
-        public override void Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {
             var args = new StringBuilder();
             for (int i = 0; i < arguments.Length; i++)
@@ -36,6 +37,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             };
 
             Process.Start(rorPsi);
+            return Task.CompletedTask;
         }
     }
 }
