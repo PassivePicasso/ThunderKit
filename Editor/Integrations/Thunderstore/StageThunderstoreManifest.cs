@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
@@ -16,18 +17,21 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreData), typeof(ManifestIdentity))]
     public class StageThunderstoreManifest : PipelineJob
     {
-        public override void Execute(Pipeline pipeline)
+        public override async Task Execute(Pipeline pipeline)
         {
-            var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
-            var identity = pipeline.Manifest.Identity;
-            var manifestJson = RenderJson(identity, thunderstoreData);
-
-            foreach (var outputPath in thunderstoreData.StagingPaths.Select(path => path.Resolve(pipeline, this)))
+            await Task.Run(() =>
             {
-                if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+                var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
+                var identity = pipeline.Manifest.Identity;
+                var manifestJson = RenderJson(identity, thunderstoreData);
 
-                File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
-            }
+                foreach (var outputPath in thunderstoreData.StagingPaths.Select(path => path.Resolve(pipeline, this)))
+                {
+                    if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+
+                    File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
+                }
+            });
         }
 
         public string RenderJson(ManifestIdentity identity, ThunderstoreData manifest)

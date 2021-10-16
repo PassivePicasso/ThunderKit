@@ -6,6 +6,7 @@ using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using UnityEditor;
+using System.Threading.Tasks;
 using UnityEditor.Compilation;
 using UnityEditorInternal;
 using UnityEngine;
@@ -78,7 +79,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         public BuildTargetGroup buildTargetGroup = BuildTargetGroup.Standalone;
 
 
-        public sealed override void Execute(Pipeline pipeline)
+        public sealed override async Task Execute(Pipeline pipeline)
         {
             var resolvedArtifactPath = PathReference.ResolvePath(assemblyArtifactPath, pipeline, this);
             Directory.CreateDirectory(resolvedArtifactPath);
@@ -160,10 +161,15 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (File.Exists(assemblyOutputPath))
                     File.Delete(assemblyOutputPath);
                 BuildStatus.Add(builder);
-                builder.Build();
+                if (builder.Build())
+                {
+                    while (EditorApplication.isCompiling)
+                    {
+                        await Task.Delay(100);
+                    }
+                }
             }
         }
-
         void CopyFiles(string sourcePath, string outputPath, params string[] patterns)
         {
             Directory.CreateDirectory(outputPath);
