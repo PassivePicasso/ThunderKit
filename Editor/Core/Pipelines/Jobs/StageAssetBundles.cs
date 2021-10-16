@@ -25,126 +25,125 @@ namespace ThunderKit.Pipelines.Jobs
 
         [PathReferenceResolver]
         public string BundleArtifactPath = "<AssetBundleStaging>";
-        public override async Task Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {
-            await Task.Run(() =>
-            {
-                var excludedExtensions = new[] { ".dll", ".cs", ".meta" };
+            var excludedExtensions = new[] { ".dll", ".cs", ".meta" };
 
-                AssetDatabase.SaveAssets();
+            AssetDatabase.SaveAssets();
 
-                var assetBundleDefs = pipeline.Datums.OfType<AssetBundleDefinitions>().ToArray();
-                var bundleArtifactPath = BundleArtifactPath.Resolve(pipeline, this);
-                Directory.CreateDirectory(bundleArtifactPath);
+            var assetBundleDefs = pipeline.Datums.OfType<AssetBundleDefinitions>().ToArray();
+            var bundleArtifactPath = BundleArtifactPath.Resolve(pipeline, this);
+            Directory.CreateDirectory(bundleArtifactPath);
 
-                var explicitAssets = assetBundleDefs
-                                    .SelectMany(abd => abd.assetBundles)
-                                    .SelectMany(ab => ab.assets)
-                                    .ToArray();
-
-                var explicitAssetPaths = new List<string>();
-                PopulateWithExplicitAssets(explicitAssets, explicitAssetPaths);
-
-                var logBuilder = new StringBuilder();
-                var builds = new AssetBundleBuild[assetBundleDefs.Sum(abd => abd.assetBundles.Length)];
-                logBuilder.AppendLine($"Defining {builds.Length} AssetBundleBuilds");
-
-                var buildsIndex = 0;
-                for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
-                {
-                    var assetBundleDef = assetBundleDefs[defIndex];
-                    var playerAssemblies = CompilationPipeline.GetAssemblies();
-                    var assemblyFiles = playerAssemblies.Select(pa => pa.outputPath).ToArray();
-                    var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
-
-                    for (int i = 0; i < assetBundleDef.assetBundles.Length; i++)
-                    {
-                        var def = assetBundleDef.assetBundles[i];
-
-
-                        var build = builds[buildsIndex];
-
-                        var assets = new List<string>();
-
-                        logBuilder.AppendLine("--------------------------------------------------");
-                        logBuilder.AppendLine($"Defining bundle: {def.assetBundleName}");
-                        logBuilder.AppendLine();
-
-                        var firstAsset = def.assets.FirstOrDefault(x => x is SceneAsset);
-
-                        if (firstAsset != null) assets.Add(AssetDatabase.GetAssetPath(firstAsset));
-                        else
-                        {
-                            PopulateWithExplicitAssets(def.assets, assets);
-
-                            var dependencies = assets
-                                .SelectMany(assetPath => AssetDatabase.GetDependencies(assetPath))
-                                .Where(dap => !explicitAssetPaths.Contains(dap))
+            var explicitAssets = assetBundleDefs
+                                .SelectMany(abd => abd.assetBundles)
+                                .SelectMany(ab => ab.assets)
                                 .ToArray();
-                            assets.AddRange(dependencies);
-                        }
 
-                        build.assetNames = assets
-                            .Select(ap => ap.Replace("\\", "/"))
-                            .Where(dap => !ArrayUtility.Contains(excludedExtensions, Path.GetExtension(dap)) &&
-                                          !ArrayUtility.Contains(sourceFiles, dap) &&
-                                          !ArrayUtility.Contains(assemblyFiles, dap) &&
-                                          !AssetDatabase.IsValidFolder(dap))
-                            .Distinct()
-                            .ToArray();
-                        build.assetBundleName = def.assetBundleName;
-                        builds[buildsIndex] = build;
-                        buildsIndex++;
+            var explicitAssetPaths = new List<string>();
+            PopulateWithExplicitAssets(explicitAssets, explicitAssetPaths);
 
-                        foreach (var asset in build.assetNames)
-                            logBuilder.AppendLine(asset);
+            var logBuilder = new StringBuilder();
+            var builds = new AssetBundleBuild[assetBundleDefs.Sum(abd => abd.assetBundles.Length)];
+            logBuilder.AppendLine($"Defining {builds.Length} AssetBundleBuilds");
 
-                        logBuilder.AppendLine("--------------------------------------------------");
-                        logBuilder.AppendLine();
-                    }
-                }
-                Debug.Log(logBuilder.ToString());
+            var buildsIndex = 0;
+            for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
+            {
+                var assetBundleDef = assetBundleDefs[defIndex];
+                var playerAssemblies = CompilationPipeline.GetAssemblies();
+                var assemblyFiles = playerAssemblies.Select(pa => pa.outputPath).ToArray();
+                var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
 
-                if (!simulate)
+                for (int i = 0; i < assetBundleDef.assetBundles.Length; i++)
                 {
-                    BuildPipeline.BuildAssetBundles(bundleArtifactPath, builds, AssetBundleBuildOptions, buildTarget);
-                    for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.Manifests.Length; pipeline.ManifestIndex++)
+                    var def = assetBundleDef.assetBundles[i];
+
+
+                    var build = builds[buildsIndex];
+
+                    var assets = new List<string>();
+
+                    logBuilder.AppendLine("--------------------------------------------------");
+                    logBuilder.AppendLine($"Defining bundle: {def.assetBundleName}");
+                    logBuilder.AppendLine();
+
+                    var firstAsset = def.assets.FirstOrDefault(x => x is SceneAsset);
+
+                    if (firstAsset != null) assets.Add(AssetDatabase.GetAssetPath(firstAsset));
+                    else
                     {
-                        var manifest = pipeline.Manifest;
-                        foreach (var assetBundleDef in manifest.Data.OfType<AssetBundleDefinitions>())
+                        PopulateWithExplicitAssets(def.assets, assets);
+
+                        var dependencies = assets
+                            .SelectMany(assetPath => AssetDatabase.GetDependencies(assetPath))
+                            .Where(dap => !explicitAssetPaths.Contains(dap))
+                            .ToArray();
+                        assets.AddRange(dependencies);
+                    }
+
+                    build.assetNames = assets
+                        .Select(ap => ap.Replace("\\", "/"))
+                        .Where(dap => !ArrayUtility.Contains(excludedExtensions, Path.GetExtension(dap)) &&
+                                      !ArrayUtility.Contains(sourceFiles, dap) &&
+                                      !ArrayUtility.Contains(assemblyFiles, dap) &&
+                                      !AssetDatabase.IsValidFolder(dap))
+                        .Distinct()
+                        .ToArray();
+                    build.assetBundleName = def.assetBundleName;
+                    builds[buildsIndex] = build;
+                    buildsIndex++;
+
+                    foreach (var asset in build.assetNames)
+                        logBuilder.AppendLine(asset);
+
+                    logBuilder.AppendLine("--------------------------------------------------");
+                    logBuilder.AppendLine();
+                }
+            }
+            Debug.Log(logBuilder.ToString());
+
+            if (!simulate)
+            {
+                BuildPipeline.BuildAssetBundles(bundleArtifactPath, builds, AssetBundleBuildOptions, buildTarget);
+                for (pipeline.ManifestIndex = 0; pipeline.ManifestIndex < pipeline.Manifests.Length; pipeline.ManifestIndex++)
+                {
+                    var manifest = pipeline.Manifest;
+                    foreach (var assetBundleDef in manifest.Data.OfType<AssetBundleDefinitions>())
+                    {
+                        var bundleNames = assetBundleDef.assetBundles.Select(ab => ab.assetBundleName).ToArray();
+                        foreach (var outputPath in assetBundleDef.StagingPaths.Select(path => path.Resolve(pipeline, this)))
                         {
-                            var bundleNames = assetBundleDef.assetBundles.Select(ab => ab.assetBundleName).ToArray();
-                            foreach (var outputPath in assetBundleDef.StagingPaths.Select(path => path.Resolve(pipeline, this)))
+                            foreach (string dirPath in Directory.GetDirectories(bundleArtifactPath, "*", SearchOption.AllDirectories))
+                                Directory.CreateDirectory(dirPath.Replace(bundleArtifactPath, outputPath));
+
+                            foreach (string filePath in Directory.GetFiles(bundleArtifactPath, "*", SearchOption.AllDirectories))
                             {
-                                foreach (string dirPath in Directory.GetDirectories(bundleArtifactPath, "*", SearchOption.AllDirectories))
-                                    Directory.CreateDirectory(dirPath.Replace(bundleArtifactPath, outputPath));
-
-                                foreach (string filePath in Directory.GetFiles(bundleArtifactPath, "*", SearchOption.AllDirectories))
+                                bool found = false;
+                                foreach (var bundleName in bundleNames)
                                 {
-                                    bool found = false;
-                                    foreach (var bundleName in bundleNames)
+                                    if (filePath.IndexOf(bundleName, System.StringComparison.OrdinalIgnoreCase) >= 0)
                                     {
-                                        if (filePath.IndexOf(bundleName, System.StringComparison.OrdinalIgnoreCase) >= 0)
-                                        {
-                                            found = true;
-                                            break;
-                                        }
+                                        found = true;
+                                        break;
                                     }
-                                    if (!found) continue;
-                                    string destFileName = filePath.Replace(bundleArtifactPath, outputPath);
-                                    Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
-                                    FileUtil.ReplaceFile(filePath, destFileName);
                                 }
-
-                                var manifestSource = Path.Combine(bundleArtifactPath, $"{Path.GetFileName(bundleArtifactPath)}.manifest");
-                                var manifestDestination = Path.Combine(outputPath, $"{manifest.Identity.Name}.manifest");
-                                FileUtil.ReplaceFile(manifestSource, manifestDestination);
+                                if (!found) continue;
+                                string destFileName = filePath.Replace(bundleArtifactPath, outputPath);
+                                Directory.CreateDirectory(Path.GetDirectoryName(destFileName));
+                                FileUtil.ReplaceFile(filePath, destFileName);
                             }
+
+                            var manifestSource = Path.Combine(bundleArtifactPath, $"{Path.GetFileName(bundleArtifactPath)}.manifest");
+                            var manifestDestination = Path.Combine(outputPath, $"{manifest.Identity.Name}.manifest");
+                            FileUtil.ReplaceFile(manifestSource, manifestDestination);
                         }
                     }
-                    pipeline.ManifestIndex = -1;
                 }
-            });
+                pipeline.ManifestIndex = -1;
+            }
+
+            return Task.CompletedTask;
         }
 
         private static void PopulateWithExplicitAssets(IEnumerable<Object> inputAssets, List<string> outputAssets)
