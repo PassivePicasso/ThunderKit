@@ -17,11 +17,9 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreData), typeof(ManifestIdentity))]
     public class StageThunderstoreManifest : PipelineJob
     {
-        public override async Task Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {
-            await Task.Run(() =>
-            {
-                var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
+            var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
                 var identity = pipeline.Manifest.Identity;
                 var manifestJson = RenderJson(identity, thunderstoreData);
 
@@ -31,7 +29,8 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
 
                     File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
                 }
-            });
+
+            return Task.CompletedTask;
         }
 
         public string RenderJson(ManifestIdentity identity, ThunderstoreData manifest)
