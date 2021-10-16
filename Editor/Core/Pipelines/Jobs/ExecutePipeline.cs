@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 
 namespace ThunderKit.Core.Pipelines.Jobs
@@ -7,7 +8,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     {
         public bool OverrideManifest;
         public Pipeline executePipeline;
-        public override void Execute(Pipeline pipeline)
+        public override async Task Execute(Pipeline pipeline)
         {
             if (!executePipeline) return;
 
@@ -17,11 +18,11 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 var manifest = executePipeline.manifest;
                 executePipeline.manifest = pipeline.manifest;
-                executePipeline.Execute();
+                await executePipeline.Execute();
                 executePipeline.manifest = manifest;
             }
             else
-                executePipeline.Execute();
+                await executePipeline.Execute();
         }
     }
 }

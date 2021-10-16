@@ -8,6 +8,7 @@ using ThunderKit.Core;
 using ThunderKit.Core.Manifests;
 using UnityEditor;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -33,7 +34,7 @@ namespace {0}
     [PipelineSupport(typeof(Pipeline))]
     public class {1} : PipelineJob
     {{
-        public override void Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {{
         }}
     }}
@@ -49,7 +50,7 @@ namespace {0}
         string ProgressTitle => $"Pipeline: {name}, {(Manifests != null && Manifests.Length > 0 ? $"Manifest: {Manifests[ManifestIndex]?.Identity?.name ?? "Error Manifest Not Found"}" : string.Empty)}";
 
 
-        public virtual void Execute()
+        public virtual async Task Execute()
         {
             using (progressBar = new ProgressBar())
             {
@@ -63,7 +64,7 @@ namespace {0}
                     throw new InvalidOperationException($"Pipeline {name} has PipelineJobs that require a Manifest but no Manifest is assigned");
                 }
 
-                    ManifestIndex = 0;
+                ManifestIndex = 0;
                 progressBar.Update(title: ProgressTitle);
                 for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                 {
@@ -77,9 +78,9 @@ namespace {0}
                         if (!Job().Active) continue;
                         progressBar.Update($"Executing PipelineJob {Job().name}");
                         if (JobIsManifestProcessor())
-                            ExecuteManifestLoop();
+                            await ExecuteManifestLoop();
                         else
-                            ExecuteJob();
+                            await ExecuteJob();
                     }
                     catch (Exception e)
                     {
@@ -97,7 +98,7 @@ namespace {0}
 
         PipelineJob Job() => currentJobs[JobIndex];
 
-        void ExecuteJob() => Job().Execute(this);
+        async Task ExecuteJob() => await Job().Execute(this);
 
         bool JobIsManifestProcessor() => Job().GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any();
 
@@ -105,13 +106,13 @@ namespace {0}
 
         bool JobCanProcessManifest() => Job().GetType().GetCustomAttributes(true).OfType<RequiresManifestDatumTypeAttribute>().All(CanProcessManifest);
 
-        void ExecuteManifestLoop()
+        async Task ExecuteManifestLoop()
         {
             for (ManifestIndex = 0; ManifestIndex < Manifests.Length; ManifestIndex++)
                 if (Manifest && JobCanProcessManifest())
                 {
                     progressBar?.Update(title: ProgressTitle);
-                    ExecuteJob();
+                    await ExecuteJob();
                 }
 
             ManifestIndex = -1;

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -7,7 +8,7 @@ namespace ThunderKit.Core.Pipelines
         public bool PerManifest;
         public Manifests.Manifest[] ExcludedManifests;
 
-        public sealed override void Execute(Pipeline pipeline)
+        public sealed override async Task Execute(Pipeline pipeline)
         {
             if (PerManifest)
             {
@@ -17,14 +18,14 @@ namespace ThunderKit.Core.Pipelines
                 {
                     if (ExcludedManifests.Contains(pipeline.Manifest)) continue;
 
-                    ExecuteInternal(pipeline);
+                    await ExecuteInternal(pipeline);
                 }
                 pipeline.ManifestIndex = -1;
             }
             else
-                ExecuteInternal(pipeline);
+                await ExecuteInternal(pipeline);
         }
 
-        protected abstract void ExecuteInternal(Pipeline pipeline);
+        protected abstract Task ExecuteInternal(Pipeline pipeline);
     }
 }
