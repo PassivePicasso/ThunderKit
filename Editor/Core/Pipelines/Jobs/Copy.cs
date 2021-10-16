@@ -1,8 +1,8 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
-using ThunderKit.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,7 +20,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         [PathReferenceResolver]
         public string Destination;
 
-        protected override void ExecuteInternal(Pipeline pipeline)
+        protected override Task ExecuteInternal(Pipeline pipeline)
         {
             var source = string.Empty;
             try
@@ -32,8 +32,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (SourceRequired) throw e;
             }
             if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"Required {nameof(Source)} is empty");
-            if (!SourceRequired && string.IsNullOrEmpty(source)) return;
-
+            if (!SourceRequired && string.IsNullOrEmpty(source))
+                return Task.CompletedTask;
             var destination = Destination.Resolve(pipeline, this);
 
             bool sourceIsFile = false;
@@ -49,7 +49,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             if (Recursive)
             {
-                if (!Directory.Exists(source)) return;
+                if (!Directory.Exists(source))
+                    throw new ArgumentException($"Source Error: Expected Directory not found");
                 else if (sourceIsFile)
                     throw new ArgumentException($"Source Error: Expected Directory, Recieved File {source}");
             }
@@ -57,6 +58,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             if (Recursive) FileUtil.ReplaceDirectory(source, destination);
             else
                 FileUtil.ReplaceFile(source, destination);
+            return Task.CompletedTask;
         }
     }
 }
