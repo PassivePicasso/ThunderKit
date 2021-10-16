@@ -183,7 +183,11 @@ namespace ThunderKit.Core.Windows
 
                 packageList.itemsSource = FilterPackages(source.Packages);
 
+#if UNITY_2021_1_OR_NEWER
+                packageList.Rebuild();
+#else
                 packageList.Refresh();
+#endif
 
                 if (sourceIndex == 0 && packageList.itemsSource.Count > 0)
                 {
@@ -319,10 +323,9 @@ namespace ThunderKit.Core.Windows
                 deletePackage = CreateInstance<DeletePackage>();
                 deletePackage.directory = selection.InstallDirectory;
                 TryDelete();
-                AssetDatabase.Refresh();
             }
             else
-                selection.Source.InstallPackage(selection, targetVersion);
+                _ = selection.Source.InstallPackage(selection, targetVersion);
         }
 
         private void TryDelete()

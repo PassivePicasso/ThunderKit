@@ -32,7 +32,6 @@ namespace ThunderKit.Core.Config
             AssertDestinations(packageName);
 
             GetReferences(packageName, settings);
-            EditorUtility.SetDirty(settings);
 
             SetupPackageManifest(settings, packageName);
 
@@ -102,11 +101,15 @@ namespace ThunderKit.Core.Config
 
         private static void GetReferences(string packageName, ThunderKitSettings settings)
         {
-            Debug.Log("Acquiring references");
-            var blackList = AppDomain.CurrentDomain.GetAssemblies()
+            try
+            {
+                AssetDatabase.StartAssetEditing();
+                EditorApplication.LockReloadAssemblies();
+                Debug.Log("Acquiring references");
+                var blackList = AppDomain.CurrentDomain.GetAssemblies()
 #if NET_4_6
                 .Where(asm => !asm.IsDynamic)
-#else 
+#else
                 .Where(asm =>
                 {
                     if (asm.ManifestModule is System.Reflection.Emit.ModuleBuilder mb)
@@ -126,19 +129,25 @@ namespace ThunderKit.Core.Config
                         return string.Empty;
                     }
                 })
-                .ToArray();
+                    .ToArray();
 
-            var managedPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
-            var packagePath = Path.Combine("Packages", packageName);
-            var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
-            GetReferences(packagePath, managedAssemblies, blackList);
+                var managedPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
+                var packagePath = Path.Combine("Packages", packageName);
+                var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
+                GetReferences(packagePath, managedAssemblies, blackList);
 
-            var pluginsPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
-            if (Directory.Exists(pluginsPath))
+                var pluginsPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
+                if (Directory.Exists(pluginsPath))
+                {
+                    var packagePluginsPath = Path.Combine(packagePath, "plugins");
+                    var plugins = Directory.GetFiles(pluginsPath, "*.dll");
+                    GetReferences(packagePluginsPath, plugins, Enumerable.Empty<string>());
+                }
+            }
+            finally
             {
-                var packagePluginsPath = Path.Combine(packagePath, "plugins");
-                var plugins = Directory.GetFiles(pluginsPath, "*.dll");
-                GetReferences(packagePluginsPath, plugins, Enumerable.Empty<string>());
+                EditorApplication.UnlockReloadAssemblies();
+                AssetDatabase.StopAssetEditing();
             }
         }
 
