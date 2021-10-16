@@ -50,7 +50,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             if (Recursive)
             {
                 if (!Directory.Exists(source))
-                    throw new ArgumentException($"Source Error: Expected Directory not found");
+                    return Task.CompletedTask;
                 else if (sourceIsFile)
                     throw new ArgumentException($"Source Error: Expected Directory, Recieved File {source}");
             }
