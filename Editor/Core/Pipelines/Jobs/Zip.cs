@@ -18,25 +18,24 @@ namespace ThunderKit.Core.Pipelines.Jops
         [PathReferenceResolver]
         public string Output;
 
-        protected override async Task ExecuteInternal(Pipeline pipeline)
+        protected override Task ExecuteInternal(Pipeline pipeline)
         {
-            await Task.Run(() =>
+            var output = Output.Resolve(pipeline, this);
+            var source = Source.Resolve(pipeline, this);
+            var outputDir = Path.GetDirectoryName(output);
+
+            File.Delete(output);
+
+            Directory.CreateDirectory(outputDir);
+
+            using (var archive = ArchiveFactory.Create(ArchiveType))
             {
-                var output = Output.Resolve(pipeline, this);
-                var source = Source.Resolve(pipeline, this);
-                var outputDir = Path.GetDirectoryName(output);
+                archive.AddAllFromDirectory(source, searchOption: SearchOption.AllDirectories);
+                var options = new WriterOptions(CompressionType.Deflate);
+                archive.SaveTo(output, options);
+            }
 
-                File.Delete(output);
-
-                Directory.CreateDirectory(outputDir);
-
-                using (var archive = ArchiveFactory.Create(ArchiveType))
-                {
-                    archive.AddAllFromDirectory(source, searchOption: SearchOption.AllDirectories);
-                    var options = new WriterOptions(CompressionType.Deflate);
-                    archive.SaveTo(output, options);
-                }
-            });
+            return Task.CompletedTask;
         }
     }
 }
