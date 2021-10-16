@@ -35,6 +35,8 @@ namespace ThunderKit.Core.Data
                 .ToArray();
 
             PackageSources = sources;
+            EditorUtility.SetDirty(this);
+            new SerializedObject(this).ApplyModifiedProperties();
         }
 
         public override void CreateSettingsUI(VisualElement rootElement)
@@ -82,7 +84,11 @@ namespace ThunderKit.Core.Data
             var source = sourceName.userData as PackageSource;
             string path = AssetDatabase.GetAssetPath(source);
             var result = AssetDatabase.RenameAsset(path, sourceName.text);
+#if UNITY_2021_1_OR_NEWER
+            sourceList.Rebuild();
+#else
             sourceList.Refresh();
+#endif
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
@@ -195,7 +201,11 @@ namespace ThunderKit.Core.Data
             if (sourceList != null)
             {
                 sourceList.itemsSource = PackageSources;
+#if UNITY_2021_1_OR_NEWER
+                sourceList.Rebuild();
+#else
                 sourceList.Refresh();
+#endif
             }
         }
         readonly string[] keywords = new string[] { };
