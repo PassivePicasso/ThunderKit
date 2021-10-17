@@ -5,6 +5,8 @@
 This update is breaking support for .NET 3.5 due to the difficulty in providing functional tools for certain aspects of Unity which are asynchronous.
 For people who need .NET 3.5 support, install ThunderKit using the net35compatibility branch which will receive fixes able to be ported upon request
 
+`"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git#net35compatibility",` 
+
 This update changes how Manifest assets in the Unity AssetDatabase are managed. You will be asked to run an upgrade process that will update all your Manifests to the new configuration automatically.
 Please make sure you back up your projects before updating in case of any problems.
 
