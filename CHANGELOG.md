@@ -10,6 +10,17 @@ Please make sure you back up your projects before updating in case of any proble
 
 Some games do not have their Unity game version properly identified in their executable. Due to this, ThunderKit will now read the games globalgamemanager file to identify the correct Unity version for the game.  Some users may find they need to switch unity versions because of this change, but it is a necessary step to take to avoid unforseen issues.
 
+### Known Issues
+
+#### Unity 2021.2.0b7 does not detect package installations automatically
+
+This is an issue which appears to be a bug with Unity's AssetDatabase.Refresh call and a bug report will be generated for Unity Technologies to investigate.
+
+This bug may be resolved in newer versions of the Unity 2021.2 beta, however there are no games available to test against which wouldn't introduce factors that could muddle results.
+
+If Unity doesn't appear to import packages installed from Thunderstore, focus another application and the refocus Unity, this will trigger unity's internal monitoring processes.
+
+
 ### Improvements
 
 * Pipelines and PipelineJobs now execute asynchronously to support operations which require that Unity take control of processing.
