@@ -55,7 +55,7 @@ namespace ThunderKit.Common.Package
         public static void WriteAssetMetaData(string assetPath, string guid = null)
         {
             guid = guid ?? GetFileNameHash(assetPath);
-            string metaData = DefaultAssemblyMetaData(guid);
+            string metaData = DefaultScriptableObjectMetaData(guid);
 
             var metadataPath = $"{assetPath}.meta";
             if (File.Exists(metadataPath)) File.Delete(metadataPath);
