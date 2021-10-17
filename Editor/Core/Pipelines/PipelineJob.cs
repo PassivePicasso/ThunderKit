@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -6,6 +7,6 @@ namespace ThunderKit.Core.Pipelines
     {
         [HideInInspector]
         public bool Active = true;
-        public abstract void Execute(Pipeline pipeline);
+        public abstract Task Execute(Pipeline pipeline);
     }
 }

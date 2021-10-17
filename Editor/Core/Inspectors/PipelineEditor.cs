@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 
-namespace ThunderKit.Core.Editor.Inspectors
+namespace ThunderKit.Core.Inspectors
 {
     [CustomEditor(typeof(Pipeline), true)]
     public class PipelineEditor : ComposableObjectEditor
@@ -42,7 +42,7 @@ namespace ThunderKit.Core.Editor.Inspectors
             {
                 var pipeline = target as Pipeline;
                 if (pipeline)
-                    pipeline.Execute();
+                    _ = pipeline.Execute();
             }
         }
     }

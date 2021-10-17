@@ -6,7 +6,7 @@ using ThunderKit.Common;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
-using static ThunderKit.Core.Editor.ScriptableHelper;
+using static ThunderKit.Core.ScriptableHelper;
 
 namespace ThunderKit.Core.Manifests
 {
@@ -73,5 +73,44 @@ namespace {0}
 }}
 ";
         public override bool SupportsType(Type type) => ElementType.IsAssignableFrom(type);
+
+        public static string GeneratePlainTextManifest(string author, string name, string description, string version, params string[] dependencyGuids) => $@"%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5155633585708372029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {{fileID: 0}}
+  m_PrefabInstance: {{fileID: 0}}
+  m_PrefabAsset: {{fileID: 0}}
+  m_GameObject: {{fileID: 0}}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {{fileID: 11500000, guid: f22bb7fd1d3b56a48bc52f8e407901d6, type: 3}}
+  m_Name: {name}
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  ErrorStacktrace: 
+  StagingPaths: []
+  Author: {author}
+  Name: {name}
+  Description: {description}
+  Version: {version}
+  Dependencies: {dependencyGuids.Aggregate((dependencyGuids.Length == 0 ? "[]" : string.Empty), (a, b)=> $"{a}\r\n{b}")}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {{fileID: 0}}
+  m_PrefabInstance: {{fileID: 0}}
+  m_PrefabAsset: {{fileID: 0}}
+  m_GameObject: {{fileID: 0}}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {{fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}}
+  m_Name: {name}
+  m_EditorClassIdentifier: 
+  Data:
+  - {{fileID: -5155633585708372029}}
+  identity: {{fileID: -5155633585708372029}}";
     }
 }

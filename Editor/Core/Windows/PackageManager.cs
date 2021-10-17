@@ -3,11 +3,12 @@ using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor.Actions;
+using ThunderKit.Core.Actions;
 using UnityEditor;
 using UnityEngine;
 using PackageSource = ThunderKit.Core.Data.PackageSource;
 using System;
+using ThunderKit.Common.Configuration;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -15,7 +16,7 @@ using UnityEngine.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-namespace ThunderKit.Core.Editor.Windows
+namespace ThunderKit.Core.Windows
 {
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class PackageManager : TemplatedWindow
@@ -183,7 +184,11 @@ namespace ThunderKit.Core.Editor.Windows
 
                 packageList.itemsSource = FilterPackages(source.Packages);
 
+#if UNITY_2021_2_OR_NEWER
+                packageList.Rebuild();
+#else
                 packageList.Refresh();
+#endif
 
                 if (sourceIndex == 0 && packageList.itemsSource.Count > 0)
                 {
@@ -310,19 +315,22 @@ namespace ThunderKit.Core.Editor.Windows
             installButton.text = selection.Installed ? "Uninstall" : "Install";
         }
 
-        void InstallVersion(EventBase obj)
+        async void InstallVersion(EventBase obj)
         {
             var installButton = obj.currentTarget as Button;
             var selection = installButton.userData as PackageGroup;
             if (selection.Installed)
             {
+                var packageName = selection.PackageManifest.name;
+                ScriptingSymbolManager.RemoveScriptingDefine(packageName);
                 deletePackage = CreateInstance<DeletePackage>();
                 deletePackage.directory = selection.InstallDirectory;
                 TryDelete();
-                AssetDatabase.Refresh();
             }
             else
-                selection.Source.InstallPackage(selection, targetVersion);
+            {
+                await selection.Source.InstallPackage(selection, targetVersion);
+            }
         }
 
         private void TryDelete()

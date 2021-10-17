@@ -32,6 +32,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   Active: 1
 --- !u!114 &114520525572577756
 MonoBehaviour:
@@ -47,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   Active: 1
   AssetBundleBuildOptions: 1
   buildTarget: 5
@@ -67,6 +69,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   Active: 1
   StagingPath: <StagingRoot>
   ExcludedManifests: []
@@ -84,11 +87,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   Active: 1
   stageDebugDatabases: 1
-  Group: 1
-  ScriptCompilationOptions: 0
-  Target: 5
+  assemblyArtifactPath: <AssemblyStaging>
+  buildTarget: 5
+  buildTargetGroup: 1
 --- !u!114 &114888345249068578
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -103,4 +107,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   Active: 1

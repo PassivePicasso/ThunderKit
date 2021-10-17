@@ -2,6 +2,7 @@
 using SharpCompress.Common;
 using SharpCompress.Writers;
 using System.IO;
+using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 
@@ -17,7 +18,7 @@ namespace ThunderKit.Core.Pipelines.Jops
         [PathReferenceResolver]
         public string Output;
 
-        protected override void ExecuteInternal(Pipeline pipeline)
+        protected override Task ExecuteInternal(Pipeline pipeline)
         {
             var output = Output.Resolve(pipeline, this);
             var source = Source.Resolve(pipeline, this);
@@ -26,13 +27,15 @@ namespace ThunderKit.Core.Pipelines.Jops
             File.Delete(output);
 
             Directory.CreateDirectory(outputDir);
-            
+
             using (var archive = ArchiveFactory.Create(ArchiveType))
             {
-               archive.AddAllFromDirectory(source, searchOption: SearchOption.AllDirectories);
+                archive.AddAllFromDirectory(source, searchOption: SearchOption.AllDirectories);
                 var options = new WriterOptions(CompressionType.Deflate);
                 archive.SaveTo(output, options);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

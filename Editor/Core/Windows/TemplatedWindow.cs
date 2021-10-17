@@ -15,7 +15,7 @@ using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-namespace ThunderKit.Core.Editor.Windows
+namespace ThunderKit.Core.Windows
 {
     using static ThunderKit.Core.UIElements.TemplateHelpers;
 

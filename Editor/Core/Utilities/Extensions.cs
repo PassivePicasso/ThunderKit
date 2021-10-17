@@ -5,7 +5,7 @@ using System.Linq;
 using ThunderKit.Core.Data;
 using UnityEditor;
 
-namespace ThunderKit.Core.Editor
+namespace ThunderKit.Core
 {
     public static class Extensions
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
@@ -16,7 +17,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(ThunderstoreData), typeof(ManifestIdentity))]
     public class StageThunderstoreManifest : PipelineJob
     {
-        public override void Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {
             var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
             var identity = pipeline.Manifest.Identity;
@@ -28,6 +29,8 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
 
                 File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
             }
+
+            return Task.CompletedTask;
         }
 
         public string RenderJson(ManifestIdentity identity, ThunderstoreData manifest)
