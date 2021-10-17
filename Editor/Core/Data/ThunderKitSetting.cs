@@ -19,7 +19,7 @@ namespace ThunderKit.Core.Data
     public class ThunderKitSetting : ScriptableObject
     {
         static Type[] thunderKitSettingsTypes = null;
-        [InitializeOnLoadMethod]
+
         static void Ensure()
         {
             SettingsWindow.OnSettingsLoading -= Ensure;
