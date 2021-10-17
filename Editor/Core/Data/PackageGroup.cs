@@ -55,27 +55,22 @@ namespace ThunderKit.Core.Data
             return false;
         }
 
-        public string InstalledVersion
+        public PackageManagerManifest PackageManifest
         {
             get
             {
-                if (!File.Exists(Path.Combine(InstallDirectory, "package.json"))) return null;
+                string jsonPath = Path.Combine(InstallDirectory, "package.json");
+                if (!File.Exists(jsonPath))
+                    return default;
 
-                var pmm = PackageHelper.GetPackageManagerManifest(InstallDirectory);
-                return pmm.version;
+                return PackageHelper.GetPackageManagerManifest(InstallDirectory);
             }
+
         }
 
-        public bool Installed
-        {
-            get
-            {
-                if (!File.Exists(Path.Combine(InstallDirectory, "package.json"))) return false;
+        public string InstalledVersion => PackageManifest.version;
 
-                var pmm = PackageHelper.GetPackageManagerManifest(InstallDirectory);
-                return pmm.name.Equals(DependencyId, StringComparison.OrdinalIgnoreCase);
-            }
-        }
+        public bool Installed => PackageManifest.name?.Equals(DependencyId, StringComparison.OrdinalIgnoreCase) ?? false;
 
 
         public override bool Equals(object obj)
