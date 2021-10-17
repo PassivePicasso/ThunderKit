@@ -63,7 +63,7 @@ namespace ThunderKit.Core.Config
         {
             var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
-            var outputDir = Combine("Packages", packageName, "package.json");
+            var outputDir = Combine("Packages", packageName);
             PackageHelper.GeneratePackageManifest(name, outputDir, packageName, fileVersionInfo.CompanyName, "1.0.0", $"Imported assemblies from game {packageName}");
         }
 
