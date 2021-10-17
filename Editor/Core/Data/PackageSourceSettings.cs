@@ -4,8 +4,6 @@ using UnityEngine;
 using System;
 using System.Linq;
 using ThunderKit.Core.UIElements;
-using System.Reflection;
-using ThunderKit.Core.Editor;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -22,27 +20,19 @@ namespace ThunderKit.Core.Data
         const string SettingsTemplatesPath = "Packages/com.passivepicasso.thunderkit/Editor/Core/Templates/Settings";
         const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
 
-        public PackageSource[] PackageSources;
+        public PackageSource[] PackageSources => AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
+                .ToArray();
+
         private ListView sourceList;
         private Button addSourceButton;
         private Button removeSourceButton;
         private Button refreshButton;
         private ScrollView selectedSourceSettings;
 
-        public override void Initialize()
-        {
-            var sources = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
-                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-                .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
-                .ToArray();
-
-            PackageSources = sources;
-        }
-
         public override void CreateSettingsUI(VisualElement rootElement)
         {
-            var settings = GetOrCreateSettings<PackageSourceSettings>();
-
             var settingsElement = TemplateHelpers.LoadTemplateInstance(PackageSourceSettingsTemplatePath);
             selectedSourceSettings = settingsElement.Q<ScrollView>("selected-source-settings");
             sourceList = settingsElement.Q<ListView>("sources-list");
@@ -84,7 +74,11 @@ namespace ThunderKit.Core.Data
             var source = sourceName.userData as PackageSource;
             string path = AssetDatabase.GetAssetPath(source);
             var result = AssetDatabase.RenameAsset(path, sourceName.text);
+#if UNITY_2021_2_OR_NEWER
+            sourceList.Rebuild();
+#else
             sourceList.Refresh();
+#endif
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
@@ -140,10 +134,7 @@ namespace ThunderKit.Core.Data
                     AssetDatabase.DeleteAsset(path);
                 }
             if (refresh)
-            {
-                PackageSources = updatedPackageSources;
                 RefreshList();
-            }
             removeSourceButton.userData = null;
         }
 
@@ -175,11 +166,7 @@ namespace ThunderKit.Core.Data
                     {
                         const string SettingsPath = "Assets/ThunderKitSettings";
                         var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/{type.Name}.asset");
-                        ScriptableHelper.EnsureAsset(assetPath, type, asset =>
-                        {
-                            var source = asset as PackageSource;
-                            PackageSources = (PackageSources ?? Array.Empty<PackageSource>()).Append(source).ToArray();
-                        });
+                        ScriptableHelper.EnsureAsset(assetPath, type);
                         RefreshList();
                     }
                 );
@@ -197,7 +184,11 @@ namespace ThunderKit.Core.Data
             if (sourceList != null)
             {
                 sourceList.itemsSource = PackageSources;
+#if UNITY_2021_2_OR_NEWER
+                sourceList.Rebuild();
+#else
                 sourceList.Refresh();
+#endif
             }
         }
         readonly string[] keywords = new string[] { };

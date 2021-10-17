@@ -1,7 +1,7 @@
 using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor.Windows;
+using ThunderKit.Core.Windows;
 using UnityEditor;
 using System;
 using UnityEngine;

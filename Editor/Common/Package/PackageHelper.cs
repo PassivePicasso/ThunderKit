@@ -5,23 +5,25 @@ using System.Text;
 using ThunderKit.Common.Configuration;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace ThunderKit.Common.Package
 {
     public static class PackageHelper
     {
-        public static void GeneratePackageManifest(string packageName, string outputDir, string modName, string authorAlias, string modVersion, string description = null)
+        public static void GeneratePackageManifest(string packageName, string outputDir, string displayName, string authorAlias, string modVersion, string description = null)
         {
             string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
             var author = new Author
             {
                 name = authorAlias,
             };
-            var packageManifest = new PackageManagerManifest(author, packageName, ObjectNames.NicifyVariableName(modName), modVersion, unityVersion, description);
+            var packageManifest = new PackageManagerManifest(author, packageName, ObjectNames.NicifyVariableName(displayName), modVersion, unityVersion, description);
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
             ScriptingSymbolManager.AddScriptingDefine(packageName);
-            File.WriteAllText(Path.Combine(outputDir, "package.json"), packageManifestJson);
+
+            string fullOutputPath = Path.Combine(outputDir, "package.json");
+            if (File.Exists(fullOutputPath)) File.Delete(fullOutputPath);
+            File.WriteAllText(fullOutputPath, packageManifestJson);
         }
 
         public static PackageManagerManifest GetPackageManagerManifest(string directory)
@@ -50,23 +52,27 @@ namespace ThunderKit.Common.Package
         /// </summary>
         /// <param name="assemblyPath">Path to asset to generate meta file for</param>
         /// <param name="metadataPath">Path to write meta file to</param>
-        public static void WriteAssetMetaData(string assetPath)
+        public static void WriteAssetMetaData(string assetPath, string guid = null)
         {
-            string guid = GetFileNameHash(assetPath);
-            string metaData = DefaultAssemblyMetaData(guid);
+            guid = guid ?? GetFileNameHash(assetPath);
+            string metaData = DefaultScriptableObjectMetaData(guid);
 
             var metadataPath = $"{assetPath}.meta";
             if (File.Exists(metadataPath)) File.Delete(metadataPath);
             File.WriteAllText(metadataPath, metaData);
-
         }
 
         public static string GetFileNameHash(string assemblyPath)
         {
+            string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
+            return GetStringHash(shortName);
+        }
+
+        public static string GetStringHash(string value)
+        {
             using (var md5 = MD5.Create())
             {
-                string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-                byte[] shortNameBytes = Encoding.Default.GetBytes(shortName);
+                byte[] shortNameBytes = Encoding.Default.GetBytes(value);
                 var shortNameHash = md5.ComputeHash(shortNameBytes);
                 var guid = new Guid(shortNameHash);
                 var cleanedGuid = guid.ToString().ToLower().Replace("-", "");

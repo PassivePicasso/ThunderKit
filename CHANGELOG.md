@@ -1,3 +1,50 @@
+## 4.0.0
+
+### Important
+
+This update is breaking support for .NET 3.5 due to the difficulty in providing functional tools for certain aspects of Unity which are asynchronous.
+For people who need .NET 3.5 support, install ThunderKit using the net35compatibility branch which will receive fixes able to be ported upon request
+
+`"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git#net35compatibility",` 
+
+This update changes how Manifest assets in the Unity AssetDatabase are managed. You will be asked to run an upgrade process that will update all your Manifests to the new configuration automatically.
+Please make sure you back up your projects before updating in case of any problems.
+
+Some games do not have their Unity game version properly identified in their executable. Due to this, ThunderKit will now read the games globalgamemanager file to identify the correct Unity version for the game.  Some users may find they need to switch unity versions because of this change, but it is a necessary step to take to avoid unforseen issues.
+
+### Known Issues
+
+* Unity 2021.2.0b7 does not detect package installation or uninstallation automatically requiring the user to manually refresh the Project
+This is an issue which appears to be a bug with Unity's AssetDatabase.Refresh call and a bug report will be generated for Unity Technologies to investigate.
+This bug may be resolved in newer versions of the Unity 2021.2 beta, however there are no games available to test against which wouldn't introduce factors that could muddle results.
+If Unity doesn't appear to import packages installed from Thunderstore, or doesn't appear to fully remove an uninstalled package, refresh your project using the context menu option in the Project window, or on windows press Ctrl+R
+
+* Unity 2021.2.0b7 locks up when importing and loading assemblies from packages or games.
+  - Work-around: Kill the Unity process after it seems like the import process has stopped loading new assemblies and restart Unity
+
+### Improvements
+
+* Unity 2021.2 beta can now succesfully install packages, however the user must manually refresh the project (Ctrl+R) to complete the installation.
+
+* Pipelines and PipelineJobs now execute asynchronously to support operations which require that Unity take control of processing.
+
+* StageAssemblies previously relied on simply copying assemblies from the project's Library/ScriptAssemblies folder. While fast and convenient this prevented users from taking control of build parameters which may be necessary for their projects.  StageAssemblies now allows you to specify Build Targets and Build Target Groups in addition to allowing you to stage debug databases. Due to this change StageAssemblies now builds player assemblies, allowing the utilization of available optimization steps the compilation engine provides.
+
+* Package Installation has been improved to no longer utilize the AssetDatabase to create and place files to avoid edge cases with some versions of Unity that prevent installation. Due to this change Manifest's now have Asset GUIDs assigned by ThunderKit.  This change ensures that Manifest's will easily and automatically reference their dependencies, and references to dependencies will continue to work after reinstallation them.  This change is not backwards compatible
+
+* Added compiler directives and code to support Unity 2021.2
+
+* Add a utility to assist in migrating Non-ThunderKit modding projects to ThunderKit by updating asset references from Dll references to Script file references. This is available under Tools/ThunderKit/Migration 
+
+* Added error messaging for PathReferences and Manifests
+
+### Fixes and Changes
+
+* Fix cases where Progress bars may not update or close as expected
+* Fix ManifestIdentities not always being saved during package installation
+* Fix issue where somtimes PackageSourceSettings will empty its reference array requiring manual repopulation
+* Fix PackageManager not removing Scripting Defines when removing a ThunderKit managed Package
+
 ## 3.4.1
 
 ## Fixes

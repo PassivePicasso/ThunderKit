@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ThunderKit.Core.Attributes;
+using System.Threading.Tasks;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Editor;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
@@ -25,7 +25,7 @@ namespace ThunderKit.Pipelines.Jobs
 
         [PathReferenceResolver]
         public string BundleArtifactPath = "<AssetBundleStaging>";
-        public override void Execute(Pipeline pipeline)
+        public override Task Execute(Pipeline pipeline)
         {
             var excludedExtensions = new[] { ".dll", ".cs", ".meta" };
 
@@ -142,6 +142,8 @@ namespace ThunderKit.Pipelines.Jobs
                 }
                 pipeline.ManifestIndex = -1;
             }
+
+            return Task.CompletedTask;
         }
 
         private static void PopulateWithExplicitAssets(IEnumerable<Object> inputAssets, List<string> outputAssets)

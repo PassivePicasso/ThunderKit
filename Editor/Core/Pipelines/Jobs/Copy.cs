@@ -1,8 +1,8 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
-using ThunderKit.Core.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,15 +12,15 @@ namespace ThunderKit.Core.Pipelines.Jobs
     public class Copy : FlowPipelineJob
     {
         public bool Recursive;
-        [Tooltip("While enabled, will error when the source is not found")]
-        public bool SourceRequired;
+        [Tooltip("While enabled, will error when the source is not found (default: true)")]
+        public bool SourceRequired = true;
 
         [PathReferenceResolver]
         public string Source;
         [PathReferenceResolver]
         public string Destination;
 
-        protected override void ExecuteInternal(Pipeline pipeline)
+        protected override Task ExecuteInternal(Pipeline pipeline)
         {
             var source = string.Empty;
             try
@@ -30,11 +30,10 @@ namespace ThunderKit.Core.Pipelines.Jobs
             catch (Exception e)
             {
                 if (SourceRequired) throw e;
-
             }
             if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"Required {nameof(Source)} is empty");
-            if (!SourceRequired && string.IsNullOrEmpty(source)) return;
-
+            if (!SourceRequired && string.IsNullOrEmpty(source))
+                return Task.CompletedTask;
             var destination = Destination.Resolve(pipeline, this);
 
             bool sourceIsFile = false;
@@ -50,7 +49,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             if (Recursive)
             {
-                if (!Directory.Exists(source)) return;
+                if (!Directory.Exists(source))
+                    return Task.CompletedTask;
                 else if (sourceIsFile)
                     throw new ArgumentException($"Source Error: Expected Directory, Recieved File {source}");
             }
@@ -58,6 +58,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             if (Recursive) FileUtil.ReplaceDirectory(source, destination);
             else
                 FileUtil.ReplaceFile(source, destination);
+            return Task.CompletedTask;
         }
     }
 }

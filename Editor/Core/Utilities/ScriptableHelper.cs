@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using ThunderKit.Core.Editor.Actions;
+using ThunderKit.Core.Actions;
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Core.Editor
+namespace ThunderKit.Core
 {
     public static class ScriptableHelper
     {

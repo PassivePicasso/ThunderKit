@@ -15,7 +15,6 @@ MonoBehaviour:
   Data:
   - {fileID: 114762357513803962}
   - {fileID: 114345867015267698}
-  lastName: StagingRoot
 --- !u!114 &114345867015267698
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -28,6 +27,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
   m_Name: Constant
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
   Value: Staging
 --- !u!114 &114762357513803962
 MonoBehaviour:
@@ -41,3 +42,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ea6c70a35243a4c83cfceb6d9f2ce7, type: 3}
   m_Name: ThunderKitRoot
   m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 

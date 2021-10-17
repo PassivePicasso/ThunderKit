@@ -9,7 +9,7 @@ namespace ThunderKit.Core.Paths.Components
         public string KeyName;
         public string ValueName;
 
-        public override string GetPath(PathReference output, Pipeline pipeline)
+        protected override string GetPathInternal(PathReference output, Pipeline pipeline)
         {
             return (string)Registry.GetValue(KeyName, ValueName, string.Empty);
         }

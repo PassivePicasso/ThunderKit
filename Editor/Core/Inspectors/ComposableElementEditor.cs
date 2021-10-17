@@ -1,7 +1,7 @@
 ﻿using ThunderKit.Core;
 using UnityEditor;
 
-namespace Assets.ThunderKit.Core.Editor.Inspectors
+namespace ThunderKit.Core.Inspectors
 {
     [CustomEditor(typeof(ComposableElement), true)]
     public class ComposableElementEditor : UnityEditor.Editor
