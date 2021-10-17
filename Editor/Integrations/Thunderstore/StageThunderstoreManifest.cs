@@ -20,15 +20,15 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
         public override Task Execute(Pipeline pipeline)
         {
             var thunderstoreData = pipeline.Manifest.Data.OfType<ThunderstoreData>().First();
-                var identity = pipeline.Manifest.Identity;
-                var manifestJson = RenderJson(identity, thunderstoreData);
+            var identity = pipeline.Manifest.Identity;
+            var manifestJson = RenderJson(identity, thunderstoreData);
 
-                foreach (var outputPath in thunderstoreData.StagingPaths.Select(path => path.Resolve(pipeline, this)))
-                {
-                    if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+            foreach (var outputPath in thunderstoreData.StagingPaths.Select(path => path.Resolve(pipeline, this)))
+            {
+                if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
-                    File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
-                }
+                File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
+            }
 
             return Task.CompletedTask;
         }
