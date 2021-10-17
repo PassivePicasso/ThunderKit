@@ -20,7 +20,6 @@ namespace ThunderKit.Core.Config
         {
             var remap = new Dictionary<string, string>();
             var allManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", PackagesAndAssets);
-            var packageManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", JustPackages);
             var scriptRefRegex = new Regex("(.*?)\\{fileID: (\\d*?), guid: (\\w*?), type: (\\d)\\}");
             try
             {
@@ -32,6 +31,7 @@ namespace ThunderKit.Core.Config
                     try
                     {
                         var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(path);
+                        if (string.IsNullOrEmpty(manifest?.Identity?.Name) || string.IsNullOrEmpty(manifest?.Identity?.Author)) continue;
                         var dependencyId = $"{manifest.Identity.Author}-{manifest.Identity.Name}";
                         var hash = PackageHelper.GetStringHash(dependencyId);
                         remap.Add(guid, hash);
