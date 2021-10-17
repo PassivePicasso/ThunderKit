@@ -22,6 +22,8 @@ If Unity doesn't appear to import packages installed from Thunderstore, or doesn
 
 ### Improvements
 
+* Unity 2021.2 beta can now succesfully install packages, however the user must manually refresh the project (Ctrl+R) to complete the installation.
+
 * Pipelines and PipelineJobs now execute asynchronously to support operations which require that Unity take control of processing.
 
 * StageAssemblies previously relied on simply copying assemblies from the project's Library/ScriptAssemblies folder. While fast and convenient this prevented users from taking control of build parameters which may be necessary for their projects.  StageAssemblies now allows you to specify Build Targets and Build Target Groups in addition to allowing you to stage debug databases. Due to this change StageAssemblies now builds player assemblies, allowing the utilization of available optimization steps the compilation engine provides.
