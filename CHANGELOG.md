@@ -19,6 +19,8 @@ This is an issue which appears to be a bug with Unity's AssetDatabase.Refresh ca
 This bug may be resolved in newer versions of the Unity 2021.2 beta, however there are no games available to test against which wouldn't introduce factors that could muddle results.
 If Unity doesn't appear to import packages installed from Thunderstore, or doesn't appear to fully remove an uninstalled package, refresh your project using the context menu option in the Project window, or on windows press Ctrl+R
 
+* Unity 2021.2.0b7 locks up when importing and loading assemblies from packages or games.
+  - Work-around: Kill the Unity process after it seems like the import process has stopped loading new assemblies and restart Unity
 
 ### Improvements
 
