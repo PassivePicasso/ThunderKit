@@ -184,7 +184,7 @@ namespace ThunderKit.Core.Windows
 
                 packageList.itemsSource = FilterPackages(source.Packages);
 
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2021_2_OR_NEWER
                 packageList.Rebuild();
 #else
                 packageList.Refresh();
