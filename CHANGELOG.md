@@ -29,6 +29,7 @@ Some games do not have their Unity game version properly identified in their exe
 * Fix cases where Progress bars may not update or close as expected
 * Fix ManifestIdentities not always being saved during package installation
 * Fix issue where somtimes PackageSourceSettings will empty its reference array requiring manual repopulation
+* Fix PackageManager not removing Scripting Defines when removing a ThunderKit managed Package
 
 ## 3.4.1
 
