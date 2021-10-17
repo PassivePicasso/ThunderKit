@@ -12,13 +12,13 @@ Some games do not have their Unity game version properly identified in their exe
 
 ### Known Issues
 
-#### Unity 2021.2.0b7 does not detect package installations automatically
+#### Unity 2021.2.0b7 does not detect package installation or uninstallation automatically requiring the user to manually refresh the Project
 
 This is an issue which appears to be a bug with Unity's AssetDatabase.Refresh call and a bug report will be generated for Unity Technologies to investigate.
 
 This bug may be resolved in newer versions of the Unity 2021.2 beta, however there are no games available to test against which wouldn't introduce factors that could muddle results.
 
-If Unity doesn't appear to import packages installed from Thunderstore, focus another application and the refocus Unity, this will trigger unity's internal monitoring processes.
+If Unity doesn't appear to import packages installed from Thunderstore, or doesn't appear to fully remove an uninstalled package, refresh your project using the context menu option in the Project window, or on windows press Ctrl+R
 
 
 ### Improvements
