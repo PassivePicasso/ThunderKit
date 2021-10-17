@@ -100,7 +100,7 @@ namespace ThunderKit.Core.Data
             var source = sourceName.userData as PackageSource;
             string path = AssetDatabase.GetAssetPath(source);
             var result = AssetDatabase.RenameAsset(path, sourceName.text);
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2021_2_OR_NEWER
             sourceList.Rebuild();
 #else
             sourceList.Refresh();
@@ -222,7 +222,7 @@ namespace ThunderKit.Core.Data
             if (sourceList != null)
             {
                 sourceList.itemsSource = PackageSources;
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2021_2_OR_NEWER
                 sourceList.Rebuild();
 #else
                 sourceList.Refresh();
