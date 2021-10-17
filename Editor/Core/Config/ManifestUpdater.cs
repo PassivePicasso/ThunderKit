@@ -14,11 +14,10 @@ namespace ThunderKit.Core.Config
     {
         static string[] JustPackages = new string[] { "Packages" };
         static string[] PackagesAndAssets = new string[] { "Packages", "Assets" };
-
-        [MenuItem("Tools/ThunderKit/Migration/Update Manifest Identity assignments"), InitializeOnLoadMethod]
+        const string MenuPath = "Tools/ThunderKit/Migration/Update Manifest Identity assignments";
+        [MenuItem(MenuPath), InitializeOnLoadMethod]
         public static void UpdateAllManifests()
         {
-
             var remap = new Dictionary<string, string>();
             var allManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", PackagesAndAssets);
             var packageManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", JustPackages);
@@ -44,10 +43,15 @@ namespace ThunderKit.Core.Config
                 }
                 if (!remap.Any(kvp => kvp.Key != kvp.Value)) return;
 
-                var proceed = EditorUtility.DisplayDialog("Update Manifest AssetDatabase", "WARNING: Back up your project before continuing\r\n\r\n" +
+                var proceed = EditorUtility.DisplayDialog("Update Manifest AssetDatabase",
+                    "WARNING: Back up your project before continuing\r\n\r\n" +
                     "ThunderKit 4.0.0 alters management of Manifest files and requires these assets are upgraded to ensure correct functionality.\r\n\r\n" +
                     "This change is not backwards compatible and requires Manifest files are updated.\r\n" +
-                    "All Manifest dependency references should be maintained through this upgrade.", "Continue", "Abort");
+                    "All Manifest dependency references should be maintained through this upgrade.\r\n" +
+                    "If you need to abort this can be manually executed from" +
+                    MenuPath,
+                    "Continue", "Abort"
+                    );
                 if (!proceed) return;
                 foreach (var guid in allManifests)
                 {
