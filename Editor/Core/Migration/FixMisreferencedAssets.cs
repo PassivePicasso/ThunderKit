@@ -13,7 +13,6 @@ namespace ThunderKit.Migration
         [MenuItem("Tools/ThunderKit/Migration/Switch DLL references to CS references")]
         public static void Execute()
         {
-            var updatedAssets = new List<string>();
             var selection = Selection.objects;
             try
             {
@@ -53,15 +52,13 @@ namespace ThunderKit.Migration
                     {
                         var line = lines[i];
                         var match = scriptRefRegex.Match(line);
-                        if (match.Success)
+                        if (!match.Success) continue;
+
+                        long fileId = long.Parse($"{match.Groups[1]}");
+                        if (monoScriptTable.ContainsKey(fileId))
                         {
-                            long fileId = long.Parse($"{match.Groups[1]}");
-                            if (monoScriptTable.ContainsKey(fileId))
-                            {
-                                lines[i] = scriptRefRegex.Replace(line, $"  m_Script: {{fileID: 11500000, guid: {monoScriptTable[fileId]}, type: 3}}");
-                                updatedAssets.Add(file.path);
-                                changes = true;
-                            }
+                            lines[i] = scriptRefRegex.Replace(line, $"  m_Script: {{fileID: 11500000, guid: {monoScriptTable[fileId]}, type: 3}}");
+                            changes = true;
                         }
                     }
                     if (changes)
