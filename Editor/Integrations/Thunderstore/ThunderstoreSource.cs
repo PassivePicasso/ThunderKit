@@ -6,7 +6,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using ThunderKit.Core;
 using ThunderKit.Core.Data;
+using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.Integrations.Thunderstore
@@ -14,6 +16,34 @@ namespace ThunderKit.Integrations.Thunderstore
     using PV = Core.Data.PackageVersion;
     public class ThunderstoreSource : PackageSource
     {
+
+        const string SettingsPath = "Assets/ThunderKitSettings";
+        [InitializeOnLoadMethod]
+        static void CreateThunderKitExtensionSource()
+        {
+            var sources = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
+                .OfType<ThunderstoreSource>()
+                .ToArray();
+
+            if (!sources.Any(s => s.Url.ToLower().Contains("thunderkit.thunderstore.io")))
+            {
+                var pss = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
+                var pssSo = new SerializedObject(pss);
+                var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/{nameof(ThunderstoreSource)}.asset");
+                var psArray = pssSo.FindProperty("packageSources");
+                psArray.arraySize++;
+                var lastIndex = psArray.GetArrayElementAtIndex(psArray.arraySize);
+                ScriptableHelper.EnsureAsset(assetPath, typeof(ThunderstoreSource), asset =>
+                {
+                    var source = asset as PackageSource;
+                    lastIndex.objectReferenceValue = source;
+                    pssSo.ApplyModifiedProperties();
+                });
+            }
+        }
+
         [Serializable]
         public struct SDateTime
         {
