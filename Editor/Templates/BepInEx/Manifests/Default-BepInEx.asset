@@ -16,7 +16,7 @@ MonoBehaviour:
   - {fileID: 114211852988908172}
   - {fileID: 114107831304456238}
   - {fileID: 114431642618062350}
-  Identity: {fileID: 0}
+  identity: {fileID: 114211852988908172}
 --- !u!114 &114107831304456238
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -31,6 +31,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   StagingPaths:
   - <ManifestPluginStaging>
   definitions: []
@@ -48,11 +49,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   StagingPaths:
   - <ManifestPluginStaging>
   Author: 
   Name: 
-  Icon: {fileID: 0}
   Description: 
   Version: 0.0.1
   Dependencies: []
@@ -70,6 +71,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   StagingPaths:
   - <ManifestPluginStaging>
   assetBundles: []
