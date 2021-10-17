@@ -31,13 +31,14 @@ namespace ThunderKit.Integrations.Thunderstore
             {
                 var pss = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
                 var pssSo = new SerializedObject(pss);
-                var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/{nameof(ThunderstoreSource)}.asset");
+                var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/ThunderKit Extensions.asset");
                 var psArray = pssSo.FindProperty("packageSources");
                 psArray.arraySize++;
-                var lastIndex = psArray.GetArrayElementAtIndex(psArray.arraySize);
+                var lastIndex = psArray.GetArrayElementAtIndex(psArray.arraySize - 1);
                 ScriptableHelper.EnsureAsset(assetPath, typeof(ThunderstoreSource), asset =>
                 {
-                    var source = asset as PackageSource;
+                    var source = asset as ThunderstoreSource;
+                    source.Url = "https://thunderkit.thunderstore.io";
                     lastIndex.objectReferenceValue = source;
                     pssSo.ApplyModifiedProperties();
                 });
