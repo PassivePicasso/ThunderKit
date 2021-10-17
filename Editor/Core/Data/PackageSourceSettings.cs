@@ -20,7 +20,18 @@ namespace ThunderKit.Core.Data
         const string SettingsTemplatesPath = "Packages/com.passivepicasso.thunderkit/Editor/Core/Templates/Settings";
         const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
 
-        public PackageSource[] PackageSources;
+        [SerializeField]
+        private PackageSource[] packageSources;
+        public PackageSource[] PackageSources
+        {
+            get
+            {
+                if (packageSources == null || packageSources.Length == 0)
+                    AssignExistingSources();
+
+                return packageSources;
+            }
+        }
         private ListView sourceList;
         private Button addSourceButton;
         private Button removeSourceButton;
@@ -29,19 +40,24 @@ namespace ThunderKit.Core.Data
 
         public override void Initialize()
         {
+            AssignExistingSources();
+        }
+
+        private void AssignExistingSources()
+        {
             var sources = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
                 .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
                 .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
                 .ToArray();
 
-            PackageSources = sources;
+            packageSources = sources;
             EditorUtility.SetDirty(this);
             new SerializedObject(this).ApplyModifiedProperties();
         }
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
-            var settings = GetOrCreateSettings<PackageSourceSettings>();
+            AssignExistingSources();
 
             var settingsElement = TemplateHelpers.LoadTemplateInstance(PackageSourceSettingsTemplatePath);
             selectedSourceSettings = settingsElement.Q<ScrollView>("selected-source-settings");
@@ -145,7 +161,7 @@ namespace ThunderKit.Core.Data
                 }
             if (refresh)
             {
-                PackageSources = updatedPackageSources;
+                packageSources = updatedPackageSources;
                 RefreshList();
             }
             removeSourceButton.userData = null;
@@ -179,10 +195,15 @@ namespace ThunderKit.Core.Data
                     {
                         const string SettingsPath = "Assets/ThunderKitSettings";
                         var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/{type.Name}.asset");
+                        var pssSo = new SerializedObject(this);
+                        var psArray = pssSo.FindProperty(nameof(packageSources));
+                        psArray.arraySize++;
+                        var lastIndex = psArray.GetArrayElementAtIndex(psArray.arraySize);
                         ScriptableHelper.EnsureAsset(assetPath, type, asset =>
                         {
                             var source = asset as PackageSource;
-                            PackageSources = (PackageSources ?? Array.Empty<PackageSource>()).Append(source).ToArray();
+                            lastIndex.objectReferenceValue = source;
+                            pssSo.ApplyModifiedProperties();
                         });
                         RefreshList();
                     }
