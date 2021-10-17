@@ -15,6 +15,27 @@ namespace ThunderKit.Core.Config
     using static ThunderKit.Common.PathExtensions;
     public class ConfigureGame
     {
+        [InitializeOnLoadMethod]
+        static void CleanupOnRemoveGame()
+        {
+            EditorApplication.projectChanged += EditorApplication_projectChanged;
+        }
+
+        private static void EditorApplication_projectChanged()
+        {
+            var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
+            if (string.IsNullOrEmpty(settings.GameExecutable) || string.IsNullOrEmpty(settings.GamePath)) return;
+
+            var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
+            var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
+            var isValid = AssetDatabase.IsValidFolder($"Packages/{name}");
+            if (isValid)
+                Debug.Log($"{packageName} is present in project.");
+            else
+                Debug.LogError($"{packageName} is not present in project.");
+
+        }
+
         public static void Configure()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
@@ -42,14 +63,8 @@ namespace ThunderKit.Core.Config
         {
             var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
-            var unityVersion = new Version(fileVersionInfo.FileVersion);
-            var author = new Author
-            {
-                name = fileVersionInfo.CompanyName,
-            };
-            var packageManifest = new PackageManagerManifest(author, name, packageName, "1.0.0", $"{unityVersion.Major}.{unityVersion.Minor}", $"Imported Assets from game {packageName}");
-            var packageManifestJson = JsonUtility.ToJson(packageManifest);
-            File.WriteAllText(Combine("Packages", packageName, "package.json"), packageManifestJson);
+            var outputDir = Combine("Packages", packageName, "package.json");
+            PackageHelper.GeneratePackageManifest(name, outputDir, packageName, fileVersionInfo.CompanyName, "1.0.0", $"Imported assemblies from game {packageName}");
         }
 
         private static void AssertDestinations(string packageName)

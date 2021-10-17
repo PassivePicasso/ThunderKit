@@ -315,7 +315,7 @@ namespace ThunderKit.Core.Windows
             installButton.text = selection.Installed ? "Uninstall" : "Install";
         }
 
-        void InstallVersion(EventBase obj)
+        async void InstallVersion(EventBase obj)
         {
             var installButton = obj.currentTarget as Button;
             var selection = installButton.userData as PackageGroup;
@@ -328,7 +328,9 @@ namespace ThunderKit.Core.Windows
                 TryDelete();
             }
             else
-                _ = selection.Source.InstallPackage(selection, targetVersion);
+            {
+                await selection.Source.InstallPackage(selection, targetVersion);
+            }
         }
 
         private void TryDelete()

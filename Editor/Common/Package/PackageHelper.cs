@@ -10,14 +10,14 @@ namespace ThunderKit.Common.Package
 {
     public static class PackageHelper
     {
-        public static void GeneratePackageManifest(string packageName, string outputDir, string modName, string authorAlias, string modVersion, string description = null)
+        public static void GeneratePackageManifest(string packageName, string outputDir, string displayName, string authorAlias, string modVersion, string description = null)
         {
             string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
             var author = new Author
             {
                 name = authorAlias,
             };
-            var packageManifest = new PackageManagerManifest(author, packageName, ObjectNames.NicifyVariableName(modName), modVersion, unityVersion, description);
+            var packageManifest = new PackageManagerManifest(author, packageName, ObjectNames.NicifyVariableName(displayName), modVersion, unityVersion, description);
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
             ScriptingSymbolManager.AddScriptingDefine(packageName);
 
