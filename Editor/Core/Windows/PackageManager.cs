@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using PackageSource = ThunderKit.Core.Data.PackageSource;
 using System;
+using ThunderKit.Common.Configuration;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -320,6 +321,8 @@ namespace ThunderKit.Core.Windows
             var selection = installButton.userData as PackageGroup;
             if (selection.Installed)
             {
+                var packageName = selection.PackageManifest.name;
+                ScriptingSymbolManager.RemoveScriptingDefine(packageName);
                 deletePackage = CreateInstance<DeletePackage>();
                 deletePackage.directory = selection.InstallDirectory;
                 TryDelete();
