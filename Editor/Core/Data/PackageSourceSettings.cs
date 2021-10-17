@@ -20,45 +20,19 @@ namespace ThunderKit.Core.Data
         const string SettingsTemplatesPath = "Packages/com.passivepicasso.thunderkit/Editor/Core/Templates/Settings";
         const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
 
-        [SerializeField]
-        private PackageSource[] packageSources;
-        public PackageSource[] PackageSources
-        {
-            get
-            {
-                if (packageSources == null || packageSources.Length == 0)
-                    AssignExistingSources();
+        public PackageSource[] PackageSources => AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
+                .ToArray();
 
-                return packageSources;
-            }
-        }
         private ListView sourceList;
         private Button addSourceButton;
         private Button removeSourceButton;
         private Button refreshButton;
         private ScrollView selectedSourceSettings;
 
-        public override void Initialize()
-        {
-            AssignExistingSources();
-        }
-
-        private void AssignExistingSources()
-        {
-            var sources = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
-                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-                .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
-                .ToArray();
-
-            packageSources = sources;
-            EditorUtility.SetDirty(this);
-            new SerializedObject(this).ApplyModifiedProperties();
-        }
-
         public override void CreateSettingsUI(VisualElement rootElement)
         {
-            AssignExistingSources();
-
             var settingsElement = TemplateHelpers.LoadTemplateInstance(PackageSourceSettingsTemplatePath);
             selectedSourceSettings = settingsElement.Q<ScrollView>("selected-source-settings");
             sourceList = settingsElement.Q<ListView>("sources-list");
@@ -160,10 +134,7 @@ namespace ThunderKit.Core.Data
                     AssetDatabase.DeleteAsset(path);
                 }
             if (refresh)
-            {
-                packageSources = updatedPackageSources;
                 RefreshList();
-            }
             removeSourceButton.userData = null;
         }
 
@@ -195,16 +166,7 @@ namespace ThunderKit.Core.Data
                     {
                         const string SettingsPath = "Assets/ThunderKitSettings";
                         var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/{type.Name}.asset");
-                        var pssSo = new SerializedObject(this);
-                        var psArray = pssSo.FindProperty(nameof(packageSources));
-                        psArray.arraySize++;
-                        var lastIndex = psArray.GetArrayElementAtIndex(psArray.arraySize);
-                        ScriptableHelper.EnsureAsset(assetPath, type, asset =>
-                        {
-                            var source = asset as PackageSource;
-                            lastIndex.objectReferenceValue = source;
-                            pssSo.ApplyModifiedProperties();
-                        });
+                        ScriptableHelper.EnsureAsset(assetPath, type);
                         RefreshList();
                     }
                 );
