@@ -34,7 +34,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 {
                     var source = asset as ThunderstoreSource;
                     source.Url = "https://thunderkit.thunderstore.io";
-                }) as ThunderstoreSource;
+                });
             }
         }
 
