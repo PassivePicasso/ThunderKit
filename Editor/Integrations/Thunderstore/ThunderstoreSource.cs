@@ -30,12 +30,12 @@ namespace ThunderKit.Integrations.Thunderstore
             if (!sources.Any(s => s.Url.ToLower().Contains("thunderkit.thunderstore.io")))
             {
                 var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/ThunderKit Extensions.asset");
-                var asset = ScriptableHelper.EnsureAsset(assetPath, typeof(ThunderstoreSource), asset =>
+                var extSource = ScriptableHelper.EnsureAsset(assetPath, typeof(ThunderstoreSource), asset =>
                 {
                     var source = asset as ThunderstoreSource;
                     source.Url = "https://thunderkit.thunderstore.io";
                 }) as UnityEngine.Object;
-                EditorUtility.SetDirty(asset);
+                EditorUtility.SetDirty(extSource);
             }
         }
 
