@@ -33,14 +33,17 @@ namespace ThunderKit.Core.Windows
             base.OnEnable();
 
             var settingsArea = rootVisualElement.Q("settings-area");
-            var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", searchFolders)
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(AssetDatabase.LoadAssetAtPath<ThunderKitSetting>)
-                .ToArray();
+            var settingsPaths = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", searchFolders)
+                .Select(AssetDatabase.GUIDToAssetPath).ToArray();
 
-
-            foreach (var setting in settings)
+            foreach (var settingPath in settingsPaths)
             {
+                var setting = AssetDatabase.LoadAssetAtPath<ThunderKitSetting>(settingPath);
+                if (!setting)
+                {
+                    AssetDatabase.DeleteAsset(settingPath);
+                    continue;
+                }
                 var settingSection = GetTemplateInstance("ThunderKitSettingSection");
                 var title = settingSection.Q<Label>("title");
                 if (title != null)
