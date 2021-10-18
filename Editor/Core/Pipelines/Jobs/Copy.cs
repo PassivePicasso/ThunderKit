@@ -15,6 +15,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
         [Tooltip("While enabled, will error when the source is not found (default: true)")]
         public bool SourceRequired = true;
 
+        [Tooltip("While enabled, copy will create destination directory if it doesn't already exist")]
+        public bool EstablishDestination = true;
+
         [PathReferenceResolver]
         public string Source;
         [PathReferenceResolver]
@@ -54,8 +57,14 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 else if (sourceIsFile)
                     throw new ArgumentException($"Source Error: Expected Directory, Recieved File {source}");
             }
+            
+            if (EstablishDestination)
+                Directory.CreateDirectory(sourceIsFile ? Path.GetDirectoryName(destination) : destination);
 
-            if (Recursive) FileUtil.ReplaceDirectory(source, destination);
+            if (Recursive)
+            {
+                FileUtil.ReplaceDirectory(source, destination);
+            }
             else
                 FileUtil.ReplaceFile(source, destination);
             return Task.CompletedTask;
