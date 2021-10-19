@@ -15,26 +15,26 @@ namespace ThunderKit.Core.Config
     using static ThunderKit.Common.PathExtensions;
     public class ConfigureGame
     {
-        [InitializeOnLoadMethod]
-        static void CleanupOnRemoveGame()
-        {
-            EditorApplication.projectChanged += EditorApplication_projectChanged;
-        }
+        //[InitializeOnLoadMethod]
+        //static void CleanupOnRemoveGame()
+        //{
+        //    EditorApplication.projectChanged += EditorApplication_projectChanged;
+        //}
 
-        private static void EditorApplication_projectChanged()
-        {
-            var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
-            if (string.IsNullOrEmpty(settings.GameExecutable) || string.IsNullOrEmpty(settings.GamePath)) return;
+        //private static void EditorApplication_projectChanged()
+        //{
+        //    var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
+        //    if (string.IsNullOrEmpty(settings.GameExecutable) || string.IsNullOrEmpty(settings.GamePath)) return;
 
-            var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
-            var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
-            var isValid = AssetDatabase.IsValidFolder($"Packages/{name}");
-            if (isValid)
-                Debug.Log($"{packageName} is present in project.");
-            else
-                Debug.LogError($"{packageName} is not present in project.");
+        //    var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
+        //    var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
+        //    var isValid = AssetDatabase.IsValidFolder($"Packages/{name}");
+        //    if (isValid)
+        //        Debug.Log($"{packageName} is present in project.");
+        //    else
+        //        Debug.LogError($"{packageName} is not present in project.");
 
-        }
+        //}
 
         public static void Configure()
         {
