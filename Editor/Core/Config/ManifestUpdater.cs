@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Manifests;
@@ -53,9 +54,11 @@ namespace ThunderKit.Core.Config
                     "Continue", "Abort"
                     );
                 if (!proceed) return;
+                var log = new StringBuilder();
+                log.AppendLine("Manifest Asset Guids and References updated");
                 foreach (var guid in allManifests)
                 {
-
+                    bool changed = false;
                     var path = AssetDatabase.GUIDToAssetPath(guid);
                     var metaPath = $"{path}.meta";
                     try
@@ -71,7 +74,9 @@ namespace ThunderKit.Core.Config
                             var refGuid = $"{match.Groups[3]}";
                             if (remap.ContainsKey(refGuid))
                             {
-                                lines[i] = scriptRefRegex.Replace(line, $"{match.Groups[1]}{{fileID: {match.Groups[2]}, guid: {remap[refGuid]}, type: {match.Groups[4]}}}");
+                                var newLine = scriptRefRegex.Replace(line, $"{match.Groups[1]}{{fileID: {match.Groups[2]}, guid: {remap[refGuid]}, type: {match.Groups[4]}}}");
+                                changed = !newLine.Equals(line);
+                                lines[i] = newLine;
                             }
                         }
 
@@ -79,15 +84,21 @@ namespace ThunderKit.Core.Config
                         {
                             var metaData = PackageHelper.DefaultScriptableObjectMetaData(remap[guid]);
                             if (File.Exists(metaPath)) File.Delete(metaPath);
+                            log.AppendLine($"Modified metadata in asset at ({path})");
                             File.WriteAllText(metaPath, metaData);
                         }
-                        File.WriteAllLines(path, lines);
+                        if (changed)
+                        {
+                            log.AppendLine($"Modified references in asset at ({path})");
+                            File.WriteAllLines(path, lines);
+                        }
                     }
                     catch (Exception e)
                     {
                         Debug.LogError($"Failed to update Manifest GUID for manifest at {path}\r\n{e}");
                     }
                 }
+                Debug.Log(log.ToString());
             }
             finally
             {
