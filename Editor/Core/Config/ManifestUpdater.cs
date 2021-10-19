@@ -55,6 +55,7 @@ namespace ThunderKit.Core.Config
                 if (!proceed) return;
                 foreach (var guid in allManifests)
                 {
+
                     var path = AssetDatabase.GUIDToAssetPath(guid);
                     var metaPath = $"{path}.meta";
                     try
@@ -74,9 +75,12 @@ namespace ThunderKit.Core.Config
                             }
                         }
 
-                        var metaData = PackageHelper.DefaultScriptableObjectMetaData(remap[guid]);
-                        if (File.Exists(metaPath)) File.Delete(metaPath);
-                        File.WriteAllText(metaPath, metaData);
+                        if (remap.ContainsKey(guid))
+                        {
+                            var metaData = PackageHelper.DefaultScriptableObjectMetaData(remap[guid]);
+                            if (File.Exists(metaPath)) File.Delete(metaPath);
+                            File.WriteAllText(metaPath, metaData);
+                        }
                         File.WriteAllLines(path, lines);
                     }
                     catch (Exception e)
