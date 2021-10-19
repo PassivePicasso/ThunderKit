@@ -55,8 +55,6 @@ namespace ThunderKit.Core.Config
                 if (!proceed) return;
                 foreach (var guid in allManifests)
                 {
-                    if (!remap.ContainsKey(guid)) continue;
-
                     var path = AssetDatabase.GUIDToAssetPath(guid);
                     var metaPath = $"{path}.meta";
                     try
