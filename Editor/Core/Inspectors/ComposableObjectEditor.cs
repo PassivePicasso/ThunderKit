@@ -53,7 +53,7 @@ namespace ThunderKit.Core.Inspectors
 
             serializedObject.Update();
             DrawPropertiesExcluding(serializedObject, "m_Script", "Data");
-            GUILayout.Space(2);
+            GUILayout.Space(4);
 
             dataArray = serializedObject.FindProperty(nameof(ComposableObject.Data));
             CleanDataArray();
@@ -69,7 +69,7 @@ namespace ThunderKit.Core.Inspectors
                 try
                 {
                     var title = ObjectNames.NicifyVariableName(stepType.Name);
-                    var foldoutRect = GUILayoutUtility.GetRect(currentViewWidth, singleLineHeight + 3);
+                    var foldoutRect = GUILayoutUtility.GetRect(currentViewWidth - 50, singleLineHeight + 3);
 
                     var boxSkin = EditorSkin.box;
                     if (element.Errored)
