@@ -86,6 +86,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             var assemblies = CompilationPipeline.GetAssemblies();
             var definitionDatums = pipeline.Manifest.Data.OfType<AssemblyDefinitions>().ToArray();
+            if (!definitionDatums.Any())
+            {
+                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found in Manifest {pipeline.Manifest.name}(Identity.Name: \"{pipeline.Manifest.Identity.Name}\"), skipping {nameof(StageAssemblies)}");
+                return;
+            }
+
             for (var (i, datum) = (0, definitionDatums[0]); i < definitionDatums.Length; i++, datum = definitionDatums[i])
             {
                 var hasUnassignedDefinition = datum.definitions.Any(def => !(bool)(def));
