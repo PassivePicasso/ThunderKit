@@ -25,6 +25,7 @@ namespace ThunderKit.Core.Windows
         private ScrollView contextScrollView;
         private Button clearLogButton;
 
+
         public static void ShowLog(Pipeline pipeline)
         {
             var consoleType = typeof(EditorWindow).Assembly.GetTypes().First(t => "ConsoleWindow".Equals(t.Name));
@@ -38,6 +39,7 @@ namespace ThunderKit.Core.Windows
         {
             base.OnEnable();
             Selection.selectionChanged += OnSelectionChanged;
+            Initialize();
         }
         private void OnDisable()
         {
@@ -102,6 +104,7 @@ namespace ThunderKit.Core.Windows
                 contentView = contextScrollView?.Q<VisualElement>("unity-content-container");
             
             if (contentView == null) return;
+            if (contextScrollView == null) return;
 
             var scrollWidth = contextScrollView.contentRect.width;
             contentView.style.maxWidth = scrollWidth - 20;
@@ -149,7 +152,7 @@ namespace ThunderKit.Core.Windows
                 focusedPipeline = pipeline;
                 Initialize();
             }
-            else
+            else if(logEntryListView != null)
             {
                 logEntryListView.itemsSource = Array.Empty<LogEntry>();
             }
