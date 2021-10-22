@@ -47,7 +47,7 @@ namespace ThunderKit.Core.Windows
         }
         private void Initialize()
         {
-            pipelineName = focusedPipeline.name;
+            pipelineName = focusedPipeline?.name ?? string.Empty;
             titleContent = new UnityEngine.GUIContent($"Log: {pipelineName}");
             if (logEntryListView == null)
             {
