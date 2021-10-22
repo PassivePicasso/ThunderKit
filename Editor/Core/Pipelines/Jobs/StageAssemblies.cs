@@ -86,11 +86,18 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             var assemblies = CompilationPipeline.GetAssemblies();
             var definitionDatums = pipeline.Manifest.Data.OfType<AssemblyDefinitions>().ToArray();
+            for (var (i, datum) = (0, definitionDatums[0]); i < definitionDatums.Length; i++, datum = definitionDatums[i])
+            {
+                var hasUnassignedDefinition = datum.definitions.Any(def => !(bool)(def));
+                if (hasUnassignedDefinition)
+                    pipeline.Log(LogLevel.Warning, $"Manifest \"{pipeline.Manifest.Identity.Name}\" has AssemblyDefinitions with unassigned definition at index {i}");
+            }
             var deserializedAsmDefs = definitionDatums.SelectMany(datum =>
-                datum.definitions.Select(asmDefAsset =>
-                    (asmDef: JsonUtility.FromJson<AsmDef>(asmDefAsset.text),
-                     asmDefAsset: asmDefAsset,
-                     datum: datum)
+                datum.definitions.Where(asmDefAsset => asmDefAsset)
+                                .Select(asmDefAsset =>
+                                        (asmDef: JsonUtility.FromJson<AsmDef>(asmDefAsset.text),
+                                         asmDefAsset: asmDefAsset,
+                                         datum: datum)
                 ));
 
             var definitions = deserializedAsmDefs.Select(dataSet =>
@@ -150,7 +157,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                         if (stageDebugDatabases)
                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
                         else
-                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
+                            CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
                     }
                 }
                 builder.buildTarget = buildTarget;
