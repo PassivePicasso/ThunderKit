@@ -101,7 +101,7 @@ namespace ThunderKit.Pipelines.Jobs
                     logBuilder.AppendLine();
                 }
             }
-            Debug.Log(logBuilder.ToString());
+            pipeline.Log(LogLevel.Information, logBuilder.ToString(), name);
 
             if (!simulate)
             {

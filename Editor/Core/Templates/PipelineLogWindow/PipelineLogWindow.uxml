@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:VisualElement class="unity-toolbar">
+            <ui:Button name="clear-log-button" text="Clear" class="toolbar-button" />
+        </ui:VisualElement>
+        <ui:ListView focusable="true" name="logentry-list-view" item-height="40" style="flex-grow: 1;" />
+        <ui:ScrollView name="context-scroll-view" style="max-height: 300px;" />
+    </ui:VisualElement>
+</ui:UXML>

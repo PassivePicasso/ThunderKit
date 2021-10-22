@@ -30,9 +30,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 source = Source.Resolve(pipeline, this);
             }
-            catch (Exception e)
+            catch
             {
-                if (SourceRequired) throw e;
+                if (SourceRequired) throw;
             }
             if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"Required {nameof(Source)} is empty");
             if (!SourceRequired && string.IsNullOrEmpty(source))
@@ -45,9 +45,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 sourceIsFile = !File.GetAttributes(source).HasFlag(FileAttributes.Directory);
             }
-            catch (Exception e)
+            catch
             {
-                if (SourceRequired) throw e;
+                if (SourceRequired) throw;
             }
 
             if (Recursive)

@@ -33,10 +33,10 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 else
                     Directory.Delete(path, Recursive);
             }
-            catch (Exception e)
+            catch
             {
                 if (IsFatal)
-                    throw e;
+                    throw;
             }
 
             return Task.CompletedTask;

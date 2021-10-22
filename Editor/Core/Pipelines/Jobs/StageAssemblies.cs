@@ -97,7 +97,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     (asm: assemblies.FirstOrDefault(asm => dataSet.asmDef.name == asm.name),
                      asmDefAsset: dataSet.asmDefAsset,
                      asmDef: dataSet.asmDef,
-                     datum: dataSet.datum )
+                     datum: dataSet.datum)
                 ).Where(def => def.asm != null)
                 .ToArray();
 
@@ -114,7 +114,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 builder.buildTargetGroup = buildTargetGroup;
 
                 var index = pipeline.ManifestIndex;
-                void OnBuildStarted(string path) => Debug.Log($"Building : {path}");
+                void OnBuildStarted(string path) => pipeline.Log(LogLevel.Information, $"Building : {path}");
                 void OnBuildFinished(string path, CompilerMessage[] messages)
                 {
                     BuildStatus.Remove(builder);
@@ -124,34 +124,33 @@ namespace ThunderKit.Core.Pipelines.Jobs
                             switch (message.type)
                             {
                                 case CompilerMessageType.Error:
-                                    Debug.LogError(message.message);
+                                    pipeline.Log(LogLevel.Error, message.message);
                                     break;
                                 case CompilerMessageType.Warning:
-                                    Debug.LogWarning(message.message);
+                                    pipeline.Log(LogLevel.Warning, message.message);
                                     break;
                             }
                         }
                     else
-                        Debug.Log($"Build Completed: {path}");
+                        pipeline.Log(LogLevel.Information, $"Build Completed: {path}");
 
-                    Debug.Log($"Resolving Paths: {path}");
+                    pipeline.Log(LogLevel.Information, $"Resolving Paths: {path}");
                     var prevIndex = pipeline.ManifestIndex;
                     pipeline.ManifestIndex = index;
                     var resolvedPaths = definition.datum.StagingPaths
                         .Select(p => PathReference.ResolvePath(p, pipeline, this)).ToArray();
                     pipeline.ManifestIndex = prevIndex;
-                    Debug.Log($"Resolved Paths: {path}");
+                    pipeline.Log(LogLevel.Information, $"Resolved Paths: {path}");
 
 
                     foreach (var outputPath in resolvedPaths)
                     {
-
-                        Debug.Log($"Copying {assemblyName} to {outputPath}");
+                        pipeline.Log(LogLevel.Information, $"Copying {assemblyName} to {outputPath}");
                         Directory.CreateDirectory(outputPath);
                         if (stageDebugDatabases)
-                            CopyFiles(resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
+                            CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
                         else
-                            CopyFiles(resolvedArtifactPath, outputPath, assemblyName);
+                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
                     }
                 }
                 builder.buildTarget = buildTarget;
@@ -161,16 +160,14 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (File.Exists(assemblyOutputPath))
                     File.Delete(assemblyOutputPath);
                 BuildStatus.Add(builder);
-                if (builder.Build())
-                {
-                    while (EditorApplication.isCompiling)
-                    {
-                        await Task.Delay(100);
-                    }
-                }
+                builder.Build();
+            }
+            while (EditorApplication.isCompiling)
+            {
+                await Task.Delay(100);
             }
         }
-        void CopyFiles(string sourcePath, string outputPath, params string[] patterns)
+        void CopyFiles(Pipeline pipeline, string sourcePath, string outputPath, params string[] patterns)
         {
             Directory.CreateDirectory(outputPath);
             var targetFiles = (from pattern in patterns
@@ -181,7 +178,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 var fileName = Path.GetFileName(source);
                 string destination = Combine(outputPath, fileName);
                 File.Copy(source, destination, true);
-                Debug.Log($"Copied {source} to {destination}");
+                pipeline.Log(LogLevel.Information, $"Copied {source} to {destination}");
 
             }
         }

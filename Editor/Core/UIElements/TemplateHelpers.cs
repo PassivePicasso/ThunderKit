@@ -29,7 +29,7 @@ namespace ThunderKit.Core.UIElements
 
         public static VisualElement GetTemplateInstance(string template, VisualElement target = null, Func<string, bool> isTemplatePath = null)
         {
-            var packageTemplate = LoadTemplate(template, isTemplatePath ?? IsTemplatePath);
+            var packageTemplate = LoadTemplate(template, isTemplatePath);
             var templatePath = AssetDatabase.GetAssetPath(packageTemplate);
             VisualElement instance = target;
 
@@ -90,12 +90,12 @@ namespace ThunderKit.Core.UIElements
 #endif
         }
 
-        private static VisualTreeAsset LoadTemplate(string name, Func<string, bool> isTemplatePath)
+        public static VisualTreeAsset LoadTemplate(string name, Func<string, bool> isTemplatePath = null)
         {
             if (templateCache.TryGetValue(name, out var asset) && asset != null)
                 return asset;
 
-            return templateCache[name] = CreateTemplate(name, isTemplatePath);
+            return templateCache[name] = CreateTemplate(name, isTemplatePath ?? IsTemplatePath);
         }
 
         static VisualTreeAsset CreateTemplate(string name, Func<string, bool> isTemplatePath)

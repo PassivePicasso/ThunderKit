@@ -75,11 +75,11 @@ namespace ThunderKit.Core.Data
         public virtual void Initialize() { }
         public virtual IEnumerable<string> Keywords() => Enumerable.Empty<string>();
         public virtual void CreateSettingsUI(VisualElement rootElement) { }
-        protected static VisualElement CreateStandardField(string gamePath)
+        protected static VisualElement CreateStandardField(string fieldPath)
         {
             var container = new VisualElement();
-            var label = ObjectNames.NicifyVariableName(gamePath);
-            var field = new PropertyField { bindingPath = gamePath, label = label };
+            var label = ObjectNames.NicifyVariableName(fieldPath);
+            var field = new PropertyField { bindingPath = fieldPath, label = label };
             container.Add(field);
             container.AddToClassList("thunderkit-field");
             field.AddToClassList("thunderkit-field-input");

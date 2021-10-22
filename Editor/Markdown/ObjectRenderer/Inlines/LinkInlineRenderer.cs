@@ -62,6 +62,15 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 link =>{}
             }
         };
+        public static bool RegisterScheme(string scheme, Action<string> action)
+        {
+            if (!SchemeLinkHandlers.ContainsKey(scheme))
+            {
+                SchemeLinkHandlers[scheme] = action;
+                return true;
+            }
+            return false;
+        }
 
         IEnumerator LoadImage(string url, Image imageElement)
         {
@@ -146,7 +155,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 {
                     linkLabel.RegisterCallback<MouseUpEvent>(evt =>
                     {
-                        if (SchemeLinkHandlers.TryGetValue(lowerScheme, out var handler))
+                        if (LinkInlineRenderer.SchemeLinkHandlers.TryGetValue(lowerScheme, out var handler))
                             handler?.Invoke(url);
                     });
                 }
