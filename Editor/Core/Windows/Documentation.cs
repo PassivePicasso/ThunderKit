@@ -1,13 +1,12 @@
 ﻿using ThunderKit.Common;
-using ThunderKit.Core.Windows;
 using ThunderKit.Core.UIElements;
 using UnityEditor;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using ThunderKit.Markdown.ObjectRenderers;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 #else
 using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
@@ -28,8 +27,25 @@ namespace ThunderKit.Core.Windows
         private const string MinimizeClass = "minimize";
         public string DocumentationRoot = "Packages/com.passivepicasso.thunderkit/Documentation/topics";
 
+        [InitializeOnLoadMethod]
+        static void RegisterScheme()
+        {
+            LinkInlineRenderer.RegisterScheme(
+                "documentation",
+                link =>
+                {
+                    var path = link.Substring("documentation://".Length);
+                    ShowThunderKitDocumentation(path);
+                });
+        }
+
         [MenuItem(Constants.ThunderKitMenuRoot + "Documentation")]
         public static void ShowThunderKitDocumentation() => GetWindow<Documentation>();
+        public static void ShowThunderKitDocumentation(string pagePath)
+        {
+            var documentationWindow = GetWindow<Documentation>();
+            documentationWindow.LoadSelection(pagePath);
+        }
 
         public override void OnEnable()
         {
@@ -216,6 +232,13 @@ namespace ThunderKit.Core.Windows
         {
             var element = e.currentTarget as PageEntry;
             LoadSelection(element);
+        }
+
+        public void LoadSelection(string pagePath)
+        {
+            var pageEntryQuery = rootVisualElement.Query<PageEntry>().ToList();
+            var entry = pageEntryQuery.First(pe => pe.PagePath.Equals(pagePath, System.StringComparison.OrdinalIgnoreCase));
+            LoadSelection(entry);
         }
 
         private void LoadSelection(PageEntry element)

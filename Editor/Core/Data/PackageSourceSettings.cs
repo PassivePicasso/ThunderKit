@@ -60,7 +60,7 @@ namespace ThunderKit.Core.Data
                 }
             };
             sourceList.itemsSource = PackageSources;
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2020_2_OR_NEWER
             sourceList.onSelectionChange += OnSelectionChanged;
 #else
             sourceList.onSelectionChanged += OnSelectionChanged;
@@ -82,7 +82,7 @@ namespace ThunderKit.Core.Data
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2020_2_OR_NEWER
         private void OnSelectionChanged(IEnumerable<object> sources)
 #else
 

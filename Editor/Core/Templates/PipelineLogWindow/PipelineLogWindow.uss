@@ -1,0 +1,120 @@
+﻿#date-time {
+	border-left-width: 1px;
+	border-color: rgba(0,0,0,0.35);
+	padding-left: 4px;
+	padding-right: 6px;
+	width: 120px;
+	justify-content: center;
+}
+#log-entry {
+	border-bottom-width: 1px;
+	border-color: rgba(0,0,0,0.35);
+}
+#time-stamp {
+	align-self: flex-end;
+}
+#date-stamp {
+	align-self: flex-end;
+}
+#icon-container{
+	border-right-width: 1px;
+	border-color: rgba(0,0,0, 0.35);
+	padding-left: 2px;
+	padding-right: 2px;
+	justify-content: center;
+}
+#message-container{
+	justify-content: center;
+}
+#icon-log-level {
+	width: 32px;
+	height: 32px;
+	min-width: 32px;
+	min-height: 32px;
+}
+#logentry-list-view {
+	flex-grow: 1;
+	border-color: rgba(0,0,0,0.25);
+	background-color: rgba(255,255,255,0.1);
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+
+}
+#context-scroll-view {
+	flex-grow: 1;
+	border-color: rgba(0,0,0,0.25);
+	background-color: rgba(0,0,0,0.2);
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+}
+.log-entry-context {
+	white-space: normal;
+	-unity-word-wrap: true;
+}
+.toolbar-button {
+	background-image: none;
+	background-color: rgba(255,255,255,0);
+	border-color: rgba(0,0,0,0.5);
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 1px;
+	border-bottom-width: 0px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+.toolbar-button:hover {
+	background-color: rgba(255,255,255,0.25);
+
+}
+.unity-toolbar {
+	height: 21px;
+	flex-direction: row;
+	white-space: nowrap;
+	background-color: rgba(255,255,255,0.15);
+	border-bottom-width: 1px;
+	border-color: rgba(0,0,0,0.5);
+	font-size: 12px;
+	margin-top: -3px;
+}
+.log-text {
+	width: 190px;
+	padding-left: 4px;
+	padding-top: 0px;
+	padding-right: 4px;
+	padding-bottom: 0px;
+
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+
+	-unity-font-style: normal;
+	overflow: hidden;
+}
+.grow {
+	flex-grow: 1;
+}
+.Error {
+	background-image: resource("console.erroricon");
+}
+.Warning {
+	background-image: resource("console.warnicon");
+}
+.Information {
+	background-image: resource("console.infoicon");
+}
+
+.selected {
+	background-color: rgba(0,0,0,0.5);
+	color: #fff;
+}

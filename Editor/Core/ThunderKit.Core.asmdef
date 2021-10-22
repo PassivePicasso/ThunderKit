@@ -1,10 +1,10 @@
 {
     "name": "ThunderKit.Core",
+    "rootNamespace": "",
     "references": [
         "ThunderKit.Common",
         "ThunderKit.Markdown"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,8 +12,11 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "SharpCompress.dll"
+        "SharpCompress.dll",
+        "Markdig.Signed.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

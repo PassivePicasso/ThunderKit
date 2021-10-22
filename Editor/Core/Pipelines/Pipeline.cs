@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Common.Logging;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core;
 using ThunderKit.Core.Manifests;
 using UnityEditor;
 using UnityEngine;
-using System.Threading.Tasks;
 
 namespace ThunderKit.Core.Pipelines
 {
+    using static LogLevel;
     public class Pipeline : ComposableObject
     {
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
@@ -40,6 +40,8 @@ namespace {0}
     }}
 }}
 ";
+
+
         private PipelineJob[] currentJobs;
         public ProgressBar progressBar { get; private set; }
 
@@ -47,21 +49,57 @@ namespace {0}
         public int ManifestIndex { get; set; }
         public Manifest Manifest => Manifests?[ManifestIndex];
 
+        private HashSet<string> messageTemplates = new HashSet<string>();
+        [SerializeField, HideInInspector]
+        private List<LogEntry> runLog = new List<LogEntry>();
+        public IReadOnlyList<LogEntry> RunLog => runLog?.AsReadOnly();
+        public void ClearLog()
+        {
+            runLog.Clear();
+            LogUpdated?.Invoke(this, default);
+        }
+
         string ProgressTitle => $"Pipeline: {name}, {(Manifests != null && Manifests.Length > 0 ? $"Manifest: {Manifests[ManifestIndex]?.Identity?.name ?? "Error Manifest Not Found"}" : string.Empty)}";
 
+        public event EventHandler<LogEntry> LogUpdated;
+
+        public void Log(LogLevel logLevel, string message, params string[] context)
+        {
+            LogEntry entry = new LogEntry(logLevel, DateTime.Now, message, context);
+            runLog.Insert(0, entry);
+            LogUpdated?.Invoke(this, entry);
+        }
+
+        public void Log(LogEntry entry)
+        {
+            runLog.Insert(0, entry);
+            LogUpdated?.Invoke(this, entry);
+        }
+
+        void InitializeLog()
+        {
+            if (runLog == null)
+                runLog = new List<LogEntry>();
+        }
 
         public virtual async Task Execute()
         {
+            InitializeLog();
+            Log(Information, $"Executing \"{name}\"", name);
             using (progressBar = new ProgressBar())
             {
                 Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
                 currentJobs = Jobs.Where(SupportsType).ToArray();
 
-                if ((currentJobs.Any(j => j.GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any())
-                  || currentJobs.OfType<FlowPipelineJob>().Any(fpj => fpj.PerManifest))
-                  && (Manifests == null || Manifests.Length == 0))
+                var manifestJobs = currentJobs.Where(j => j.GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any())
+                           .Union(currentJobs.OfType<FlowPipelineJob>().Where(fpj => fpj.PerManifest)).ToArray();
+
+                if (manifestJobs.Length > 0 && (Manifests == null || Manifests.Length == 0))
                 {
-                    throw new InvalidOperationException($"Pipeline {name} has PipelineJobs that require a Manifest but no Manifest is assigned");
+                    var message = $"Pipeline \"{name}\" has PipelineJobs that require a Manifest but no Manifest is assigned";
+                    Log(Error, message, manifestJobs.Select(mj => mj.GetType().Name).Prepend("PipelineJobs requiring Manifests").ToArray());
+                    Log(Error, $"Halted execution of \"{name}\"", name);
+                    throw new InvalidOperationException(message);
                 }
 
                 ManifestIndex = 0;
@@ -73,10 +111,12 @@ namespace {0}
                     Job().ErrorMessage = string.Empty;
                 }
                 for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
+                {
+                    var job = Job();
                     try
                     {
-                        if (!Job().Active) continue;
-                        progressBar.Update($"Executing PipelineJob {Job().name}");
+                        if (!job.Active) continue;
+                        progressBar.Update($"Executing PipelineJob {job.name}");
                         if (JobIsManifestProcessor())
                             await ExecuteManifestLoop();
                         else
@@ -84,16 +124,16 @@ namespace {0}
                     }
                     catch (Exception e)
                     {
-                        Job().Errored = true;
-                        Job().ErrorMessage = e.Message;
-                        EditorGUIUtility.PingObject(Job());
-                        Debug.LogError($"Error Invoking {Job().name} Job on Pipeline {name}\r\n{e}", this);
-                        JobIndex = currentJobs.Length;
-                        break;
+                        job.Errored = true;
+                        job.ErrorMessage = e.Message;
+                        Log(Error, $"Error Invoking {job.name} Job on Pipeline {name}", name, e.Message, e.StackTrace);
+                        throw;
                     }
+                }
                 ManifestIndex =
                 JobIndex = -1;
             }
+            Log(Information, $"Finished executing \"{name}\"", name);
         }
 
         PipelineJob Job() => currentJobs[JobIndex];
@@ -133,4 +173,5 @@ namespace {0}
 
         public override Type ElementType => typeof(PipelineJob);
     }
+
 }
