@@ -32,6 +32,12 @@ namespace ThunderKit.Pipelines.Jobs
             AssetDatabase.SaveAssets();
 
             var assetBundleDefs = pipeline.Datums.OfType<AssetBundleDefinitions>().ToArray();
+            var hasValidBundles = assetBundleDefs.Any(abd => abd.assetBundles.Any(ab => !string.IsNullOrEmpty(ab.assetBundleName) && ab.assets.Any()));
+            if (!hasValidBundles)
+            {
+                pipeline.Log(LogLevel.Warning, $"No valid AssetBundleDefinitions defined, skipping {nameof(StageAssetBundles)} PipelineJob");
+                return Task.CompletedTask;
+            }
             var bundleArtifactPath = BundleArtifactPath.Resolve(pipeline, this);
             Directory.CreateDirectory(bundleArtifactPath);
 
