@@ -60,7 +60,9 @@ namespace ThunderKit.Core.UIElements
         }
 
         const string editorVersion =
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2021_1_OR_NEWER
+            "2021";
+#elif UNITY_2020_1_OR_NEWER
             "2020";
 #elif UNITY_2019_1_OR_NEWER
             "2019";
@@ -84,9 +86,11 @@ namespace ThunderKit.Core.UIElements
         {
 #if UNITY_2019_1_OR_NEWER
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath);
-            element.styleSheets.Add(styleSheet);
+            if (!element.styleSheets.Contains(styleSheet))
+                element.styleSheets.Add(styleSheet);
 #elif UNITY_2018_1_OR_NEWER
-            element.AddStyleSheetPath(sheetPath);
+            if (!element.HasStyleSheetPath(sheetPath))
+                element.AddStyleSheetPath(sheetPath);
 #endif
         }
 
