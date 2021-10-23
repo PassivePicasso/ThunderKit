@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Common.Logging;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Markdown.ObjectRenderers;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -41,6 +45,21 @@ namespace {0}
     }}
 }}
 ";
+        const string ExceptionScheme = "exceptionsource";
+        [InitializeOnLoadMethod]
+        static void RegisterScheme()
+        {
+            LinkInlineRenderer.RegisterScheme(
+                ExceptionScheme,
+                link =>
+                {
+                    var schemeless = link.Substring($"{ExceptionScheme}://".Length);
+                    var parts = schemeless.Split('#');
+                    var path = parts[0];
+                    var linenumber = int.Parse(parts[1]);
+                    InternalEditorUtility.OpenFileAtLineExternal(path, linenumber);
+                });
+        }
 
 
         private PipelineJob[] currentJobs;
@@ -91,8 +110,8 @@ namespace {0}
 
         public virtual async Task Execute()
         {
-            
-           var pipelinePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
+
+            var pipelinePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
             var pipelineLink = $"[{name}](assetlink://{pipelinePath})";
             InitializeLog();
             Log(Information, $"Executing {pipelineLink}");
@@ -137,7 +156,12 @@ namespace {0}
                     {
                         job.Errored = true;
                         job.ErrorMessage = e.Message;
-                        Log(Error, $"Error Invoking {job.name} Job on Pipeline {pipelineLink}", pipelineLink, e.Message.Replace("\r\n", "\r\n\r\n"), e.StackTrace.Replace("\r\n", "\r\n\r\n"));
+
+                        var stackTrace = e.StackTrace.Replace("\r\n", "\r\n\r\n");
+                        var sourceEx = new Regex("in (?<path>[^<>]+?):(?<linenumber>\\d+)");
+                        stackTrace = sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
+
+                        Log(Error, $"Error Invoking {job.name} Job on Pipeline {pipelineLink}", pipelineLink, e.Message, stackTrace);
                         throw;
                     }
                 }
