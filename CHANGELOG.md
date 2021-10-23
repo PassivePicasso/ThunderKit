@@ -1,3 +1,49 @@
+## 4.1.0
+
+### Markdown Level Up
+
+Text alignment and kerning has been improved significantly.  I'm sorry for any mental anguish users have suffered.
+
+The Markdown implementation performance and output quality has been significantly improved. Previously the UIElementsRenderer would break all string literals on whitespace separation and then render each word as an individual VisualElement of type Label. This provided an easy way to achieve flow document layouting, however resulted in large documents taking an exceptionally long time to render.
+
+In this update the UIElementsRenderer will now scan each ParagraphBlock returned by MarkDig and if the Paragraph contains only simple string literals will opt to render the entire paragraph in a single Label.  This reduces the number of elements generated in large documents by thousands. This results in significantly improved render times in large documents as well as faster layouting.
+
+Additionally, the Markdown system now supports adding custom Schemes for Markdown links from external libraries which has enabled new features in ThunderKit.
+
+Finally the code design of the MarkdownElement and its utilization has been improved to prevent cases where Markdown doesn't have the necessary visual styles to render correctly.
+
+### Pipeline Improvements
+
+This update introduces a system to maintain logs of Pipeline runs. These logs are serialized with the Pipeline and can be cleared using the new Pipeline Log window.
+The pipeline log provides Rich logging with links to source code and assets enabled with the Markdown system.
+
+Each Pipeline's log can be accessed via the "Show Log" button in the top right of the Pipeline's Inspector. 
+Most PipelineJobs have had their logging increased or improved to make the Pipeline Logs more useful for debugging failures in your pipeline runs.
+
+The execute button for pipelines have been moved from under the "Add Pipeline Button" to the top left of the Pipeline Inspector. This should reduce incidents of accidentally firing off the Pipeline.
+
+### Documentation Improvements
+
+The Markdown improvements has allowed the introduction of Documentation page links to be created. Now MarkdownElements can link to specific documentation pages.  This hasn't been applied to all documentation to create a highly connected document graph yet, but additional enhancements to documentation will be done over time.
+
+Some documents have been reformatted to improve their layout flexibility
+
+### Fixes and Improvements
+
+* Automatically generate a PackageSource for the ThunderKit Extensiosn Thunderstore
+
+* Remove ThunderKit.Core.Editor namespace due to code clarity issues a namespace named Editor creates in Unity
+
+* Fix bugs with Pipeline flow related to Asynchronous migration
+
+* Fix a number of cases where Exception context could be hidden
+
+* Add a new toggle to Copy jobs that indicates if the Job should try to create the target directory, default value is true
+
+* Fixed some cases where Pipelines would run to the end instead of halting when encountering what should have been a fatal exception
+
+* StageAssetBundles and StageAssemblies logging and code flow has been improved to clarify common cases where these jobs will fail to execute correct
+
 ## 4.0.0
 
 ### Important
