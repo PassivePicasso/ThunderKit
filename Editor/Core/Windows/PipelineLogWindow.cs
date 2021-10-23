@@ -92,8 +92,9 @@ namespace ThunderKit.Core.Windows
             Refresh();
 
             rootVisualElement.Bind(new SerializedObject(this));
-
-            focusedPipeline.LogUpdated += Pipeline_LogUpdated;
+            
+            if (focusedPipeline)
+                focusedPipeline.LogUpdated += Pipeline_LogUpdated;
         }
 
 #if UNITY_2020_1_OR_NEWER
@@ -106,8 +107,9 @@ namespace ThunderKit.Core.Windows
             var entry = obj.OfType<LogEntry>().First();
             foreach (var context in entry.context)
             {
-                Label child = new Label(context);
-                child.AddToClassList("log-entry-context");
+                var child = new MarkdownElement { Data = context, MarkdownDataType = MarkdownDataType.Text };
+                //child.AddToClassList("log-entry-context");
+                child.RefreshContent();
                 contextScrollView.Add(child);
             }
         }
