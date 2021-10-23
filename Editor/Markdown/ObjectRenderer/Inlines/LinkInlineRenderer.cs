@@ -51,13 +51,6 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 }
             },
             {
-                "pathreference",
-                link =>
-                {
-
-                }
-            },
-            {
                 "#",
                 link =>{}
             }

@@ -130,6 +130,10 @@ namespace ThunderKit.Markdown
                         splitLiterals = true;
                         inline = null;
                         break;
+                    case HtmlEntityInline htmlEntityInline:
+                        builder.Append(htmlEntityInline.Transcoded);
+                        inline = htmlEntityInline.NextSibling;
+                        break;
                     case HtmlInline htmlInline:
                         builder.Append(htmlInline.Tag);
                         inline = htmlInline.NextSibling;
@@ -147,7 +151,6 @@ namespace ThunderKit.Markdown
             if (!splitLiterals)
             {
                 var element = GetTextElement<Label>(builder.ToString(), "inline");
-                element.AddToClassList("last-inline");
                 WriteInline(element);
             }
             else
