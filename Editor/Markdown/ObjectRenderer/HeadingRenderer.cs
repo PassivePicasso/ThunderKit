@@ -1,4 +1,6 @@
 using Markdig.Syntax;
+using Markdig.Syntax.Inlines;
+using System.Text;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -14,10 +16,10 @@ namespace ThunderKit.Markdown.ObjectRenderers
     using static Helpers.UnityPathUtility;
     public class HeadingRenderer : UIElementObjectRenderer<HeadingBlock>
     {
-        protected override void Write(UIElementRenderer renderer, HeadingBlock obj)
+        protected override void Write(UIElementRenderer renderer, HeadingBlock block)
         {
-            renderer.Push(GetClassedElement<VisualElement>($"header-{obj.Level}"));
-            renderer.WriteLeafInline(obj);
+            renderer.Push(GetClassedElement<VisualElement>($"header-{block.Level}"));
+            renderer.WriteOptimizedLeafInline(block);
             renderer.Pop();
         }
     }
