@@ -8,6 +8,7 @@ using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -57,6 +58,12 @@ namespace {0}
         {
             runLog.Clear();
             LogUpdated?.Invoke(this, default);
+            foreach (var job in Jobs)
+            {
+                job.Errored = false;
+                job.ErrorMessage = string.Empty;
+                job.ErrorStacktrace = string.Empty;
+            }
         }
 
         string ProgressTitle => $"Pipeline: {name}, {(Manifests != null && Manifests.Length > 0 ? $"Manifest: {Manifests[ManifestIndex]?.Identity?.name ?? "Error Manifest Not Found"}" : string.Empty)}";
@@ -84,8 +91,9 @@ namespace {0}
 
         public virtual async Task Execute()
         {
-            var pipelinePath = AssetDatabase.GetAssetPath(this);
-            var pipelineLink = $"[{name}](assetlink://{pipelinePath.Replace(" ", "").Replace("\t", "")})";
+            
+           var pipelinePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
+            var pipelineLink = $"[{name}](assetlink://{pipelinePath})";
             InitializeLog();
             Log(Information, $"Executing {pipelineLink}");
             using (progressBar = new ProgressBar())
@@ -99,8 +107,9 @@ namespace {0}
                 if (manifestJobs.Length > 0 && (Manifests == null || Manifests.Length == 0))
                 {
                     var message = $"Pipeline {pipelineLink} has PipelineJobs that require a Manifest but no Manifest is assigned";
-                    Log(Error, message, manifestJobs.Select(mj => $"{mj.GetType().Name}").Prepend("PipelineJobs requiring Manifests").ToArray());
+                    Log(Error, message, manifestJobs.Select(mj => $"[{name}.{mj.GetType().Name}](assetlink://{pipelinePath})").Prepend("PipelineJobs requiring Manifests").ToArray());
                     Log(Error, $"Halted execution of {pipelineLink}");
+                    message = $"Pipeline \"{name}\" has PipelineJobs that require a Manifest but no Manifest is assigned";
                     throw new InvalidOperationException(message);
                 }
 
@@ -128,7 +137,7 @@ namespace {0}
                     {
                         job.Errored = true;
                         job.ErrorMessage = e.Message;
-                        Log(Error, $"Error Invoking {job.name} Job on Pipeline {pipelineLink}", name, e.Message, e.StackTrace);
+                        Log(Error, $"Error Invoking {job.name} Job on Pipeline {pipelineLink}", pipelineLink, e.Message.Replace("\r\n", "\r\n\r\n"), e.StackTrace.Replace("\r\n", "\r\n\r\n"));
                         throw;
                     }
                 }
