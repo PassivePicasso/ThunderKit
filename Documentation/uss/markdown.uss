@@ -101,8 +101,7 @@ Label {
 }
 
 .paragraph {
-    margin-bottom: 6px;
-    margin-top: 6px;
+    margin-bottom: 8px;
     flex-wrap: wrap;
     flex-direction: row;
 }
@@ -112,7 +111,10 @@ Label {
 }
 
 .list-item {
-    margin-left: 29px;
+    margin-left: 14px;
+}
+.list-item .list-item {
+    margin-left: 14px;
 }
 
 .code {
