@@ -130,6 +130,10 @@ namespace ThunderKit.Markdown
                         splitLiterals = true;
                         inline = null;
                         break;
+                    case HtmlInline htmlInline:
+                        builder.Append(htmlInline.Tag);
+                        inline = htmlInline.NextSibling;
+                        break;
                     case LineBreakInline lineBreakInline:
                         builder.AppendLine();
                         inline = inline.NextSibling;
