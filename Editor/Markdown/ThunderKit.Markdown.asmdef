@@ -1,6 +1,8 @@
 {
     "name": "ThunderKit.Markdown",
-    "references": [],
+    "references": [
+        "ColorCode"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"

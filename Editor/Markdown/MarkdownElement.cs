@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Markdig.Renderers.Normalize;
 using System.Linq;
+using ThunderKit.Markdown.SyntaxHighlighting;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -19,6 +20,7 @@ namespace ThunderKit.Markdown
     using static Helpers.UnityPathUtility;
 
     public enum MarkdownDataType { Implicit, Source, Text }
+
     public class MarkdownElement : VisualElement
     {
         const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
@@ -30,6 +32,7 @@ namespace ThunderKit.Markdown
             renderer = new UIElementRenderer();
             var mpb = new MarkdownPipelineBuilder();
             mpb.Extensions.AddIfNotAlready<GenericAttributesExtension>();
+            mpb.UseSyntaxHighlighting();
             var pipeline = mpb.Build();
             pipeline.Setup(renderer);
         }

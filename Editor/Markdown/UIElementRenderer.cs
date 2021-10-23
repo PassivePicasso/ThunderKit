@@ -79,15 +79,20 @@ namespace ThunderKit.Markdown
         public void Pop()
         {
             var popped = stack.Pop();
-            stack.Peek().Add(popped);
+            var peeked = stack.Peek();
+            peeked.Add(popped);
         }
+        public VisualElement Peek() => stack.Peek();
+
         public void WriteBlock(VisualElement block)
         {
-            stack.Peek().Add(block);
+            var peeked = stack.Peek();
+            peeked.Add(block);
         }
         public void WriteInline(VisualElement inline)
         {
-            stack.Peek().Add(inline);
+            var peeked = stack.Peek();
+            peeked.Add(inline);
         }
         public void WriteText(ref StringSlice slice)
         {
