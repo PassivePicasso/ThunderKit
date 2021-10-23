@@ -88,7 +88,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var definitionDatums = pipeline.Manifest.Data.OfType<AssemblyDefinitions>().ToArray();
             if (!definitionDatums.Any())
             {
-                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found in Manifest {pipeline.Manifest.name}(Identity.Name: \"{pipeline.Manifest.Identity.Name}\"), skipping {nameof(StageAssemblies)}");
+                var manifestPath = AssetDatabase.GetAssetPath(pipeline.Manifest);
+                var manifestName = string.IsNullOrEmpty(pipeline.Manifest.Identity?.Name) ? pipeline.Manifest.name : pipeline.Manifest.Identity?.Name;
+                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found in Manifest [{manifestName}](assetlink://{manifestPath}), skipping {nameof(StageAssemblies)}");
                 return;
             }
 

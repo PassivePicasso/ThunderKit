@@ -84,8 +84,10 @@ namespace {0}
 
         public virtual async Task Execute()
         {
+            var pipelinePath = AssetDatabase.GetAssetPath(this);
+            var pipelineLink = $"[{name}](assetlink://{pipelinePath.Replace(" ", "").Replace("\t", "")})";
             InitializeLog();
-            Log(Information, $"Executing \"{name}\"", name);
+            Log(Information, $"Executing {pipelineLink}");
             using (progressBar = new ProgressBar())
             {
                 Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
@@ -96,9 +98,9 @@ namespace {0}
 
                 if (manifestJobs.Length > 0 && (Manifests == null || Manifests.Length == 0))
                 {
-                    var message = $"Pipeline \"{name}\" has PipelineJobs that require a Manifest but no Manifest is assigned";
-                    Log(Error, message, manifestJobs.Select(mj => mj.GetType().Name).Prepend("PipelineJobs requiring Manifests").ToArray());
-                    Log(Error, $"Halted execution of \"{name}\"", name);
+                    var message = $"Pipeline {pipelineLink} has PipelineJobs that require a Manifest but no Manifest is assigned";
+                    Log(Error, message, manifestJobs.Select(mj => $"{mj.GetType().Name}").Prepend("PipelineJobs requiring Manifests").ToArray());
+                    Log(Error, $"Halted execution of {pipelineLink}");
                     throw new InvalidOperationException(message);
                 }
 
@@ -126,14 +128,14 @@ namespace {0}
                     {
                         job.Errored = true;
                         job.ErrorMessage = e.Message;
-                        Log(Error, $"Error Invoking {job.name} Job on Pipeline {name}", name, e.Message, e.StackTrace);
+                        Log(Error, $"Error Invoking {job.name} Job on Pipeline {pipelineLink}", name, e.Message, e.StackTrace);
                         throw;
                     }
                 }
                 ManifestIndex =
                 JobIndex = -1;
             }
-            Log(Information, $"Finished executing \"{name}\"", name);
+            Log(Information, $"Finished executing {pipelineLink}");
         }
 
         PipelineJob Job() => currentJobs[JobIndex];

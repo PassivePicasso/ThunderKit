@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using ThunderKit.Core.Data;
+using ThunderKit.Markdown;
+using UnityEngine;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -24,6 +26,7 @@ namespace ThunderKit.Core.Windows
         private ListView logEntryListView;
         private ScrollView contextScrollView;
         private Button clearLogButton;
+        private bool locked = false;
 
 
         public static void ShowLog(Pipeline pipeline)
@@ -35,16 +38,28 @@ namespace ThunderKit.Core.Windows
             window.Initialize();
         }
 
+        private void OnSelectionChange()
+        {
+            if (locked) return;
+            if (Selection.objects.Length > 1) { }
+            if (Selection.activeObject is Pipeline pipeline)
+            {
+                focusedPipeline.LogUpdated -= Pipeline_LogUpdated;
+                focusedPipeline = pipeline;
+                Initialize();
+            }
+            else if (logEntryListView != null)
+            {
+                logEntryListView.itemsSource = Array.Empty<LogEntry>();
+            }
+        }
+
         public override void OnEnable()
         {
             base.OnEnable();
-            Selection.selectionChanged += OnSelectionChanged;
             Initialize();
         }
-        private void OnDisable()
-        {
-            Selection.selectionChanged -= OnSelectionChanged;
-        }
+
         private void Initialize()
         {
             pipelineName = focusedPipeline?.name ?? string.Empty;
@@ -97,12 +112,19 @@ namespace ThunderKit.Core.Windows
             }
         }
 
+        protected virtual void ShowButton(Rect r)
+        {
+            GUIStyle lockButton = "IN LockButton";
+            locked = GUI.Toggle(r, locked, new GUIContent(), lockButton);
+        }
+
+
         private void OnGUI()
         {
             var contentView = contextScrollView?.Q<VisualElement>("ContentView");
             if (contentView == null)
                 contentView = contextScrollView?.Q<VisualElement>("unity-content-container");
-            
+
             if (contentView == null) return;
             if (contextScrollView == null) return;
 
@@ -110,7 +132,6 @@ namespace ThunderKit.Core.Windows
             contentView.style.maxWidth = scrollWidth - 20;
             contextScrollView.style.maxHeight = rootVisualElement.contentRect.height / 2;
         }
-        VisualElement OnMake() => GetTemplateInstance("LogEntryView");
 
         void OnBind(VisualElement element, int entryIndex)
         {
@@ -119,43 +140,30 @@ namespace ThunderKit.Core.Windows
             var dateStamp = element.Q<Label>("date-stamp");
 
             var icon = element.Q<VisualElement>("icon-log-level");
-            var messageLabel = element.Q<Label>("message-label");
+            var messageElement = element.Q<MarkdownElement>("message-label");
 
             icon.EnableInClassList($"{LogLevel.Information}", false);
             icon.EnableInClassList($"{LogLevel.Warning}", false);
             icon.EnableInClassList($"{LogLevel.Error}", false);
             icon.EnableInClassList($"{entry.logLevel}", true);
 
-            messageLabel.text = entry.message;
+            messageElement.Data = entry.message;
+            messageElement.RefreshContent();
             timeStamp.text = entry.time.ToString(settings.TimeFormat);
             dateStamp.text = entry.time.ToString(settings.DateFormat);
             element.userData = entry.context;
         }
 
+        VisualElement OnMake() => GetTemplateInstance("LogEntryView");
+
         void Pipeline_LogUpdated(object sender, LogEntry e) => Refresh();
+
+        private void OnClearLog() => focusedPipeline.ClearLog();
+
         void Refresh()
         {
-            if (focusedPipeline.RunLog != null)
+            if (focusedPipeline?.RunLog != null)
                 logEntryListView.itemsSource = (IList)focusedPipeline.RunLog;
-        }
-        private void OnClearLog()
-        {
-            focusedPipeline.ClearLog();
-        }
-
-        void OnSelectionChanged()
-        {
-            if (Selection.objects.Length > 1) { }
-            if (Selection.activeObject is Pipeline pipeline)
-            {
-                focusedPipeline.LogUpdated -= Pipeline_LogUpdated;
-                focusedPipeline = pipeline;
-                Initialize();
-            }
-            else if(logEntryListView != null)
-            {
-                logEntryListView.itemsSource = Array.Empty<LogEntry>();
-            }
         }
     }
 }
