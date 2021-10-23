@@ -22,7 +22,6 @@ namespace ThunderKit.Core.Data
 {
     public class PipelineSettings : ThunderKitSetting
     {
-        const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
         const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
         public string TimeFormat = "HH:mm:ss:fff";
         public string DateFormat = "dd-MM-yyyy";
@@ -35,10 +34,8 @@ namespace ThunderKit.Core.Data
                 MarkdownDataType = MarkdownDataType.Text
             };
 #if UNITY_2018
-            helpInfo.AddStyleSheetPath(MarkdownStylePath);
             helpInfo.AddStyleSheetPath(DocumentationStylePath);
 #else
-            helpInfo.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(MarkdownStylePath));
             helpInfo.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(DocumentationStylePath));
 #endif
             helpInfo.RefreshContent();

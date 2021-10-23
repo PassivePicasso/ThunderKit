@@ -1,6 +1,5 @@
 using Markdig;
 using Markdig.Extensions.GenericAttributes;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -9,7 +8,6 @@ using Markdig.Renderers.Normalize;
 using System.Linq;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 #else
 using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
@@ -23,6 +21,7 @@ namespace ThunderKit.Markdown
     public enum MarkdownDataType { Implicit, Source, Text }
     public class MarkdownElement : VisualElement
     {
+        const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
         private static readonly UIElementRenderer renderer;
         private string data;
 
@@ -49,6 +48,50 @@ namespace ThunderKit.Markdown
         {
             EditorApplication.projectChanged -= RefreshContent;
             EditorApplication.projectChanged += RefreshContent;
+            AddSheet(MarkdownStylePath);
+            if (EditorGUIUtility.isProSkin)
+                AddSheet(MarkdownStylePath, "Dark");
+
+#if UNITY_2021_1_OR_NEWER
+            AddSheet(MarkdownStylePath, "2021");
+#elif UNITY_2020_1_OR_NEWER
+            AddSheet(MarkdownStylePath, "2020");
+#elif UNITY_2019_1_OR_NEWER
+            AddSheet(MarkdownStylePath, "2019");
+#elif UNITY_2018_1_OR_NEWER
+            AddSheet(MarkdownStylePath, "2018");
+#endif
+        }
+
+        public void AddSheet(string templatePath, string modifier = null)
+        {
+            string path;
+
+            if (!string.IsNullOrEmpty(modifier))
+            {
+                path = templatePath.Replace(".uss", $"_{modifier}.uss");
+                if (!File.Exists(path))
+                {
+                    path = templatePath.Replace(".uss", $"_{modifier}.uss");
+                    if (!File.Exists(path))
+                        return;
+                }
+            }
+            else path = templatePath;
+
+            MultiVersionLoadStyleSheet(path);
+        }
+
+        public void MultiVersionLoadStyleSheet(string sheetPath)
+        {
+#if UNITY_2019_1_OR_NEWER
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath);
+            if (!styleSheets.Contains(styleSheet))
+                styleSheets.Add(styleSheet);
+#elif UNITY_2018_1_OR_NEWER
+            if (!HasStyleSheetPath(sheetPath))
+                AddStyleSheetPath(sheetPath);
+#endif
         }
 
         string GetMarkdown()

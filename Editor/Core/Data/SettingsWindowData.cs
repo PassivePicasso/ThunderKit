@@ -17,7 +17,6 @@ namespace ThunderKit.Core.Data
 {
     public class SettingsWindowData : ThunderKitSetting
     {
-        const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
         const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
         [InitializeOnLoadMethod]
         static void SettingsWindowSetup()
@@ -65,10 +64,8 @@ If this is your first time using ThunderKit, [Click Here](menulink://Tools/Thund
                 MarkdownDataType = MarkdownDataType.Text
             };
 #if UNITY_2018
-            markdown.AddStyleSheetPath(MarkdownStylePath);
             markdown.AddStyleSheetPath(DocumentationStylePath);
 #else
-            markdown.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(MarkdownStylePath));
             markdown.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(DocumentationStylePath));
 #endif
             markdown.RefreshContent();

@@ -247,20 +247,3 @@
 .standard-spacer {
     height: 50px;
 }
-
-.assetlink {
-    border-bottom-color: rgb(128, 0, 0);
-    border-color: rgb(128, 0, 0);
-}
-.assetlink .inline {
-    color: rgb(192, 0, 0);
-}
-
-
-.menulink {
-    border-bottom-color: rgb(0, 128, 0);
-    border-color: rgb(0, 128, 0);
-}
-.menulink .inline {
-    color: rgb(0, 128, 0);
-}

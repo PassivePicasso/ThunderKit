@@ -149,7 +149,8 @@ namespace ThunderKit.Markdown.ObjectRenderers
                     lowerScheme = uri.Scheme.ToLower();
                 }
 
-                var linkLabel = GetClassedElement<VisualElement>("link", lowerScheme);
+                var linkLabel = GetClassedElement<Label>("link", lowerScheme, "inline");
+                linkLabel.text = link.FirstChild.ToString();
                 linkLabel.tooltip = url;
                 if (isValidUri)
                 {
@@ -160,9 +161,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
                     });
                 }
 
-                renderer.Push(linkLabel);
-                renderer.WriteChildren(link);
-                renderer.Pop();
+                renderer.WriteInline(linkLabel);
             }
 
         }
