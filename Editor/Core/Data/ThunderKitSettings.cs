@@ -24,9 +24,6 @@ namespace ThunderKit.Core.Data
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ThunderKitSetting
     {
-        const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
-        const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
-
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
@@ -77,11 +74,6 @@ $@"
                     MarkdownDataType = MarkdownDataType.Text
                 };
 
-#if UNITY_2018
-                markdown.AddStyleSheetPath(MarkdownStylePath);
-#else
-                markdown.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>(MarkdownStylePath));
-#endif
                 markdown.AddToClassList("m4");
                 markdown.RefreshContent();
                 rootElement.Add(markdown);

@@ -1,11 +1,21 @@
+MarkdownElement{
+    -unity-text-align: upper-left;
+    justify-content: flex-start;
+}
+VisualElement {
+    margin-left: 0px;
+    margin-right: 2px;
+}
+
+Label {
+    margin-left: 0px;
+    margin-right: 2px;
+}
+
 .inline {
     font-size: 14px;
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-left: 1px;
-    padding-right: 2px;
+    padding-left: 0px;
+    padding-right: 0px;
     padding-top: 0;
     padding-bottom: 0;
 }
@@ -113,7 +123,6 @@
     border-bottom-right-radius: 4px;
     padding-left: 4px;
     padding-right: 4px;
-    -unity-text-align: middle-center;
 }
 
 .quote {
@@ -126,22 +135,32 @@
 }
 
 .link {
-    justify-content: space-between;
     flex-direction: row;
     cursor: link;
     border-bottom-width: 1px;
     border-bottom-color: rgba(0, 0, 128, 0.75);
     border-color: rgba(0, 0, 128, 0.75);
-    margin-left: 1px;
-    margin-right: 2px;
-    margin-top: 0px;
-    margin-bottom: 0px;
     height: 17px;
-    padding-left: 0px;
-    padding-right: 0px;
 }
-.link .inline {
+
+.link.inline {
     color: rgba(0, 0, 128, 0.75);
+}
+
+.assetlink {
+    border-bottom-color: rgb(255, 0, 0);
+    border-color: rgb(255, 0, 0);
+}
+.assetlink.inline {
+    color: rgb(255, 0, 0);
+}
+
+.menulink {
+    border-bottom-color: rgb(0, 128, 0);
+    border-color: rgb(0, 128, 0);
+}
+.menulink.inline {
+    color: rgb(0, 128, 0);
 }
 
 .alt-text {

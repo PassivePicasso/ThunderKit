@@ -86,7 +86,7 @@ namespace ThunderKit.Markdown
         }
         public void WriteInline(VisualElement inline)
         {
-            AddInline(stack.Peek(), inline);
+            stack.Peek().Add(inline);
         }
         public void WriteText(ref StringSlice slice)
         {
@@ -149,10 +149,6 @@ namespace ThunderKit.Markdown
             // Extension renderers
             //ObjectRenderers.Add(new TableRenderer());
             ObjectRenderers.Add(new TaskListRenderer());
-        }
-        private static void AddInline(VisualElement parent, VisualElement inline)
-        {
-            parent.Add(inline);
         }
     }
 }

@@ -1,0 +1,24 @@
+
+.link {
+    border-bottom-color: rgb(128, 128, 255);
+    border-color: rgb(128, 128, 255);
+}
+.link.inline {
+    color: rgb(128, 128, 255);
+}
+
+.assetlink {
+    border-bottom-color: rgb(255, 128, 128);
+    border-color: rgb(255, 128, 128);
+}
+.assetlink.inline {
+    color: rgb(255, 128, 128);
+}
+
+.menulink {
+    border-bottom-color: rgb(128, 255, 128);
+    border-color: rgb(128, 255, 128);
+}
+.menulink.inline {
+    color: rgb(128, 255, 128);
+}
