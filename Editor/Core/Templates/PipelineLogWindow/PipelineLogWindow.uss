@@ -50,6 +50,10 @@
 	border-top-width: 0px;
 	border-right-width: 0px;
 	border-bottom-width: 0px;
+	padding-left: 14px;
+	padding-top: 14px;
+	padding-right: 14px;
+	padding-bottom: 14px;
 }
 .log-entry-context {
 	white-space: normal;
