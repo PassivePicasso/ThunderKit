@@ -9,7 +9,7 @@ VisualElement {
 
 Label {
     margin-left: 0px;
-    margin-right: 2px;
+    margin-right: 5px;
 }
 
 .inline {
@@ -18,6 +18,8 @@ Label {
     padding-right: 0px;
     padding-top: 0;
     padding-bottom: 0;
+    white-space: wrap;
+	-unity-word-wrap: true;
 }
 
 .header-1 {
@@ -105,6 +107,10 @@ Label {
     flex-wrap: wrap;
     flex-direction: row;
 }
+.paragraph * {
+    flex-wrap: wrap;
+    flex-direction: row;
+}
 
 .list {
     cursor: link;
@@ -112,6 +118,8 @@ Label {
 
 .list-item {
     margin-left: 14px;
+    flex-wrap: nowrap;
+    flex-direction: row;
 }
 .list-item .list-item {
     margin-left: 14px;
@@ -207,5 +215,4 @@ Label {
 
 .bullet {
     padding-top: 4px;
-    height: 8px;
 }

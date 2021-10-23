@@ -6,6 +6,7 @@ using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using ThunderKit.Markdown.ObjectRenderers;
 using System.Text.RegularExpressions;
+using System.Text;
 #if !NET40
 using System.Runtime.CompilerServices;
 #endif
@@ -107,6 +108,48 @@ namespace ThunderKit.Markdown
 
                     WriteInline(element);
                 }
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="block"></param>
+        /// <returns>true if constructed optimized label, otherwise false</returns>
+        public void WriteOptimizedLeafInline(LeafBlock block)
+        {
+            var inline = block.Inline.FirstChild;
+            var splitLiterals = false;
+            var builder = new StringBuilder();
+            while (inline != null)
+            {
+                switch (inline)
+                {
+                    case CodeInline codeInline:
+                    case LinkInline linkInline:
+                    case EmphasisInline emphasisInline:
+                        splitLiterals = true;
+                        inline = null;
+                        break;
+                    case LineBreakInline lineBreakInline:
+                        builder.AppendLine();
+                        inline = inline.NextSibling;
+                        break;
+                    default:
+                        builder.Append(inline);
+                        inline = inline.NextSibling;
+                        break;
+                }
+            }
+            if (!splitLiterals)
+            {
+                var element = GetTextElement<Label>(builder.ToString(), "inline");
+                element.AddToClassList("last-inline");
+                WriteInline(element);
+            }
+            else
+            {
+                stack.Peek().AddToClassList("split-literals");
+                WriteLeafInline(block);
             }
         }
 
