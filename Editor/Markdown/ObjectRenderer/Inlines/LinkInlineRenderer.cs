@@ -109,7 +109,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
 
         protected override void Write(UIElementRenderer renderer, LinkInline link)
         {
-            var url = link.Url;
+            var url = UnityWebRequest.UnEscapeURL(link.Url);
             if (link.IsImage)
             {
                 var imageElement = GetClassedElement<Image>("image");
@@ -136,23 +136,14 @@ namespace ThunderKit.Markdown.ObjectRenderers
             {
 
                 var lowerScheme = string.Empty;
-                var isValidUri = Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute);
-                if (!isValidUri)
-                {
-                    var match = LinkInlineRenderer.SchemeCheck.Match(url);
-                    if (match.Success) lowerScheme = match.Groups[1].Value.ToLower();
-                    else lowerScheme = "#";
-                }
-                else
-                {
-                    var uri = new Uri(url);
-                    lowerScheme = uri.Scheme.ToLower();
-                }
+                var match = LinkInlineRenderer.SchemeCheck.Match(url);
+                if (match.Success) lowerScheme = match.Groups[1].Value.ToLower();
+                else lowerScheme = "#";
 
                 var linkLabel = GetClassedElement<Label>("link", lowerScheme, "inline");
                 linkLabel.text = link.FirstChild.ToString();
                 linkLabel.tooltip = url;
-                if (isValidUri)
+                if (match.Success)
                 {
                     linkLabel.RegisterCallback<MouseUpEvent>(evt =>
                     {
