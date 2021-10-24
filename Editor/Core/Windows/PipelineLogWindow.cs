@@ -92,9 +92,12 @@ namespace ThunderKit.Core.Windows
             Refresh();
 
             rootVisualElement.Bind(new SerializedObject(this));
-            
+
             if (focusedPipeline)
+            {
+                focusedPipeline.LogUpdated -= Pipeline_LogUpdated;
                 focusedPipeline.LogUpdated += Pipeline_LogUpdated;
+            }
         }
 
 #if UNITY_2020_1_OR_NEWER

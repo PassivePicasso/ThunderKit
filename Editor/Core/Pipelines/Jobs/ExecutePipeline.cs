@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using ThunderKit.Core.Attributes;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -7,31 +6,29 @@ namespace ThunderKit.Core.Pipelines.Jobs
     public class ExecutePipeline : PipelineJob
     {
         public bool OverrideManifest;
-        public Pipeline executePipeline;
+        public Pipeline targetpipeline;
         public override async Task Execute(Pipeline pipeline)
         {
-            void ExecutePipeline_LogUpdated(object sender, LogEntry e) => pipeline.Log(e);
-            if (!executePipeline) return;
+            if (!targetpipeline) return;
 
             // pipeline.manifest is the correct field to use, stop checking every time.
-            // pipieline.manifest is the manifest that is assigned to the pipeline via the editor
+            // pipieline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
             try
             {
-                executePipeline.LogUpdated += ExecutePipeline_LogUpdated;
+                targetpipeline.Logger = pipeline;
                 if (OverrideManifest && pipeline.manifest)
                 {
-                    var manifest = executePipeline.manifest;
-                    executePipeline.manifest = pipeline.manifest;
-                    await executePipeline.Execute();
-                    executePipeline.manifest = manifest;
-
+                    var manifest = targetpipeline.manifest;
+                    targetpipeline.manifest = pipeline.manifest;
+                    await targetpipeline.Execute();
+                    targetpipeline.manifest = manifest;
                 }
                 else
-                    await executePipeline.Execute();
+                    await targetpipeline.Execute();
             }
             finally
             {
-                executePipeline.LogUpdated -= ExecutePipeline_LogUpdated;
+                targetpipeline.Logger = null;
             }
         }
     }
