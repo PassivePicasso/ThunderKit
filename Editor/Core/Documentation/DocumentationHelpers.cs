@@ -73,6 +73,10 @@ namespace ThunderKit.Core.Documentation
             Action<int, string, string> action =
                 (int instanceId, string pathname, string resourceFile) =>
                 {
+                    var ext = Path.GetExtension(pathname);
+                    if (string.IsNullOrEmpty(ext))
+                        pathname = $"{pathname}.md";
+
                     var title = ObjectNames.NicifyVariableName(Path.GetFileNameWithoutExtension(pathname));
                     var uxmlPathname = Path.ChangeExtension(pathname, ".uxml");
                     File.WriteAllText(pathname, $"# {title}");
