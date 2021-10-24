@@ -28,6 +28,7 @@ namespace ThunderKit.Core.Pipelines
         public IEnumerable<ManifestDatum> Datums => Manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
 
         public IEnumerable<PipelineJob> Jobs => Data.OfType<PipelineJob>();
+        public Pipeline Logger { get => logger ?? this; set => logger = value; }
 
         public string OutputRoot => "ThunderKit";
 
@@ -88,87 +89,101 @@ namespace {0}
         string ProgressTitle => $"Pipeline: {name}, {(Manifests != null && Manifests.Length > 0 ? $"Manifest: {Manifests[ManifestIndex]?.Identity?.name ?? "Error Manifest Not Found"}" : string.Empty)}";
 
         public event EventHandler<LogEntry> LogUpdated;
-
+        private Pipeline logger;
         public void Log(LogLevel logLevel, string message, params string[] context)
         {
             LogEntry entry = new LogEntry(logLevel, DateTime.Now, message, context);
-            runLog.Insert(0, entry);
-            LogUpdated?.Invoke(this, entry);
+            Logger.runLog.Insert(0, entry);
         }
 
         public void Log(LogEntry entry)
         {
-            runLog.Insert(0, entry);
-            LogUpdated?.Invoke(this, entry);
+            Logger.runLog.Insert(0, entry);
         }
 
         void InitializeLog()
         {
-            if (runLog == null)
-                runLog = new List<LogEntry>();
+            if (Logger.runLog == null)
+                Logger.runLog = new List<LogEntry>();
         }
 
         public virtual async Task Execute()
         {
-
             var pipelinePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
             var pipelineLink = $"[{name}](assetlink://{pipelinePath})";
-            InitializeLog();
-            Log(Information, $"Executing {pipelineLink}");
-            using (progressBar = new ProgressBar())
+            try
             {
-                Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
-                currentJobs = Jobs.Where(SupportsType).ToArray();
-
-                var manifestJobs = currentJobs.Where(j => j.GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any())
-                           .Union(currentJobs.OfType<FlowPipelineJob>().Where(fpj => fpj.PerManifest)).ToArray();
-
-                if (manifestJobs.Length > 0 && (Manifests == null || Manifests.Length == 0))
+                InitializeLog();
+                Log(Information, $"Executing {pipelineLink}");
+                using (progressBar = new ProgressBar())
                 {
-                    var message = $"Pipeline {pipelineLink} has PipelineJobs that require a Manifest but no Manifest is assigned";
-                    Log(Error, message, manifestJobs.Select(mj => $"[{name}.{mj.GetType().Name}](assetlink://{pipelinePath})").Prepend("PipelineJobs requiring Manifests").ToArray());
-                    Log(Error, $"Halted execution of {pipelineLink}");
-                    message = $"Pipeline \"{name}\" has PipelineJobs that require a Manifest but no Manifest is assigned";
-                    throw new InvalidOperationException(message);
-                }
+                    Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
+                    currentJobs = Jobs.Where(SupportsType).ToArray();
 
-                ManifestIndex = 0;
-                progressBar.Update(title: ProgressTitle);
-                for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
-                {
-                    progressBar.Update($"Clearing PipelineJob state: {Job().name}");
-                    Job().Errored = false;
-                    Job().ErrorMessage = string.Empty;
-                }
-                for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
-                {
-                    var job = Job();
-                    try
+                    var manifestJobs = currentJobs.Where(j => j.GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any())
+                               .Union(currentJobs.OfType<FlowPipelineJob>().Where(fpj => fpj.PerManifest)).ToArray();
+
+                    if (manifestJobs.Length > 0 && (Manifests == null || Manifests.Length == 0))
                     {
-                        if (!job.Active) continue;
-                        progressBar.Update($"Executing PipelineJob {job.name}");
-                        if (JobIsManifestProcessor())
-                            await ExecuteManifestLoop();
-                        else
-                            await ExecuteJob();
+                        var message = $"Pipeline {pipelineLink} has PipelineJobs that require a Manifest but no Manifest is assigned";
+                        Log(Error, message, manifestJobs.Select(mj => $"[{name}.{mj.GetType().Name}](assetlink://{pipelinePath})").Prepend("PipelineJobs requiring Manifests").ToArray());
+                        Log(Error, $"Halted execution of {pipelineLink}");
+                        message = $"Pipeline \"{name}\" has PipelineJobs that require a Manifest but no Manifest is assigned";
+                        throw new InvalidOperationException(message);
                     }
-                    catch (Exception e)
+
+                    ManifestIndex = 0;
+                    progressBar.Update(title: ProgressTitle);
+                    for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                     {
-                        job.Errored = true;
-                        job.ErrorMessage = e.Message;
-
-                        var stackTrace = e.StackTrace.Replace("\r\n", "\r\n\r\n");
-                        var sourceEx = new Regex("in (?<path>[^<>]+?):(?<linenumber>\\d+)");
-                        stackTrace = sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
-
-                        Log(Error, $"Error Invoking {job.name} Job on Pipeline {pipelineLink}", pipelineLink, e.Message, stackTrace);
-                        throw;
+                        progressBar.Update($"Clearing PipelineJob state: {Job().name}");
+                        Job().Errored = false;
+                        Job().ErrorMessage = string.Empty;
                     }
+                    for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
+                    {
+                        var job = Job();
+                        try
+                        {
+                            if (!job.Active) continue;
+                            progressBar.Update($"Executing PipelineJob {job.name}");
+                            if (JobIsManifestProcessor())
+                                await ExecuteManifestLoop();
+                            else
+                                await ExecuteJob();
+                        }
+                        catch (Exception e)
+                        {
+                            job.Errored = true;
+                            job.ErrorMessage = e.Message;
+
+                            var stackTrace = e.StackTrace.Replace("\r\n", "\r\n\r\n");
+                            var sourceEx = new Regex("in (?<path>[^<>]+?):(?<linenumber>\\d+)");
+                            stackTrace = sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
+
+                            Log(Error, $"Error Invoking {job.name} Job on Pipeline {pipelineLink}", pipelineLink, e.Message, stackTrace);
+                            throw;
+                        }
+                    }
+                    ManifestIndex =
+                    JobIndex = -1;
                 }
-                ManifestIndex =
-                JobIndex = -1;
+                Log(Information, $"Finished executing {pipelineLink}");
+                EditorUtility.SetDirty(this);
             }
-            Log(Information, $"Finished executing {pipelineLink}");
+            catch (Exception e)
+            {
+                var stackTrace = e.StackTrace.Replace("\r\n", "\r\n\r\n");
+                var sourceEx = new Regex("in (?<path>[^<>]+?):(?<linenumber>\\d+)");
+                stackTrace = sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
+
+                Log(Error, $"Error Invoking Pipeline {pipelineLink}", pipelineLink, e.Message, stackTrace);
+                throw;
+            }
+            finally
+            {
+                LogUpdated?.Invoke(this, default);
+            }
         }
 
         PipelineJob Job() => currentJobs[JobIndex];
@@ -207,6 +222,7 @@ namespace {0}
         }
 
         public override Type ElementType => typeof(PipelineJob);
+
     }
 
 }
