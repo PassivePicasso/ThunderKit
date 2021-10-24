@@ -6,6 +6,7 @@ using ThunderKit.Common;
 using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 using static ThunderKit.Core.ScriptableHelper;
 
 namespace ThunderKit.Core.Manifests
@@ -27,11 +28,12 @@ namespace ThunderKit.Core.Manifests
 
         public IEnumerable<Manifest> EnumerateManifests()
         {
-            if (!Identity || Identity.Dependencies == null)
-            {
-                yield return this;
-                yield break;
-            }
+            if(!Identity)
+                throw new ArgumentException($"[{name}.Identity](assetlink://{UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this))}) is missing its identity.");
+            if(Identity.Dependencies == null) 
+                throw new ArgumentException($"[{name}.Identity.Dependencies](assetlink://{UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this))}) is null");
+            if(Identity.Dependencies.Any(dep => !dep)) 
+                throw new ArgumentException($"[{name}.Identity.Dependencies](assetlink://{UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this))}) has an unassigned entry");
 
             var returned = new HashSet<Manifest>(this.Identity.Dependencies.SelectMany(x => x.EnumerateManifests()));
             returned.Add(this);
