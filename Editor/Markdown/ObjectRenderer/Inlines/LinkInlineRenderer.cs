@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Reflection;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -14,6 +15,7 @@ using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
 using UnityEditor.Experimental.UIElements;
 #endif
+using Object = UnityEngine.Object;
 
 namespace ThunderKit.Markdown.ObjectRenderers
 {
@@ -22,44 +24,68 @@ namespace ThunderKit.Markdown.ObjectRenderers
     using static Helpers.UnityPathUtility;
     public class LinkInlineRenderer : UIElementObjectRenderer<LinkInline>
     {
+        private const BindingFlags nonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
+        public struct SchemeHandler
+        {
+            public Action<string> linkHandler;
+            public Func<Label, VisualElement> preprocessor;
+        }
         internal class ImageLoadBehaviour : MonoBehaviour { }
 
         internal static Regex SchemeCheck = new Regex("^([\\w]+)://.*", RegexOptions.Singleline | RegexOptions.Compiled);
-        internal static readonly Dictionary<string, Action<string>> SchemeLinkHandlers = new Dictionary<string, Action<string>>
+        private static Func<Object, Texture2D> GetIconForObject;
+        internal static Dictionary<string, SchemeHandler> SchemeLinkHandlers;
+
+        [InitializeOnLoadMethod]
+        static void InitializeDefaultSchemes()
         {
-            { "http",  link => System.Diagnostics.Process.Start(link) },
-            { "https",  link => System.Diagnostics.Process.Start(link) },
-            { "mailto",  link => System.Diagnostics.Process.Start(link) },
+            RegisterScheme("assetlink", link =>
             {
-                "assetlink",
-                link =>
-                {
-                    var schemelessUri = link.Substring("assetlink://".Length);
-                    if(schemelessUri.Length == 0) return;
-                    var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(schemelessUri);
-                    EditorGUIUtility.PingObject(asset);
-                    Selection.activeObject = asset;
-                }
+                var schemelessUri = link.Substring("assetlink://".Length);
+                if (schemelessUri.Length == 0) return;
+                var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(schemelessUri);
+                EditorGUIUtility.PingObject(asset);
+                Selection.activeObject = asset;
             },
+            label =>
             {
-                "menulink",
-                link =>
-                {
-                    var schemelessUri = link.Substring("menulink://".Length);
-                    if(schemelessUri.Length == 0) return;
-                    EditorApplication.ExecuteMenuItem(schemelessUri);
-                }
-            },
+                var schemelessUri = label.tooltip.Substring("assetlink://".Length);
+                if (schemelessUri.Length == 0)
+                    return label;
+
+                var container = new VisualElement();
+
+                var icon = new Image();
+                icon.AddToClassList("asset-icon");
+                icon.image = AssetDatabase.GetCachedIcon(schemelessUri);
+
+                container.Add(icon);
+                container.Add(label);
+
+                return container;
+            });
+            RegisterScheme("menulink", link =>
             {
-                "#",
-                link =>{}
-            }
-        };
-        public static bool RegisterScheme(string scheme, Action<string> action)
+                var schemelessUri = link.Substring("menulink://".Length);
+                if (schemelessUri.Length == 0) return;
+                EditorApplication.ExecuteMenuItem(schemelessUri);
+            });
+            RegisterScheme("http", link => System.Diagnostics.Process.Start(link));
+            RegisterScheme("https", link => System.Diagnostics.Process.Start(link));
+            RegisterScheme("mailto", link => System.Diagnostics.Process.Start(link));
+        }
+
+        public static bool RegisterScheme(string scheme, Action<string> action, Func<Label, VisualElement> preprocessor = null)
         {
+            if (SchemeLinkHandlers == null) SchemeLinkHandlers = new Dictionary<string, SchemeHandler>();
+
             if (!SchemeLinkHandlers.ContainsKey(scheme))
             {
-                SchemeLinkHandlers[scheme] = action;
+                SchemeLinkHandlers[scheme] = new SchemeHandler
+                {
+                    linkHandler = action,
+                    preprocessor = preprocessor != null ? preprocessor : label => label
+                };
                 return true;
             }
             return false;
@@ -135,17 +161,17 @@ namespace ThunderKit.Markdown.ObjectRenderers
 
                 var linkLabel = GetClassedElement<Label>("link", lowerScheme, "inline");
                 linkLabel.text = link.FirstChild.ToString();
+                linkLabel.userData = url;
                 linkLabel.tooltip = url;
-                if (match.Success)
+                VisualElement inlineElement = linkLabel;
+                if (SchemeLinkHandlers.TryGetValue(lowerScheme, out var schemeHandlers))
                 {
-                    linkLabel.RegisterCallback<MouseUpEvent>(evt =>
-                    {
-                        if (LinkInlineRenderer.SchemeLinkHandlers.TryGetValue(lowerScheme, out var handler))
-                            handler?.Invoke(url);
-                    });
-                }
+                    inlineElement = schemeHandlers.preprocessor(linkLabel);
 
-                renderer.WriteInline(linkLabel);
+                    if (match.Success)
+                        linkLabel.RegisterCallback<MouseUpEvent>(evt => schemeHandlers.linkHandler?.Invoke(url));
+                }
+                renderer.WriteInline(inlineElement);
             }
 
         }

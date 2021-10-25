@@ -25,16 +25,18 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override Task ExecuteInternal(Pipeline pipeline)
         {
+            var errorLink = $"[{pipeline.name}.Copy](assetlink://{pipeline.pipelinePath})";
             var source = string.Empty;
             try
             {
                 source = Source.Resolve(pipeline, this);
             }
-            catch
+            catch (Exception e)
             {
-                if (SourceRequired) throw;
+                if (SourceRequired) 
+                    throw new InvalidOperationException($"{errorLink} Failed to resolve source when source is required", e);
             }
-            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"Required {nameof(Source)} is empty");
+            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"{errorLink} Required {nameof(Source)} is empty");
             if (!SourceRequired && string.IsNullOrEmpty(source))
                 return Task.CompletedTask;
             var destination = Destination.Resolve(pipeline, this);
@@ -45,9 +47,10 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 sourceIsFile = !File.GetAttributes(source).HasFlag(FileAttributes.Directory);
             }
-            catch
+            catch (Exception e)
             {
-                if (SourceRequired) throw;
+                if (SourceRequired)
+                    throw new InvalidOperationException($"{errorLink} Failed to check source attributes when source is required", e);
             }
 
             if (Recursive)
@@ -55,7 +58,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (!Directory.Exists(source))
                     return Task.CompletedTask;
                 else if (sourceIsFile)
-                    throw new ArgumentException($"Source Error: Expected Directory, Recieved File {source}");
+                    throw new ArgumentException($"{errorLink} Expected Directory for recursive copy, Recieved file path: {source}");
             }
             
             if (EstablishDestination)
@@ -67,6 +70,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             }
             else
                 FileUtil.ReplaceFile(source, destination);
+
             return Task.CompletedTask;
         }
     }

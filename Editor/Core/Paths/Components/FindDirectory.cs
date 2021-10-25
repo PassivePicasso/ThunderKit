@@ -1,7 +1,10 @@
+using System;
 using System.IO;
 using System.Linq;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Pipelines;
+using UnityEditor;
+using UnityEngine.Networking;
 
 namespace ThunderKit.Core.Paths.Components
 {
@@ -13,10 +16,20 @@ namespace ThunderKit.Core.Paths.Components
         public string path;
         protected override string GetPathInternal(PathReference output, Pipeline pipeline)
         {
-            string resolvedPath = PathReference.ResolvePath(path, pipeline, this);
+            try
+            {
+                string resolvedPath = PathReference.ResolvePath(path, pipeline, this);
 
-            string first = Directory.GetDirectories(resolvedPath, searchPattern, searchOption).First();
-            return first;
+                string first = Directory.GetDirectories(resolvedPath, searchPattern, searchOption).First();
+                return first;
+            }
+            catch (Exception e)
+            {
+                var pathReferencePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(output));
+                var pathReferenceLink = $"[{output.name}.{name}:](assetlink://{pathReferencePath})";
+
+                throw new InvalidOperationException($"{pathReferenceLink} No directories found", e);
+            }
         }
     }
 }

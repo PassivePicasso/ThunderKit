@@ -23,8 +23,7 @@ namespace ThunderKit.Core.Data
     public class PipelineSettings : ThunderKitSetting
     {
         const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
-        public string TimeFormat = "HH:mm:ss:fff";
-        public string DateFormat = "dd-MM-yyyy";
+        public string DateTimeFormat = "HH:mm:ss:fff";
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
@@ -41,8 +40,7 @@ namespace ThunderKit.Core.Data
             helpInfo.RefreshContent();
             helpInfo.AddToClassList("m4");
             rootElement.Add(helpInfo);
-            rootElement.Add(CreateStandardField(nameof(TimeFormat)));
-            rootElement.Add(CreateStandardField(nameof(DateFormat)));
+            rootElement.Add(CreateStandardField(nameof(DateTimeFormat)));
             rootElement.Bind(new SerializedObject(this));
         }
     }

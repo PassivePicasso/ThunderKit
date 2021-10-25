@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:ScrollView name="context-scroll-view" />
+    </ui:VisualElement>
+</ui:UXML>

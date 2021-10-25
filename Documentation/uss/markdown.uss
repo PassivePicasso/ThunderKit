@@ -18,6 +18,8 @@ Label {
     padding-right: 0px;
     padding-top: 0;
     padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
     white-space: wrap;
 	-unity-word-wrap: true;
 }
@@ -103,7 +105,8 @@ Label {
 }
 
 .paragraph {
-    margin-bottom: 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
     flex-wrap: wrap;
     flex-direction: row;
 }
@@ -150,27 +153,28 @@ Label {
     border-bottom-width: 1px;
     border-bottom-color: rgba(0, 0, 128, 0.75);
     border-color: rgba(0, 0, 128, 0.75);
-    height: 17px;
 }
 
 .link.inline {
     color: rgba(0, 0, 128, 0.75);
+    overflow: visible;
+    height: 16px;
 }
 
 .assetlink {
-    border-bottom-color: rgb(255, 0, 0);
-    border-color: rgb(255, 0, 0);
+    border-bottom-color: rgb(128, 0, 192);
+    border-color: rgb(128, 0, 192);
 }
 .assetlink.inline {
-    color: rgb(255, 0, 0);
+    color: rgb(128, 0, 192);
 }
 
 .menulink {
-    border-bottom-color: rgb(0, 128, 0);
-    border-color: rgb(0, 128, 0);
+    border-bottom-color: rgb(32, 128, 32);
+    border-color: rgb(32, 128, 32);
 }
 .menulink.inline {
-    color: rgb(0, 128, 0);
+    color: rgb(32, 128, 32);
 }
 
 .alt-text {
@@ -215,4 +219,10 @@ Label {
 
 .bullet {
     padding-top: 4px;
+}
+
+.asset-icon {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
 }
