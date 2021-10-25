@@ -60,7 +60,7 @@ MonoBehaviour:
   - {fileID: 7527256621150178074}
   - {fileID: 2078919326612615040}
   - {fileID: 114803605343111210}
-  manifest: {fileID: 11400000, guid: 70145d0d6a179378371736500f6e8aae, type: 2}
+  manifest: {fileID: 0}
   runLog: []
 --- !u!114 &114803605343111210
 MonoBehaviour:
