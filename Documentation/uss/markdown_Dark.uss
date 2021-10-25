@@ -8,11 +8,11 @@
 }
 
 .assetlink {
-    border-bottom-color: rgb(255, 128, 128);
-    border-color: rgb(255, 128, 128);
+    border-bottom-color: rgb(168, 128, 192);
+    border-color: rgb(168, 128, 192);
 }
 .assetlink.inline {
-    color: rgb(255, 128, 128);
+    color: rgb(168, 128, 192);
 }
 
 .menulink {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ThunderKit.Common;
@@ -90,9 +91,12 @@ namespace {0}
 
         public event EventHandler<LogEntry> LogUpdated;
         private Pipeline logger;
+        public string pipelinePath { get; private set; }
+        public string pipelineLink { get; private set; }
+
         public void Log(LogLevel logLevel, string message, params string[] context)
         {
-            LogEntry entry = new LogEntry(logLevel, DateTime.Now, message, context);
+            LogEntry entry = new LogEntry(logLevel, DateTime.Now, $"{pipelineLink} {message}", context);
             Logger.runLog.Insert(0, entry);
         }
 
@@ -109,12 +113,12 @@ namespace {0}
 
         public virtual async Task Execute()
         {
-            var pipelinePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
-            var pipelineLink = $"[{name}](assetlink://{pipelinePath})";
+            pipelinePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
+            pipelineLink = $"[{name}:](assetlink://{pipelinePath})";
             try
             {
                 InitializeLog();
-                Log(Information, $"Executing {pipelineLink}");
+                Log(Information, $"Executing ");
                 using (progressBar = new ProgressBar())
                 {
                     Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
@@ -125,15 +129,16 @@ namespace {0}
 
                     if (manifestJobs.Length > 0 && (Manifests == null || Manifests.Length == 0))
                     {
-                        var message = $"Pipeline {pipelineLink} has PipelineJobs that require a Manifest but no Manifest is assigned";
+                        var message = $"Pipeline has PipelineJobs that require a Manifest but no Manifest is assigned";
                         Log(Error, message, manifestJobs.Select(mj => $"[{name}.{mj.GetType().Name}](assetlink://{pipelinePath})").Prepend("PipelineJobs requiring Manifests").ToArray());
-                        Log(Error, $"Halted execution of {pipelineLink}");
-                        message = $"Pipeline \"{name}\" has PipelineJobs that require a Manifest but no Manifest is assigned";
+                        Log(Error, $"Halted execution");
                         throw new InvalidOperationException(message);
                     }
 
                     ManifestIndex = 0;
                     progressBar.Update(title: ProgressTitle);
+                    var jobLinks = currentJobs.Select(j => j.name).ToArray();
+                    Log(Information, $"Clearing PipelineJob states", jobLinks);
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                     {
                         progressBar.Update($"Clearing PipelineJob state: {Job().name}");
@@ -142,11 +147,12 @@ namespace {0}
                     }
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                     {
-                        var job = Job();
                         try
                         {
-                            if (!job.Active) continue;
-                            progressBar.Update($"Executing PipelineJob {job.name}");
+                            if (!Job().Active) continue;
+
+                            Log(Information, $"Execute  \"{Job().name}\" at index {JobIndex}");
+                            progressBar.Update($"Executing PipelineJob {Job().name}");
                             if (JobIsManifestProcessor())
                                 await ExecuteManifestLoop();
                             else
@@ -154,30 +160,33 @@ namespace {0}
                         }
                         catch (Exception e)
                         {
-                            job.Errored = true;
-                            job.ErrorMessage = e.Message;
-
-                            var stackTrace = e.StackTrace.Replace("\r\n", "\r\n\r\n");
-                            var sourceEx = new Regex("in (?<path>[^<>]+?):(?<linenumber>\\d+)");
-                            stackTrace = sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
-
-                            Log(Error, $"Error Invoking {job.name} Job on Pipeline {pipelineLink}", pipelineLink, e.Message, stackTrace);
+                            Job().Errored = true;
+                            Job().ErrorMessage = e.Message;
                             throw;
                         }
                     }
+
                     ManifestIndex =
                     JobIndex = -1;
                 }
-                Log(Information, $"Finished executing {pipelineLink}");
+                Log(Information, $"Finished execution");
                 EditorUtility.SetDirty(this);
             }
             catch (Exception e)
             {
+                List<string> context = new List<string>();
+                var exception = e;
+                while (exception != null)
+                {
+                    context.Add(exception.Message);
+                    exception = exception.InnerException;
+                }
                 var stackTrace = e.StackTrace.Replace("\r\n", "\r\n\r\n");
                 var sourceEx = new Regex("in (?<path>[^<>]+?):(?<linenumber>\\d+)");
-                stackTrace = sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
-
-                Log(Error, $"Error Invoking Pipeline {pipelineLink}", pipelineLink, e.Message, stackTrace);
+                stackTrace = $"{e.Message}\r\n\r\n" + sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
+                context.Add(stackTrace);
+                context.Insert(0, pipelineLink);
+                Log(Error, $"Error invoking \"{Job().name}\" at index {JobIndex}", context.ToArray());
                 throw;
             }
             finally

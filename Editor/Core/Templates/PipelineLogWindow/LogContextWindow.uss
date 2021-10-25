@@ -1,0 +1,57 @@
+﻿MarkdownElement {
+	flex-grow: 1;
+	border-color: rgba(0,0,0,0.25);
+	background-color: rgba(0,0,0,.25);
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	padding-left: 4px;
+	padding-right: 14px;
+	margin-left: 6px;
+	margin-right: 6px;
+	margin-top: 4px;
+}
+.toolbar-button {
+	background-image: none;
+	background-color: rgba(255,255,255,0);
+	border-color: rgba(0,0,0,0.5);
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 1px;
+	border-bottom-width: 0px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+.toolbar-button:hover {
+	background-color: rgba(255,255,255,0.25);
+
+}
+.unity-toolbar {
+	height: 21px;
+	flex-direction: row;
+	white-space: nowrap;
+	background-color: rgba(255,255,255,0.15);
+	border-bottom-width: 1px;
+	border-color: rgba(0,0,0,0.5);
+	font-size: 12px;
+	margin-top: -3px;
+}
+.grow {
+	flex-grow: 1;
+}
+#log-entry:selected.error {
+	background-color: rgba(255,0,0,0.05);
+}
+#log-entry:selected.warning {
+	background-color: rgba(255,255,0,0.05);
+}
+#log-entry:selected.information {
+	background-color: rgba(255,255,255,0.25);
+}

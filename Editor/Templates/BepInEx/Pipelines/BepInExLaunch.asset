@@ -15,6 +15,7 @@ MonoBehaviour:
   Data:
   - {fileID: 114525731783530820}
   manifest: {fileID: 0}
+  runLog: []
 --- !u!114 &114525731783530820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -29,6 +30,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
+  ErrorStacktrace: 
   Active: 1
   workingDirectory: <BepInExPackDestination>
   executable: <GameExecutable>

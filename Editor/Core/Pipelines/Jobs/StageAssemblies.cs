@@ -84,22 +84,27 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var resolvedArtifactPath = PathReference.ResolvePath(assemblyArtifactPath, pipeline, this);
             Directory.CreateDirectory(resolvedArtifactPath);
 
+            var manifestPath = AssetDatabase.GetAssetPath(pipeline.Manifest);
+            var manifestName = string.IsNullOrEmpty(pipeline.Manifest.Identity?.Name) ? pipeline.Manifest.name : pipeline.Manifest.Identity?.Name;
+            var manifestLink = $"[{manifestName}](assetlink://{manifestPath})";
+
             var assemblies = CompilationPipeline.GetAssemblies();
             var definitionDatums = pipeline.Manifest.Data.OfType<AssemblyDefinitions>().ToArray();
             if (!definitionDatums.Any())
             {
-                var manifestPath = AssetDatabase.GetAssetPath(pipeline.Manifest);
-                var manifestName = string.IsNullOrEmpty(pipeline.Manifest.Identity?.Name) ? pipeline.Manifest.name : pipeline.Manifest.Identity?.Name;
-                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found in Manifest [{manifestName}](assetlink://{manifestPath}), skipping {nameof(StageAssemblies)}");
+                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found in {manifestLink}, skipping {nameof(StageAssemblies)}");
                 return;
             }
 
-            for (var (i, datum) = (0, definitionDatums[0]); i < definitionDatums.Length; i++, datum = definitionDatums[i])
+            for (int i = 0; i < definitionDatums.Length; i++)
             {
+                var datum = definitionDatums[i];
+                if (!datum) continue;
                 var hasUnassignedDefinition = datum.definitions.Any(def => !(bool)(def));
                 if (hasUnassignedDefinition)
-                    pipeline.Log(LogLevel.Warning, $"Manifest \"{pipeline.Manifest.Identity.Name}\" has AssemblyDefinitions with unassigned definition at index {i}");
+                    pipeline.Log(LogLevel.Warning, $"{manifestLink} has AssemblyDefinitions with unassigned definition at index {i}");
             }
+
             var deserializedAsmDefs = definitionDatums.SelectMany(datum =>
                 datum.definitions.Where(asmDefAsset => asmDefAsset)
                                 .Select(asmDefAsset =>

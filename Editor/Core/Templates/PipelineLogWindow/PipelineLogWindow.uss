@@ -13,9 +13,6 @@
 #time-stamp {
 	align-self: flex-end;
 }
-#date-stamp {
-	align-self: flex-end;
-}
 #icon-container{
 	border-right-width: 1px;
 	border-color: rgba(0,0,0, 0.35);
@@ -27,10 +24,10 @@
 	justify-content: center;
 }
 #icon-log-level {
-	width: 32px;
-	height: 32px;
-	min-width: 32px;
-	min-height: 32px;
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
 }
 #logentry-list-view {
 	flex-grow: 1;
@@ -108,17 +105,25 @@
 .grow {
 	flex-grow: 1;
 }
-.Error {
-	background-image: resource("console.erroricon");
+.error-icon {
+	background-image: resource("console.erroricon.sml");
 }
-.Warning {
-	background-image: resource("console.warnicon");
+.warning-icon {
+	background-image: resource("console.warnicon.sml");
 }
-.Information {
-	background-image: resource("console.infoicon");
+.information-icon {
+	background-image: resource("console.infoicon.sml");
 }
+#log-entry:hover {
+	background-color: rgba(0,0,0,0.04);
 
-.selected {
-	background-color: rgba(0,0,0,0.5);
-	color: #fff;
+}
+#log-entry:selected.error {
+	background-color: rgba(255,0,0,0.05);
+}
+#log-entry:selected.warning {
+	background-color: rgba(255,255,0,0.05);
+}
+#log-entry:selected.information {
+	background-color: rgba(255,255,255,0.25);
 }

@@ -24,7 +24,6 @@ namespace ThunderKit.Core.Windows
         private PipelineSettings settings;
         public string pipelineName;
         private ListView logEntryListView;
-        private ScrollView contextScrollView;
         private Button clearLogButton;
         private bool locked = false;
 
@@ -70,15 +69,12 @@ namespace ThunderKit.Core.Windows
                 logEntryListView.bindItem = OnBind;
                 logEntryListView.makeItem = OnMake;
 #if UNITY_2020_1_OR_NEWER
-                logEntryListView.onSelectionChange += LogEntryListView_onSelectionChanged;
+                logEntryListView.onItemsChosen += LogEntryListView_onItemsChosen;
 #else
-                logEntryListView.onSelectionChanged += LogEntryListView_onSelectionChanged;
+                logEntryListView.onItemChosen += LogEntryListView_onItemsChosen;
 #endif
             }
-            if (contextScrollView == null)
-            {
-                contextScrollView = rootVisualElement.Q<ScrollView>("context-scroll-view");
-            }
+
             if (clearLogButton == null)
             {
                 clearLogButton = rootVisualElement.Q<Button>("clear-log-button");
@@ -101,21 +97,10 @@ namespace ThunderKit.Core.Windows
         }
 
 #if UNITY_2020_1_OR_NEWER
-        private void LogEntryListView_onSelectionChanged(IEnumerable<object> obj)
+        private void LogEntryListView_onItemsChosen(IEnumerable<object> obj) => LogContextWindow.ShowContext(obj.OfType<LogEntry>().First());
 #else
-        private void LogEntryListView_onSelectionChanged(List<object> obj)
+        private void LogEntryListView_onItemsChosen(object obj) => LogContextWindow.ShowContext((LogEntry)obj);
 #endif
-        {
-            contextScrollView.Clear();
-            var entry = obj.OfType<LogEntry>().First();
-            foreach (var context in entry.context)
-            {
-                var child = new MarkdownElement { Data = context, MarkdownDataType = MarkdownDataType.Text };
-                //child.AddToClassList("log-entry-context");
-                child.RefreshContent();
-                contextScrollView.Add(child);
-            }
-        }
 
         protected virtual void ShowButton(Rect r)
         {
@@ -123,43 +108,35 @@ namespace ThunderKit.Core.Windows
             locked = GUI.Toggle(r, locked, new GUIContent(), lockButton);
         }
 
-
-        private void OnGUI()
-        {
-            var contentView = contextScrollView?.Q<VisualElement>("ContentView");
-            if (contentView == null)
-                contentView = contextScrollView?.Q<VisualElement>("unity-content-container");
-
-            if (contentView == null) return;
-            if (contextScrollView == null) return;
-
-            var scrollWidth = contextScrollView.contentRect.width;
-            contentView.style.maxWidth = scrollWidth - 20;
-            contextScrollView.style.maxHeight = rootVisualElement.contentRect.height / 2;
-        }
-
         void OnBind(VisualElement element, int entryIndex)
         {
             var entry = (LogEntry)logEntryListView.itemsSource[entryIndex];
             var timeStamp = element.Q<Label>("time-stamp");
-            var dateStamp = element.Q<Label>("date-stamp");
 
             var icon = element.Q<VisualElement>("icon-log-level");
             var messageElement = element.Q<MarkdownElement>("message-label");
 
-            icon.EnableInClassList($"{LogLevel.Information}", false);
-            icon.EnableInClassList($"{LogLevel.Warning}", false);
-            icon.EnableInClassList($"{LogLevel.Error}", false);
-            icon.EnableInClassList($"{entry.logLevel}", true);
+            foreach (var value in Enum.GetValues(typeof(LogLevel)).OfType<LogLevel>())
+            {
+                icon.EnableInClassList(IconClass(value), false);
+                element.EnableInClassList(LevelClass(value), false);
+            }
+            var entryLevelIconClass = IconClass(entry.logLevel);
+            var entryLevelClass = LevelClass(entry.logLevel);
+
+            icon.EnableInClassList(entryLevelIconClass, true);
+            element.EnableInClassList(entryLevelClass, true);
 
             messageElement.Data = entry.message;
             messageElement.RefreshContent();
-            timeStamp.text = entry.time.ToString(settings.TimeFormat);
-            dateStamp.text = entry.time.ToString(settings.DateFormat);
+            timeStamp.text = entry.time.ToString(settings.DateTimeFormat);
             element.userData = entry.context;
         }
+        string LevelClass(LogLevel value) => $"{value}".ToLower();
 
-        VisualElement OnMake() => GetTemplateInstance("LogEntryView");
+        string IconClass(LogLevel logLevel) => $"{LevelClass(logLevel)}-icon";
+
+        VisualElement OnMake() => GetTemplateInstance("LogEntryView").Children().First();
 
         void Pipeline_LogUpdated(object sender, LogEntry e) => Refresh();
 

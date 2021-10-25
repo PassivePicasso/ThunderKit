@@ -24,33 +24,11 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 url = "mailto:" + url;
             }
 
-            var isValidUri = Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute);
-            if (!isValidUri)
-            {
-                var match = LinkInlineRenderer.SchemeCheck.Match(url);
-                if (match.Success) lowerScheme = match.Groups[1].Value.ToLower();
-                else lowerScheme = "#";
-            }
-            else
-            {
-                var uri = new Uri(url);
-                lowerScheme = uri.Scheme.ToLower();
-            }
 
-            var linkLabel = GetClassedElement<VisualElement>("link", lowerScheme);
-            if (isValidUri)
-            {
-                linkLabel.RegisterCallback<MouseUpEvent>(evt =>
-                {
-                    if (LinkInlineRenderer.SchemeLinkHandlers.TryGetValue(lowerScheme, out var handler))
-                        handler?.Invoke(url);
-                });
-            }
+            var linkLabel = GetTextElement<Label>(url, "link", lowerScheme);
             linkLabel.tooltip = url;
 
-            renderer.Push(linkLabel);
-            renderer.WriteText(url);
-            renderer.Pop();
+            renderer.WriteInline(linkLabel);
         }
     }
 }
