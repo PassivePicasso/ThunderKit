@@ -26,6 +26,9 @@ namespace ThunderKit.Core.Paths
             var pathReferences = pathReferencePaths.Select(x => AssetDatabase.LoadAssetAtPath<PathReference>(x)).ToArray();
             var pathReferenceDictionary = pathReferences.ToDictionary(pr => pr.name);
 
+            var callerPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(caller));
+            var callerLink = $"[{pipeline.name}.{caller.name}](assetlink://{callerPath})";
+
             Match match = referenceIdentifier.Match(result);
             while (match != null && !string.IsNullOrEmpty(match.Value))
             {
@@ -33,7 +36,7 @@ namespace ThunderKit.Core.Paths
                 if (!pathReferenceDictionary.ContainsKey(matchValue))
                 {
                     EditorGUIUtility.PingObject(caller);
-                    throw new KeyNotFoundException($"No PathReference named \"{matchValue}\" found in AssetDatabase");
+                    throw new KeyNotFoundException($"{callerLink} No PathReference named \"{matchValue}\" found in AssetDatabase");
                 }
 
                 var pathReference = pathReferenceDictionary[matchValue];
@@ -41,7 +44,7 @@ namespace ThunderKit.Core.Paths
                 var pathReferenceLink = $"[{pathReference.name}](assetlink://{pathReferencePath})";
 
                 var replacement = pathReference.GetPath(pipeline);
-                if (replacement == null) throw new NullReferenceException($"{pathReferenceLink} returned null. Error may have been encountered");
+                if (replacement == null) throw new NullReferenceException($"{callerLink} {pathReferenceLink} returned null. Error may have been encountered");
                 result = result.Replace(match.Value, replacement);
                 match = match.NextMatch();
             }

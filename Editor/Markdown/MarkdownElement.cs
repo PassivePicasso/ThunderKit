@@ -30,6 +30,7 @@ namespace ThunderKit.Markdown
             renderer = new UIElementRenderer();
             var mpb = new MarkdownPipelineBuilder();
             mpb.Extensions.AddIfNotAlready<GenericAttributesExtension>();
+            mpb.DisableHtml();
             var pipeline = mpb.Build();
             pipeline.Setup(renderer);
         }

@@ -30,7 +30,7 @@ namespace ThunderKit.Core.Inspectors
             rect.width -= offset;
             return rect;
         }
-        public override void OnInspectorGUI()
+        public override async void OnInspectorGUI()
         {
             var pipeline = target as Pipeline;
             if (!pipeline)
@@ -42,7 +42,7 @@ namespace ThunderKit.Core.Inspectors
             using(var scope = new GUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Execute"))
-                    _ = pipeline.Execute();
+                    await pipeline.Execute();
                 if(GUILayout.Button("Show Log"))
                 {
                     PipelineLogWindow.ShowLog(pipeline);

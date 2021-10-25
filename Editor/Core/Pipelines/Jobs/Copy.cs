@@ -25,7 +25,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override Task ExecuteInternal(Pipeline pipeline)
         {
-            var errorLink = $"[{pipeline.name}.Copy](assetlink://{pipeline.pipelinePath})";
+            var errorLink = $"[{pipeline.name}.Copy](assetlink://{pipeline.pipelinePath}) From {Source} To {Destination}";
             var source = string.Empty;
             try
             {
@@ -50,7 +50,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             catch (Exception e)
             {
                 if (SourceRequired)
-                    throw new InvalidOperationException($"{errorLink} Failed to check source attributes when source is required", e);
+                    throw new InvalidOperationException($"{errorLink} Failed to check {nameof(Source)} attributes when {nameof(Source)} is required", e);
             }
 
             if (Recursive)
