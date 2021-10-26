@@ -159,7 +159,6 @@ namespace {0}
             finally
             {
                 EditorUtility.SetDirty(Logger);
-                AssetDatabase.SaveAssets();
                 Logger = null;
             }
         }
