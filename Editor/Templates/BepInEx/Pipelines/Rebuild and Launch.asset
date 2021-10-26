@@ -17,6 +17,7 @@ MonoBehaviour:
   - {fileID: 114559832304535298}
   - {fileID: 114679819151059082}
   manifest: {fileID: 0}
+  Logger: {fileID: 0}
   runLog: []
 --- !u!114 &114316524637315588
 MonoBehaviour:

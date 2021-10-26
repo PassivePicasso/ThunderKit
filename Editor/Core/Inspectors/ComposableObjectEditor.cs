@@ -44,13 +44,14 @@ namespace ThunderKit.Core.Inspectors
         }
         public override void OnInspectorGUI()
         {
+            //Evaluate Editor Skin settings
             if (!EditorSkin)
                 if (EditorGUIUtility.isProSkin)
                     EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>("Packages/com.passivepicasso.thunderkit/Editor/Core/DarkSkin.guiskin");
                 else
                     EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>("Packages/com.passivepicasso.thunderkit/Editor/Core/LightSkin.guiskin");
 
-
+            //Ensure SerializedObject is up to date with latest data
             serializedObject.Update();
             DrawPropertiesExcluding(serializedObject, "m_Script", "Data");
             GUILayout.Space(4);
@@ -68,7 +69,7 @@ namespace ThunderKit.Core.Inspectors
 
                 try
                 {
-                    var title = ObjectNames.NicifyVariableName(stepType.Name);
+                    var title = $"{i} - {ObjectNames.NicifyVariableName(stepType.Name)}";
                     var foldoutRect = GUILayoutUtility.GetRect(currentViewWidth - 50, singleLineHeight + 3);
 
                     var boxSkin = EditorSkin.box;
@@ -82,7 +83,7 @@ namespace ThunderKit.Core.Inspectors
                     Rect clearErrorRect = new Rect(foldoutRect.x + 1 + foldoutRect.width - standardSize * 2, foldoutRect.y + 1, standardSize, standardSize);
 
                     var popupIcon = IconContent("_Popup");
-                    var stopIcon = IconContent("console.warnicon.sml");
+                    var stopIcon = IconContent("console.erroricon.sml");
 
                     switch (Event.current.type)
                     {

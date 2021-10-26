@@ -36,7 +36,7 @@ namespace ThunderKit.Core.Paths
                 if (!pathReferenceDictionary.ContainsKey(matchValue))
                 {
                     EditorGUIUtility.PingObject(caller);
-                    throw new KeyNotFoundException($"{callerLink} No PathReference named \"{matchValue}\" found in AssetDatabase");
+                    throw new InvalidOperationException($"{callerLink} No PathReference named \"{matchValue}\" found in AssetDatabase");
                 }
 
                 var pathReference = pathReferenceDictionary[matchValue];

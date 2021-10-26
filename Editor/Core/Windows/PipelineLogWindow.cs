@@ -7,6 +7,7 @@ using System;
 using ThunderKit.Core.Data;
 using ThunderKit.Markdown;
 using UnityEngine;
+using UnityEditor.Callbacks;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -20,31 +21,42 @@ namespace ThunderKit.Core.Windows
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class PipelineLogWindow : TemplatedWindow
     {
-        public Pipeline focusedPipeline;
-        private PipelineSettings settings;
+        private PipelineLogSettings settings;
         public string pipelineName;
         private ListView logEntryListView;
-        private Button clearLogButton;
         private bool locked = false;
+        private PipelineLog pipelineLog;
 
 
-        public static void ShowLog(Pipeline pipeline)
+        public static void ShowLog(PipelineLog pipelineLog)
         {
             var consoleType = typeof(EditorWindow).Assembly.GetTypes().First(t => "ConsoleWindow".Equals(t.Name));
-            var window = GetWindow<PipelineLogWindow>($"{pipeline.name} Log", consoleType);
-            window.focusedPipeline = pipeline;
-            window.settings = ThunderKitSetting.GetOrCreateSettings<PipelineSettings>();
+            var window = GetWindow<PipelineLogWindow>($"{pipelineLog.pipeline.name}", consoleType);
+            window.pipelineLog = pipelineLog;
+            window.settings = ThunderKitSetting.GetOrCreateSettings<PipelineLogSettings>();
             window.Initialize();
+        }
+
+
+        [OnOpenAsset]
+        public static bool OnOpen(int instanceId, int line)
+        {
+            var asset = EditorUtility.InstanceIDToObject(instanceId);
+            if (asset is PipelineLog log)
+            {
+                ShowLog(log);
+                return true;
+            }
+            return false;
         }
 
         private void OnSelectionChange()
         {
             if (locked) return;
             if (Selection.objects.Length > 1) { }
-            if (Selection.activeObject is Pipeline pipeline)
+            if (Selection.activeObject is PipelineLog pipelineLog)
             {
-                focusedPipeline.LogUpdated -= Pipeline_LogUpdated;
-                focusedPipeline = pipeline;
+                this.pipelineLog = pipelineLog;
                 Initialize();
             }
             else if (logEntryListView != null)
@@ -61,46 +73,46 @@ namespace ThunderKit.Core.Windows
 
         private void Initialize()
         {
-            pipelineName = focusedPipeline?.name ?? string.Empty;
-            titleContent = new UnityEngine.GUIContent($"Log: {pipelineName}");
+            if (!pipelineLog) return;
+            pipelineName = pipelineLog.pipeline?.name ?? string.Empty;
+            var content = EditorGUIUtility.IconContent("d_UnityEditor.ConsoleWindow");
+            content.text = $"Pipeline Log";
+            titleContent = content;
             if (logEntryListView == null)
             {
                 logEntryListView = rootVisualElement.Q<ListView>("logentry-list-view");
                 logEntryListView.bindItem = OnBind;
                 logEntryListView.makeItem = OnMake;
 #if UNITY_2020_1_OR_NEWER
-                logEntryListView.onItemsChosen += LogEntryListView_onItemsChosen;
+                logEntryListView.onSelectionChange += UpdateContextWindowSelect;
+                logEntryListView.onItemsChosen += UpdateContextWindow;
 #else
-                logEntryListView.onItemChosen += LogEntryListView_onItemsChosen;
+                logEntryListView.onSelectionChanged += UpdateContextWindowSelect;
+                logEntryListView.onItemChosen += UpdateContextWindow;
 #endif
             }
 
-            if (clearLogButton == null)
-            {
-                clearLogButton = rootVisualElement.Q<Button>("clear-log-button");
-#if UNITY_2020_1_OR_NEWER
-                clearLogButton.clicked += OnClearLog;
-#else
-                clearLogButton.clickable.clicked += OnClearLog;
-#endif
-            }
-
-            Refresh();
+            logEntryListView.itemsSource = (IList)pipelineLog.Entries;
 
             rootVisualElement.Bind(new SerializedObject(this));
-
-            if (focusedPipeline)
-            {
-                focusedPipeline.LogUpdated -= Pipeline_LogUpdated;
-                focusedPipeline.LogUpdated += Pipeline_LogUpdated;
-            }
         }
 
 #if UNITY_2020_1_OR_NEWER
-        private void LogEntryListView_onItemsChosen(IEnumerable<object> obj) => LogContextWindow.ShowContext(obj.OfType<LogEntry>().First());
+        private void UpdateContextWindow(IEnumerable<object> obj) => LogContextWindow.ShowContext(obj.OfType<LogEntry>().First());
 #else
-        private void LogEntryListView_onItemsChosen(object obj) => LogContextWindow.ShowContext((LogEntry)obj);
+        private void UpdateContextWindow(object obj) => LogContextWindow.ShowContext((LogEntry)obj);
 #endif
+        private void UpdateContextWindowSelect(
+#if UNITY_2020_1_OR_NEWER
+            IEnumerable<object> obj
+#else
+            List<object> obj
+#endif
+            )
+        {
+            if (LogContextWindow.IsOpen)
+                LogContextWindow.ShowContext(obj.OfType<LogEntry>().First());
+        }
 
         protected virtual void ShowButton(Rect r)
         {
@@ -137,15 +149,5 @@ namespace ThunderKit.Core.Windows
         string IconClass(LogLevel logLevel) => $"{LevelClass(logLevel)}-icon";
 
         VisualElement OnMake() => GetTemplateInstance("LogEntryView").Children().First();
-
-        void Pipeline_LogUpdated(object sender, LogEntry e) => Refresh();
-
-        private void OnClearLog() => focusedPipeline.ClearLog();
-
-        void Refresh()
-        {
-            if (focusedPipeline?.RunLog != null)
-                logEntryListView.itemsSource = (IList)focusedPipeline.RunLog;
-        }
     }
 }

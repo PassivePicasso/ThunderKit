@@ -11,6 +11,7 @@ using ThunderKit.Core.Pipelines;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace ThunderKit.Pipelines.Jobs
 {
@@ -35,7 +36,8 @@ namespace ThunderKit.Pipelines.Jobs
             var hasValidBundles = assetBundleDefs.Any(abd => abd.assetBundles.Any(ab => !string.IsNullOrEmpty(ab.assetBundleName) && ab.assets.Any()));
             if (!hasValidBundles)
             {
-                pipeline.Log(LogLevel.Warning, $"No valid AssetBundleDefinitions defined, skipping {nameof(StageAssetBundles)} PipelineJob");
+                var scriptPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
+                pipeline.Log(LogLevel.Warning, $"No valid AssetBundleDefinitions defined, skipping [{nameof(StageAssetBundles)}](assetlink://{scriptPath}) PipelineJob", string.Empty);
                 return Task.CompletedTask;
             }
             var bundleArtifactPath = BundleArtifactPath.Resolve(pipeline, this);
@@ -107,7 +109,7 @@ namespace ThunderKit.Pipelines.Jobs
                     logBuilder.AppendLine();
                 }
             }
-            pipeline.Log(LogLevel.Information, logBuilder.ToString(), name);
+            pipeline.Log(LogLevel.Information, logBuilder.ToString(), null);
 
             if (!simulate)
             {

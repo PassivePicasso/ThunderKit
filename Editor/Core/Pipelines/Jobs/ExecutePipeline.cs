@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using UnityEditor;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -13,9 +14,11 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             // pipeline.manifest is the correct field to use, stop checking every time.
             // pipieline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
+            PipelineLog priorLogger = null;
             try
             {
-                targetpipeline.Logger = pipeline;
+                priorLogger = targetpipeline.Logger;
+                targetpipeline.Logger = pipeline.Logger;
                 if (OverrideManifest && pipeline.manifest)
                 {
                     var manifest = targetpipeline.manifest;
@@ -28,7 +31,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             }
             finally
             {
-                targetpipeline.Logger = null;
+                targetpipeline.Logger = priorLogger;
             }
         }
     }

@@ -25,7 +25,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override Task ExecuteInternal(Pipeline pipeline)
         {
-            var errorLink = $"[{pipeline.name}.Copy](assetlink://{pipeline.pipelinePath}) From {Source} To {Destination}";
+            var errorLink = $"[{pipeline.name}[{pipeline.JobIndex}].Copy](assetlink://{pipeline.pipelinePath}) From {Source} To {Destination}";
             var source = string.Empty;
             try
             {

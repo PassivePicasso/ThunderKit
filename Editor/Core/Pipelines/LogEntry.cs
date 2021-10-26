@@ -49,15 +49,17 @@ namespace ThunderKit.Core.Pipelines
         public LogLevel logLevel;
         [SerializeField] private SDateTime internalTime;
         public string message;
+        public string exception;
         public string[] context;
         public DateTime time => internalTime;
 
-        public LogEntry(LogLevel logLevel, DateTime time, string message, string[] context)
+        public LogEntry(LogLevel logLevel, DateTime time, string message, string exception, string[] context)
         {
             this.logLevel = logLevel;
             this.internalTime = time;
             this.message = message;
             this.context = context;
+            this.exception = exception;
         }
 
         public override bool Equals(object obj)
@@ -66,6 +68,7 @@ namespace ThunderKit.Core.Pipelines
                    logLevel == other.logLevel &&
                    internalTime == other.internalTime &&
                    message == other.message &&
+                   exception == other.exception &&
                    EqualityComparer<object[]>.Default.Equals(context, other.context);
         }
 
@@ -75,26 +78,28 @@ namespace ThunderKit.Core.Pipelines
             hashCode = hashCode * -1521134295 + logLevel.GetHashCode();
             hashCode = hashCode * -1521134295 + internalTime.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(message);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(exception);
             hashCode = hashCode * -1521134295 + EqualityComparer<object[]>.Default.GetHashCode(context);
             return hashCode;
         }
 
-        public void Deconstruct(out LogLevel logLevel, out DateTime time, out string message, out object[] context)
+        public void Deconstruct(out LogLevel logLevel, out DateTime time, out string message, out string exception, out object[] context)
         {
             logLevel = this.logLevel;
             time = this.internalTime;
             message = this.message;
+            exception = this.exception;
             context = this.context;
         }
 
-        public static implicit operator (LogLevel logLevel, DateTime time, string message, string[] context)(LogEntry value)
+        public static implicit operator (LogLevel logLevel, DateTime time, string message, string exception, string[] context)(LogEntry value)
         {
-            return (value.logLevel, value.internalTime, value.message, value.context);
+            return (value.logLevel, value.internalTime, value.message, value.exception, value.context);
         }
 
-        public static implicit operator LogEntry((LogLevel logLevel, DateTime time, string message, string[] context) value)
+        public static implicit operator LogEntry((LogLevel logLevel, DateTime time, string message, string exception, string[] context) value)
         {
-            return new LogEntry(value.logLevel, value.time, value.message, value.context);
+            return new LogEntry(value.logLevel, value.time, value.message, value.exception, value.context);
         }
     }
 }
