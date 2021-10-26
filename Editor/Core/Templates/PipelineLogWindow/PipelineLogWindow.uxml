@@ -2,6 +2,6 @@
     <ui:VisualElement style="flex-grow: 1;">
         <ui:VisualElement class="unity-toolbar">
         </ui:VisualElement>
-        <ui:ListView focusable="true" name="logentry-list-view" item-height="24" style="flex-grow: 1;" />
+        <ui:ListView focusable="true" name="logentry-list-view" item-height="40" style="flex-grow: 1;" />
     </ui:VisualElement>
 </ui:UXML>
