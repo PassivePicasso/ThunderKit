@@ -1,9 +1,10 @@
-﻿#date-time {
+﻿#time-container {
 	border-left-width: 1px;
+	border-right-width: 1px;
 	border-color: rgba(0,0,0,0.35);
 	padding-left: 4px;
 	padding-right: 6px;
-	width: 120px;
+	width: 100px;
 	justify-content: center;
 }
 #log-entry {
@@ -11,21 +12,19 @@
 	border-color: rgba(0,0,0,0.35);
 }
 #time-stamp {
-	align-self: flex-end;
+	align-self: center;
 }
 #icon-container{
-	border-right-width: 1px;
 	border-color: rgba(0,0,0, 0.35);
-	padding-left: 2px;
-	padding-right: 2px;
 	justify-content: center;
 }
 #message-container{
 	justify-content: center;
+	padding-right: 110px;
 }
 #icon-log-level {
-	width: 16px;
-	height: 16px;
+	width: 32px;
+	height: 32px;
 	min-width: 16px;
 	min-height: 16px;
 }
@@ -38,19 +37,6 @@
 	border-right-width: 0px;
 	border-bottom-width: 0px;
 
-}
-#context-scroll-view {
-	flex-grow: 1;
-	border-color: rgba(0,0,0,0.25);
-	background-color: rgba(0,0,0,0.2);
-	border-left-width: 0px;
-	border-top-width: 0px;
-	border-right-width: 0px;
-	border-bottom-width: 0px;
-	padding-left: 14px;
-	padding-top: 14px;
-	padding-right: 14px;
-	padding-bottom: 14px;
 }
 .log-entry-context {
 	white-space: normal;
@@ -106,13 +92,13 @@
 	flex-grow: 1;
 }
 .error-icon {
-	background-image: resource("console.erroricon.sml");
+	background-image: resource("console.erroricon");
 }
 .warning-icon {
-	background-image: resource("console.warnicon.sml");
+	background-image: resource("console.warnicon");
 }
 .information-icon {
-	background-image: resource("console.infoicon.sml");
+	background-image: resource("console.infoicon");
 }
 #log-entry:hover {
 	background-color: rgba(0,0,0,0.04);
