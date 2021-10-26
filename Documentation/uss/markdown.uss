@@ -20,7 +20,7 @@ Label {
     padding-bottom: 0;
     margin-top: 0;
     margin-bottom: 0;
-    white-space: wrap;
+    white-space: normal;
 	-unity-word-wrap: true;
 }
 
@@ -150,29 +150,17 @@ Label {
 .link {
     flex-direction: row;
     cursor: link;
-    border-bottom-width: 1px;
-    border-bottom-color: rgba(0, 0, 128, 0.75);
-    border-color: rgba(0, 0, 128, 0.75);
 }
 
 .link.inline {
-    color: rgba(0, 0, 128, 0.75);
+    color: rgba(0, 0, 168, 0.75);
     overflow: visible;
-    height: 16px;
 }
 
-.assetlink {
-    border-bottom-color: rgb(128, 0, 192);
-    border-color: rgb(128, 0, 192);
-}
 .assetlink.inline {
     color: rgb(128, 0, 192);
 }
 
-.menulink {
-    border-bottom-color: rgb(32, 128, 32);
-    border-color: rgb(32, 128, 32);
-}
 .menulink.inline {
     color: rgb(32, 128, 32);
 }
