@@ -1,5 +1,6 @@
 using UnityEditor;
 using ThunderKit.Markdown;
+using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -14,6 +15,7 @@ namespace ThunderKit.Core.Data
     {
         const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
         public string DateTimeFormat = "HH:mm:ss:fff";
+        public string CreatedDateFormat = "MMM/dd HH:mm:ss";
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
@@ -31,6 +33,7 @@ namespace ThunderKit.Core.Data
             helpInfo.AddToClassList("m4");
             rootElement.Add(helpInfo);
             rootElement.Add(CreateStandardField(nameof(DateTimeFormat)));
+            rootElement.Add(CreateStandardField(nameof(CreatedDateFormat)));
             rootElement.Bind(new SerializedObject(this));
         }
     }

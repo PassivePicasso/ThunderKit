@@ -1,6 +1,7 @@
 ﻿using ThunderKit.Core.Pipelines;
 using UnityEditor;
 using ThunderKit.Markdown;
+using System.Linq;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -13,21 +14,25 @@ namespace ThunderKit.Core.Windows
 {
     public class LogContextWindow : TemplatedWindow
     {
-        public LogEntry logEntry;
-        private ScrollView contextScrollView, stacktraceScrollView;
-        private Button contextButton, stacktraceButton;
-        private VisualElement panelSection;
+        internal static LogContextWindow instance;
 
+        public LogEntry logEntry;
+        private VisualElement tabSection;
+        private VisualElement contentSection;
         public static bool IsOpen { get; private set; }
         public static LogContextWindow ShowContext(LogEntry logEntry)
         {
-            var content = EditorGUIUtility.IconContent("d_UnityEditor.InspectorWindow");
-            content.text = "Log Inspector";
-            var window = GetWindow<LogContextWindow>($"Log Inspector");
-            window.titleContent = content;
-            window.logEntry = logEntry;
-            window.Initialize();
-            return window;
+            if (!IsOpen || instance == null)
+            {
+                var content = EditorGUIUtility.IconContent("d_UnityEditor.InspectorWindow");
+                content.text = "Log Inspector";
+                instance = GetWindow<LogContextWindow>($"Log Inspector");
+                instance.titleContent = content;
+            }
+            instance.logEntry = logEntry;
+            instance.Initialize();
+
+            return instance;
         }
 
         public override void OnEnable()
@@ -41,82 +46,61 @@ namespace ThunderKit.Core.Windows
 
         private void Initialize()
         {
-            if (panelSection == null)
-            {
-                panelSection = rootVisualElement.Q<VisualElement>("panel-section");
-            }
-            if (contextScrollView == null)
-            {
-                contextScrollView = rootVisualElement.Q<ScrollView>("context-scroll-view");
-                contextScrollView.StretchToParentSize();
-#if UNITY_2019_1_OR_NEWER
-#elif UNITY_2018_1_OR_NEWER
-                contextScrollView.stretchContentWidth = true;
-#endif
-            }
-            if (stacktraceScrollView == null)
-            {
-                stacktraceScrollView = rootVisualElement.Q<ScrollView>("stacktrace-scroll-view");
-                stacktraceScrollView.StretchToParentSize();
-#if UNITY_2019_1_OR_NEWER
-#elif UNITY_2018_1_OR_NEWER
-                stacktraceScrollView.stretchContentWidth = true;
-#endif
-            }
+            if (tabSection == null) tabSection = rootVisualElement.Q<VisualElement>("tab-section");
+            if (contentSection == null) contentSection = rootVisualElement.Q<VisualElement>("content-section");
 
-            if (contextButton == null)
-            {
-                contextButton = rootVisualElement.Q<Button>("context-button");
-                contextButton.clickable.clicked += ContextClicked;
-            }
-            if (stacktraceButton == null)
-            {
-                stacktraceButton = rootVisualElement.Q<Button>("stacktrace-button");
-                stacktraceButton.clickable.clicked += StacktraceClicked;
-            }
-            contextScrollView.Clear();
+            contentSection.Clear();
+            tabSection.Clear();
 
-            stacktraceButton.visible = logEntry.exception != null;
-            if (stacktraceButton.visible)
-            {
-                var child = new MarkdownElement { Data = logEntry.exception, MarkdownDataType = MarkdownDataType.Text };
-                child.RefreshContent();
-                stacktraceScrollView.Add(child);
-                stacktraceScrollView.visible = false;
-            }
-            contextButton.visible = logEntry.context != null;
-            if (contextButton.visible)
-            {
-                foreach (var context in logEntry.context)
+            if (logEntry.context != null)
+                foreach (var data in logEntry.context)
                 {
-                    var child = new MarkdownElement { Data = context, MarkdownDataType = MarkdownDataType.Text };
-                    //child.AddToClassList("log-entry-context");
-                    child.RefreshContent();
-                    contextScrollView.Add(child);
+                    var firstLine = data.Substring(0, data.IndexOf("\r\n"));
+                    var remainingData = data.Substring(firstLine.Length);
+
+                    var tabButton = new Toggle();
+                    tabButton.value = false;
+                    tabButton.text = firstLine;
+                    tabButton.AddToClassList("tab-button");
+                    tabButton.name = $"tab-{firstLine.ToLowerInvariant()}";
+
+                    tabSection.Add(tabButton);
+
+                    var markdownContent = new MarkdownElement { Data = remainingData, MarkdownDataType = MarkdownDataType.Text };
+                    var stacktraceScrollView = new ScrollView { markdownContent };
+                    stacktraceScrollView.name = $"content-{firstLine.ToLowerInvariant()}";
+                    stacktraceScrollView.StretchToParentSize();
+#if UNITY_2019_1_OR_NEWER
+#elif UNITY_2018_1_OR_NEWER
+                    stacktraceScrollView.stretchContentWidth = true;
+#endif
+                    contentSection.Add(stacktraceScrollView);
+
+                    tabButton.OnValueChanged(evt =>
+                    {
+                        foreach (var child in contentSection.Children())
+                            child.visible = false;
+
+                        foreach (var child in tabSection.Children().OfType<Toggle>())
+                            if (child != tabButton)
+                                child.value = false;
+
+                        stacktraceScrollView.visible = tabButton.value;
+                        if (stacktraceScrollView.visible && markdownContent.childCount == 0)
+                            markdownContent.RefreshContent();
+                    });
                 }
-                contextScrollView.visible = true;
-            }
+
+            var firstDetail = tabSection.Children().OfType<Toggle>().FirstOrDefault();
+            if (firstDetail != null) firstDetail.value = true;
+            if (tabSection.childCount == 1)
+                firstDetail.SetEnabled(false);
             rootVisualElement.Bind(new SerializedObject(this));
         }
 
-        private void StacktraceClicked()
+        internal void Clear()
         {
-            stacktraceScrollView.visible = true;
-            contextScrollView.visible = false;
-            UpdateClassState();
-        }
-
-        private void ContextClicked()
-        {
-            stacktraceScrollView.visible = false;
-            contextScrollView.visible = true;
-            UpdateClassState();
-        }
-
-        private void UpdateClassState()
-        {
-            stacktraceButton.EnableInClassList("active", stacktraceScrollView.visible);
-            contextButton.EnableInClassList("active", contextScrollView.visible);
+            logEntry = default;
         }
     }
 }

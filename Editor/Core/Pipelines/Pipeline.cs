@@ -7,6 +7,7 @@ using ThunderKit.Common;
 using ThunderKit.Common.Logging;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Windows;
 using ThunderKit.Markdown.ObjectRenderers;
 using UnityEditor;
 using UnityEditorInternal;
@@ -87,7 +88,7 @@ namespace {0}
                     isRoot = true;
                 }
 
-                Log(Information, $"Executing ", string.Empty);
+                Log(Information, $"Executing ");
                 using (progressBar = new ProgressBar())
                 {
                     Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
@@ -99,15 +100,16 @@ namespace {0}
                     if (manifestJobs.Length > 0 && (Manifests == null || Manifests.Length == 0))
                     {
                         var message = $"Pipeline has PipelineJobs that require a Manifest but no Manifest is assigned";
-                        Log(Error, message, string.Empty, manifestJobs.Select(mj => $"[{name}.{mj.GetType().Name}](assetlink://{pipelinePath})")
-                                                        .Prepend("PipelineJobs requiring Manifests").ToArray());
-                        Log(Error, $"Halted execution", string.Empty);
+                        var context = manifestJobs.Select(mj => $"[{name}.{mj.GetType().Name}](assetlink://{pipelinePath})")
+                                                        .Prepend("").Prepend("Requirements").ToArray();
+                        Log(Error, message, context);
+                        Log(Error, $"Halted execution");
                         throw new InvalidOperationException(message);
                     }
 
                     ManifestIndex = 0;
                     progressBar.Update(title: ProgressTitle);
-                    Log(Information, $"Clearing PipelineJob error states", string.Empty);
+                    Log(Information, $"Clearing PipelineJob error states");
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                     {
                         progressBar.Update($"Clearing PipelineJob state: {Job().name}");
@@ -116,57 +118,56 @@ namespace {0}
                     }
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                     {
-                        try
-                        {
-                            if (!Job().Active) continue;
+                        if (!Job().Active) continue;
 
-                            Log(Information, $"Execute  \"{Job().name}\" at index {JobIndex}", string.Empty);
-                            progressBar.Update($"Executing PipelineJob {Job().name}");
-                            if (JobIsManifestProcessor())
-                                await ExecuteManifestLoop();
-                            else
-                                await ExecuteJob();
-                        }
-                        catch (Exception e)
-                        {
-                            Job().Errored = true;
-                            Job().ErrorMessage = e.Message;
-                            throw;
-                        }
+                        Log(Information, $"Execute  \"{Job().name}\" at index {JobIndex}");
+                        progressBar.Update($"Executing PipelineJob {Job().name}");
+                        if (JobIsManifestProcessor())
+                            await ExecuteManifestLoop();
+                        else
+                            await ExecuteJob();
                     }
                     ManifestIndex =
                     JobIndex = -1;
                 }
-                Log(Information, $"Finished execution", string.Empty);
+                Log(Information, $"Finished execution");
             }
             catch (Exception e)
             {
-                List<string> context = new List<string>();
-                var exception = e;
-                while (exception != null)
-                {
-                    context.Add(exception.Message);
-                    exception = exception.InnerException;
-                }
-                var stackTrace = e.StackTrace.Replace("\r\n", "\r\n\r\n");
-                var sourceEx = new Regex("in (?<path>[^<>]+?):(?<linenumber>\\d+)");
-                stackTrace = $"{e.Message}\r\n\r\n" + sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
-                context.Insert(0, pipelineLink);
-                Log(Error, $"Error invoking \"{Job().name}\" at index {JobIndex}", stackTrace, context.ToArray());
                 if (!isRoot)
-                    throw;
+                    throw new InvalidOperationException($"{pipelineLink} Halted Execution", e);
+                else
+                {
+                    var exceptionList = new List<Exception>();
+                    var ex = e;
+                    while (ex != null)
+                    {
+                        exceptionList.Add(ex);
+                        ex = ex.InnerException;
+                    }
+                    exceptionList.Reverse();
+                    foreach (var exception in exceptionList)
+                    {
+                        var stackTrace = exception.StackTrace.Replace("\r\n", "\r\n\r\n");
+                        var sourceEx = new Regex("in (?<path>[^<>]+?):(?<linenumber>\\d+)");
+                        stackTrace = $"Stacktrace\r\n{exception.Message}\r\n\r\n" + sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
+                        Log(Error, $"{exception.Message}", stackTrace);
+                    }
+                    PipelineLogWindow.ShowLog(Logger);
+                }
             }
             finally
             {
-                EditorUtility.SetDirty(Logger);
                 Logger = null;
+                if (!isRoot)
+                    AssetDatabase.SaveAssets();
             }
         }
 
-        public void Log(LogLevel logLevel, string message, string exception, params string[] context)
+        public void Log(LogLevel logLevel, string message, params string[] context)
         {
             var contextualMessage = $"{pipelineLink} {message}";
-            LogEntry entry = new LogEntry(logLevel, DateTime.Now, contextualMessage, exception, context);
+            LogEntry entry = new LogEntry(logLevel, DateTime.Now, contextualMessage, context);
             Logger.Log(entry);
         }
 

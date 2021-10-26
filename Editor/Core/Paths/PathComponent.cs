@@ -1,7 +1,5 @@
 ﻿using System;
 using ThunderKit.Core.Pipelines;
-using UnityEditor;
-using UnityEngine.Networking;
 
 namespace ThunderKit.Core.Paths
 {

@@ -46,18 +46,13 @@ namespace ThunderKit.Core.Inspectors
                     await pipeline.Execute();
                 if(GUILayout.Button("Show Log"))
                 {
-                    var pipelineLogs = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
+                    var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
                                                     .Select(AssetDatabase.GUIDToAssetPath)
                                                     .Where(ap => ap.Contains(pipeline.name))
                                                     .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
-                                                    .ToArray();
-                    var menu = new GenericMenu();
-                    for(int i = 0; i < pipelineLogs.Length; i++)
-                    {
-                        var log = pipelineLogs[i];
-                        menu.AddItem(new GUIContent($"{log.name}"), false, () => PipelineLogWindow.ShowLog(log));
-                    }
-                    menu.ShowAsContext();
+                                                    .OrderByDescending(log => log.CreatedDate)
+                                                    .First();
+                    PipelineLogWindow.ShowLog(pipelineLog);
                 }
             }
             GUILayout.Space(4);

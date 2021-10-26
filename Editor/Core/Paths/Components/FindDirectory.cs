@@ -27,8 +27,7 @@ namespace ThunderKit.Core.Paths.Components
             {
                 var pathReferencePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(output));
                 var pathReferenceLink = $"[{output.name}.{name}:](assetlink://{pathReferencePath})";
-
-                throw new InvalidOperationException($"{pathReferenceLink} No directories found", e);
+                throw new InvalidOperationException($"{pipeline.pipelineLink} {pathReferenceLink} {e.Message}");
             }
         }
     }
