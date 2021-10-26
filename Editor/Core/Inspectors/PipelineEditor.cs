@@ -1,4 +1,5 @@
-﻿using ThunderKit.Core.Pipelines;
+﻿using System.Linq;
+using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;
@@ -45,7 +46,18 @@ namespace ThunderKit.Core.Inspectors
                     await pipeline.Execute();
                 if(GUILayout.Button("Show Log"))
                 {
-                    PipelineLogWindow.ShowLog(pipeline);
+                    var pipelineLogs = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
+                                                    .Select(AssetDatabase.GUIDToAssetPath)
+                                                    .Where(ap => ap.Contains(pipeline.name))
+                                                    .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
+                                                    .ToArray();
+                    var menu = new GenericMenu();
+                    for(int i = 0; i < pipelineLogs.Length; i++)
+                    {
+                        var log = pipelineLogs[i];
+                        menu.AddItem(new GUIContent($"{log.name}"), false, () => PipelineLogWindow.ShowLog(log));
+                    }
+                    menu.ShowAsContext();
                 }
             }
             GUILayout.Space(4);

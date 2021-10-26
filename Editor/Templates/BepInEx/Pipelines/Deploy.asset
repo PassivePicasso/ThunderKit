@@ -61,7 +61,6 @@ MonoBehaviour:
   - {fileID: 2078919326612615040}
   - {fileID: 114803605343111210}
   manifest: {fileID: 0}
-  runLog: []
 --- !u!114 &114803605343111210
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -152,7 +151,7 @@ MonoBehaviour:
   Recursive: 1
   SourceRequired: 1
   EstablishDestination: 1
-  Source: <BepInExPackSfource>
+  Source: <BepInExPackSource>
   Destination: <BepInExPackDestination>
 --- !u!114 &7527256621150178074
 MonoBehaviour:

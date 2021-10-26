@@ -1,15 +1,5 @@
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
-using UnityEditor.Compilation;
-using System.IO;
-using System;
-using System.Linq;
-using System.Reflection;
-using ThunderKit.Common;
-using ThunderKit.Core.Config;
 using ThunderKit.Markdown;
-using ThunderKit.Core.Windows;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -20,7 +10,7 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.Data
 {
-    public class PipelineSettings : ThunderKitSetting
+    public class PipelineLogSettings : ThunderKitSetting
     {
         const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
         public string DateTimeFormat = "HH:mm:ss:fff";

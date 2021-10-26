@@ -18,6 +18,7 @@ MonoBehaviour:
   - {fileID: 114537630434205182}
   - {fileID: 114366308522735304}
   manifest: {fileID: 11400000, guid: 70145d0d6a179378371736500f6e8aae, type: 2}
+  Logger: {fileID: 0}
   runLog: []
 --- !u!114 &114366308522735304
 MonoBehaviour:

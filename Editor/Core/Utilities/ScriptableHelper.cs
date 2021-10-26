@@ -51,6 +51,14 @@ namespace ThunderKit.Core
             }
         }
 
+        public static void AssignIcon(UnityEngine.Object g, Texture2D tex)
+        {
+            Type editorGUIUtilityType = typeof(EditorGUIUtility);
+            System.Reflection.BindingFlags bindingFlags = System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+            object[] args = new object[] { g, tex };
+            editorGUIUtilityType.InvokeMember("SetIconForObject", bindingFlags, null, null, args);
+        }
+
         public static void SelectNewAsset(Type t, Func<string> overrideName = null)
         {
             if (!typeof(ScriptableObject).IsAssignableFrom(t)) return;
