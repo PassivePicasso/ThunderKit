@@ -61,18 +61,18 @@ namespace ThunderKit.Core.Paths
             string result = string.Empty;
             foreach (var pc in Data.OfType<PathComponent>())
             {
-                try
-                {
+                //try
+                //{
                     result = Combine(result, pc.GetPath(this, pipeline));
-                }
-                catch (Exception e)
-                {
-                    var pathReferencePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
-                    var pathReferenceLink = $"[{name}](assetlink://{pathReferencePath})";
+                //}
+                //catch (Exception e)
+                //{
+                //    var pathReferencePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
+                //    var pathReferenceLink = $"[{name}](assetlink://{pathReferencePath})";
 
-                    var exception = new InvalidOperationException($"{pathReferenceLink} resolution failed", e);
-                    throw exception;
-                }
+                //    var exception = new InvalidOperationException($"{pipeline.pipelineLink} {pathReferenceLink} resolution failed", e);
+                //    throw exception;
+                //}
             }
             return result;
         }

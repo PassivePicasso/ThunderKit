@@ -94,7 +94,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             if (!definitionDatums.Any())
             {
                 var scriptPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
-                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found in {manifestLink}, skipping [{nameof(StageAssemblies)}](assetlink://{scriptPath})", string.Empty);
+                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found in {manifestLink}, skipping [{nameof(StageAssemblies)}](assetlink://{scriptPath})");
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (!datum) continue;
                 var hasUnassignedDefinition = datum.definitions.Any(def => !(bool)(def));
                 if (hasUnassignedDefinition)
-                    pipeline.Log(LogLevel.Warning, $"{manifestLink} has AssemblyDefinitions with unassigned definition at index {i}", string.Empty);
+                    pipeline.Log(LogLevel.Warning, $"{manifestLink} has AssemblyDefinitions with unassigned definition at index {i}");
             }
 
             var deserializedAsmDefs = definitionDatums.SelectMany(datum =>
@@ -136,7 +136,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 builder.buildTargetGroup = buildTargetGroup;
 
                 var index = pipeline.ManifestIndex;
-                void OnBuildStarted(string path) => pipeline.Log(LogLevel.Information, $"Building : {path}", string.Empty);
+                void OnBuildStarted(string path) => pipeline.Log(LogLevel.Information, $"Building : {path}");
                 void OnBuildFinished(string path, CompilerMessage[] messages)
                 {
                     BuildStatus.Remove(builder);
@@ -155,20 +155,20 @@ namespace ThunderKit.Core.Pipelines.Jobs
                             }
                         }
                     else
-                        pipeline.Log(LogLevel.Information, $"Build Completed: {path}", string.Empty);
+                        pipeline.Log(LogLevel.Information, $"Build Completed: {path}");
 
-                    pipeline.Log(LogLevel.Information, $"Resolving Paths: {path}", string.Empty);
+                    pipeline.Log(LogLevel.Information, $"Resolving Paths: {path}");
                     var prevIndex = pipeline.ManifestIndex;
                     pipeline.ManifestIndex = index;
                     var resolvedPaths = definition.datum.StagingPaths
                         .Select(p => PathReference.ResolvePath(p, pipeline, this)).ToArray();
                     pipeline.ManifestIndex = prevIndex;
-                    pipeline.Log(LogLevel.Information, $"Resolved Paths: {path}", string.Empty);
+                    pipeline.Log(LogLevel.Information, $"Resolved Paths: {path}");
 
 
                     foreach (var outputPath in resolvedPaths)
                     {
-                        pipeline.Log(LogLevel.Information, $"Copying {assemblyName} to {outputPath}", string.Empty);
+                        pipeline.Log(LogLevel.Information, $"Copying {assemblyName} to {outputPath}");
                         Directory.CreateDirectory(outputPath);
                         if (stageDebugDatabases)
                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
@@ -201,7 +201,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 var fileName = Path.GetFileName(source);
                 string destination = Combine(outputPath, fileName);
                 File.Copy(source, destination, true);
-                pipeline.Log(LogLevel.Information, $"Copied {source} to {destination}", string.Empty);
+                pipeline.Log(LogLevel.Information, $"Copied {source} to {destination}");
 
             }
         }

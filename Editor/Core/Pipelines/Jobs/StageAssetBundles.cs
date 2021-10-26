@@ -37,7 +37,7 @@ namespace ThunderKit.Pipelines.Jobs
             if (!hasValidBundles)
             {
                 var scriptPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
-                pipeline.Log(LogLevel.Warning, $"No valid AssetBundleDefinitions defined, skipping [{nameof(StageAssetBundles)}](assetlink://{scriptPath}) PipelineJob", string.Empty);
+                pipeline.Log(LogLevel.Warning, $"No valid AssetBundleDefinitions defined, skipping [{nameof(StageAssetBundles)}](assetlink://{scriptPath}) PipelineJob");
                 return Task.CompletedTask;
             }
             var bundleArtifactPath = BundleArtifactPath.Resolve(pipeline, this);

@@ -22,15 +22,7 @@ namespace ThunderKit.Core.Pipelines
         public void Log(LogEntry entry)
         {
             entries.Insert(0, entry);
-        }
-
-        void Awake()
-        {
-            if (entries == null)
-            {
-                entries = new List<LogEntry>();
-                creationDate = new SDateTime(DateTime.Now.Ticks);
-            }
+            EditorUtility.SetDirty(this);
         }
 
         public static PipelineLog CreateLog(Pipeline pipeline)
@@ -41,6 +33,8 @@ namespace ThunderKit.Core.Pipelines
             var fileName = Path.GetFileNameWithoutExtension(logPath);
             log.name = fileName;
             log.pipeline = pipeline;
+            log.creationDate = new SDateTime(DateTime.Now.Ticks);
+            log.entries = new List<LogEntry>();
             var content = EditorGUIUtility.IconContent("d_UnityEditor.ConsoleWindow");
             ScriptableHelper.AssignIcon(log, content.image as Texture2D);
 

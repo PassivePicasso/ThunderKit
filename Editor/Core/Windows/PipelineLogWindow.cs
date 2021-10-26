@@ -21,19 +21,25 @@ namespace ThunderKit.Core.Windows
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class PipelineLogWindow : TemplatedWindow
     {
+        private static PipelineLogWindow window;
+        public static bool IsOpen { get; private set; }
+
         private PipelineLogSettings settings;
-        public string pipelineName;
         private ListView logEntryListView;
         private bool locked = false;
         private PipelineLog pipelineLog;
-
+        private Label nameLabel;
+        private Label createdDateLabel;
 
         public static void ShowLog(PipelineLog pipelineLog)
         {
-            var consoleType = typeof(EditorWindow).Assembly.GetTypes().First(t => "ConsoleWindow".Equals(t.Name));
-            var window = GetWindow<PipelineLogWindow>($"{pipelineLog.pipeline.name}", consoleType);
-            window.pipelineLog = pipelineLog;
+            if (window == null || !IsOpen)
+            {
+                var consoleType = typeof(EditorWindow).Assembly.GetTypes().First(t => "ConsoleWindow".Equals(t.Name));
+                window = GetWindow<PipelineLogWindow>($"{pipelineLog.pipeline.name}", consoleType);
+            }
             window.settings = ThunderKitSetting.GetOrCreateSettings<PipelineLogSettings>();
+            window.pipelineLog = pipelineLog;
             window.Initialize();
         }
 
@@ -56,12 +62,14 @@ namespace ThunderKit.Core.Windows
             if (Selection.objects.Length > 1) { }
             if (Selection.activeObject is PipelineLog pipelineLog)
             {
-                this.pipelineLog = pipelineLog;
-                Initialize();
+                ShowLog(pipelineLog);
             }
-            else if (logEntryListView != null)
+            else 
             {
-                logEntryListView.itemsSource = Array.Empty<LogEntry>();
+                if (logEntryListView != null)
+                    logEntryListView.itemsSource = Array.Empty<LogEntry>();
+                LogContextWindow.instance?.Clear();
+                this.pipelineLog = null;
             }
         }
 
@@ -69,12 +77,14 @@ namespace ThunderKit.Core.Windows
         {
             base.OnEnable();
             Initialize();
+            IsOpen = true;
         }
+        private void OnDestroy() => IsOpen = false;
+        private void OnDisable() => IsOpen = false;
 
         private void Initialize()
         {
             if (!pipelineLog) return;
-            pipelineName = pipelineLog.pipeline?.name ?? string.Empty;
             var content = EditorGUIUtility.IconContent("d_UnityEditor.ConsoleWindow");
             content.text = $"Pipeline Log";
             titleContent = content;
@@ -91,8 +101,13 @@ namespace ThunderKit.Core.Windows
                 logEntryListView.onItemChosen += UpdateContextWindow;
 #endif
             }
-
+            nameLabel = rootVisualElement.Q<Label>("name-label");
+            createdDateLabel = rootVisualElement.Q<Label>("created-date-label");
+            
+            nameLabel.text = pipelineLog.name;
+            createdDateLabel.text = pipelineLog.CreatedDate.ToString(settings.CreatedDateFormat);
             logEntryListView.itemsSource = (IList)pipelineLog.Entries;
+            logEntryListView.selectedIndex = 0;
 
             rootVisualElement.Bind(new SerializedObject(this));
         }

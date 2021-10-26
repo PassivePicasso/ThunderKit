@@ -1,6 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <ui:VisualElement style="flex-grow: 1;">
         <ui:VisualElement class="unity-toolbar">
+            <ui:VisualElement class="name-section">
+                <ui:Label text="Name:" />
+                <ui:Label name="name-label" />
+            </ui:VisualElement>
+            <ui:VisualElement class="date-section">
+                <ui:Label text="Created:" />
+                <ui:Label name="created-date-label" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:ListView focusable="true" name="logentry-list-view" item-height="40" style="flex-grow: 1;" />
     </ui:VisualElement>

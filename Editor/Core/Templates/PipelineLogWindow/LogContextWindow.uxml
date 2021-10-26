@@ -1,11 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <ui:VisualElement style="flex-grow: 1;">
-        <ui:VisualElement class="unity-toolbar">
-            <ui:Button name="context-button" class="toolbar-button" text="Context"/>
-            <ui:Button name="stacktrace-button" class="toolbar-button" text="Details"/>
+        <ui:VisualElement name="tab-section" class="tab-toolbar">
         </ui:VisualElement>
-        <ui:VisualElement name="panel-section" style="flex-grow: 1;">
-            <ui:ScrollView name="context-scroll-view" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px;"/>
+        <ui:VisualElement name="content-section" style="flex-grow: 1;">
             <ui:ScrollView name="stacktrace-scroll-view" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px;" />
         </ui:VisualElement>
     </ui:VisualElement>

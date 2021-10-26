@@ -4,7 +4,7 @@
 	border-color: rgba(0,0,0,0.35);
 	padding-left: 4px;
 	padding-right: 6px;
-	width: 100px;
+	width: 120px;
 	justify-content: center;
 }
 #log-entry {
@@ -13,6 +13,8 @@
 }
 #time-stamp {
 	align-self: center;
+	white-space: normal;
+	-unity-word-wrap: true;
 }
 #icon-container{
 	border-color: rgba(0,0,0, 0.35);
@@ -20,7 +22,7 @@
 }
 #message-container{
 	justify-content: center;
-	padding-right: 110px;
+	padding-right: 150px;
 }
 #icon-log-level {
 	width: 32px;
@@ -72,6 +74,14 @@
 	border-color: rgba(0,0,0,0.5);
 	font-size: 12px;
 	margin-top: -3px;
+}
+.name-section {
+	flex-direction: row;
+	border-right-width: 1px;
+	border-color: rgba(0,0,0,0.5);
+}
+.date-section {
+	flex-direction: row;
 }
 .log-text {
 	width: 190px;
