@@ -1,10 +1,12 @@
-﻿This package contains third-party software components governed by the license(s) indicated below:
+﻿This notice serves only to indicate what open source assets are being used in the ThunderKit project and does not indicate an endorsement of this software package in any form.
+
+This package contains third-party software components governed by the license(s) indicated below:
 
 ## Markdig (v18.3)
 
 * `Copyright (c) 2018, Alexandre Mutel`
-* [https://github.com/lunet-io/markdig](https://github.com/lunet-io/markdig)
-* License : [BSD 2-Clause "Simplified"](https://github.com/lunet-io/markdig/blob/master/license.txt)
+* [https://github.com/xoofx/markdig](https://github.com/xoofx/markdig)
+* License : [BSD 2-Clause "Simplified"](https://github.com/xoofx/markdig/blob/master/license.txt)
 * [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/Markdig/license.txt)
 
 ## Cascadia Code
@@ -16,7 +18,7 @@
 
 ## SharpCompress (v21.0)
 
-* `Copyright (c) 2019 - Present, Microsoft Corporation,`
+* `Copyright (c) 2014  Adam Hathcock`
 * [https://github.com/adamhathcock/sharpcompress](https://github.com/adamhathcock/sharpcompress)
 * License:  [The MIT License](https://github.com/adamhathcock/sharpcompress/blob/master/LICENSE.txt)
 * [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/SharpCompress/LICENSE.txt)
