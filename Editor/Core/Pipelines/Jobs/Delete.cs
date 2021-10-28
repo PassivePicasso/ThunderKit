@@ -29,9 +29,11 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             try
             {
+                pipeline.Log(LogLevel.Information, $"Deleting {path}");
                 if (pathIsFile) File.Delete(path);
                 else
                     Directory.Delete(path, Recursive);
+                pipeline.Log(LogLevel.Information, $"Deleted {path}");
             }
             catch
             {
