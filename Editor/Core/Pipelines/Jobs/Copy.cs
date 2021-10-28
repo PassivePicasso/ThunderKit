@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
@@ -33,7 +34,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             }
             catch (Exception e)
             {
-                if (SourceRequired) 
+                if (SourceRequired)
                     throw new InvalidOperationException($"{errorLink} Failed to resolve source when source is required", e);
             }
             if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"{errorLink} Required {nameof(Source)} is empty");
@@ -60,16 +61,21 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 else if (sourceIsFile)
                     throw new ArgumentException($"{errorLink} Expected Directory for recursive copy, Recieved file path: {source}");
             }
-            
+
             if (EstablishDestination)
                 Directory.CreateDirectory(sourceIsFile ? Path.GetDirectoryName(destination) : destination);
 
             if (Recursive)
             {
                 FileUtil.ReplaceDirectory(source, destination);
+                var copiedFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories).Prepend("Copied Files").ToArray();
+                pipeline.Log(LogLevel.Information, $"Copied from:{source} to {destination}", copiedFiles);
             }
             else
+            {
                 FileUtil.ReplaceFile(source, destination);
+                pipeline.Log(LogLevel.Information, $"Copied from:{source} to {destination}");
+            }
 
             return Task.CompletedTask;
         }

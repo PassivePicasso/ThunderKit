@@ -51,9 +51,9 @@ namespace ThunderKit.Pipelines.Jobs
             var explicitAssetPaths = new List<string>();
             PopulateWithExplicitAssets(explicitAssets, explicitAssetPaths);
 
+            var defBuildDetails = new List<string>;
             var logBuilder = new StringBuilder();
             var builds = new AssetBundleBuild[assetBundleDefs.Sum(abd => abd.assetBundles.Length)];
-            logBuilder.AppendLine($"Defining {builds.Length} AssetBundleBuilds");
 
             var buildsIndex = 0;
             for (int defIndex = 0; defIndex < assetBundleDefs.Length; defIndex++)
@@ -62,20 +62,16 @@ namespace ThunderKit.Pipelines.Jobs
                 var playerAssemblies = CompilationPipeline.GetAssemblies();
                 var assemblyFiles = playerAssemblies.Select(pa => pa.outputPath).ToArray();
                 var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
+                
+                //reset logging containers
+                defBuildDetails.Clear();
+                logBuilder.Clear();
 
                 for (int i = 0; i < assetBundleDef.assetBundles.Length; i++)
                 {
                     var def = assetBundleDef.assetBundles[i];
-
-
                     var build = builds[buildsIndex];
-
                     var assets = new List<string>();
-
-                    logBuilder.AppendLine("--------------------------------------------------");
-                    logBuilder.AppendLine($"Defining bundle: {def.assetBundleName}");
-                    logBuilder.AppendLine();
-
                     var firstAsset = def.assets.FirstOrDefault(x => x is SceneAsset);
 
                     if (firstAsset != null) assets.Add(AssetDatabase.GetAssetPath(firstAsset));
@@ -102,14 +98,17 @@ namespace ThunderKit.Pipelines.Jobs
                     builds[buildsIndex] = build;
                     buildsIndex++;
 
-                    foreach (var asset in build.assetNames)
-                        logBuilder.AppendLine(asset);
+                    LogBundleDetails(logBuilder, build);
 
-                    logBuilder.AppendLine("--------------------------------------------------");
-                    logBuilder.AppendLine();
+                    defBuildDetails.Add(logBuilder.ToString());
                 }
+
+                var manifestPath = AssetDatabase.GetAssetPath(assetBundleDef);
+                var manifestName = Path.GetFileNameWithoutExtension(manifestPath);
+                var manifestLink = $"[{manifestName}](assetlink://{UnityWebRequest.EscapeURL(manifestPath)})";
+
+                pipeline.Log(LogLevel.Information, $"{manifestLink} Creating {builds.Length} AssetBundles", defBuildDetails.ToArray());
             }
-            pipeline.Log(LogLevel.Information, logBuilder.ToString(), null);
 
             if (!simulate)
             {
@@ -152,6 +151,18 @@ namespace ThunderKit.Pipelines.Jobs
             }
 
             return Task.CompletedTask;
+        }
+
+        private static void LogBundleDetails(StringBuilder logBuilder, AssetBundleBuild build)
+        {
+            logBuilder.AppendLine($"{build.assetBundleName}");
+            logBuilder.AppendLine();
+            logBuilder.AppendLine($"Bundle files");
+            logBuilder.AppendLine();
+            foreach (var asset in build.assetNames)
+                logBuilder.AppendLine(asset);
+
+            logBuilder.AppendLine();
         }
 
         private static void PopulateWithExplicitAssets(IEnumerable<Object> inputAssets, List<string> outputAssets)
