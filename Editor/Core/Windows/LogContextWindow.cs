@@ -51,12 +51,13 @@ namespace ThunderKit.Core.Windows
 
             contentSection.Clear();
             tabSection.Clear();
-
+            int anonymousContext = 0;
             if (logEntry.context != null)
                 foreach (var data in logEntry.context)
                 {
-                    var firstLine = data.Substring(0, data.IndexOf("\r\n"));
-                    var remainingData = data.Substring(firstLine.Length);
+                    var lineIndex = data.IndexOf("\r\n");
+                    var firstLine = lineIndex > 0 ? data.Substring(0, lineIndex) : $"Context {anonymousContext++}";
+                    var remainingData = lineIndex > 0 ? data.Substring(firstLine.Length) : data;
 
                     var tabButton = new Toggle();
                     tabButton.value = false;
@@ -78,16 +79,18 @@ namespace ThunderKit.Core.Windows
 
                     tabButton.OnValueChanged(evt =>
                     {
-                        foreach (var child in contentSection.Children())
-                            child.visible = false;
+                        if (evt.newValue)
+                        {
+                            foreach (var child in contentSection.Children())
+                                child.visible = stacktraceScrollView == child;
 
-                        foreach (var child in tabSection.Children().OfType<Toggle>())
-                            if (child != tabButton)
-                                child.value = false;
+                            foreach (var child in tabSection.Children().OfType<Toggle>())
+                                if (child != tabButton)
+                                    child.SetValueWithoutNotify(false);
 
-                        stacktraceScrollView.visible = tabButton.value;
-                        if (stacktraceScrollView.visible && markdownContent.childCount == 0)
-                            markdownContent.RefreshContent();
+                            if (stacktraceScrollView.visible && markdownContent.childCount == 0)
+                                markdownContent.RefreshContent();
+                        }
                     });
                 }
 

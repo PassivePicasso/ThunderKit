@@ -43,7 +43,7 @@
 	background-image: none;
 
 }
-.unity-toolbar {
+.tab-toolbar {
 	height: 24px;
 	flex-direction: row;
 	white-space: nowrap;
