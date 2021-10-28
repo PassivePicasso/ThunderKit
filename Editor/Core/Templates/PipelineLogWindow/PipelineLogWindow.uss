@@ -1,9 +1,15 @@
-﻿#logentry-list-view .paragraph {
+﻿#logentry-list-view .asset-icon {
+	width: 14px;
+	height: 14px;
 	margin-top: 0px;
 	margin-bottom: 0px;
 }
+#logentry-list-view .paragraph {
+	margin-top: 0px;
+	margin-bottom: 2px;
+}
 #logentry-list-view .inline {
-	font-size: 11px;
+	font-size: 12px;
 }
 
 #time-container {

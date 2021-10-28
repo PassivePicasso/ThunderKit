@@ -119,6 +119,9 @@ Label {
     cursor: link;
 }
 
+.list-item .inline {
+    -unity-text-align: middle-center;
+}
 .list-item {
     margin-left: 14px;
     flex-wrap: nowrap;
