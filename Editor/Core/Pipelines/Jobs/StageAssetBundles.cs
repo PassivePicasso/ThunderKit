@@ -51,7 +51,7 @@ namespace ThunderKit.Pipelines.Jobs
             var explicitAssetPaths = new List<string>();
             PopulateWithExplicitAssets(explicitAssets, explicitAssetPaths);
 
-            var defBuildDetails = new List<string>;
+            var defBuildDetails = new List<string>();
             var logBuilder = new StringBuilder();
             var builds = new AssetBundleBuild[assetBundleDefs.Sum(abd => abd.assetBundles.Length)];
 
