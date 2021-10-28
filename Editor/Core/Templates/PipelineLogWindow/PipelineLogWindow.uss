@@ -1,4 +1,12 @@
-﻿#time-container {
+﻿#logentry-list-view .paragraph {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+#logentry-list-view .inline {
+	font-size: 11px;
+}
+
+#time-container {
 	border-left-width: 1px;
 	border-right-width: 1px;
 	border-color: rgba(0,0,0,0.35);
