@@ -31,7 +31,7 @@ namespace ThunderKit.Core.Inspectors
             rect.width -= offset;
             return rect;
         }
-        public override async void OnInspectorGUI()
+        public override void OnInspectorGUI()
         {
             var pipeline = target as Pipeline;
             if (!pipeline)
@@ -40,20 +40,24 @@ namespace ThunderKit.Core.Inspectors
                 Debug.LogError("Drawing PipelineEditor inspector for pipeline that is not targetted.");
                 return;
             }
-            using(var scope = new GUILayout.HorizontalScope())
+            using (var scope = new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button("Execute"))
-                    await pipeline.Execute();
-                if(GUILayout.Button("Show Log"))
+                try
                 {
-                    var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
-                                                    .Select(AssetDatabase.GUIDToAssetPath)
-                                                    .Where(ap => ap.Contains(pipeline.name))
-                                                    .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
-                                                    .OrderByDescending(log => log.CreatedDate)
-                                                    .First();
-                    PipelineLogWindow.ShowLog(pipelineLog);
+                    if (GUILayout.Button("Execute"))
+                        _ = pipeline.Execute();
+                    if (GUILayout.Button("Show Log"))
+                    {
+                        var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
+                                                        .Select(AssetDatabase.GUIDToAssetPath)
+                                                        .Where(ap => ap.Contains(pipeline.name))
+                                                        .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
+                                                        .OrderByDescending(log => log.CreatedDate)
+                                                        .First();
+                        PipelineLogWindow.ShowLog(pipelineLog);
+                    }
                 }
+                catch { }
             }
             GUILayout.Space(4);
 
