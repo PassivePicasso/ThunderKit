@@ -62,10 +62,9 @@ namespace ThunderKit.Pipelines.Jobs
                 var playerAssemblies = CompilationPipeline.GetAssemblies();
                 var assemblyFiles = playerAssemblies.Select(pa => pa.outputPath).ToArray();
                 var sourceFiles = playerAssemblies.SelectMany(pa => pa.sourceFiles).ToArray();
-                
+
                 //reset logging containers
                 defBuildDetails.Clear();
-                logBuilder.Clear();
 
                 for (int i = 0; i < assetBundleDef.assetBundles.Length; i++)
                 {
@@ -101,13 +100,14 @@ namespace ThunderKit.Pipelines.Jobs
                     LogBundleDetails(logBuilder, build);
 
                     defBuildDetails.Add(logBuilder.ToString());
+                    logBuilder.Clear();
                 }
 
                 var manifestPath = AssetDatabase.GetAssetPath(assetBundleDef);
                 var manifestName = Path.GetFileNameWithoutExtension(manifestPath);
-                var manifestLink = $"[{manifestName}](assetlink://{UnityWebRequest.EscapeURL(manifestPath)})";
+                var manifestLink = $"[StageAssetBundles({manifestName})](assetlink://{UnityWebRequest.EscapeURL(manifestPath)})";
 
-                pipeline.Log(LogLevel.Information, $"{manifestLink} Creating {builds.Length} AssetBundles", defBuildDetails.ToArray());
+                pipeline.Log(LogLevel.Information, $"{manifestLink} Creating {assetBundleDef.assetBundles.Length} AssetBundles", defBuildDetails.ToArray());
             }
 
             if (!simulate)
@@ -156,11 +156,13 @@ namespace ThunderKit.Pipelines.Jobs
         private static void LogBundleDetails(StringBuilder logBuilder, AssetBundleBuild build)
         {
             logBuilder.AppendLine($"{build.assetBundleName}");
-            logBuilder.AppendLine();
-            logBuilder.AppendLine($"Bundle files");
-            logBuilder.AppendLine();
             foreach (var asset in build.assetNames)
-                logBuilder.AppendLine(asset);
+            {
+                var name = Path.GetFileNameWithoutExtension(asset);
+                if (name.Length == 0) continue;
+                logBuilder.AppendLine($"[{name}](assetlink://{UnityWebRequest.EscapeURL(asset)})");
+                logBuilder.AppendLine();
+            }
 
             logBuilder.AppendLine();
         }
