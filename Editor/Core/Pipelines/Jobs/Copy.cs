@@ -6,6 +6,7 @@ using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -26,7 +27,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override Task ExecuteInternal(Pipeline pipeline)
         {
-            var errorLink = $"[{pipeline.name}({pipeline.JobIndex} - Copy)](assetlink://{pipeline.pipelinePath}) From {Source} To {Destination}";
+            var copyLink = $"[({pipeline.JobIndex} - Copy)](assetlink://{pipeline.pipelinePath}) ``` {Source} ``` to ``` {Destination} ```\r\n";
             var source = string.Empty;
             try
             {
@@ -35,11 +36,14 @@ namespace ThunderKit.Core.Pipelines.Jobs
             catch (Exception e)
             {
                 if (SourceRequired)
-                    throw new InvalidOperationException($"{errorLink} Failed to resolve source when source is required", e);
+                    throw new InvalidOperationException($"{copyLink} Failed to resolve source when source is required", e);
             }
-            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"{errorLink} Required {nameof(Source)} is empty");
+            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"{copyLink} Required {nameof(Source)} is empty");
             if (!SourceRequired && string.IsNullOrEmpty(source))
+            {
+                pipeline.Log(LogLevel.Information, $"{copyLink} Source not specified and is not required, copy skipped");
                 return Task.CompletedTask;
+            }
             var destination = Destination.Resolve(pipeline, this);
 
             bool sourceIsFile = false;
@@ -51,15 +55,22 @@ namespace ThunderKit.Core.Pipelines.Jobs
             catch (Exception e)
             {
                 if (SourceRequired)
-                    throw new InvalidOperationException($"{errorLink} Failed to check {nameof(Source)} attributes when {nameof(Source)} is required", e);
+                    throw new InvalidOperationException($"{copyLink} Failed to check {nameof(Source)} attributes when {nameof(Source)} is required", e);
             }
 
             if (Recursive)
             {
-                if (!Directory.Exists(source))
+                if (!Directory.Exists(source) && !SourceRequired)
+                {
+                    pipeline.Log(LogLevel.Information, $"{copyLink} Source not found and is not required, copy skipped");
                     return Task.CompletedTask;
+                }
+                else if (!Directory.Exists(source) && SourceRequired)
+                {
+                    throw new ArgumentException($"{copyLink} Source not found and is required");
+                }
                 else if (sourceIsFile)
-                    throw new ArgumentException($"{errorLink} Expected Directory for recursive copy, Recieved file path: {source}");
+                    throw new ArgumentException($"{copyLink} Expected Directory for recursive copy, Recieved file path: {source}");
             }
 
             if (EstablishDestination)
@@ -68,13 +79,16 @@ namespace ThunderKit.Core.Pipelines.Jobs
             if (Recursive)
             {
                 FileUtil.ReplaceDirectory(source, destination);
-                var copiedFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories).Prepend("Copied Files").ToArray();
-                pipeline.Log(LogLevel.Information, $"Copied from:{source} to {destination}", copiedFiles);
+                int i = 1;
+                var copiedFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories)
+                    .Prepend("Copied Files")
+                    .Aggregate((a, b) => $"{a}\r\n\r\n {i++}. {b}");
+                pipeline.Log(LogLevel.Information, $"{copyLink}\r\n\r\nCopied ``` {source} ``` to ``` {destination} ```", copiedFiles);
             }
             else
             {
                 FileUtil.ReplaceFile(source, destination);
-                pipeline.Log(LogLevel.Information, $"Copied from:{source} to {destination}");
+                pipeline.Log(LogLevel.Information, $"{copyLink}\r\n\r\n``` {source} ``` to ``` {destination} ```");
             }
 
             return Task.CompletedTask;
