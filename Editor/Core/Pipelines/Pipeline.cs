@@ -73,13 +73,26 @@ namespace {0}
 
         string ProgressTitle => $"Pipeline: {name}, {(Manifests != null && Manifests.Length > 0 ? $"Manifest: {Manifests[ManifestIndex]?.Identity?.name ?? "Error Manifest Not Found"}" : string.Empty)}";
 
-        public string pipelinePath { get; private set; }
-        public string pipelineLink { get; private set; }
+        public string manifestPath => UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(Manifest));
+        public string pipelinePath => UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
+        public string pipelineLink
+        {
+            get
+            {
+                var result = "[";
+                result += name;
+                if (JobIndex > -1)
+                    result += $"({JobIndex} - {Job().name})";
+                result += $"](assetlink://{pipelinePath})";
+                if (ManifestIndex > -1)
+                    result += $"[{Manifest.name}](assetlink://{manifestPath})";
+                return result;
+            }
+        }
+
         public virtual async Task Execute()
         {
             bool isRoot = false;
-            pipelinePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
-            pipelineLink = $"[{name}:](assetlink://{pipelinePath})";
             try
             {
                 if (!Logger)
@@ -88,7 +101,7 @@ namespace {0}
                     isRoot = true;
                 }
 
-                Log(Information, $"Executing ");
+                Log(Information, $"Execute Pipeline");
                 using (progressBar = new ProgressBar())
                 {
                     Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
@@ -120,7 +133,7 @@ namespace {0}
                     {
                         if (!Job().Active) continue;
 
-                        Log(Information, $"Execute  \"{Job().name}\" at index {JobIndex}");
+                        Log(Information, $"Execute Job");
                         progressBar.Update($"Executing PipelineJob {Job().name}");
                         if (JobIsManifestProcessor())
                             await ExecuteManifestLoop();

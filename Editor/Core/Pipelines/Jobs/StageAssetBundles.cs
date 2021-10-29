@@ -103,11 +103,7 @@ namespace ThunderKit.Pipelines.Jobs
                     logBuilder.Clear();
                 }
 
-                var manifestPath = AssetDatabase.GetAssetPath(assetBundleDef);
-                var manifestName = Path.GetFileNameWithoutExtension(manifestPath);
-                var manifestLink = $"[StageAssetBundles({manifestName})](assetlink://{UnityWebRequest.EscapeURL(manifestPath)})";
-
-                pipeline.Log(LogLevel.Information, $"{manifestLink} Creating {assetBundleDef.assetBundles.Length} AssetBundles", defBuildDetails.ToArray());
+                pipeline.Log(LogLevel.Information, $"Creating {assetBundleDef.assetBundles.Length} AssetBundles", defBuildDetails.ToArray());
             }
 
             if (!simulate)

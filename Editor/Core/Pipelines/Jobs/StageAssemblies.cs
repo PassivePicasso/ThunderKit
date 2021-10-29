@@ -83,21 +83,16 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         public sealed override async Task Execute(Pipeline pipeline)
         {
-            var stageAssembliesLink = $"[({pipeline.JobIndex} - StageAssemblies)](assetlink://{pipeline.pipelinePath})";
             var resolvedArtifactPath = PathReference.ResolvePath(assemblyArtifactPath, pipeline, this);
             Directory.CreateDirectory(resolvedArtifactPath);
 
-
-            var manifestPath = AssetDatabase.GetAssetPath(pipeline.Manifest);
-            var manifestName = string.IsNullOrEmpty(pipeline.Manifest.Identity?.Name) ? pipeline.Manifest.name : pipeline.Manifest.Identity?.Name;
-            var manifestLink = $"[{manifestName}](assetlink://{manifestPath})";
 
             var assemblies = CompilationPipeline.GetAssemblies();
             var definitionDatums = pipeline.Manifest.Data.OfType<AssemblyDefinitions>().ToArray();
             if (!definitionDatums.Any())
             {
                 var scriptPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
-                pipeline.Log(LogLevel.Warning, $"{stageAssembliesLink} No AssemblyDefinitions found in {manifestLink}, skipping [{nameof(StageAssemblies)}](assetlink://{scriptPath})");
+                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found, skipping");
                 return;
             }
 
@@ -107,7 +102,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (!datum) continue;
                 var hasUnassignedDefinition = datum.definitions.Any(def => !(bool)(def));
                 if (hasUnassignedDefinition)
-                    pipeline.Log(LogLevel.Warning, $"{stageAssembliesLink} {manifestLink} has AssemblyDefinitions with unassigned definition at index {i}");
+                    pipeline.Log(LogLevel.Warning, $"AssemblyDefinitions with unassigned definition at index {i}");
             }
 
             var deserializedAsmDefs = definitionDatums.SelectMany(datum =>
@@ -150,31 +145,31 @@ namespace ThunderKit.Core.Pipelines.Jobs
                             switch (message.type)
                             {
                                 case CompilerMessageType.Error:
-                                    pipeline.Log(LogLevel.Error, $"{stageAssembliesLink} {message.message}", extraData);
+                                    pipeline.Log(LogLevel.Error, message.message, extraData);
                                     break;
                                 case CompilerMessageType.Warning:
-                                    pipeline.Log(LogLevel.Warning, $"{stageAssembliesLink} {message.message}", extraData);
+                                    pipeline.Log(LogLevel.Warning, message.message, extraData);
                                     break;
                             }
                         }
 
-                    pipeline.Log(LogLevel.Information, $"{stageAssembliesLink} Build Completed: ``` {path} ```");
+                    pipeline.Log(LogLevel.Information, $"Build Completed: ``` {path} ```");
 
                     var prevIndex = pipeline.ManifestIndex;
                     pipeline.ManifestIndex = index;
                     var resolvedPaths = definition.datum.StagingPaths
                         .Select(p => PathReference.ResolvePath(p, pipeline, this)).ToArray();
-                    pipeline.ManifestIndex = prevIndex;
 
                     foreach (var outputPath in resolvedPaths)
                     {
-                        pipeline.Log(LogLevel.Information, $"{stageAssembliesLink} Staging ``` {assemblyName} ``` in ``` {outputPath} ```");
+                        pipeline.Log(LogLevel.Information, $"Staging ``` {assemblyName} ``` in ``` {outputPath} ```");
                         Directory.CreateDirectory(outputPath);
                         if (stageDebugDatabases)
                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
                         else
                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
                     }
+                    pipeline.ManifestIndex = prevIndex;
                 }
                 builder.buildTarget = buildTarget;
                 builder.buildFinished += OnBuildFinished;
@@ -192,7 +187,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
         }
         void CopyFiles(Pipeline pipeline, string sourcePath, string outputPath, params string[] patterns)
         {
-            var stageAssembliesLink = $"[({pipeline.JobIndex} - StageAssemblies)](assetlink://{pipeline.pipelinePath}) ``` {sourcePath} ``` to ``` {outputPath} ```\r\n";
             var builder = new StringBuilder("Assembly Files");
             Directory.CreateDirectory(outputPath);
             var targetFiles = (from pattern in patterns
@@ -210,7 +204,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 builder.AppendLine();
             }
 
-            pipeline.Log(LogLevel.Information, $"{stageAssembliesLink}", builder.ToString());
+            pipeline.Log(LogLevel.Information, $"``` {sourcePath} ``` to ``` {outputPath} ```\r\n", builder.ToString());
         }
 
     }
