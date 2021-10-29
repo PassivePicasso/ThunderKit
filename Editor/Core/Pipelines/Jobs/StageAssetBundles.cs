@@ -31,8 +31,17 @@ namespace ThunderKit.Pipelines.Jobs
             var excludedExtensions = new[] { ".dll", ".cs", ".meta" };
 
             AssetDatabase.SaveAssets();
+            var manifests = pipeline.Manifests;
+            var abdIndices = new Dictionary<AssetBundleDefinitions, int>();
+            var abds = new List<AssetBundleDefinitions>();
+            for(int i = 0; i < manifests.Length; i++)
+                foreach (var abd in manifests[i].Data.OfType<AssetBundleDefinitions>())
+                {
+                    abds.Add(abd);
+                    abdIndices.Add(abd, i);
+                }
 
-            var assetBundleDefs = pipeline.Datums.OfType<AssetBundleDefinitions>().ToArray();
+            var assetBundleDefs = abds.ToArray();
             var hasValidBundles = assetBundleDefs.Any(abd => abd.assetBundles.Any(ab => !string.IsNullOrEmpty(ab.assetBundleName) && ab.assets.Any()));
             if (!hasValidBundles)
             {
@@ -103,7 +112,10 @@ namespace ThunderKit.Pipelines.Jobs
                     logBuilder.Clear();
                 }
 
+                var prevInd = pipeline.ManifestIndex;
+                pipeline.ManifestIndex = abdIndices[assetBundleDef];
                 pipeline.Log(LogLevel.Information, $"Creating {assetBundleDef.assetBundles.Length} AssetBundles", defBuildDetails.ToArray());
+                pipeline.ManifestIndex = prevInd;
             }
 
             if (!simulate)
