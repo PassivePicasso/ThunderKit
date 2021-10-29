@@ -27,7 +27,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override Task ExecuteInternal(Pipeline pipeline)
         {
-            var copyLink = $"[({pipeline.JobIndex} - Copy)](assetlink://{pipeline.pipelinePath}) ``` {Source} ``` to ``` {Destination} ```\r\n";
+            var copyStatement = $"``` {Source} ``` to ``` {Destination} ```\r\n";
             var source = string.Empty;
             try
             {
@@ -36,12 +36,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
             catch (Exception e)
             {
                 if (SourceRequired)
-                    throw new InvalidOperationException($"{copyLink} Failed to resolve source when source is required", e);
+                    throw new InvalidOperationException($"{copyStatement} Failed to resolve source when source is required", e);
             }
-            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"{copyLink} Required {nameof(Source)} is empty");
+            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"{copyStatement} Required {nameof(Source)} is empty");
             if (!SourceRequired && string.IsNullOrEmpty(source))
             {
-                pipeline.Log(LogLevel.Information, $"{copyLink} Source not specified and is not required, copy skipped");
+                pipeline.Log(LogLevel.Information, $"{copyStatement} Source not specified and is not required, copy skipped");
                 return Task.CompletedTask;
             }
             var destination = Destination.Resolve(pipeline, this);
@@ -55,22 +55,22 @@ namespace ThunderKit.Core.Pipelines.Jobs
             catch (Exception e)
             {
                 if (SourceRequired)
-                    throw new InvalidOperationException($"{copyLink} Failed to check {nameof(Source)} attributes when {nameof(Source)} is required", e);
+                    throw new InvalidOperationException($"{copyStatement} Failed to check {nameof(Source)} attributes when {nameof(Source)} is required", e);
             }
 
             if (Recursive)
             {
                 if (!Directory.Exists(source) && !SourceRequired)
                 {
-                    pipeline.Log(LogLevel.Information, $"{copyLink} Source not found and is not required, copy skipped");
+                    pipeline.Log(LogLevel.Information, $"{copyStatement} Source not found and is not required, copy skipped");
                     return Task.CompletedTask;
                 }
                 else if (!Directory.Exists(source) && SourceRequired)
                 {
-                    throw new ArgumentException($"{copyLink} Source not found and is required");
+                    throw new ArgumentException($"{copyStatement} Source not found and is required");
                 }
                 else if (sourceIsFile)
-                    throw new ArgumentException($"{copyLink} Expected Directory for recursive copy, Recieved file path: {source}");
+                    throw new ArgumentException($"{copyStatement} Expected Directory for recursive copy, Recieved file path: {source}");
             }
 
             if (EstablishDestination)
@@ -83,12 +83,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 var copiedFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories)
                     .Prepend("Copied Files")
                     .Aggregate((a, b) => $"{a}\r\n\r\n {i++}. {b}");
-                pipeline.Log(LogLevel.Information, $"{copyLink}\r\n\r\nCopied ``` {source} ``` to ``` {destination} ```", copiedFiles);
+                pipeline.Log(LogLevel.Information, $"{copyStatement}\r\n\r\nCopied ``` {source} ``` to ``` {destination} ```", copiedFiles);
             }
             else
             {
                 FileUtil.ReplaceFile(source, destination);
-                pipeline.Log(LogLevel.Information, $"{copyLink}\r\n\r\n``` {source} ``` to ``` {destination} ```");
+                pipeline.Log(LogLevel.Information, $"{copyStatement}\r\n\r\n``` {source} ``` to ``` {destination} ```");
             }
 
             return Task.CompletedTask;
