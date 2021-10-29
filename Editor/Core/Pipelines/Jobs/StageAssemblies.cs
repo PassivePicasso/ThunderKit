@@ -162,7 +162,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
                     foreach (var outputPath in resolvedPaths)
                     {
-                        pipeline.Log(LogLevel.Information, $"Staging ``` {assemblyName} ``` in ``` {outputPath} ```");
                         Directory.CreateDirectory(outputPath);
                         if (stageDebugDatabases)
                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
@@ -204,7 +203,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 builder.AppendLine();
             }
 
-            pipeline.Log(LogLevel.Information, $"``` {sourcePath} ``` to ``` {outputPath} ```\r\n", builder.ToString());
+            pipeline.Log(LogLevel.Information, $"staging ``` {sourcePath} ``` in ``` {outputPath} ```\r\n", builder.ToString());
         }
 
     }
