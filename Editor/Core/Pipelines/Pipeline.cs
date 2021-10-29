@@ -71,7 +71,17 @@ namespace {0}
         [HideInInspector, NonSerialized]
         public PipelineLog Logger;
 
-        string ProgressTitle => $"Pipeline: {name}, {(Manifests != null && Manifests.Length > 0 ? $"Manifest: {Manifests[ManifestIndex]?.Identity?.name ?? "Error Manifest Not Found"}" : string.Empty)}";
+        string ProgressTitle
+        {
+            get
+
+            {
+                string title = $"Pipeline: {name}";
+                var isManifestActive = Manifests != null && Manifests.Length > 0 && ManifestIndex > -1;
+                title += isManifestActive ? $"Manifest: {Manifests[ManifestIndex]?.Identity?.name ?? "Error Manifest Not Found"}" : string.Empty;
+                return title;
+            }
+        }
 
         public string manifestPath => UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(Manifest));
         public string pipelinePath => UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
@@ -120,7 +130,6 @@ namespace {0}
                         throw new InvalidOperationException(message);
                     }
 
-                    ManifestIndex = 0;
                     progressBar.Update(title: ProgressTitle);
                     Log(Information, $"Clearing PipelineJob error states");
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
@@ -129,6 +138,7 @@ namespace {0}
                         Job().Errored = false;
                         Job().ErrorMessage = string.Empty;
                     }
+
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                     {
                         if (!Job().Active) continue;
@@ -148,7 +158,7 @@ namespace {0}
             catch (Exception e)
             {
                 if (!isRoot)
-                    throw new InvalidOperationException($"{pipelineLink} Halted Execution", e);
+                    throw new InvalidOperationException($"{pipelineLink} Halted Execution\r\n\r\n{e.Message}", e);
                 else
                 {
                     var exceptionList = new List<Exception>();
