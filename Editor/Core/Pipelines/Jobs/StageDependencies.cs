@@ -25,10 +25,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 var manifestIdentity = pipeline.Manifest.Identity;
                 var dependencyPath = Path.Combine("Packages", manifestIdentity.Name);
                 string destination = StagingPath.Resolve(pipeline, this);
-                var manifestPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(pipeline.Manifest));
 
-                var results = CopyFilesRecursively(dependencyPath, destination).Prepend("Staged Files").ToArray();
-                pipeline.Log(LogLevel.Information, $"Staged Dependency [{manifestIdentity.Name}](assetlink://{manifestPath })", results);
+                var results = CopyFilesRecursively(dependencyPath, destination).Prepend("Staged Files").Aggregate((a,b)=>$"{a}\r\n\r\n{b}");
+                pipeline.Log(LogLevel.Information, $"staged in {destination}", results);
             }
 
             pipeline.ManifestIndex = -1;
