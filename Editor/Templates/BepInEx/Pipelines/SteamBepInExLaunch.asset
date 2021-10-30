@@ -38,4 +38,4 @@ MonoBehaviour:
   - --doorstop-enable
   - true
   - --doorstop-target
-  - <PWD>/<BepInEx.Preloader.dll>
+  - "<PWD>/<BepInEx.Preloader.dll>"
