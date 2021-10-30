@@ -28,11 +28,17 @@ namespace ThunderKit.Core.Pipelines.Jobs
                                 Directory.CreateDirectory(Path.GetDirectoryName(destPath));
 
                             FileUtil.ReplaceFile(sourcePath, destPath);
+                            pipeline.Log(LogLevel.Information, $"staged ``` {sourcePath} ``` in ``` {destPath} ```");
                         }
                         else
                         {
                             if (!Directory.Exists(destPath)) Directory.CreateDirectory(destPath);
                             FileUtil.ReplaceDirectory(sourcePath, destPath);
+                            int i = 1;
+                            var copiedFiles = Directory.EnumerateFiles(destPath, "*", SearchOption.AllDirectories)
+                                .Prepend("Copied Files")
+                                .Aggregate((a, b) => $"{a}\r\n\r\n {i++}. {b}");
+                            pipeline.Log(LogLevel.Information, $"staged ``` {sourcePath} ``` in ``` {destPath} ```", copiedFiles);
                         }
                     }
 
