@@ -111,11 +111,12 @@ namespace {0}
                     isRoot = true;
                 }
 
-                Log(Information, $"Execute Pipeline");
                 using (progressBar = new ProgressBar())
                 {
                     Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
                     currentJobs = Jobs.Where(SupportsType).ToArray();
+                    //Needs to run after CurrentJobs is populated
+                    Log(Information, $"Execute Pipeline");
 
                     var manifestJobs = currentJobs.Where(j => j.GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any())
                                .Union(currentJobs.OfType<FlowPipelineJob>().Where(fpj => fpj.PerManifest)).ToArray();
