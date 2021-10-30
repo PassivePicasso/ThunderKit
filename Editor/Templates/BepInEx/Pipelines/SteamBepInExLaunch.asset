@@ -33,9 +33,6 @@ MonoBehaviour:
   workingDirectory: <BepInExPackDestination>
   executable: <Steam.exe>
   arguments:
-  - -applaunch
-  - <GameAppId>
-  - --doorstop-enable
-  - true
-  - --doorstop-target
-  - "<PWD>/<BepInEx.Preloader.dll>"
+  - -applaunch <GameAppId>
+  - --doorstop-enable true
+  - --doorstop-target "<PWD>/<BepInEx.Preloader.dll>"
