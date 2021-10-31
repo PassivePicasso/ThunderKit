@@ -68,7 +68,8 @@ namespace ThunderKit.Core.Windows
                     tabSection.Add(tabButton);
 
                     var markdownContent = new MarkdownElement { Data = remainingData, MarkdownDataType = MarkdownDataType.Text };
-                    var stacktraceScrollView = new ScrollView { markdownContent };
+                    var stacktraceScrollView = new ScrollView();
+                    stacktraceScrollView.Add(markdownContent);
                     stacktraceScrollView.name = $"content-{firstLine.ToLowerInvariant()}";
                     stacktraceScrollView.StretchToParentSize();
 #if UNITY_2019_1_OR_NEWER
@@ -77,7 +78,11 @@ namespace ThunderKit.Core.Windows
 #endif
                     contentSection.Add(stacktraceScrollView);
 
+#if UNITY_2019_1_OR_NEWER
+                    tabButton.RegisterValueChangedCallback(evt =>
+#elif UNITY_2018_1_OR_NEWER
                     tabButton.OnValueChanged(evt =>
+#endif
                     {
                         if (evt.newValue)
                         {
