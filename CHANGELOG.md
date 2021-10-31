@@ -1,4 +1,4 @@
-## 4.1.0
+## 4.1.1
 
 ### Pipelines and Logging
 
@@ -45,6 +45,11 @@ Some documents have been reformatted to improve their layout flexibility
 * StageAssetBundles and StageAssemblies logging and code flow has been improved to clarify common cases where these jobs will fail to execute correct
 
 * Added and improved logging to Copy, Delete, ExecutePipepline, ExecuteProcess, StageAssemblies, StageAssetBundles, StageDependencies, StageManifestFiles, Zip and StageThunderstoreManifest
+
+* Fix issue where SteamBepInExLaunch could fail to start due to formatting of command line args
+
+* Fix issue in Zip that could cause the job to fail in a case it shouldn't
+
 
 ## 4.0.0
 
