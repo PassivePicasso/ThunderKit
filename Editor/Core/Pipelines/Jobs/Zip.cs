@@ -25,7 +25,10 @@ namespace ThunderKit.Core.Pipelines.Jops
             var source = Source.Resolve(pipeline, this);
             var outputDir = Path.GetDirectoryName(output);
 
-            File.Delete(output);
+            if (File.Exists(output))
+            {
+                File.Delete(output);
+            }
 
             Directory.CreateDirectory(outputDir);
 
