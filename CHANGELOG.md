@@ -1,5 +1,15 @@
 ## 4.1.0
 
+### Pipelines and Logging
+
+This update introduces a system to maintain logs of Pipeline runs. These logs saved under the Assets/ThunderKitAssets/Logs folder and grouped by Pipeline.  Pipeline Logs are rich data sets which provides listings of runtime function and reporting of build artifacts. Logs will show you what was done during a pipeline run, what files were copied, deleted, and created during that run.
+
+The pipeline logs will additionally show any errors, and provide any potentially relevant data from the errors that could lead to resolution. These errors are enhanced by ThunderKit's markdown system, allowing you to click on source code lines to open up your code editor to the source of errors for further debugging.  This should help developers who extend ThunderKit with custom PipelineJobs and PathComponents.
+
+The most recent log for a pipeline can be launched by inspecting the Pipeline then clicking on the Show Log button.
+
+The execute button for pipelines have been moved from under the "Add Pipeline Button" to the top left of the Pipeline Inspector. This should reduce incidents of accidentally firing off the Pipeline.
+
 ### Markdown Level Up
 
 Text alignment and kerning has been improved significantly.  I'm sorry for any mental anguish users have suffered.
@@ -11,16 +21,6 @@ In this update the UIElementsRenderer will now scan each ParagraphBlock returned
 Additionally, the Markdown system now supports adding custom Schemes for Markdown links from external libraries which has enabled new features in ThunderKit.
 
 Finally the code design of the MarkdownElement and its utilization has been improved to prevent cases where Markdown doesn't have the necessary visual styles to render correctly.
-
-### Pipeline Improvements
-
-This update introduces a system to maintain logs of Pipeline runs. These logs are serialized with the Pipeline and can be cleared using the new Pipeline Log window.
-The pipeline log provides Rich logging with links to source code and assets enabled with the Markdown system.
-
-Each Pipeline's log can be accessed via the "Show Log" button in the top right of the Pipeline's Inspector. 
-Most PipelineJobs have had their logging increased or improved to make the Pipeline Logs more useful for debugging failures in your pipeline runs.
-
-The execute button for pipelines have been moved from under the "Add Pipeline Button" to the top left of the Pipeline Inspector. This should reduce incidents of accidentally firing off the Pipeline.
 
 ### Documentation Improvements
 
@@ -43,6 +43,8 @@ Some documents have been reformatted to improve their layout flexibility
 * Fixed some cases where Pipelines would run to the end instead of halting when encountering what should have been a fatal exception
 
 * StageAssetBundles and StageAssemblies logging and code flow has been improved to clarify common cases where these jobs will fail to execute correct
+
+* Added and improved logging to Copy, Delete, ExecutePipepline, ExecuteProcess, StageAssemblies, StageAssetBundles, StageDependencies, StageManifestFiles, Zip and StageThunderstoreManifest
 
 ## 4.0.0
 
