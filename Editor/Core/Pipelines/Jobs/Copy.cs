@@ -1,10 +1,12 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -25,6 +27,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override Task ExecuteInternal(Pipeline pipeline)
         {
+            var copyStatement = $"``` {Source} ``` to ``` {Destination} ```\r\n";
             var source = string.Empty;
             try
             {
@@ -32,11 +35,15 @@ namespace ThunderKit.Core.Pipelines.Jobs
             }
             catch (Exception e)
             {
-                if (SourceRequired) throw e;
+                if (SourceRequired)
+                    throw new InvalidOperationException($"{copyStatement} Failed to resolve source when source is required", e);
             }
-            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"Required {nameof(Source)} is empty");
+            if (SourceRequired && string.IsNullOrEmpty(source)) throw new ArgumentException($"{copyStatement} Required {nameof(Source)} is empty");
             if (!SourceRequired && string.IsNullOrEmpty(source))
+            {
+                pipeline.Log(LogLevel.Information, $"{copyStatement} Source not specified and is not required, copy skipped");
                 return Task.CompletedTask;
+            }
             var destination = Destination.Resolve(pipeline, this);
 
             bool sourceIsFile = false;
@@ -47,26 +54,43 @@ namespace ThunderKit.Core.Pipelines.Jobs
             }
             catch (Exception e)
             {
-                if (SourceRequired) throw e;
+                if (SourceRequired)
+                    throw new InvalidOperationException($"{copyStatement} Failed to check {nameof(Source)} attributes when {nameof(Source)} is required", e);
             }
 
             if (Recursive)
             {
-                if (!Directory.Exists(source))
+                if (!Directory.Exists(source) && !SourceRequired)
+                {
+                    pipeline.Log(LogLevel.Information, $"{copyStatement} Source not found and is not required, copy skipped");
                     return Task.CompletedTask;
+                }
+                else if (!Directory.Exists(source) && SourceRequired)
+                {
+                    throw new ArgumentException($"{copyStatement} Source not found and is required");
+                }
                 else if (sourceIsFile)
-                    throw new ArgumentException($"Source Error: Expected Directory, Recieved File {source}");
+                    throw new ArgumentException($"{copyStatement} Expected Directory for recursive copy, Recieved file path: {source}");
             }
-            
+
             if (EstablishDestination)
                 Directory.CreateDirectory(sourceIsFile ? Path.GetDirectoryName(destination) : destination);
 
             if (Recursive)
             {
                 FileUtil.ReplaceDirectory(source, destination);
+                int i = 1;
+                var copiedFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories)
+                    .Prepend("Copied Files")
+                    .Aggregate((a, b) => $"{a}\r\n\r\n {i++}. {b}");
+                pipeline.Log(LogLevel.Information, $"{copyStatement}\r\n\r\nCopied ``` {source} ``` to ``` {destination} ```", copiedFiles);
             }
             else
+            {
                 FileUtil.ReplaceFile(source, destination);
+                pipeline.Log(LogLevel.Information, $"{copyStatement}\r\n\r\n``` {source} ``` to ``` {destination} ```");
+            }
+
             return Task.CompletedTask;
         }
     }

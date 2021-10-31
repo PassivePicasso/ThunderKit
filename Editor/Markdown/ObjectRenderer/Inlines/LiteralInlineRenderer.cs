@@ -10,7 +10,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
             if (obj.Content.IsEmpty)
                 return;
 
-            renderer.WriteText(ref obj.Content);
+            renderer.WriteSplitText(ref obj.Content);
         }
     }
 }

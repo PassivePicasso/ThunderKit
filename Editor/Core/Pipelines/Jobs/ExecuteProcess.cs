@@ -36,6 +36,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 UseShellExecute = true
             };
 
+            pipeline.Log(LogLevel.Information, $"Executing {exe} in working directory {pwd}");
+
             Process.Start(rorPsi);
             return Task.CompletedTask;
         }

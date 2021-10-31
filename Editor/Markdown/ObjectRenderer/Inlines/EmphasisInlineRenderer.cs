@@ -1,4 +1,5 @@
 using Markdig.Syntax.Inlines;
+using System.Collections.Generic;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -16,38 +17,26 @@ namespace ThunderKit.Markdown.ObjectRenderers
     {
         protected override void Write(UIElementRenderer renderer, EmphasisInline obj)
         {
-            string delimiterClass = null;
-
+            bool hasDelimiter = true;
             switch (obj.DelimiterChar)
             {
                 case '*':
-                case '_':
-                    delimiterClass = obj.DelimiterCount == 2 ? "bold" : "italic";
+                    if (obj.DelimiterCount > 2) renderer.Push(GetClassedElement<VisualElement>("italic", "bold"));
+                    if (obj.DelimiterCount == 2) renderer.Push(GetClassedElement<VisualElement>("italic"));
+                    else renderer.Push(GetClassedElement<VisualElement>("bold"));
                     break;
-                case '~':
-                    delimiterClass = obj.DelimiterCount == 2 ? "strikethrough" : "subscript";
+                case '_' when obj.DelimiterCount == 2:
+                    renderer.Push(GetClassedElement<VisualElement>("italic"));
                     break;
-                case '^':
-                    delimiterClass = "superscript";
-                    break;
-                case '+':
-                    delimiterClass = "inserted";
-                    break;
-                case '=':
-                    delimiterClass = "marked";
+                default:
+                    hasDelimiter = false;
                     break;
             }
 
-            if (delimiterClass != null)
-            {
-                renderer.Push(GetClassedElement<VisualElement>(delimiterClass));
-                renderer.WriteChildren(obj);
+            renderer.WriteChildren(obj);
+
+            if (hasDelimiter)
                 renderer.Pop();
-            }
-            else
-            {
-                renderer.WriteChildren(obj);
-            }
         }
     }
 }

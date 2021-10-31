@@ -8,7 +8,11 @@ namespace ThunderKit.Core.Inspectors
     {
         public override void OnInspectorGUI()
         {
-            DrawPropertiesExcluding(serializedObject, new string[] { "m_Script" });
+            try
+            {
+                DrawPropertiesExcluding(serializedObject, new string[] { "m_Script" });
+            }
+            catch { }
         }
     }
 }

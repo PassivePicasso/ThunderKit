@@ -73,6 +73,10 @@ namespace ThunderKit.Core.Documentation
             Action<int, string, string> action =
                 (int instanceId, string pathname, string resourceFile) =>
                 {
+                    var ext = Path.GetExtension(pathname);
+                    if (string.IsNullOrEmpty(ext))
+                        pathname = $"{pathname}.md";
+
                     var title = ObjectNames.NicifyVariableName(Path.GetFileNameWithoutExtension(pathname));
                     var uxmlPathname = Path.ChangeExtension(pathname, ".uxml");
                     File.WriteAllText(pathname, $"# {title}");
@@ -91,7 +95,6 @@ namespace ThunderKit.Core.Documentation
 
         static string GetUXMLTemplate(string title) =>
 $@"<ui:UXML xmlns:ui=""UnityEngine.UIElements"" xmlns:uie=""UnityEditor.UIElements"" editor-extension-mode=""True"">
-    <Style src=""/Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss"" />
     <Style src=""/Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss"" />
     <ui:VisualElement name=""help-page"" class=""m4"">
         <ui:VisualElement name=""header"" class=""bm4"" style=""flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);"">

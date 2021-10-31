@@ -20,15 +20,16 @@ namespace ThunderKit.Markdown.ObjectRenderers
     {
         protected override void Write(UIElementRenderer renderer, CodeInline obj)
         {
-            var codeInline = GetClassedElement<Label>( "code");
+            var codeInline = GetClassedElement<Label>("code", "inline");
             codeInline.text = obj.Content;
+            codeInline.tooltip = "Click to copy to clipboard";
             codeInline.RegisterCallback<AttachToPanelEvent>(OnAttach);
 
             renderer.WriteInline(codeInline);
         }
         private void OnAttach(AttachToPanelEvent evt)
         {
-            var codeInline = evt.currentTarget as Label;
+            var codeInline = evt.target as Label;
             codeInline.UnregisterCallback<AttachToPanelEvent>(OnAttach);
             codeInline.RegisterCallback<MouseUpEvent>(CopyToClipboard);
         }
@@ -42,7 +43,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 builder.Append(word.text);
 
             EditorGUIUtility.systemCopyBuffer = builder.ToString();
-            
+
         }
     }
 }

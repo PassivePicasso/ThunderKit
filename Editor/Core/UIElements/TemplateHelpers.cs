@@ -29,7 +29,7 @@ namespace ThunderKit.Core.UIElements
 
         public static VisualElement GetTemplateInstance(string template, VisualElement target = null, Func<string, bool> isTemplatePath = null)
         {
-            var packageTemplate = LoadTemplate(template, isTemplatePath ?? IsTemplatePath);
+            var packageTemplate = LoadTemplate(template, isTemplatePath);
             var templatePath = AssetDatabase.GetAssetPath(packageTemplate);
             VisualElement instance = target;
 
@@ -60,7 +60,9 @@ namespace ThunderKit.Core.UIElements
         }
 
         const string editorVersion =
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2021_1_OR_NEWER
+            "2021";
+#elif UNITY_2020_1_OR_NEWER
             "2020";
 #elif UNITY_2019_1_OR_NEWER
             "2019";
@@ -84,18 +86,20 @@ namespace ThunderKit.Core.UIElements
         {
 #if UNITY_2019_1_OR_NEWER
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath);
-            element.styleSheets.Add(styleSheet);
+            if (!element.styleSheets.Contains(styleSheet))
+                element.styleSheets.Add(styleSheet);
 #elif UNITY_2018_1_OR_NEWER
-            element.AddStyleSheetPath(sheetPath);
+            if (!element.HasStyleSheetPath(sheetPath))
+                element.AddStyleSheetPath(sheetPath);
 #endif
         }
 
-        private static VisualTreeAsset LoadTemplate(string name, Func<string, bool> isTemplatePath)
+        public static VisualTreeAsset LoadTemplate(string name, Func<string, bool> isTemplatePath = null)
         {
             if (templateCache.TryGetValue(name, out var asset) && asset != null)
                 return asset;
 
-            return templateCache[name] = CreateTemplate(name, isTemplatePath);
+            return templateCache[name] = CreateTemplate(name, isTemplatePath ?? IsTemplatePath);
         }
 
         static VisualTreeAsset CreateTemplate(string name, Func<string, bool> isTemplatePath)

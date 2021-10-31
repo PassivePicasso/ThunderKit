@@ -28,6 +28,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
                 if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
                 File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
+                pipeline.Log(LogLevel.Information, $"Creating Thunderstore manifest.json", $"Manifest.json\r\n{manifestJson}");
             }
 
             return Task.CompletedTask;

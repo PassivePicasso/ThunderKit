@@ -19,7 +19,7 @@ namespace ThunderKit.Core.Paths
                 Errored = true;
                 ErrorMessage = e.Message;
                 ErrorStacktrace = e.StackTrace;
-                throw new InvalidOperationException($"Error Invoking PathComponent: {name}", e);
+                throw;
             }
         }
 

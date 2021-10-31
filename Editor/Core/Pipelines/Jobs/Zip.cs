@@ -2,6 +2,7 @@
 using SharpCompress.Common;
 using SharpCompress.Writers;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
@@ -34,6 +35,12 @@ namespace ThunderKit.Core.Pipelines.Jops
                 var options = new WriterOptions(CompressionType.Deflate);
                 archive.SaveTo(output, options);
             }
+
+            int i = 1;
+            var copiedFiles = Directory.EnumerateFiles(outputDir, "*", SearchOption.AllDirectories)
+                .Prepend("Copied Files")
+                .Aggregate((a, b) => $"{a}\r\n\r\n {i++}. {b}");
+            pipeline.Log(LogLevel.Information, $"archived ``` {source} ``` into ``` {output} ```", copiedFiles);
 
             return Task.CompletedTask;
         }

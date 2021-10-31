@@ -41,6 +41,10 @@ namespace ThunderKit.Markdown
                 {
                     File.WriteAllText(pathname, "# Markdown File");
                     AssetDatabase.Refresh();
+                    var ext = Path.GetExtension(pathname);
+                    if (string.IsNullOrEmpty(ext))
+                        pathname = $"{pathname}.md";
+
                     Selection.activeObject = AssetDatabase.LoadAssetAtPath<TextAsset>(pathname);
                 };
 
