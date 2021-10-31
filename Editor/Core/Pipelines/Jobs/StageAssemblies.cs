@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using UnityEditor.Compilation;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Networking;
+using System.Text;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -84,20 +86,38 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var resolvedArtifactPath = PathReference.ResolvePath(assemblyArtifactPath, pipeline, this);
             Directory.CreateDirectory(resolvedArtifactPath);
 
+
             var assemblies = CompilationPipeline.GetAssemblies();
             var definitionDatums = pipeline.Manifest.Data.OfType<AssemblyDefinitions>().ToArray();
+            if (!definitionDatums.Any())
+            {
+                var scriptPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
+                pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found, skipping");
+                return;
+            }
+
+            for (int i = 0; i < definitionDatums.Length; i++)
+            {
+                var datum = definitionDatums[i];
+                if (!datum) continue;
+                var hasUnassignedDefinition = datum.definitions.Any(def => !(bool)(def));
+                if (hasUnassignedDefinition)
+                    pipeline.Log(LogLevel.Warning, $"AssemblyDefinitions with unassigned definition at index {i}");
+            }
+
             var deserializedAsmDefs = definitionDatums.SelectMany(datum =>
-                datum.definitions.Select(asmDefAsset =>
-                    (asmDef: JsonUtility.FromJson<AsmDef>(asmDefAsset.text),
-                     asmDefAsset: asmDefAsset,
-                     datum: datum)
+                datum.definitions.Where(asmDefAsset => asmDefAsset)
+                                .Select(asmDefAsset =>
+                                        (asmDef: JsonUtility.FromJson<AsmDef>(asmDefAsset.text),
+                                         asmDefAsset: asmDefAsset,
+                                         datum: datum)
                 ));
 
             var definitions = deserializedAsmDefs.Select(dataSet =>
                     (asm: assemblies.FirstOrDefault(asm => dataSet.asmDef.name == asm.name),
                      asmDefAsset: dataSet.asmDefAsset,
                      asmDef: dataSet.asmDef,
-                     datum: dataSet.datum )
+                     datum: dataSet.datum)
                 ).Where(def => def.asm != null)
                 .ToArray();
 
@@ -114,45 +134,41 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 builder.buildTargetGroup = buildTargetGroup;
 
                 var index = pipeline.ManifestIndex;
-                void OnBuildStarted(string path) => Debug.Log($"Building : {path}");
+                void OnBuildStarted(string path) => pipeline.Log(LogLevel.Information, $"Building : {path}");
                 void OnBuildFinished(string path, CompilerMessage[] messages)
                 {
                     BuildStatus.Remove(builder);
                     if (messages.Any())
                         foreach (var message in messages.OrderBy(msg => msg.type))
                         {
+                            var extraData = $"{message.file} ({message.line}:{message.column})";
                             switch (message.type)
                             {
                                 case CompilerMessageType.Error:
-                                    Debug.LogError(message.message);
+                                    pipeline.Log(LogLevel.Error, message.message, extraData);
                                     break;
                                 case CompilerMessageType.Warning:
-                                    Debug.LogWarning(message.message);
+                                    pipeline.Log(LogLevel.Warning, message.message, extraData);
                                     break;
                             }
                         }
-                    else
-                        Debug.Log($"Build Completed: {path}");
 
-                    Debug.Log($"Resolving Paths: {path}");
+                    pipeline.Log(LogLevel.Information, $"Build Completed: ``` {path} ```");
+
                     var prevIndex = pipeline.ManifestIndex;
                     pipeline.ManifestIndex = index;
                     var resolvedPaths = definition.datum.StagingPaths
                         .Select(p => PathReference.ResolvePath(p, pipeline, this)).ToArray();
-                    pipeline.ManifestIndex = prevIndex;
-                    Debug.Log($"Resolved Paths: {path}");
-
 
                     foreach (var outputPath in resolvedPaths)
                     {
-
-                        Debug.Log($"Copying {assemblyName} to {outputPath}");
                         Directory.CreateDirectory(outputPath);
                         if (stageDebugDatabases)
-                            CopyFiles(resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
+                            CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
                         else
-                            CopyFiles(resolvedArtifactPath, outputPath, assemblyName);
+                            CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
                     }
+                    pipeline.ManifestIndex = prevIndex;
                 }
                 builder.buildTarget = buildTarget;
                 builder.buildFinished += OnBuildFinished;
@@ -161,29 +177,33 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if (File.Exists(assemblyOutputPath))
                     File.Delete(assemblyOutputPath);
                 BuildStatus.Add(builder);
-                if (builder.Build())
-                {
-                    while (EditorApplication.isCompiling)
-                    {
-                        await Task.Delay(100);
-                    }
-                }
+                builder.Build();
+            }
+            while (EditorApplication.isCompiling)
+            {
+                await Task.Delay(100);
             }
         }
-        void CopyFiles(string sourcePath, string outputPath, params string[] patterns)
+        void CopyFiles(Pipeline pipeline, string sourcePath, string outputPath, params string[] patterns)
         {
+            var builder = new StringBuilder("Assembly Files");
             Directory.CreateDirectory(outputPath);
             var targetFiles = (from pattern in patterns
                                from file in Directory.GetFiles(sourcePath, pattern, SearchOption.AllDirectories)
                                select file).ToArray();
+
+            builder.AppendLine();
             foreach (var source in targetFiles)
             {
                 var fileName = Path.GetFileName(source);
                 string destination = Combine(outputPath, fileName);
                 File.Copy(source, destination, true);
-                Debug.Log($"Copied {source} to {destination}");
-
+                builder.AppendLine($"From: {source}");
+                builder.AppendLine($"  To: {destination}");
+                builder.AppendLine();
             }
+
+            pipeline.Log(LogLevel.Information, $"staging ``` {sourcePath} ``` in ``` {outputPath} ```\r\n", builder.ToString());
         }
 
     }

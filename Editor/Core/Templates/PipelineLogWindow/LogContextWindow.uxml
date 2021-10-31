@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:VisualElement name="tab-section" class="tab-toolbar">
+        </ui:VisualElement>
+        <ui:VisualElement name="content-section" style="flex-grow: 1;">
+            <ui:ScrollView name="stacktrace-scroll-view" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

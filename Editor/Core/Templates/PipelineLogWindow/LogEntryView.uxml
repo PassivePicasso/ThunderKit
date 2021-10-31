@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="log-entry" class="grow" style="flex-direction: row; overflow: hidden;">
+        <ui:VisualElement name="icon-container">
+            <ui:VisualElement name="icon-log-level" />
+        </ui:VisualElement>
+        <ui:VisualElement name="time-container">
+            <ui:Label text="12:00:00" display-tooltip-when-elided="true" name="time-stamp" style="-unity-text-align: middle-right;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="message-container" style="overflow: hidden; -unity-text-align: middle-left; flex-grow: 1;">
+            <ThunderKit.Markdown.MarkdownElement name="message-label" markdown-data-type="Text" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

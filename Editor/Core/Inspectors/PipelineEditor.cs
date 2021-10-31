@@ -1,7 +1,8 @@
-﻿using ThunderKit.Core.Pipelines;
+﻿using System.Linq;
+using ThunderKit.Core.Pipelines;
+using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;
-using static UnityEditor.EditorGUIUtility;
 
 namespace ThunderKit.Core.Inspectors
 {
@@ -32,18 +33,35 @@ namespace ThunderKit.Core.Inspectors
         }
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-            var size = new Vector2(250, 24);
-            var rect = GUILayoutUtility.GetRect(size.x, size.y);
-            rect.width = size.x;
-            rect.y += standardVerticalSpacing * 2;
-            rect.x = (currentViewWidth / 2) - (rect.width / 2);
-            if (GUI.Button(rect, "Execute"))
+            var pipeline = target as Pipeline;
+            if (!pipeline)
             {
-                var pipeline = target as Pipeline;
-                if (pipeline)
-                    _ = pipeline.Execute();
+                //this should never get hit?
+                Debug.LogError("Drawing PipelineEditor inspector for pipeline that is not targetted.");
+                return;
             }
+            using (var scope = new GUILayout.HorizontalScope())
+            {
+                try
+                {
+                    if (GUILayout.Button("Execute"))
+                        _ = pipeline.Execute();
+                    if (GUILayout.Button("Show Log"))
+                    {
+                        var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
+                                                        .Select(AssetDatabase.GUIDToAssetPath)
+                                                        .Where(ap => ap.Contains(pipeline.name))
+                                                        .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
+                                                        .OrderByDescending(log => log.CreatedDate)
+                                                        .First();
+                        PipelineLogWindow.ShowLog(pipelineLog);
+                    }
+                }
+                catch { }
+            }
+            GUILayout.Space(4);
+
+            base.OnInspectorGUI();
         }
     }
 }

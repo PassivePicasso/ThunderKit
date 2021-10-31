@@ -7,6 +7,7 @@ namespace ThunderKit.Core.Pipelines
     {
         [HideInInspector]
         public bool Active = true;
+
         public abstract Task Execute(Pipeline pipeline);
     }
 }

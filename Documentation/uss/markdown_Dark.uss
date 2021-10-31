@@ -1,0 +1,11 @@
+.link.inline {
+    color: rgb(128, 128, 255);
+}
+
+.assetlink.inline {
+    color: rgb(168, 128, 192);
+}
+
+.menulink.inline {
+    color: rgb(128, 255, 128);
+}
