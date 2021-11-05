@@ -19,7 +19,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
             var checkbox = GetClassedElement<Toggle>("task-list");
             checkbox.value = taskList.Checked;
             checkbox.SetEnabled(false);
-            renderer.WriteInline(checkbox);
+            renderer.WriteElement(checkbox);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
         protected override void Write(UIElementRenderer renderer, ParagraphBlock block)
         {
             renderer.Push(GetClassedElement<VisualElement>("paragraph"));
-            renderer.WriteOptimizedLeafInline(block);
+            renderer.WriteOptimizedLeafBlock(block);
             renderer.Pop();
         }
     }
