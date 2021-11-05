@@ -22,3 +22,10 @@ This package contains third-party software components governed by the license(s)
 * [https://github.com/adamhathcock/sharpcompress](https://github.com/adamhathcock/sharpcompress)
 * License:  [The MIT License](https://github.com/adamhathcock/sharpcompress/blob/master/LICENSE.txt)
 * [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/SharpCompress/LICENSE.txt)
+
+## Markdown Test File
+
+* `Copyright (c) 2017 Max Stoiber`
+* [https://github.com/mxstbr/markdown-test-file](https://github.com/mxstbr/markdown-test-file)
+* License:  [The MIT License](https://github.com/mxstbr/markdown-test-file/blob/master/LICENSE)
+* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/MarkdownTestFile/LICENSE.txt)
