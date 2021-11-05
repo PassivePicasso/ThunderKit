@@ -52,7 +52,8 @@ namespace ThunderKit.Markdown
                 {
                     if (i != 0)
                         WriteInline(GetClassedElement<Label>("linebreak"));
-                    WriteSplitText(ref slices[i].Slice);
+
+                    WriteText(ref slices[i].Slice);
                 }
             }
         }
@@ -69,6 +70,14 @@ namespace ThunderKit.Markdown
         {
             stack.Peek().Add(inline);
         }
+        public void WriteText(ref StringSlice slice)
+        {
+            if (slice.IsEmpty)
+                return;
+            var result = slice.Text.Substring(slice.Start, slice.Length);
+            var element = GetTextElement<Label>(result, "inline");
+            WriteInline(element);
+        }
         public void WriteSplitText(ref StringSlice slice)
         {
             if (slice.IsEmpty)
@@ -83,8 +92,6 @@ namespace ThunderKit.Markdown
                     var element = GetTextElement<Label>(value, "inline");
 
                     match = match.NextMatch();
-                    //if (match.Success == false)
-                    //    element.AddToClassList("last-inline");
 
                     WriteInline(element);
                 }
@@ -133,29 +140,23 @@ namespace ThunderKit.Markdown
             else
             {
                 stack.Peek().AddToClassList("split-literals");
-                WriteLeafInline(block);
-            }
-        }
-
-        public void WriteLeafInline(LeafBlock leafBlock)
-        {
-            if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
-            var inline = leafBlock.Inline.FirstChild;
-            while (inline != null)
-            {
-                switch (inline)
+                var leafInline = block.Inline.FirstChild;
+                while (leafInline != null)
                 {
-                    case HtmlInline htmlInline:
-                        WriteText(htmlInline.Tag);
-                        break;
-                    case HtmlEntityInline htmlEntityInline:
-                        WriteText(htmlEntityInline.ToString());
-                        break;
-                    default:
-                        Write(inline);
-                        break;
+                    switch (leafInline)
+                    {
+                        case HtmlInline htmlInline:
+                            WriteText(htmlInline.Tag);
+                            break;
+                        case HtmlEntityInline htmlEntityInline:
+                            WriteText(htmlEntityInline.ToString());
+                            break;
+                        default:
+                            Write(leafInline);
+                            break;
+                    }
+                    leafInline = leafInline.NextSibling;
                 }
-                inline = inline.NextSibling;
             }
         }
 
