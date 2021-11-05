@@ -41,22 +41,6 @@ namespace ThunderKit.Markdown
             return Document;
         }
 
-        public void WriteLeafRawLines(LeafBlock leafBlock)
-        {
-            if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
-            if (leafBlock.Lines.Lines != null)
-            {
-                var lines = leafBlock.Lines;
-                var slices = lines.Lines;
-                for (var i = 0; i < lines.Count; i++)
-                {
-                    if (i != 0)
-                        WriteElement(GetClassedElement<Label>("linebreak"));
-
-                    WriteText(ref slices[i].Slice);
-                }
-            }
-        }
         public void Push(VisualElement o)
         {
             stack.Push(o);
@@ -69,14 +53,6 @@ namespace ThunderKit.Markdown
         public void WriteElement(VisualElement element)
         {
             stack.Peek().Add(element);
-        }
-        public void WriteText(ref StringSlice slice)
-        {
-            if (slice.IsEmpty)
-                return;
-            var result = slice.Text.Substring(slice.Start, slice.Length);
-            var element = GetTextElement<Label>(result, "inline");
-            WriteElement(element);
         }
         public void WriteSplitText(ref StringSlice slice)
         {

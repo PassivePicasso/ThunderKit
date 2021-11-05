@@ -22,7 +22,9 @@ MarkdownElement's links do not track visitation, so the color of links will not 
 ## Copying Text
 
 The documentation in its current form doesn't easily allow free selection of text.
-However, holding control and clicking on `code blocks` will copy their content to the clipboard.
+```
+However, you can select and copy from code block like this one
+```
 
 ## About ThunderKit Documentation
 
