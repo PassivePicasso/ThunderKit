@@ -16,10 +16,6 @@
 	flex-grow: 1;
 	flex-direction: row;
 }
-#tab-element {
-	flex-basis: 100px;
-	flex-grow: .1;
-}
 #content-section {
 	flex-grow: 1;
 }
@@ -44,6 +40,7 @@
 	margin-bottom: 0px;
 	padding-top: 7px;
 	height: 24px;
+	width: 220px;
 }
 .tab-button>#Checkmark{
 	visibility: hidden;
@@ -72,6 +69,7 @@
 	border-bottom-width: 1px;
 	border-color: rgba(0,0,0,0.5);
 	font-size: 12px;
+	width: 234px;
 }
 #tab-section .content-view {
 	flex-direction: column-reverse;
