@@ -20,24 +20,24 @@ namespace ThunderKit.Markdown.ObjectRenderers
         {
             renderer.Push(GetClassedElement<VisualElement>("list"));
 
+
             foreach (var item in listBlock.OfType<ListItemBlock>())
             {
                 var listItem = GetClassedElement<VisualElement>("list-item");
-                renderer.Push(listItem);
+                var listItemChildren = GetClassedElement<VisualElement>("list-item-children");
 
-                foreach (var block in item.OfType<ParagraphBlock>())
+                renderer.Push(listItem);
                 {
-                    renderer.Push(GetClassedElement<VisualElement>("paragraph"));
-                    renderer.WriteOptimizedLeafInline(block);
+                    var marker = listBlock.IsOrdered ? $"{item.Order}." : $"{listBlock.BulletType}";
+                    var classes = listBlock.IsOrdered ? "inline" : "bullet";
+                    renderer.WriteInline(GetTextElement<Label>(marker, classes));
+
+                    renderer.Push(listItemChildren);
+                    {
+                        renderer.WriteChildren(item);
+                    }
                     renderer.Pop();
                 }
-
-                var marker = listBlock.IsOrdered ? $"{item.Order}." : $"{listBlock.BulletType}";
-
-                var classes = listBlock.IsOrdered ? "inline" : "bullet";
-
-                listItem.Insert(0, GetTextElement<Label>(marker, classes));
-
                 renderer.Pop();
             }
 
