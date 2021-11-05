@@ -171,7 +171,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
                     if (match.Success)
                         linkLabel.RegisterCallback<MouseUpEvent>(evt => schemeHandlers.linkHandler?.Invoke(url));
                 }
-                renderer.WriteInline(inlineElement);
+                renderer.WriteElement(inlineElement);
             }
 
         }

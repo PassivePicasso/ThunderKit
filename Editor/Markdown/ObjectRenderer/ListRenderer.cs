@@ -30,7 +30,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 {
                     var marker = listBlock.IsOrdered ? $"{item.Order}." : $"{listBlock.BulletType}";
                     var classes = listBlock.IsOrdered ? "inline" : "bullet";
-                    renderer.WriteInline(GetTextElement<Label>(marker, classes));
+                    renderer.WriteElement(GetTextElement<Label>(marker, classes));
 
                     renderer.Push(listItemChildren);
                     {

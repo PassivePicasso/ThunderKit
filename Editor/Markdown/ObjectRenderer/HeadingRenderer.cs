@@ -19,7 +19,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
         protected override void Write(UIElementRenderer renderer, HeadingBlock block)
         {
             renderer.Push(GetClassedElement<VisualElement>($"header-{block.Level}"));
-            renderer.WriteOptimizedLeafInline(block);
+            renderer.WriteOptimizedLeafBlock(block);
             renderer.Pop();
         }
     }

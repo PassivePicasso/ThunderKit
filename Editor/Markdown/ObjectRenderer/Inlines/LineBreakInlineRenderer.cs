@@ -19,7 +19,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
         {
             if (obj.IsHard)
             {
-                renderer.WriteInline(GetClassedElement<Label>("linebreak"));
+                renderer.WriteElement(GetClassedElement<Label>("linebreak"));
             }
             else
             {

@@ -25,7 +25,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
             codeInline.tooltip = "Click to copy to clipboard";
             codeInline.RegisterCallback<AttachToPanelEvent>(OnAttach);
 
-            renderer.WriteInline(codeInline);
+            renderer.WriteElement(codeInline);
         }
         private void OnAttach(AttachToPanelEvent evt)
         {

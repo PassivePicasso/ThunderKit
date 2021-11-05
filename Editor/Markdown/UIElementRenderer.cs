@@ -51,7 +51,7 @@ namespace ThunderKit.Markdown
                 for (var i = 0; i < lines.Count; i++)
                 {
                     if (i != 0)
-                        WriteInline(GetClassedElement<Label>("linebreak"));
+                        WriteElement(GetClassedElement<Label>("linebreak"));
 
                     WriteText(ref slices[i].Slice);
                 }
@@ -66,9 +66,9 @@ namespace ThunderKit.Markdown
             var popped = stack.Pop();
             stack.Peek().Add(popped);
         }
-        public void WriteInline(VisualElement inline)
+        public void WriteElement(VisualElement element)
         {
-            stack.Peek().Add(inline);
+            stack.Peek().Add(element);
         }
         public void WriteText(ref StringSlice slice)
         {
@@ -76,7 +76,7 @@ namespace ThunderKit.Markdown
                 return;
             var result = slice.Text.Substring(slice.Start, slice.Length);
             var element = GetTextElement<Label>(result, "inline");
-            WriteInline(element);
+            WriteElement(element);
         }
         public void WriteSplitText(ref StringSlice slice)
         {
@@ -93,7 +93,7 @@ namespace ThunderKit.Markdown
 
                     match = match.NextMatch();
 
-                    WriteInline(element);
+                    WriteElement(element);
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace ThunderKit.Markdown
         /// </summary>
         /// <param name="block"></param>
         /// <returns>true if constructed optimized label, otherwise false</returns>
-        public void WriteOptimizedLeafInline(LeafBlock block)
+        public void WriteOptimizedLeafBlock(LeafBlock block)
         {
             var inline = block.Inline.FirstChild;
             Inline previousInline = null;
@@ -135,7 +135,7 @@ namespace ThunderKit.Markdown
             {
                 var result = builder.ToString().Replace("\r\n", " ");
                 var element = GetTextElement<Label>(result, "inline");
-                WriteInline(element);
+                WriteElement(element);
             }
             else
             {

@@ -17,7 +17,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
     {
         protected override void Write(UIElementRenderer renderer, ThematicBreakBlock obj)
         {
-            renderer.WriteInline(GetClassedElement<VisualElement>("thematicbreak"));
+            renderer.WriteElement(GetClassedElement<VisualElement>("thematicbreak"));
         }
     }
 }
