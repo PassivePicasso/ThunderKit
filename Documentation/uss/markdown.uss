@@ -103,7 +103,6 @@ Label {
     padding-right: 2px;
     flex-direction: row;
 }
-
 .paragraph {
     margin-top: 4px;
     margin-bottom: 4px;
@@ -115,20 +114,17 @@ Label {
     flex-direction: row;
 }
 
-.list {
-    cursor: link;
-}
-
-.list-item .inline {
-    -unity-text-align: middle-center;
-}
 .list-item {
+    margin-top: 4px;
+    margin-bottom: 4px;
     margin-left: 14px;
     flex-wrap: nowrap;
     flex-direction: row;
 }
-.list-item .list-item {
-    margin-left: 14px;
+.list-item .list-item-children {
+    margin-top: -4px;
+    flex-wrap: nowrap;
+    flex-direction: column;
 }
 
 .code {
@@ -142,7 +138,11 @@ Label {
 }
 
 .quote {
+    border-left-width: 4px;
+    border-color: rgba(128, 128, 128, 0.25);
     color: rgb(255, 255, 255);
+    padding-left: 14px;
+    margin-top: 4px;
 }
 
 .last-inline {
@@ -209,7 +209,7 @@ Label {
 }
 
 .bullet {
-    padding-top: 4px;
+    padding-top: 3px;
 }
 
 .asset-icon {

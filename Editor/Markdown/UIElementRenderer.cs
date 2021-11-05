@@ -126,7 +126,8 @@ namespace ThunderKit.Markdown
             }
             if (!splitLiterals)
             {
-                var element = GetTextElement<Label>(builder.ToString(), "inline");
+                var result = builder.ToString().Replace("\r\n", " ");
+                var element = GetTextElement<Label>(result, "inline");
                 WriteInline(element);
             }
             else
