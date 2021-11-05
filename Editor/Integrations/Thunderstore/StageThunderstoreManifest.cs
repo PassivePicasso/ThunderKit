@@ -28,7 +28,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
                 if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
 
                 File.WriteAllText(Combine(outputPath, "manifest.json"), manifestJson);
-                pipeline.Log(LogLevel.Information, $"Creating Thunderstore manifest.json", $"Manifest.json\r\n{manifestJson}");
+                pipeline.Log(LogLevel.Information, $"Creating Thunderstore manifest.json", $"Manifest.json\r\n```js\r\n{manifestJson}\r\n```");
             }
 
             return Task.CompletedTask;
@@ -56,7 +56,7 @@ namespace ThunderKit.Integrations.Thunderstore.Jobs
                 version_number = identity.Version,
                 website_url = manifest.url
             };
-            return JsonUtility.ToJson(stub);
+            return JsonUtility.ToJson(stub, true);
         }
     }
 }
