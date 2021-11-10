@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -26,8 +26,14 @@ namespace ThunderKit.Core.Paths
             var pathReferences = pathReferencePaths.Select(x => AssetDatabase.LoadAssetAtPath<PathReference>(x)).ToArray();
             var pathReferenceDictionary = pathReferences.ToDictionary(pr => pr.name);
 
-            var callerPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(caller));
-            var callerLink = $"[{pipeline.name}.{caller.name}](assetlink://{callerPath})";
+            var callerPath = string.Empty;
+            var callerLink = string.Empty;
+
+            if (pipeline != null && caller)
+            {
+                callerPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(caller));
+                callerLink = $"[{pipeline.name}.{caller.name}](assetlink://{callerPath})";
+            }
 
             Match match = referenceIdentifier.Match(result);
             while (match != null && !string.IsNullOrEmpty(match.Value))
@@ -35,7 +41,10 @@ namespace ThunderKit.Core.Paths
                 var matchValue = match.Value.Trim(opo, opc);
                 if (!pathReferenceDictionary.ContainsKey(matchValue))
                 {
-                    EditorGUIUtility.PingObject(caller);
+                    if (caller)
+                    {
+                        EditorGUIUtility.PingObject(caller);
+                    }
                     throw new InvalidOperationException($"{callerLink} No PathReference named \"{matchValue}\" found in AssetDatabase");
                 }
 
