@@ -121,7 +121,7 @@ namespace ThunderKit.Core.Config
                 var exePath = Path.Combine(settings.GamePath, settings.GameExecutable);
                 var fvi = FileVersionInfo.GetVersionInfo(exePath);
                 var majorMinorSubVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
-                if (majorMinorSubVersion.Count(f == '.') == 2)
+                if (majorMinorSubVersion.Count(f => f == '.') == 2)
                     versionMatch = unityVersion.Equals(majorMinorSubVersion);
             }
 
