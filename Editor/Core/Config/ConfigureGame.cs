@@ -104,6 +104,7 @@ namespace ThunderKit.Core.Config
 
             var dataPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data");
             var informationFile = Path.Combine(dataPath, "globalgamemanagers");
+            var playerVersion = string.Empty;
             if (!File.Exists(informationFile))
             {
                 informationFile = Path.Combine(dataPath, "data.unity3d");
@@ -112,7 +113,7 @@ namespace ThunderKit.Core.Config
             {
                 var firstGrand = File.ReadLines(informationFile).First();
 
-                var playerVersion = regs.Replace(firstGrand, match => match.Groups[1].Value);
+                playerVersion = regs.Replace(firstGrand, match => match.Groups[1].Value);
 
                 versionMatch = unityVersion.Equals(playerVersion);
             }
@@ -120,7 +121,7 @@ namespace ThunderKit.Core.Config
             {
                 var exePath = Path.Combine(settings.GamePath, settings.GameExecutable);
                 var fvi = FileVersionInfo.GetVersionInfo(exePath);
-                var majorMinorSubVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
+                playerVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
                 if (majorMinorSubVersion.Count(f => f == '.') == 2)
                     versionMatch = unityVersion.Equals(majorMinorSubVersion);
             }
