@@ -97,18 +97,34 @@ namespace ThunderKit.Core.Config
 
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
+            var versionMatch = false;
             var regs = new Regex(".*?(\\d{1,4}\\.\\d+\\.\\d+).*");
 
             var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
 
             var dataPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data");
-            var globalGameManager = Path.Combine(dataPath, "globalgamemanagers");
+            var informationFile = Path.Combine(dataPath, "globalgamemanagers");
+            if (!File.Exists(informationFile))
+            {
+                informationFile = Path.Combine(dataPath, "data.unity3d");
+            }
+            if (File.Exists(informationFile))
+            {
+                var firstGrand = File.ReadLines(informationFile).First();
 
-            var firstGrand = File.ReadLines(globalGameManager).First();
+                var playerVersion = regs.Replace(firstGrand, match => match.Groups[1].Value);
 
-            var playerVersion = regs.Replace(firstGrand, match => match.Groups[1].Value);
+                versionMatch = unityVersion.Equals(playerVersion);
+            }
+            else
+            {
+                var exePath = Path.Combine(settings.GamePath, settings.GameExecutable);
+                var fvi = FileVersionInfo.GetVersionInfo(exePath);
+                var majorMinorSubVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
+                if (majorMinorSubVersion.Count('.') == 2)
+                    versionMatch = unityVersion.Equals(majorMinorSubVersion);
+            }
 
-            var versionMatch = unityVersion.Equals(playerVersion);
             var result = versionMatch ? "" : ", aborting setup.\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.";
             Debug.Log($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}){result}");
             return versionMatch;
