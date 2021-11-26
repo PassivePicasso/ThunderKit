@@ -118,12 +118,11 @@ namespace ThunderKit.Core.Config
             }
             else
             {
-                throw new Exception("Cannot discover unity version of targetted game. Reach out on discord for assistance.")
-                //var exePath = Path.Combine(settings.GamePath, settings.GameExecutable);
-                //var fvi = FileVersionInfo.GetVersionInfo(exePath);
-                //var majorMinorSubVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
-                //if (majorMinorSubVersion.Count('.') == 2)
-                //    versionMatch = unityVersion.Equals(majorMinorSubVersion);
+                var exePath = Path.Combine(settings.GamePath, settings.GameExecutable);
+                var fvi = FileVersionInfo.GetVersionInfo(exePath);
+                var majorMinorSubVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
+                if (majorMinorSubVersion.Count(f == '.') == 2)
+                    versionMatch = unityVersion.Equals(majorMinorSubVersion);
             }
 
             var result = versionMatch ? "" : ", aborting setup.\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.";
