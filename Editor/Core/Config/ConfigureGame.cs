@@ -122,8 +122,8 @@ namespace ThunderKit.Core.Config
                 var exePath = Path.Combine(settings.GamePath, settings.GameExecutable);
                 var fvi = FileVersionInfo.GetVersionInfo(exePath);
                 playerVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
-                if (majorMinorSubVersion.Count(f => f == '.') == 2)
-                    versionMatch = unityVersion.Equals(majorMinorSubVersion);
+                if (playerVersion.Count(f => f == '.') == 2)
+                    versionMatch = unityVersion.Equals(playerVersion);
             }
 
             var result = versionMatch ? "" : ", aborting setup.\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.";
