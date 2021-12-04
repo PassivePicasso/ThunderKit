@@ -94,8 +94,8 @@ namespace {0}
                 if (JobIndex > -1)
                     result += $"({JobIndex} - {Job().name})";
                 result += $"](assetlink://{pipelinePath})";
-                if (ManifestIndex > -1)
-                    result += $"[{Manifest.name}](assetlink://{manifestPath})";
+                if (ManifestIndex > -1 && Manifests != null && Manifests.Length > 0)
+                    result += $"[{Manifest?.name}](assetlink://{manifestPath})";
                 return result;
             }
         }
@@ -113,9 +113,10 @@ namespace {0}
 
                 using (progressBar = new ProgressBar())
                 {
-                    Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
+                    //currentJobs needs to be populated first to ensure that it is available for logging.
                     currentJobs = Jobs.Where(SupportsType).ToArray();
                     //Needs to run after CurrentJobs is populated
+                    Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
                     Log(Information, $"Execute Pipeline");
 
                     var manifestJobs = currentJobs.Where(j => j.GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any())
