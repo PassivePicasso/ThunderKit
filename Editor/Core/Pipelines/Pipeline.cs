@@ -160,7 +160,7 @@ namespace {0}
             catch (Exception e)
             {
                 if (!isRoot)
-                    throw new InvalidOperationException($"{pipelineLink} Halted Execution\r\n\r\n{e.Message}", e);
+                    throw;
                 else
                 {
                     var exceptionList = new List<Exception>();
