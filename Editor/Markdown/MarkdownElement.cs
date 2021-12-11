@@ -1,17 +1,15 @@
 using Markdig;
-using Markdig.Extensions.GenericAttributes;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 using Markdig.Renderers.Normalize;
 using System.Linq;
+using ThunderKit.Markdown.Extensions.Json;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
-using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
 
 namespace ThunderKit.Markdown
@@ -22,18 +20,11 @@ namespace ThunderKit.Markdown
     public class MarkdownElement : VisualElement
     {
         const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
-        private static readonly UIElementRenderer renderer;
+        private readonly UIElementRenderer renderer;
+        private readonly MarkdownPipelineBuilder mpb;
+        private readonly MarkdownPipeline pipeline;
         private string data;
 
-        static MarkdownElement()
-        {
-            renderer = new UIElementRenderer();
-            var mpb = new MarkdownPipelineBuilder();
-            mpb.Extensions.AddIfNotAlready<GenericAttributesExtension>();
-            mpb.DisableHtml();
-            var pipeline = mpb.Build();
-            pipeline.Setup(renderer);
-        }
         public string Data { get => data; set => data = value; }
         private string Markdown { get; set; }
         private string NormalizedMarkdown { get; set; }
@@ -47,6 +38,13 @@ namespace ThunderKit.Markdown
         public bool ExpandAutoLinks { get; set; }
         public MarkdownElement()
         {
+            renderer = new UIElementRenderer();
+            mpb = new MarkdownPipelineBuilder();
+            mpb.Extensions.AddIfNotAlready<JsonFrontMatterExtension>();
+            mpb.DisableHtml();
+            pipeline = mpb.Build();
+            pipeline.Setup(renderer);
+
             EditorApplication.projectChanged -= RefreshContent;
             EditorApplication.projectChanged += RefreshContent;
             AddSheet(MarkdownStylePath);
@@ -97,14 +95,14 @@ namespace ThunderKit.Markdown
 
         string GetMarkdown()
         {
-            string markdown = Data;
+            string markdown = string.Empty;
             switch (MarkdownDataType)
             {
                 case MarkdownDataType.Implicit:
                 case MarkdownDataType.Source:
-                    if (!".md".Equals(Path.GetExtension(Source))) break;
+                    if (!".md".Equals(Path.GetExtension(Data))) break;
 
-                    var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Source);
+                    var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Data);
                     if (asset)
                         markdown = asset.text;
                     else
@@ -140,7 +138,7 @@ namespace ThunderKit.Markdown
 
             NormalizedMarkdown = Markdig.Markdown.Normalize(Markdown, normalizeOptions);
 
-            var document = Markdig.Markdown.Parse(NormalizedMarkdown);
+            var document = Markdig.Markdown.Parse(NormalizedMarkdown, pipeline);
             renderer.LoadDocument(this);
             renderer.Render(document);
         }
@@ -174,11 +172,7 @@ namespace ThunderKit.Markdown
                 bool configured = false;
                 if (mdElement.MarkdownDataType != MarkdownDataType.Text)
                 {
-                    if (IsAssetDirectory(mdElement.Data))
-                    {
-                        mdElement.Source = mdElement.Data;
-                        configured = true;
-                    }
+                    if (IsAssetDirectory(mdElement.Data)) configured = true;
                     else if (cc.visualTreeAsset != null)
                     {
                         var treeAssetPath = AssetDatabase.GetAssetPath(cc.visualTreeAsset);
@@ -188,7 +182,7 @@ namespace ThunderKit.Markdown
                             var source = string.IsNullOrEmpty(mdElement.Data) ? $"{Path.GetFileNameWithoutExtension(treeAssetPath)}.md"
                                                                               : mdElement.Data;
                             var sourcePath = Path.Combine(treeAssetDirectory, source);
-                            mdElement.Source = sourcePath;
+                            mdElement.Data = sourcePath;
                             configured = true;
                         }
                     }
