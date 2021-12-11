@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Manifest_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 The [ManifestIdentity](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/ManifestIdentity.cs) stores unique identifying information used by ThunderKit to construct dependency information for package stores and mod loaders.
 
 ### Fields
