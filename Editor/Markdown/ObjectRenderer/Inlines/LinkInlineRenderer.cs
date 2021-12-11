@@ -19,7 +19,6 @@ using Object = UnityEngine.Object;
 
 namespace ThunderKit.Markdown.ObjectRenderers
 {
-
     using static Helpers.VisualElementFactory;
     using static Helpers.UnityPathUtility;
     public class LinkInlineRenderer : UIElementObjectRenderer<LinkInline>
@@ -30,7 +29,6 @@ namespace ThunderKit.Markdown.ObjectRenderers
             public Action<string> linkHandler;
             public Func<Label, VisualElement> preprocessor;
         }
-        internal class ImageLoadBehaviour : MonoBehaviour { }
 
         internal static Regex SchemeCheck = new Regex("^([\\w]+)://.*", RegexOptions.Singleline | RegexOptions.Compiled);
         private static Func<Object, Texture2D> GetIconForObject;
@@ -91,58 +89,21 @@ namespace ThunderKit.Markdown.ObjectRenderers
             return false;
         }
 
-        IEnumerator LoadImage(string url, Image imageElement)
-        {
-            using (var request = UnityWebRequestTexture.GetTexture(url))
-            {
-                imageElement.RegisterCallback<DetachFromPanelEvent, UnityWebRequest>(CancelRequest, request);
-
-                yield return request.SendWebRequest();
-
-#if UNITY_2020_1_OR_NEWER
-                if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-#else
-                if (request.isNetworkError || request.isHttpError)
-#endif
-                    Debug.Log(request.error);
-                else
-                    SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
-
-                imageElement.UnregisterCallback<DetachFromPanelEvent, UnityWebRequest>(CancelRequest);
-            }
-        }
-
-        static void CancelRequest(DetachFromPanelEvent evt, UnityWebRequest webRequest) => webRequest.Abort();
-
-        public static void SetupImage(Image imageElement, Texture texture)
-        {
-            imageElement.image = texture;
-#if UNITY_2019_1_OR_NEWER
-            imageElement.style.width = texture.width;
-            imageElement.style.height = texture.height;
-#else
-            imageElement.style.width = new StyleValue<float>(texture.width);
-            imageElement.style.height = new StyleValue<float>(texture.height);
-#endif
-        }
-
         protected override void Write(UIElementRenderer renderer, LinkInline link)
         {
             var url = UnityWebRequest.UnEscapeURL(link.Url);
             if (link.IsImage)
             {
-                var imageElement = GetClassedElement<Image>("image");
-                if (IsAssetDirectory(url))
+                var imageElement = GetImageElement<Image>(link.Url, "image");
+                var nextSibling = link.NextSibling;
+                if (nextSibling != null)
                 {
-                    var image = AssetDatabase.LoadAssetAtPath<Texture>(url);
-                    if (image)
-                        SetupImage(imageElement, image);
-                }
-                else
-                {
-                    var imageLoaderObject = new GameObject("MarkdownImageLoader", typeof(ImageLoadBehaviour)) { isStatic = true, hideFlags = HideFlags.HideAndDontSave };
-                    var imageLoader = imageLoaderObject.GetComponent<ImageLoadBehaviour>();
-                    var c = imageLoader.StartCoroutine(LoadImage(url, imageElement));
+                    var text = nextSibling.ToString();
+                    if (text.StartsWith("{") && text.EndsWith("}"))
+                    {
+                        // if text contains attribute size set image size
+                        imageElement.AddToClassList(text.Substring(1, text.Length - 2));
+                    }
                 }
 
                 renderer.Push(imageElement);
@@ -153,9 +114,8 @@ namespace ThunderKit.Markdown.ObjectRenderers
             }
             else
             {
-
                 var lowerScheme = string.Empty;
-                var match = LinkInlineRenderer.SchemeCheck.Match(url);
+                var match = SchemeCheck.Match(url);
                 if (match.Success) lowerScheme = match.Groups[1].Value.ToLower();
                 else lowerScheme = "#";
 
