@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PathReference_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 [WorkingDirectory](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/WorkingDirectory.cs) will return the current Process Working Directory
 
 ## Remarks

@@ -1,3 +1,15 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"content" : "ComposableObject",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ComposableObject_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 ThunderKit is aims to be an extensible platform. To help achieve this goal the 3 core systems in ThunderKit are built upon the ComposableObject.
 
 The ComposableObject is a component system with a unified editor to allow the easy implementation of new component based data structures. The common editor enable you to create new Components for 

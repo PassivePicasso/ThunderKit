@@ -1,3 +1,15 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"content" : "About this Documentation",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 ## Integrated Links
 
 The ThunderKit Documentation is enhanced by multiple types of links that add Unity integration features.

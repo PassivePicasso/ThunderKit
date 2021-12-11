@@ -1,7 +1,18 @@
-# Date Time Format
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"content" : "DateTimeFormat Reference",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
 
 Refer to [Custom Date and Time Format Strings](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings) 
 for more information about date and time formatting.
+
 
 * "d"	The day of the month, from 1 through 31.
 * "dd"	The day of the month, from 01 through 31.
