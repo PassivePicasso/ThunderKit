@@ -22,18 +22,18 @@ namespace ThunderKit.Markdown
     using static Helpers.VisualElementFactory;
     public class UIElementRenderer : RendererBase
     {
-        private static readonly Regex LiteralSplitter = new Regex(@"([\S]+\b)\S?", RegexOptions.Singleline | RegexOptions.Compiled);
         private readonly Stack<VisualElement> stack = new Stack<VisualElement>(128);
 
         public UIElementRenderer() { }
-        public virtual void LoadDocument(VisualElement document)
+        public void LoadDocument(MarkdownElement document)
         {
             Document = document;
+            stack.Clear();
             stack.Push(document);
             LoadRenderers();
         }
 
-        public VisualElement Document { get; protected set; }
+        public MarkdownElement Document { get; protected set; }
         /// <inheritdoc/>
         public override object Render(MarkdownObject markdownObject)
         {
@@ -59,18 +59,25 @@ namespace ThunderKit.Markdown
             if (slice.IsEmpty)
                 return;
 
-            var match = LiteralSplitter.Match(slice.Text, slice.Start, slice.Length);
-            while (match.Success)
+            var text = slice.ToString();
+            for (int i = 0; i < text.Length;)
             {
-                string value = match.Value;
+                int nextI = text.IndexOf(' ', i + 1);
+                if (nextI == i) break;
+
+                var value = string.Empty;
+                if (nextI == -1)
+                    value = text.Substring(i);
+                else
+                    value = text.Substring(i, nextI - i);
+
+                value = value.Trim(' ', '\r', '\n');
+                i = nextI;
+
                 if (!string.IsNullOrEmpty(value))
-                {
-                    var element = GetTextElement<Label>(value, "inline");
+                    WriteElement(GetTextElement<Label>(value, "inline"));
 
-                    match = match.NextMatch();
-
-                    WriteElement(element);
-                }
+                if (i == -1) break;
             }
         }
         /// <summary>
@@ -131,7 +138,7 @@ namespace ThunderKit.Markdown
                             Write(leafInline);
                             break;
                     }
-                    leafInline = leafInline.NextSibling;
+                    leafInline = leafInline?.NextSibling;
                 }
             }
         }
@@ -162,9 +169,6 @@ namespace ThunderKit.Markdown
             ObjectRenderers.Add(new LineBreakInlineRenderer());
             ObjectRenderers.Add(new LinkInlineRenderer());
             ObjectRenderers.Add(new LiteralInlineRenderer());
-
-            // Extension renderers
-            ObjectRenderers.Add(new TaskListRenderer());
         }
     }
 }
