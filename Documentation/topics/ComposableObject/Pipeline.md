@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Pipeline_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 Pipelines are the Build portion of ThunderKit. In combination with PathReferences and Manifests, a Pipeline can build Assemblies, AssetBundles, manifest files, and anything else a project may need.
 
 Pipelines are composed of a Manifest and a set of PipelineJobs. PipelineJobs will either execute once during a Pipeline run or once per Manifest. This can be indicated by the PipelineJob&apos;s name, functionality or explicit options on the PipelineJob.  See the documentation for a PipelineJob if

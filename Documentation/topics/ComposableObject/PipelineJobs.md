@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Pipeline_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 PipelineJobs are what conduct Unity Build actions such as staging assets, assetbundles and other files, copying and moving files for deployment, as well as creating and modifying zip files.
 
 ThunderKit comes with a collection of PipelineJobs that cover each of these use cases and like ManifestDatums and PathComponents you can create new PipelineJobs using the help of ComposableObject Inspector.

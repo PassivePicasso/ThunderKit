@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PackageSource_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 The [ThunderKit Package Manager](menulink://Tools/ThunderKit/Packages) can be opened from the main menu under Tools/ThunderKit/Packages
 
 With the package manager you can access mods, mod loaders, and utilites hosted on Thunderstore and other mod distribution sources in the future to assist you in making your project.

@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PathReference_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 [GamePath](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/GamePath.cs) will return the value of GamePath in your [ThunderKitSettings](menulink://Tools/ThunderKit/Settings)
 
 ## Remarks
