@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using ThunderKit.Markdown.ObjectRenderers;
+using ThunderKit.Markdown;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -25,10 +26,15 @@ namespace ThunderKit.Core.Windows
         private const string SelectedClass = "selected";
         private const string HiddenClass = "hidden";
         private const string MinimizeClass = "minimize";
-        public string DocumentationRoot = "Packages/com.passivepicasso.thunderkit/Documentation/topics";
+
+        private static HashSet<string> DocumentationRoots = new HashSet<string>();
+        public static void RegisterDocumentationPath(string rootPath)
+        {
+            DocumentationRoots.Add(rootPath);
+        }
 
         [InitializeOnLoadMethod]
-        static void RegisterScheme()
+        static void InitializeDocumentation()
         {
             LinkInlineRenderer.RegisterScheme(
                 "documentation",
@@ -37,6 +43,8 @@ namespace ThunderKit.Core.Windows
                     var path = link.Substring("documentation://".Length);
                     ShowThunderKitDocumentation(path);
                 });
+
+            RegisterDocumentationPath("Packages/com.passivepicasso.thunderkit/Documentation/topics");
         }
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Documentation")]
@@ -52,8 +60,8 @@ namespace ThunderKit.Core.Windows
             base.OnEnable();
 
             var pageList = rootVisualElement.Q("page-list");
-            var topicsFileGuids = AssetDatabase.FindAssets($"t:{nameof(VisualTreeAsset)}", new string[] { DocumentationRoot });
-            var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            var topicsFileGuids = AssetDatabase.FindAssets($"t:TextAsset", DocumentationRoots.ToArray());
+            var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).Where(path => Path.GetExtension(path).Equals(".md")).ToArray();
             var uxmlTopics = topicsFilePaths.Distinct().ToArray();
             var pageFiles = uxmlTopics
                 .OrderBy(dir => Path.GetDirectoryName(dir))
@@ -80,7 +88,7 @@ namespace ThunderKit.Core.Windows
                 var pageEntry = new PageEntry(fileName, fullPageName, pagePath, pageDepth);
                 pageEntry.FoldOut.RegisterCallback<ChangeEvent<bool>>(OnToggle);
                 pageEntry.AddManipulator(new Clickable(OnSelect));
-                if (fullPageName.Equals ("topics-1st_read_me!"))
+                if (fullPageName.Equals("topics-1st_read_me!"))
                 {
                     defaultPage = pageEntry;
                 }
@@ -100,7 +108,7 @@ namespace ThunderKit.Core.Windows
 #endif
                 pages.Add(fullPageName, pageEntry);
             }
-            if(defaultPage != null)
+            if (defaultPage != null)
                 LoadSelection(defaultPage);
         }
 #if UNITY_2019_1_OR_NEWER
@@ -244,13 +252,13 @@ namespace ThunderKit.Core.Windows
         private void LoadSelection(PageEntry element)
         {
             var pageList = rootVisualElement.Q("page-list");
-            var pageView = rootVisualElement.Q("page-view");
             var selectedElement = pageList.Q(className: SelectedClass);
             selectedElement?.RemoveFromClassList(SelectedClass);
             element.AddToClassList(SelectedClass);
 
-            pageView.Clear();
-            LoadTemplateInstance(element.PagePath, pageView);
+            var markdownElement = rootVisualElement.Q<MarkdownElement>("documentation-markdown");
+            markdownElement.Data = element.PagePath;
+            markdownElement.RefreshContent();
         }
     }
 }
