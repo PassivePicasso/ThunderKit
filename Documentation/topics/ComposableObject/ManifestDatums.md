@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Manifest_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 ManifestDatums are where collections of information can be stored.
 ThunderKit comes with a few ManifestDatums to cover common use cases, however if you find that they do not cover your case you should create a ManifestDatum to 
 collect the information you need.

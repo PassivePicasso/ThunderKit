@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PackageSource_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 PackageSources provide the ThunderKit PackageManager with package listings that can be downloaded and installed into a ThunderKit Project.
 You can manage your PackageSources from [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) where you can Add, Remove and Refresh your PackageSources.
 

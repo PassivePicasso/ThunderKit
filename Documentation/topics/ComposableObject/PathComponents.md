@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PathReference_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 PathReferences are ComposableObjects composed of PathComponents to compute paths,  use them to coordinate the deployment of files for your Manifests and Pipelines.
 When a PathReference is executed, each PathComponent that belongs to it is executed in order.
 Each PathComponent will return a string for as a part of a path.

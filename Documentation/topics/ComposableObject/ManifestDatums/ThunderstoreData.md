@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Manifest_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 The [ThunderstoreData](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreData.cs) ManifestDatum stores a URL and identifies the Manifest as being a Thunderstore compatible Manifest.
 
 ## Fields

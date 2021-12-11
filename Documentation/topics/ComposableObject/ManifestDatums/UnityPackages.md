@@ -1,3 +1,14 @@
+---
+{ 
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"contentClasses" : [ "page-header" ],
+	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_UnityPackage_2X_Icon.png",
+	"iconClasses" : [ "header-icon" ]
+}
+
+---
+
 [UnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/AssetReference.cs) stores an array of UnityPackage assets for use by the StageUnityPackages PipelineJob
 
 UnityPackages are an interface to Unity [Asset Packages](https://docs.unity3d.com/2018.4/Documentation/Manual/AssetPackages.html)
