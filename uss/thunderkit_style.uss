@@ -66,11 +66,21 @@
     margin-bottom: 4px;
 }
 
+.page-header-container {
+    flex-direction: row; 
+    flex-basis: 64px;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.39);
+}
+
 .page-header {
     -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
     font-size: 32px;
     -unity-font-style: normal;
     color: rgba(255, 255, 255, 0.53);
+    justify-content: center;
+    margin-left: 10px;
 }
 
 .settings-header {
