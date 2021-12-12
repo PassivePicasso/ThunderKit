@@ -12,16 +12,24 @@ namespace ThunderKit.Markdown
 
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            foreach (string document in importedAssets)
-            {
-                if (Path.GetExtension(document) != ".md") continue;
-                DocumentUpdated?.Invoke(null, (document, ChangeType.Imported));
-            }
-            foreach (string document in deletedAssets)
-            {
-                if (Path.GetExtension(document) != ".md") continue;
-                DocumentUpdated?.Invoke(null, (document, ChangeType.Deleted));
-            }
+            if (importedAssets != null)
+                foreach (string document in importedAssets)
+                {
+                    if (Path.GetExtension(document) != ".md") continue;
+                    DocumentUpdated?.Invoke(null, (document, ChangeType.Imported));
+                }
+            if (deletedAssets != null)
+                foreach (string document in deletedAssets)
+                {
+                    if (Path.GetExtension(document) != ".md") continue;
+                    DocumentUpdated?.Invoke(null, (document, ChangeType.Deleted));
+                }
+            if (movedAssets != null)
+                foreach (string document in movedAssets)
+                {
+                    if (Path.GetExtension(document) != ".md") continue;
+                    DocumentUpdated?.Invoke(null, (document, ChangeType.Moved));
+                }
         }
     }
 }
