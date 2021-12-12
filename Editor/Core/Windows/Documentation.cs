@@ -95,6 +95,8 @@ namespace ThunderKit.Core.Windows
         public override void OnEnable()
         {
             base.OnEnable();
+            instance = this;
+            IsOpen = true;
             Initialize();
         }
         private void Initialize()
