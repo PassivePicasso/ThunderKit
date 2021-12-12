@@ -51,12 +51,11 @@ namespace ThunderKit.Markdown
             pipeline = mpb.Build();
             pipeline.Setup(renderer);
 
-            EditorApplication.projectChanged -= RefreshContent;
-            EditorApplication.projectChanged += RefreshContent;
             AddSheet(MarkdownStylePath);
             if (EditorGUIUtility.isProSkin)
                 AddSheet(MarkdownStylePath, "Dark");
 
+            MarkdownFileWatcher.DocumentUpdated += MarkdownFileWatcher_DocumentUpdated;
 #if UNITY_2021_1_OR_NEWER
             AddSheet(MarkdownStylePath, "2021");
 #elif UNITY_2020_1_OR_NEWER
@@ -66,6 +65,14 @@ namespace ThunderKit.Markdown
 #elif UNITY_2018_1_OR_NEWER
             AddSheet(MarkdownStylePath, "2018");
 #endif
+        }
+
+        private void MarkdownFileWatcher_DocumentUpdated(object sender, (string path, MarkdownFileWatcher.ChangeType change) e)
+        {
+            if(e.path == Data && e.change == MarkdownFileWatcher.ChangeType.Imported)
+            {
+                RefreshContent();
+            }
         }
 
         public void AddSheet(string templatePath, string modifier = null)
@@ -107,11 +114,6 @@ namespace ThunderKit.Markdown
                 case MarkdownDataType.Implicit:
                 case MarkdownDataType.Source:
                     if (!".md".Equals(Path.GetExtension(Data))) break;
-
-                    if (!string.IsNullOrEmpty(prevData))
-                        MarkdownFileWatcher.UnregisterActiveElement(prevData, this);
-                    if (!string.IsNullOrEmpty(data))
-                        MarkdownFileWatcher.RegisterActiveElement(data, this);
 
                     var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Data);
                     if (asset)

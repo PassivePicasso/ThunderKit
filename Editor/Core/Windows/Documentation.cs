@@ -25,6 +25,9 @@ namespace ThunderKit.Core.Windows
         private const string HiddenClass = "hidden";
         private const string HideArrowClass = "hide-arrow";
         private const string MinimizeClass = "minimize";
+        public static bool IsOpen { get; private set; }
+
+        private string currentPage;
 
         [InitializeOnLoadMethod]
         static void InitializeDocumentation()
@@ -38,17 +41,67 @@ namespace ThunderKit.Core.Windows
                 });
         }
 
+        internal static Documentation instance;
+        private MarkdownElement markdownElement;
+        private VisualElement pageList;
+
+        public static Documentation ShowDocumentation()
+        {
+            if (!IsOpen || instance == null)
+            {
+                var consoleType = typeof(EditorWindow).Assembly.GetTypes()
+                    .Where(t => t.Name.Contains("SceneView")
+                             || t.Name.Contains("Game")
+                             || t.Name.Contains("ProjectSettings")
+                             || t.Name.Contains("Store"));
+
+                instance = GetWindow<Documentation>("Documentation", consoleType.ToArray());
+            }
+
+
+            instance.Initialize();
+
+            return instance;
+        }
+
+        private void MarkdownFileWatcher_DocumentUpdated(object sender, (string path, MarkdownFileWatcher.ChangeType change) e)
+        {
+            var page = currentPage;
+            Initialize();
+            switch (e.change)
+            {
+                case MarkdownFileWatcher.ChangeType.Imported:
+                case MarkdownFileWatcher.ChangeType.Moved:
+                    LoadSelection(e.path);
+                    break;
+                case MarkdownFileWatcher.ChangeType.Deleted:
+                    if (currentPage == e.path) currentPage = null;
+                    LoadSelection("Packages/com.passivepicasso.thunderkit/Documentation/topics/1st Read Me!.md");
+                    break;
+            }
+        }
+
         [MenuItem(Constants.ThunderKitMenuRoot + "Documentation")]
-        public static void ShowThunderKitDocumentation() => GetWindow<Documentation>();
+        public static void ShowThunderKitDocumentation()
+        {
+            ShowDocumentation();
+        }
+
         public static void ShowThunderKitDocumentation(string pagePath)
         {
-            var documentationWindow = GetWindow<Documentation>();
-            documentationWindow.LoadSelection(pagePath);
+            ShowDocumentation().LoadSelection(pagePath);
         }
 
         public override void OnEnable()
         {
             base.OnEnable();
+            Initialize();
+        }
+        private void Initialize()
+        {
+            MarkdownFileWatcher.DocumentUpdated -= MarkdownFileWatcher_DocumentUpdated;
+            MarkdownFileWatcher.DocumentUpdated += MarkdownFileWatcher_DocumentUpdated;
+
             var documentationRoots = AssetDatabase.FindAssets($"t:{nameof(DocumentationRoot)}")
                     .Distinct()
                     .Select(AssetDatabase.GUIDToAssetPath)
@@ -57,61 +110,48 @@ namespace ThunderKit.Core.Windows
                     .Select(p => (path: p.path.Replace("\\", "/"), asset: p.asset))
                     .ToArray();
 
-            var pageList = rootVisualElement.Q("page-list");
-            var topicsFileGuids = AssetDatabase.FindAssets($"t:TextAsset", documentationRoots.Select(r => r.path).ToArray());
-            var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).Where(path => Path.GetExtension(path).Equals(".md")).ToArray();
-            var uxmlTopics = topicsFilePaths.Distinct().ToArray();
-            var pageFiles = uxmlTopics
-                .OrderBy(dir => Path.GetDirectoryName(dir))
-                .ThenBy(path => Path.GetFileNameWithoutExtension(path))
-                .ToArray();
+            markdownElement = rootVisualElement.Q<MarkdownElement>("documentation-markdown");
+
+            pageList = rootVisualElement.Q("page-list");
             pageList.RegisterCallback<KeyDownEvent>(OnNavigate);
             pageList.Clear();
 
-            var pages = new Dictionary<string, PageEntry>();
-            PageEntry defaultPage = null;
-            foreach (var pagePath in pageFiles)
+            var rootArray = new string[1];
+            foreach (var root in documentationRoots)
             {
-                var fileName = Path.GetFileNameWithoutExtension(pagePath);
-                var containingDirectory = Path.GetDirectoryName(pagePath);
-                var pageNamePath = Path.Combine(containingDirectory, fileName);
+                rootArray[0] = root.path;
+                var topicsFileGuids = AssetDatabase.FindAssets($"t:TextAsset", rootArray);
+                var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).Where(path => Path.GetExtension(path).Equals(".md")).ToArray();
+                var uxmlTopics = topicsFilePaths.Distinct().ToArray();
+                var pageFiles = uxmlTopics
+                    .OrderBy(dir => Path.GetDirectoryName(dir))
+                    .ThenBy(path => Path.GetFileNameWithoutExtension(path))
+                    .ToArray();
 
-                var fullParentPageName = GetPageName(containingDirectory);
-                var fullPageName = GetPageName(pageNamePath);
-                var parentPage = pages.TryGetValue(fullParentPageName, out var tempPage) ? tempPage : null;
-
-                var pageEntry = new PageEntry(fileName, fullPageName, pagePath, OnSelect);
-
-                if (fullPageName.Equals("topics-1st_read_me!"))
+                var pages = new Dictionary<string, PageEntry>();
+                var rootPage = new PageEntry(root.asset.name, root.asset.name, "", OnSelect);
+                pageList.Add(rootPage);
+                foreach (var pagePath in pageFiles)
                 {
-                    defaultPage = pageEntry;
+                    var pageName = Path.GetFileNameWithoutExtension(pagePath);
+                    var containingDirectory = Path.GetDirectoryName(pagePath);
+                    var pageNamePath = Path.Combine(containingDirectory, pageName);
+
+                    var fullPageName = GetPageName(pageNamePath);
+                    var parentPage = pages.TryGetValue(containingDirectory, out var tempPage) ? tempPage : null;
+
+                    var pageEntry = new PageEntry(pageName, pageName, pagePath, OnSelect);
+
+
+                    if (parentPage != null) parentPage.AddChildPage(pageEntry);
+                    else
+                        rootPage.AddChildPage(pageEntry);
+                    pages.Add(pageNamePath, pageEntry);
                 }
-                if (parentPage != null) parentPage.AddChildPage(pageEntry);
-                else
-                    pageList.Add(pageEntry);
-
-
-#if UNITY_2019_1_OR_NEWER
-                rootVisualElement.RegisterCallback<CustomStyleResolvedEvent>(OnStyleResolved);
-#endif
-                pages.Add(fullPageName, pageEntry);
             }
-            if (defaultPage != null)
-                LoadSelection(defaultPage);
+            if (currentPage == null)
+                LoadSelection("Packages/com.passivepicasso.thunderkit/Documentation/topics/1st Read Me!.md");
         }
-#if UNITY_2019_1_OR_NEWER
-        private void OnStyleResolved(CustomStyleResolvedEvent evt)
-        {
-            var root = evt.currentTarget as VisualElement;
-            foreach (var pageEntry in root.Query<PageEntry>().Build().ToList())
-            {
-                float left = pageEntry.Depth * 12;
-                pageEntry.style.paddingLeft = new StyleLength(new Length(left, LengthUnit.Pixel));
-            }
-
-        }
-#endif
-
 
         string GetPageName(string path)
         {
@@ -155,7 +195,7 @@ namespace ThunderKit.Core.Windows
                     if (selectedPage.childEntries.Length > 0 && selectedPage.value)
                         selectedPage.Toggle(false);
                     else if (selectedPage.parentEntry != null)
-                        UpdateSelectedPage(pageIndex, selectedPage, selectedPage.parentEntry);
+                        UpdateSelectedPage(selectedPage, selectedPage.parentEntry);
                     break;
 
                 case UnityEngine.KeyCode.RightArrow:
@@ -171,12 +211,12 @@ namespace ThunderKit.Core.Windows
                 if (newSelectedIndex > -1 && newSelectedIndex < pageIndex.Count)
                 {
                     var newSelectedPage = pageIndex[newSelectedIndex];
-                    UpdateSelectedPage(pageIndex, selectedPage, newSelectedPage);
+                    UpdateSelectedPage(selectedPage, newSelectedPage);
                 }
             }
         }
 
-        private void UpdateSelectedPage(List<PageEntry> pageIndex, PageEntry selectedPage, PageEntry newSelectedPage)
+        private void UpdateSelectedPage(PageEntry selectedPage, PageEntry newSelectedPage)
         {
             selectedPage.RemoveFromClassList(SelectedClass);
             newSelectedPage.AddToClassList(SelectedClass);
@@ -200,8 +240,9 @@ namespace ThunderKit.Core.Windows
         public void LoadSelection(string pagePath)
         {
             var pageEntryQuery = rootVisualElement.Query<PageEntry>().ToList();
-            var entry = pageEntryQuery.First(pe => pe.PagePath.Equals(pagePath, System.StringComparison.OrdinalIgnoreCase));
-            LoadSelection(entry);
+            var entry = pageEntryQuery.FirstOrDefault(pe => pe.PagePath.Equals(pagePath, System.StringComparison.OrdinalIgnoreCase));
+            if (entry != null)
+                LoadSelection(entry);
         }
 
         private void LoadSelection(PageEntry element)
@@ -211,7 +252,17 @@ namespace ThunderKit.Core.Windows
             selectedElement?.RemoveFromClassList(SelectedClass);
             element.AddToClassList(SelectedClass);
 
-            var markdownElement = rootVisualElement.Q<MarkdownElement>("documentation-markdown");
+            currentPage = element.PagePath;
+
+            var parent = element.parentEntry;
+            while (parent != null)
+            {
+                if (!parent.value)
+                    parent.Toggle(true);
+
+                parent = parent.parentEntry;
+            }
+
             markdownElement.Data = element.PagePath;
             markdownElement.RefreshContent();
         }
@@ -228,7 +279,7 @@ namespace ThunderKit.Core.Windows
 
             public readonly string PagePath;
 
-            public PageEntry(string templateName, string name, string pagePath, Action<EventBase> onSelect)
+            public PageEntry(string pageName, string name, string pagePath, Action<EventBase> onSelect)
             {
                 this.name = name;
                 PagePath = pagePath;
@@ -238,7 +289,7 @@ namespace ThunderKit.Core.Windows
 
                 Label = new Label
                 {
-                    text = ObjectNames.NicifyVariableName(templateName)
+                    text = ObjectNames.NicifyVariableName(pageName)
                 };
                 Label.AddToClassList(PageClass);
 
@@ -286,8 +337,7 @@ namespace ThunderKit.Core.Windows
                     container.AddToClassList(MinimizeClass);
                     if (ClassListContains(SelectedClass))
                     {
-                        var documentationWindow = GetWindow<Documentation>();
-                        documentationWindow.LoadSelection(PagePath);
+                        instance.LoadSelection(PagePath);
                     }
                 }
             }
