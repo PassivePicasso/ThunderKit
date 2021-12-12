@@ -42,6 +42,7 @@ namespace ThunderKit.Core.Windows
         }
 
         internal static Documentation instance;
+        private ScrollView indexScroller;
         private MarkdownElement markdownElement;
         private VisualElement pageList;
 
@@ -112,6 +113,7 @@ namespace ThunderKit.Core.Windows
                     .Select(p => (path: p.path.Replace("\\", "/"), asset: p.asset))
                     .ToArray();
 
+            indexScroller = rootVisualElement.Q<ScrollView>("index-scroller");
             markdownElement = rootVisualElement.Q<MarkdownElement>("documentation-markdown");
 
             pageList = rootVisualElement.Q("page-list");
@@ -214,8 +216,16 @@ namespace ThunderKit.Core.Windows
                 {
                     var newSelectedPage = pageIndex[newSelectedIndex];
                     UpdateSelectedPage(selectedPage, newSelectedPage);
+                    if (indexScroller.needsVertical)
+                    {
+                        var dist = (float)(newSelectedIndex + modifier) / pageIndex.Count;
+                        float highValue = indexScroller.verticalScroller.highValue * 1.25f;
+                        var newValue = (highValue * dist) - (highValue * 0.125f);
+                        indexScroller.verticalScroller.value = newValue;
+                    }
                 }
             }
+
         }
 
         private void UpdateSelectedPage(PageEntry selectedPage, PageEntry newSelectedPage)
@@ -267,12 +277,13 @@ namespace ThunderKit.Core.Windows
 
             markdownElement.Data = element.PagePath;
             markdownElement.RefreshContent();
+
         }
 
 
         public class PageEntry : BaseField<bool>
         {
-            private Label Label;
+            public Label Label { get; private set; }
             internal VisualElement container;
             private VisualElement ArrowIcon;
 
