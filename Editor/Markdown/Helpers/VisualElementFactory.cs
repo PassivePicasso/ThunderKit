@@ -47,7 +47,10 @@ namespace ThunderKit.Markdown.Helpers
 #else
                 if (request.isNetworkError || request.isHttpError)
 #endif
-                    Debug.Log(request.error);
+                {
+                    if (!request.error.Contains("aborted"))
+                        Debug.Log(request.error);
+                }
                 else
                     SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
 
