@@ -23,12 +23,18 @@ namespace ThunderKit.Markdown
         private readonly UIElementRenderer renderer;
         private readonly MarkdownPipelineBuilder mpb;
         private readonly MarkdownPipeline pipeline;
-        private string data;
-
-        public string Data { get => data; set => data = value; }
+        private string data, prevData;
+        private FileSystemWatcher fileSystemWatcher;
+        public string Data
+        {
+            get => data; set
+            {
+                prevData = data;
+                data = value;
+            }
+        }
         private string Markdown { get; set; }
         private string NormalizedMarkdown { get; set; }
-        private string Source { get; set; }
         public MarkdownDataType MarkdownDataType { get; set; }
         public bool SpaceAfterQuoteBlock { get; set; }
         public bool EmptyLineAfterCodeBlock { get; set; }
@@ -101,6 +107,11 @@ namespace ThunderKit.Markdown
                 case MarkdownDataType.Implicit:
                 case MarkdownDataType.Source:
                     if (!".md".Equals(Path.GetExtension(Data))) break;
+
+                    if (!string.IsNullOrEmpty(prevData))
+                        MarkdownFileWatcher.UnregisterActiveElement(prevData, this);
+                    if (!string.IsNullOrEmpty(data))
+                        MarkdownFileWatcher.RegisterActiveElement(data, this);
 
                     var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Data);
                     if (asset)
