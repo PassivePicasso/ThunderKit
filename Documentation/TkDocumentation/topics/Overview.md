@@ -1,6 +1,6 @@
 ---
 {
-	"title" : "Change Log",
+	"title" : "ThunderKit Overview",
 	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png",
 	"contentUrl" : "Packages/com.passivepicasso.thunderkit/README.md",
 	"headerClasses" : [ "bm4", "page-header-container" ],
