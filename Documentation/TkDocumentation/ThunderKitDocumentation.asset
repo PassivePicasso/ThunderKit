@@ -10,5 +10,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdae1e1d7d79c7140aa2c28477e5fd8f, type: 3}
-  m_Name: ThunderKitDocumentations
+  m_Name: ThunderKitDocumentation
   m_EditorClassIdentifier: 
