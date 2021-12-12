@@ -6,18 +6,16 @@ using System.Linq;
 using System.Collections.Generic;
 using ThunderKit.Markdown.ObjectRenderers;
 using ThunderKit.Markdown;
+using ThunderKit.Core.Data;
+using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
-using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
 
 namespace ThunderKit.Core.Windows
 {
-    using static TemplateHelpers;
-
     public class Documentation : TemplatedWindow
     {
         private const string PageClass = "pagelistview__page";
@@ -25,13 +23,8 @@ namespace ThunderKit.Core.Windows
         private const string ElementClass = "pagelistview__item";
         private const string SelectedClass = "selected";
         private const string HiddenClass = "hidden";
+        private const string HideArrowClass = "hide-arrow";
         private const string MinimizeClass = "minimize";
-
-        private static HashSet<string> DocumentationRoots = new HashSet<string>();
-        public static void RegisterDocumentationPath(string rootPath)
-        {
-            DocumentationRoots.Add(rootPath);
-        }
 
         [InitializeOnLoadMethod]
         static void InitializeDocumentation()
@@ -43,8 +36,6 @@ namespace ThunderKit.Core.Windows
                     var path = link.Substring("documentation://".Length);
                     ShowThunderKitDocumentation(path);
                 });
-
-            RegisterDocumentationPath("Packages/com.passivepicasso.thunderkit/Documentation/topics");
         }
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Documentation")]
@@ -58,9 +49,16 @@ namespace ThunderKit.Core.Windows
         public override void OnEnable()
         {
             base.OnEnable();
+            var documentationRoots = AssetDatabase.FindAssets($"t:{nameof(DocumentationRoot)}")
+                    .Distinct()
+                    .Select(AssetDatabase.GUIDToAssetPath)
+                    .Distinct()
+                    .Select(path => (path: Path.GetDirectoryName(path), asset: AssetDatabase.LoadAssetAtPath<DocumentationRoot>(path)))
+                    .Select(p => (path: p.path.Replace("\\", "/"), asset: p.asset))
+                    .ToArray();
 
             var pageList = rootVisualElement.Q("page-list");
-            var topicsFileGuids = AssetDatabase.FindAssets($"t:TextAsset", DocumentationRoots.ToArray());
+            var topicsFileGuids = AssetDatabase.FindAssets($"t:TextAsset", documentationRoots.Select(r => r.path).ToArray());
             var topicsFilePaths = topicsFileGuids.Select(AssetDatabase.GUIDToAssetPath).Where(path => Path.GetExtension(path).Equals(".md")).ToArray();
             var uxmlTopics = topicsFilePaths.Distinct().ToArray();
             var pageFiles = uxmlTopics
@@ -82,27 +80,17 @@ namespace ThunderKit.Core.Windows
                 var fullPageName = GetPageName(pageNamePath);
                 var parentPage = pages.TryGetValue(fullParentPageName, out var tempPage) ? tempPage : null;
 
-                int pageDepth = 0;
-                if (parentPage != null) pageDepth = parentPage.Depth + 1;
+                var pageEntry = new PageEntry(fileName, fullPageName, pagePath, OnSelect);
 
-                var pageEntry = new PageEntry(fileName, fullPageName, pagePath, pageDepth);
-                pageEntry.FoldOut.RegisterCallback<ChangeEvent<bool>>(OnToggle);
-                pageEntry.AddManipulator(new Clickable(OnSelect));
                 if (fullPageName.Equals("topics-1st_read_me!"))
                 {
                     defaultPage = pageEntry;
                 }
-                if (parentPage != null)
-                {
-                    var parentIndex = pageList.IndexOf(parentPage);
-                    pageEntry.AddToClassList(HiddenClass);
-                    pageEntry.AddToClassList(MinimizeClass);
-                    pageList.Insert(parentIndex + parentPage.ChildPageCount + 1, pageEntry);
-                    parentPage.FoldOut.RemoveFromClassList(HiddenClass);
-                    parentPage.ChildPageCount++;
-                }
+                if (parentPage != null) parentPage.AddChildPage(pageEntry);
                 else
                     pageList.Add(pageEntry);
+
+
 #if UNITY_2019_1_OR_NEWER
                 rootVisualElement.RegisterCallback<CustomStyleResolvedEvent>(OnStyleResolved);
 #endif
@@ -124,47 +112,6 @@ namespace ThunderKit.Core.Windows
         }
 #endif
 
-        public class PageEntry : VisualElement
-        {
-            public Foldout FoldOut;
-            public Label Label;
-            public string PagePath;
-            public int ChildPageCount;
-            public int Depth { get; private set; }
-            public PageEntry(string templateName, string name, string pagePath, int depth)
-            {
-                this.name = name;
-                this.Depth = depth;
-                PagePath = pagePath;
-
-                FoldOut = new Foldout();
-                FoldOut.AddToClassList("index-toggle");
-                FoldOut.AddToClassList(HiddenClass);
-                FoldOut.value = false;
-
-                Label = new Label
-                {
-                    text = ObjectNames.NicifyVariableName(templateName)
-                };
-                Label.AddToClassList(PageClass);
-
-                Add(FoldOut);
-                Add(Label);
-
-                AddToClassList(PageHeaderClass);
-                AddToClassList(ElementClass);
-            }
-
-#if UNITY_2018
-            protected override void OnStyleResolved(ICustomStyle style)
-            {
-                base.OnStyleResolved(style);
-                float left = Depth * 12;
-                var paddingLeft = new StyleValue<float>(left);
-                this.style.paddingLeft = paddingLeft;
-            }
-#endif
-        }
 
         string GetPageName(string path)
         {
@@ -176,70 +123,78 @@ namespace ThunderKit.Core.Windows
 
         private void OnNavigate(KeyDownEvent evt)
         {
+            var pageList = rootVisualElement.Q("page-list");
+            var pageIndex = pageList.Query<PageEntry>().Build().ToList()
+                .Where(e =>
+                {
+                    var current = e;
+                    if (current.parentEntry == null) return true;
+                    current = current.parentEntry;
+                    while (current != null)
+                    {
+                        if (!current.value) return false;
+                        current = current.parentEntry;
+                    }
+                    return true;
+                }).ToList();
+            var selectedPage = pageList.Query<PageEntry>(className: SelectedClass).Build().First();
+            var selectedIndex = pageIndex.IndexOf(selectedPage);
             int modifier = 0;
+
             switch (evt.keyCode)
             {
                 case UnityEngine.KeyCode.UpArrow:
                     modifier = -1;
                     break;
+
                 case UnityEngine.KeyCode.DownArrow:
                     modifier = 1;
                     break;
+
+                case UnityEngine.KeyCode.LeftArrow:
+                    if (selectedPage.childEntries.Length > 0 && selectedPage.value)
+                        selectedPage.Toggle(false);
+                    else if (selectedPage.parentEntry != null)
+                        UpdateSelectedPage(pageIndex, selectedPage, selectedPage.parentEntry);
+                    break;
+
+                case UnityEngine.KeyCode.RightArrow:
+                    if (!selectedPage.value)
+                        selectedPage.Toggle(true);
+                    else if (selectedPage.childEntries.Length > 0)
+                        modifier = 1;
+                    break;
             }
-            var pageList = rootVisualElement.Q("page-list");
-            var selectedPage = pageList.Query<PageEntry>(className: SelectedClass).Build().First();
-            var selectedIndex = pageList.IndexOf(selectedPage);
-            int newSelectedIndex = selectedIndex + modifier;
-            if (newSelectedIndex > -1 && newSelectedIndex < pageList.childCount)
+            if (modifier != 0)
             {
-                var newSelectedPage = pageList[newSelectedIndex];
-                while (newSelectedPage.ClassListContains(HiddenClass) && newSelectedIndex > -1 && newSelectedIndex < pageList.childCount)
+                int newSelectedIndex = selectedIndex + modifier;
+                if (newSelectedIndex > -1 && newSelectedIndex < pageIndex.Count)
                 {
-                    newSelectedIndex += modifier;
-                    newSelectedPage = pageList[newSelectedIndex];
+                    var newSelectedPage = pageIndex[newSelectedIndex];
+                    UpdateSelectedPage(pageIndex, selectedPage, newSelectedPage);
                 }
-                selectedPage.RemoveFromClassList(SelectedClass);
-                newSelectedPage.AddToClassList(SelectedClass);
-                LoadSelection(newSelectedPage as PageEntry);
             }
         }
 
-        private void OnToggle(ChangeEvent<bool> evt)
+        private void UpdateSelectedPage(List<PageEntry> pageIndex, PageEntry selectedPage, PageEntry newSelectedPage)
         {
-            var toggle = evt.currentTarget as VisualElement;
-            var pageEntry = toggle.parent as PageEntry;
-            var fullPageName = toggle.parent.name;
-            var childPages = rootVisualElement.Query<PageEntry>()
-                .Where(h =>
-                {
-                    string parentFullName = h.name.Substring(0, h.name.LastIndexOf("-"));
-                    bool isChildOfEventPage = parentFullName.Equals(fullPageName);
-                    return isChildOfEventPage;
-                })
-                .ToList();
-
-            if (evt.newValue)
-                foreach (var child in childPages)
-                {
-                    child.RemoveFromClassList(HiddenClass);
-                    child.RemoveFromClassList(MinimizeClass);
-                }
-            else
-                foreach (var child in childPages)
-                {
-                    child.AddToClassList(HiddenClass);
-                    child.AddToClassList(MinimizeClass);
-                    if (child.ClassListContains(SelectedClass))
-                    {
-                        LoadSelection(pageEntry);
-                    }
-                }
+            selectedPage.RemoveFromClassList(SelectedClass);
+            newSelectedPage.AddToClassList(SelectedClass);
+            LoadSelection(newSelectedPage);
         }
 
         void OnSelect(EventBase e)
         {
-            var element = e.currentTarget as PageEntry;
-            LoadSelection(element);
+            var element = e.currentTarget as VisualElement;
+
+            while (element != null && !(element is PageEntry))
+                element = element.parent;
+
+            var entry = element as PageEntry;
+            entry.Toggle(true);
+
+            if (element != null)
+                LoadSelection(entry);
         }
 
         public void LoadSelection(string pagePath)
@@ -259,6 +214,83 @@ namespace ThunderKit.Core.Windows
             var markdownElement = rootVisualElement.Q<MarkdownElement>("documentation-markdown");
             markdownElement.Data = element.PagePath;
             markdownElement.RefreshContent();
+        }
+
+
+        public class PageEntry : BaseField<bool>
+        {
+            private Label Label;
+            internal VisualElement container;
+            private VisualElement ArrowIcon;
+
+            public PageEntry parentEntry { get; private set; }
+            public PageEntry[] childEntries => container.OfType<PageEntry>().ToArray();
+
+            public readonly string PagePath;
+
+            public PageEntry(string templateName, string name, string pagePath, Action<EventBase> onSelect)
+            {
+                this.name = name;
+                PagePath = pagePath;
+
+                container = new VisualElement();
+                container.name = "page-entry-children";
+
+                Label = new Label
+                {
+                    text = ObjectNames.NicifyVariableName(templateName)
+                };
+                Label.AddToClassList(PageClass);
+
+                var header = new VisualElement();
+                header.AddToClassList("header");
+                ArrowIcon = new VisualElement();
+
+                header.Add(ArrowIcon);
+                ArrowIcon.AddToClassList("in-foldout");
+                header.Add(Label);
+                Add(header);
+                Add(container);
+                container.AddToClassList(HiddenClass);
+                container.AddToClassList(MinimizeClass);
+                ArrowIcon.AddToClassList(HiddenClass);
+
+                AddToClassList(PageHeaderClass);
+                AddToClassList(ElementClass);
+                Label.AddManipulator(new Clickable(onSelect));
+                ArrowIcon.AddManipulator(new Clickable(() => Toggle(!value)));
+                SetValueWithoutNotify(false);
+            }
+            public void AddChildPage(PageEntry child)
+            {
+                child.parentEntry = this;
+                container.Add(child);
+                ArrowIcon.RemoveFromClassList(HiddenClass);
+            }
+
+            public void Toggle(bool state)
+            {
+                value = state;
+                if (value)
+                {
+                    ArrowIcon.RemoveFromClassList("in-foldout");
+                    ArrowIcon.AddToClassList("in-foldout-on");
+                    container.RemoveFromClassList(HiddenClass);
+                    container.RemoveFromClassList(MinimizeClass);
+                }
+                else
+                {
+                    ArrowIcon.AddToClassList("in-foldout");
+                    ArrowIcon.RemoveFromClassList("in-foldout-on");
+                    container.AddToClassList(HiddenClass);
+                    container.AddToClassList(MinimizeClass);
+                    if (ClassListContains(SelectedClass))
+                    {
+                        var documentationWindow = GetWindow<Documentation>();
+                        documentationWindow.LoadSelection(PagePath);
+                    }
+                }
+            }
         }
     }
 }
