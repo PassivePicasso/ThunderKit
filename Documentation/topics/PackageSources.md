@@ -1,9 +1,9 @@
 ---
 { 
 	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
-	"headerClasses" : [ "bm4", "page-header-container" ],
-	"contentClasses" : [ "page-header" ],
 	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PackageSource_2X_Icon.png",
+	"headerClasses" : [ "bm4", "page-header-container" ],
+	"titleClasses" : [ "page-header" ],
 	"iconClasses" : [ "header-icon" ]
 }
 
