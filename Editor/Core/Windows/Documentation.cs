@@ -188,25 +188,39 @@ namespace ThunderKit.Core.Windows
             switch (evt.keyCode)
             {
                 case UnityEngine.KeyCode.UpArrow:
-                    modifier = -1;
+                    if (selectedIndex > 0)
+                        modifier = -1;
                     break;
 
                 case UnityEngine.KeyCode.DownArrow:
-                    modifier = 1;
+                    if (selectedIndex < pageIndex.Count)
+                        modifier = 1;
                     break;
 
                 case UnityEngine.KeyCode.LeftArrow:
                     if (selectedPage.childEntries.Length > 0 && selectedPage.value)
                         selectedPage.Toggle(false);
-                    else if (selectedPage.parentEntry != null)
-                        UpdateSelectedPage(selectedPage, selectedPage.parentEntry);
+                    else
+                        for (modifier = -1; selectedIndex + modifier > 0; modifier--)
+                        {
+                            if (pageIndex[selectedIndex + modifier].childEntries.Length > 0
+                                && pageIndex[modifier + selectedIndex].value)
+                                break;
+                        }
                     break;
 
                 case UnityEngine.KeyCode.RightArrow:
                     if (!selectedPage.value)
                         selectedPage.Toggle(true);
                     else if (selectedPage.childEntries.Length > 0)
-                        modifier = 1;
+                    {
+                        for (modifier = 1; selectedIndex + modifier < pageIndex.Count; modifier++)
+                        {
+                            if (pageIndex[modifier + selectedIndex].childEntries.Length > 0
+                                && !pageIndex[modifier + selectedIndex].value)
+                                break;
+                        }
+                    }
                     break;
             }
             if (modifier != 0)
