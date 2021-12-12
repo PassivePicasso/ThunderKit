@@ -77,9 +77,9 @@ namespace ThunderKit.Markdown.ObjectRenderers
         {
             if (SchemeLinkHandlers == null) SchemeLinkHandlers = new Dictionary<string, SchemeHandler>();
 
-            if (!SchemeLinkHandlers.ContainsKey(scheme))
+            if (!SchemeLinkHandlers.ContainsKey(scheme.ToLowerInvariant()))
             {
-                SchemeLinkHandlers[scheme] = new SchemeHandler
+                SchemeLinkHandlers[scheme.ToLowerInvariant()] = new SchemeHandler
                 {
                     linkHandler = action,
                     preprocessor = preprocessor != null ? preprocessor : label => label
@@ -95,17 +95,6 @@ namespace ThunderKit.Markdown.ObjectRenderers
             if (link.IsImage)
             {
                 var imageElement = GetImageElement<Image>(link.Url, "image");
-                var nextSibling = link.NextSibling;
-                if (nextSibling != null)
-                {
-                    var text = nextSibling.ToString();
-                    if (text.StartsWith("{") && text.EndsWith("}"))
-                    {
-                        // if text contains attribute size set image size
-                        imageElement.AddToClassList(text.Substring(1, text.Length - 2));
-                    }
-                }
-
                 renderer.Push(imageElement);
                 renderer.WriteChildren(link);
                 foreach (var child in imageElement.Children())
@@ -130,6 +119,10 @@ namespace ThunderKit.Markdown.ObjectRenderers
 
                     if (match.Success)
                         linkLabel.RegisterCallback<MouseUpEvent>(evt => schemeHandlers.linkHandler?.Invoke(url));
+                } else
+                {
+                    linkLabel.RegisterCallback<MouseUpEvent>(evt => schemeHandlers.linkHandler?.Invoke(url));
+
                 }
                 renderer.WriteElement(inlineElement);
             }
