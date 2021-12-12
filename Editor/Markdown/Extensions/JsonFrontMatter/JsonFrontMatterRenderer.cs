@@ -29,7 +29,6 @@ namespace ThunderKit.Markdown.Extensions.Json
             public string title;
             public string[] titleClasses;
 
-            public string iconUrl;
             public string[] iconClasses;
 
             public string contentUrl;
@@ -44,12 +43,10 @@ namespace ThunderKit.Markdown.Extensions.Json
                 var header = GetClassedElement<VisualElement>(frontMatter.headerClasses);
                 header.name = nameof(header);
 
-                if (!string.IsNullOrEmpty(frontMatter.iconUrl))
-                {
-                    var headerIcon = GetImageElement<Image>(frontMatter.iconUrl, frontMatter.iconClasses);
-                    headerIcon.name = nameof(headerIcon);
-                    header.Add(headerIcon);
-                }
+                var headerIcon = GetClassedElement<VisualElement>(frontMatter.iconClasses);
+                headerIcon.name = nameof(headerIcon);
+                header.Add(headerIcon);
+
                 if (!string.IsNullOrEmpty(frontMatter.title))
                 {
                     var title = GetTextElement<Label>(frontMatter.title, frontMatter.titleClasses);

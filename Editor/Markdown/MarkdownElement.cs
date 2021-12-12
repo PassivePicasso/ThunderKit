@@ -23,13 +23,11 @@ namespace ThunderKit.Markdown
         private readonly UIElementRenderer renderer;
         private readonly MarkdownPipelineBuilder mpb;
         private readonly MarkdownPipeline pipeline;
-        private string data, prevData;
-        private FileSystemWatcher fileSystemWatcher;
+        private string data;
         public string Data
         {
             get => data; set
             {
-                prevData = data;
                 data = value;
             }
         }
@@ -147,7 +145,6 @@ namespace ThunderKit.Markdown
                 ListItemCharacter = ListItemCharacter[0],
                 SpaceAfterQuoteBlock = SpaceAfterQuoteBlock
             };
-
 
             NormalizedMarkdown = Markdig.Markdown.Normalize(Markdown, normalizeOptions);
 
