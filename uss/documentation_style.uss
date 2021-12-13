@@ -1,0 +1,35 @@
+.header-icon-composableobject>.glyph {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ComposableObject_2X_Icon.png');
+}
+
+.header-icon-manifest>.glyph {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Manifest_2X_Icon.png');
+}
+
+.header-icon-packagesource>.glyph {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PackageSource_2X_Icon.png');
+}
+
+.header-icon-pathreference>.glyph {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PathReference_2X_Icon.png');
+}
+
+.header-icon-pipeline>.glyph {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Pipeline_2X_Icon.png');
+}
+
+.header-icon-server_icon {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Server_Icon.png');
+}
+
+.header-icon-thunderkitsetting>.glyph {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ThunderKitSetting_2X_Icon.png');
+}
+
+.header-icon-unitypackage>.glyph {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_UnityPackage_2X_Icon.png');
+}
+
+.header-icon-documentation>.glyph {
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png');
+}
