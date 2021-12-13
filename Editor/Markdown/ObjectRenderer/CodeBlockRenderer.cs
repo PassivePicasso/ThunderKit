@@ -30,7 +30,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
             textField.multiline = true;
             textField.value = result;
             textField.RegisterCallback<KeyDownEvent>(OnKeyDown);
-            renderer.WriteElement(textField);
+            renderer.WriteElement(textField, obj);
         }
 
         private void OnKeyDown(KeyDownEvent evt)

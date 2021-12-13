@@ -4,8 +4,7 @@
 	"title" : "BepInEx Local Configuration Guide",
 	"headerClasses" : [ "bm4", "page-header-container" ],
 	"titleClasses" : [ "page-header" ],
-	"iconUrl" : "Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png",
-	"iconClasses" : [ "header-icon" ]
+	"iconClasses" : [ "header-icon", "TK_Documentation_2X_Icon" ]
 }
 
 ---
@@ -25,6 +24,6 @@ Refer to the BepInEx Documentation, [Installing BepInEx](https://docs.bepinex.de
 
 ## Create Local Thunderstore Source
 
-Start by creating a LocalThunderstoreSource under the ThunderKit/Settings window by clicking the Add button under the PackageSourceSettings section.
+Start by creating a LocalThunderstoreSource under the ThunderKit/Settings window by clicking the Add button under the PackageSourceSettings section and selecting LocalThunderstoreSource
 
-![alt text](Packages/com.passivepicasso.thunderkit/Documentation/graphics/Tutorials/NewGameBepInEx/NewLocalThunderstoreSource.png){ nlts }
+![](Packages/com.passivepicasso.thunderkit/Documentation/graphics/Tutorials/NewGameBepInEx/NewLocalThunderstoreSource.png)

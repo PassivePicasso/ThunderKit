@@ -1,6 +1,7 @@
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using System.Text;
+using Markdig.Renderers.Html;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -18,7 +19,12 @@ namespace ThunderKit.Markdown.ObjectRenderers
     {
         protected override void Write(UIElementRenderer renderer, HeadingBlock block)
         {
-            renderer.Push(GetClassedElement<VisualElement>($"header-{block.Level}"));
+            VisualElement header = GetClassedElement<VisualElement>($"header-{block.Level}");
+            renderer.WriteAttributes(block.TryGetAttributes(), header);
+            renderer.Push(header);
+            var glyph = new VisualElement();
+            glyph.AddToClassList("glyph");
+            header.Add(glyph);
             renderer.WriteOptimizedLeafBlock(block);
             renderer.Pop();
         }
