@@ -1,3 +1,4 @@
+
 .TK_ComposableObject_2X_Icon {
     background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ComposableObject_2X_Icon.png');
 }
@@ -69,6 +70,7 @@
     margin-left: -10px;
 }
 .page-header-container {
+    margin-top: 0px;
     flex-direction: row; 
     flex-basis: 64px;
     justify-content: flex-start;
@@ -76,7 +78,14 @@
     background-color: rgba(0, 0, 0, 0.39);
 }
 
-.page-header {
+.page-header-container>.glyph {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+}
+
+.page-header-container>Label {
     -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
     font-size: 32px;
     -unity-font-style: normal;
