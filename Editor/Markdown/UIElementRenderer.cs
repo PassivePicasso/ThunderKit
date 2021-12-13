@@ -1,24 +1,23 @@
-using System;
 using System.Collections.Generic;
 using Markdig.Helpers;
 using Markdig.Syntax;
 using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using ThunderKit.Markdown.ObjectRenderers;
-using System.Text.RegularExpressions;
 using System.Text;
 #if !NET40
-using System.Runtime.CompilerServices;
 #endif
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
-using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
+
+
 namespace ThunderKit.Markdown
 {
+    using HtmlAttributesExtensions = Markdig.Renderers.Html.HtmlAttributesExtensions;
+    using HtmlAttributes = Markdig.Renderers.Html.HtmlAttributes;
     using static Helpers.VisualElementFactory;
     public class UIElementRenderer : RendererBase
     {
@@ -50,9 +49,17 @@ namespace ThunderKit.Markdown
             var popped = stack.Pop();
             stack.Peek().Add(popped);
         }
-        public void WriteElement(VisualElement element)
+
+        internal VisualElement Peek()
+        {
+            return stack.Peek();
+        }
+
+        public void WriteElement(VisualElement element, MarkdownObject mdo = null)
         {
             stack.Peek().Add(element);
+            if (mdo != null)
+                WriteAttributes(HtmlAttributesExtensions.TryGetAttributes(mdo), element);
         }
         public void WriteSplitText(ref StringSlice slice)
         {
@@ -65,7 +72,7 @@ namespace ThunderKit.Markdown
                 int nextI = text.IndexOf(' ', i + 1);
                 if (nextI == i) break;
 
-                var value = string.Empty;
+                string value;
                 if (nextI == -1)
                     value = text.Substring(i);
                 else
@@ -80,6 +87,7 @@ namespace ThunderKit.Markdown
                 if (i == -1) break;
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -122,7 +130,6 @@ namespace ThunderKit.Markdown
             }
             else
             {
-                stack.Peek().AddToClassList("split-literals");
                 var leafInline = block.Inline.FirstChild;
                 while (leafInline != null)
                 {
@@ -140,6 +147,33 @@ namespace ThunderKit.Markdown
                     }
                     leafInline = leafInline?.NextSibling;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Writes the specified <see cref="HtmlAttributes"/>.
+        /// </summary>
+        /// <param name="attributes">The attributes to render.</param>
+        /// <param name="classFilter">A class filter used to transform a class into another class at writing time</param>
+        /// <returns>This instance</returns>
+        public void WriteAttributes(HtmlAttributes attributes, VisualElement element)
+        {
+            if (attributes == null) return;
+
+            if (attributes.Id != null)
+            {
+                element.name = attributes.Id;
+            }
+
+            if (attributes.Classes != null && attributes.Classes.Count > 0)
+            {
+                foreach (var cls in attributes.Classes)
+                    element.EnableInClassList(cls, true);
+            }
+
+            if (attributes.Properties != null && attributes.Properties.Count > 0)
+            {
+                element.userData = attributes.Properties;
             }
         }
 

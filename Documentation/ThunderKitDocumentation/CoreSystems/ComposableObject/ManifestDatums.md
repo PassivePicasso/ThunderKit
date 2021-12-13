@@ -1,5 +1,6 @@
 ---
 { 
+	"title" : "ManifestDatums",
 	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
 	"headerClasses" : [ "bm4", "page-header-container" ],
 	"titleClasses" : [ "page-header" ],

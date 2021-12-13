@@ -2,28 +2,21 @@ using System;
 using Markdig.Syntax.Inlines;
 using UnityEditor;
 using UnityEngine.Networking;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Collections;
-using System.Reflection;
+using Markdig.Renderers.Html;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 #else
-using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
-using Object = UnityEngine.Object;
 
 namespace ThunderKit.Markdown.ObjectRenderers
 {
     using static Helpers.VisualElementFactory;
-    using static Helpers.UnityPathUtility;
     public class LinkInlineRenderer : UIElementObjectRenderer<LinkInline>
     {
-        private const BindingFlags nonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
         public struct SchemeHandler
         {
             public Action<string> linkHandler;
@@ -31,7 +24,6 @@ namespace ThunderKit.Markdown.ObjectRenderers
         }
 
         internal static Regex SchemeCheck = new Regex("^([\\w]+)://.*", RegexOptions.Singleline | RegexOptions.Compiled);
-        private static Func<Object, Texture2D> GetIconForObject;
         internal static Dictionary<string, SchemeHandler> SchemeLinkHandlers;
 
         [InitializeOnLoadMethod]
@@ -71,6 +63,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
             RegisterScheme("http", link => System.Diagnostics.Process.Start(link));
             RegisterScheme("https", link => System.Diagnostics.Process.Start(link));
             RegisterScheme("mailto", link => System.Diagnostics.Process.Start(link));
+            RegisterScheme("#", link => { });
         }
 
         public static bool RegisterScheme(string scheme, Action<string> action, Func<Label, VisualElement> preprocessor = null)
@@ -95,7 +88,10 @@ namespace ThunderKit.Markdown.ObjectRenderers
             if (link.IsImage)
             {
                 var imageElement = GetImageElement<Image>(link.Url, "image");
+
+                renderer.WriteAttributes(link.TryGetAttributes(), imageElement);
                 renderer.Push(imageElement);
+
                 renderer.WriteChildren(link);
                 foreach (var child in imageElement.Children())
                     child.AddToClassList("alt-text");
@@ -106,12 +102,14 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 var lowerScheme = string.Empty;
                 var match = SchemeCheck.Match(url);
                 if (match.Success) lowerScheme = match.Groups[1].Value.ToLower();
-                else lowerScheme = "#";
 
-                var linkLabel = GetClassedElement<Label>("link", lowerScheme, "inline");
+                var linkLabel = GetClassedElement<Label>(lowerScheme, "link", "inline");
                 linkLabel.text = link.FirstChild.ToString();
                 linkLabel.userData = url;
                 linkLabel.tooltip = url;
+                if (!string.IsNullOrWhiteSpace(lowerScheme))
+                    linkLabel.AddToClassList(lowerScheme);
+
                 VisualElement inlineElement = linkLabel;
                 if (SchemeLinkHandlers.TryGetValue(lowerScheme, out var schemeHandlers))
                 {
@@ -119,12 +117,13 @@ namespace ThunderKit.Markdown.ObjectRenderers
 
                     if (match.Success)
                         linkLabel.RegisterCallback<MouseUpEvent>(evt => schemeHandlers.linkHandler?.Invoke(url));
-                } else
+                }
+                else
                 {
                     linkLabel.RegisterCallback<MouseUpEvent>(evt => schemeHandlers.linkHandler?.Invoke(url));
 
                 }
-                renderer.WriteElement(inlineElement);
+                renderer.WriteElement(inlineElement, link);
             }
 
         }

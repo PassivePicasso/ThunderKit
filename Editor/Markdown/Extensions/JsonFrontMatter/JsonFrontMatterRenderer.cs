@@ -35,44 +35,26 @@ namespace ThunderKit.Markdown.Extensions.Json
         }
         protected override void Write(UIElementRenderer renderer, JsonFrontMatterBlock frontMatterBlock)
         {
-            var json = frontMatterBlock.Lines.ToString();
             try
             {
+                var json = frontMatterBlock.Lines.ToString().Trim();
                 var frontMatter = JsonUtility.FromJson<FrontMatter>(json);
-
-                var header = GetClassedElement<VisualElement>(frontMatter.headerClasses);
-                header.name = nameof(header);
-
-                var headerIcon = GetClassedElement<VisualElement>(frontMatter.iconClasses);
-                headerIcon.name = nameof(headerIcon);
-                header.Add(headerIcon);
 
                 if (!string.IsNullOrEmpty(frontMatter.title))
                 {
-                    var title = GetTextElement<Label>(frontMatter.title, frontMatter.titleClasses);
-                    title.name = nameof(title);
-                    header.Add(title);
+                    var header = GeneratePageHeader(frontMatter);
+                    renderer.WriteElement(header);
                 }
-                else if (IsAssetDirectory(renderer.Document.Data))
+
+                if (!string.IsNullOrEmpty(frontMatter.contentUrl)
+                    && renderer.Peek() is MarkdownElement markdown
+                    && markdown.Data != frontMatter.contentUrl)
                 {
-                    var fileName = Path.GetFileNameWithoutExtension(renderer.Document.Data);
-                    fileName = ObjectNames.NicifyVariableName(fileName);
-                    var title = GetTextElement<Label>(fileName, frontMatter.titleClasses);
-                    title.name = nameof(title);
-                    header.Add(title);
+                    markdown.Data = frontMatter.contentUrl;
+                    markdown.RefreshContent();
                 }
 
-                renderer.WriteElement(header);
-
-                if (!string.IsNullOrEmpty(frontMatter.contentUrl))
-                {
-                    var contentElement = GetClassedElement<MarkdownElement>();
-                    contentElement.Data = frontMatter.contentUrl;
-                    renderer.WriteElement(contentElement);
-                    contentElement.RefreshContent();
-                }
-
-                var parent = header.parent;
+                var parent = renderer.Peek();
                 if (!parent.HasStyleSheetPath(frontMatter.pageStylePath))
                     parent.AddStyleSheetPath(frontMatter.pageStylePath);
             }
@@ -81,6 +63,25 @@ namespace ThunderKit.Markdown.Extensions.Json
                 Debug.LogError(e);
                 renderer.WriteElement(GetTextElement<Label>(e.Message));
             }
+        }
+
+        private VisualElement GeneratePageHeader(FrontMatter frontMatter)
+        {
+            var header = GetClassedElement<VisualElement>(frontMatter.headerClasses);
+            header.name = nameof(header);
+
+            var headerIcon = GetClassedElement<VisualElement>(frontMatter.iconClasses);
+            headerIcon.name = nameof(headerIcon);
+            header.Add(headerIcon);
+
+            if (!string.IsNullOrEmpty(frontMatter.title))
+            {
+                var title = GetTextElement<Label>(frontMatter.title, frontMatter.titleClasses);
+                title.name = nameof(title);
+                header.Add(title);
+            }
+
+            return header;
         }
     }
 }

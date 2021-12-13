@@ -1,11 +1,14 @@
 using Markdig;
+using Markdig.Renderers.Normalize;
+
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using ThunderKit.Markdown.Extensions.GenericAttributes;
+using ThunderKit.Markdown.Extensions.Json;
+
 using UnityEditor;
 using UnityEngine;
-using Markdig.Renderers.Normalize;
-using System.Linq;
-using ThunderKit.Markdown.Extensions.Json;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -44,8 +47,9 @@ namespace ThunderKit.Markdown
         {
             renderer = new UIElementRenderer();
             mpb = new MarkdownPipelineBuilder();
+            mpb.Extensions.AddIfNotAlready<GenericAttributesExtension>();
             mpb.Extensions.AddIfNotAlready<JsonFrontMatterExtension>();
-            mpb.DisableHtml();
+            //mpb.DisableHtml();
             pipeline = mpb.Build();
             pipeline.Setup(renderer);
 
@@ -67,7 +71,7 @@ namespace ThunderKit.Markdown
 
         private void MarkdownFileWatcher_DocumentUpdated(object sender, (string path, MarkdownFileWatcher.ChangeType change) e)
         {
-            if(e.path == Data && e.change == MarkdownFileWatcher.ChangeType.Imported)
+            if (e.path == Data && e.change == MarkdownFileWatcher.ChangeType.Imported)
             {
                 RefreshContent();
             }

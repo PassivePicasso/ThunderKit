@@ -30,11 +30,11 @@ namespace ThunderKit.Markdown.Helpers
             {
                 var imageLoaderObject = new GameObject("MarkdownImageLoader", typeof(ImageLoadBehaviour)) { isStatic = true, hideFlags = HideFlags.HideAndDontSave };
                 var imageLoader = imageLoaderObject.GetComponent<ImageLoadBehaviour>();
-                var c = imageLoader.StartCoroutine(LoadImage(url, imageElement));
+                var c = imageLoader.StartCoroutine(LoadImage(url, imageElement, imageLoaderObject));
             }
             return imageElement;
         }
-        static IEnumerator LoadImage(string url, Image imageElement)
+        static IEnumerator LoadImage(string url, Image imageElement, GameObject gameObject)
         {
             using (var request = UnityWebRequestTexture.GetTexture(url))
             {
@@ -55,6 +55,7 @@ namespace ThunderKit.Markdown.Helpers
                     SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
 
                 imageElement.UnregisterCallback<DetachFromPanelEvent, UnityWebRequest>(CancelRequest);
+                GameObject.DestroyImmediate(gameObject);
             }
         }
         static void CancelRequest(DetachFromPanelEvent evt, UnityWebRequest webRequest) => webRequest.Abort();
@@ -68,6 +69,7 @@ namespace ThunderKit.Markdown.Helpers
 #else
             imageElement.style.width = new StyleValue<float>(texture.width);
             imageElement.style.height = new StyleValue<float>(texture.height);
+
 #endif
         }
 
