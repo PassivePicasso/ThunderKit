@@ -1,3 +1,4 @@
+
 .header-icon-composableobject>.glyph {
     background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ComposableObject_2X_Icon.png');
 }
@@ -32,4 +33,8 @@
 
 .header-icon-documentation>.glyph {
     background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png');
+}
+.page-header-container{
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
