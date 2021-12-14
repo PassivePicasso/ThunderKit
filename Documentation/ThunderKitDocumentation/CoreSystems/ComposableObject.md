@@ -1,6 +1,5 @@
 ---
 { 
-	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss",
 	"title" : "ComposableObject",
 	"headerClasses" : [ "bm4", "page-header-container" ],
 	"titleClasses" : [ "page-header" ],
