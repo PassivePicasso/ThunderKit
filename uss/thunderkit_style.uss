@@ -70,7 +70,6 @@
     margin-left: -10px;
 }
 .page-header-container {
-    margin-top: 0px;
     flex-direction: row; 
     flex-basis: 64px;
     justify-content: flex-start;

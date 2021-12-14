@@ -16,6 +16,9 @@ namespace ThunderKit.Markdown.Helpers
     using static Helpers.UnityPathUtility;
     public static class VisualElementFactory
     {
+        private static GameObject imageLoaderObject;
+        private static ImageLoadBehaviour imageLoader;
+
         internal class ImageLoadBehaviour : MonoBehaviour { }
         public static T GetImageElement<T>(string url, params string[] classNames) where T : Image, new()
         {
@@ -28,8 +31,11 @@ namespace ThunderKit.Markdown.Helpers
             }
             else
             {
-                var imageLoaderObject = new GameObject("MarkdownImageLoader", typeof(ImageLoadBehaviour)) { isStatic = true, hideFlags = HideFlags.HideAndDontSave };
-                var imageLoader = imageLoaderObject.GetComponent<ImageLoadBehaviour>();
+                if (!imageLoaderObject || !imageLoader)
+                {
+                    imageLoaderObject = new GameObject("MarkdownImageLoader", typeof(ImageLoadBehaviour)) { isStatic = true, hideFlags = HideFlags.HideAndDontSave };
+                    imageLoader = imageLoaderObject.GetComponent<ImageLoadBehaviour>();
+                }
                 var c = imageLoader.StartCoroutine(LoadImage(url, imageElement, imageLoaderObject));
             }
             return imageElement;
