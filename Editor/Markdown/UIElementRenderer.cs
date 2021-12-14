@@ -37,6 +37,9 @@ namespace ThunderKit.Markdown
         public override object Render(MarkdownObject markdownObject)
         {
             Write(markdownObject);
+            if (stack != null)
+                while (stack.Count > 1)
+                    Pop();
             return Document;
         }
 

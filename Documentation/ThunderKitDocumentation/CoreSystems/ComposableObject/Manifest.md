@@ -1,4 +1,14 @@
-# Manifest { #manifest .page-header-container .header-icon-manifest }
+---
+{
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/documentation_style.uss",
+	"headerClasses" : [ ],
+	"titleClasses" : [ ],
+	"iconClasses" : [ ]
+}
+
+---
+
+# Manifest {#manifest .page-header-container .header-icon-manifest }
 
 Manifests are where you will store all the information about your projects for ThunderKit to utilize. This includes meta data information for mod distribution systems like Thunderstore. Manifests are composed of ManifestDatums there are many ManifestDatums already available. Check the ManifestDatums section for a list of ManifestDatums and their functionality.
 

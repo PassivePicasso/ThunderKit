@@ -1,23 +1,16 @@
 ﻿using ThunderKit.Markdown.ObjectRenderers;
 using UnityEngine;
-using System.Collections;
-using UnityEngine.Networking;
-using UnityEditor;
-using System.IO;
 using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 #else
-using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
 
 namespace ThunderKit.Markdown.Extensions.Json
 {
     using static Helpers.VisualElementFactory;
-    using static Helpers.UnityPathUtility;
     public class JsonFrontMatterRenderer : UIElementObjectRenderer<JsonFrontMatterBlock>
     {
         public struct FrontMatter
@@ -40,23 +33,24 @@ namespace ThunderKit.Markdown.Extensions.Json
                 var json = frontMatterBlock.Lines.ToString().Trim();
                 var frontMatter = JsonUtility.FromJson<FrontMatter>(json);
 
+                VisualElement jsonFrontMatter = new VisualElement { name = "markdown-frontmatter-container" };
+                renderer.Push(jsonFrontMatter);
+
                 if (!string.IsNullOrEmpty(frontMatter.title))
                 {
                     var header = GeneratePageHeader(frontMatter);
                     renderer.WriteElement(header);
                 }
 
-                if (!string.IsNullOrEmpty(frontMatter.contentUrl)
-                    && renderer.Peek() is MarkdownElement markdown
-                    && markdown.Data != frontMatter.contentUrl)
+                if (!string.IsNullOrEmpty(frontMatter.contentUrl))
                 {
-                    markdown.Data = frontMatter.contentUrl;
+                    var markdown = new MarkdownElement { Data = frontMatter.contentUrl };
+                    renderer.WriteElement(markdown);
                     markdown.RefreshContent();
                 }
 
-                var parent = renderer.Peek();
-                if (!parent.HasStyleSheetPath(frontMatter.pageStylePath))
-                    parent.AddStyleSheetPath(frontMatter.pageStylePath);
+                if (!string.IsNullOrEmpty(frontMatter.pageStylePath) && !jsonFrontMatter.HasStyleSheetPath(frontMatter.pageStylePath))
+                    jsonFrontMatter.AddStyleSheetPath(frontMatter.pageStylePath);
             }
             catch (Exception e)
             {
