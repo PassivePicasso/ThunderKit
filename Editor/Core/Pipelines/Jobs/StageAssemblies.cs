@@ -12,6 +12,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Text;
+using System.Reflection;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -86,7 +87,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var resolvedArtifactPath = PathReference.ResolvePath(assemblyArtifactPath, pipeline, this);
             Directory.CreateDirectory(resolvedArtifactPath);
 
-
             var assemblies = CompilationPipeline.GetAssemblies();
             var definitionDatums = pipeline.Manifest.Data.OfType<AssemblyDefinitions>().ToArray();
             if (!definitionDatums.Any())
@@ -120,6 +120,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                      datum: dataSet.datum)
                 ).Where(def => def.asm != null)
                 .ToArray();
+
+            MethodInfo uNetProcessMethod = UNetWeaverHelper.GetProcessMethod();
 
             foreach (var definition in definitions)
             {
@@ -167,6 +169,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
                         else
                             CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
+
+                        TryUNetWeave(uNetProcessMethod, definition, assemblyName, outputPath);
                     }
                     pipeline.ManifestIndex = prevIndex;
                 }
@@ -179,11 +183,13 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 BuildStatus.Add(builder);
                 builder.Build();
             }
+
             while (EditorApplication.isCompiling)
             {
                 await Task.Delay(100);
             }
         }
+
         void CopyFiles(Pipeline pipeline, string sourcePath, string outputPath, params string[] patterns)
         {
             var builder = new StringBuilder("Assembly Files");
@@ -206,5 +212,24 @@ namespace ThunderKit.Core.Pipelines.Jobs
             pipeline.Log(LogLevel.Information, $"staging ``` {sourcePath} ``` in ``` {outputPath} ```\r\n", builder.ToString());
         }
 
+        private static void TryUNetWeave(MethodInfo uNetProcessMethod,
+            (UnityEditor.Compilation.Assembly asm, AssemblyDefinitionAsset asmDefAsset, AsmDef asmDef, AssemblyDefinitions datum) definition,
+            string assemblyName, string outputPath)
+        {
+            if (uNetProcessMethod != null)
+            {
+                var enginePath = InternalEditorUtility.GetEngineCoreModuleAssemblyPath();
+                var networkingDllPath = Path.Combine(EditorApplication.applicationContentsPath, "UnityExtensions", "Unity", "Networking", "UnityEngine.Networking.dll");
+                var assemblyToWeavePath = Path.Combine(outputPath, assemblyName);
+
+                uNetProcessMethod.Invoke(null,
+                    new object[]
+                    {
+                        enginePath, networkingDllPath,
+                        outputPath, new[] { assemblyToWeavePath }, definition.asm.allReferences, null,
+                        (Action<string>)Debug.LogWarning, (Action<string>)Debug.LogError
+                    });
+            }
+        }
     }
 }
