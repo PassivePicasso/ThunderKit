@@ -1,15 +1,22 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace ThunderKit.Core
 {
     public static class UNetWeaverHelper
     {
+        private const BindingFlags allFlags = (BindingFlags)(-1);
+
         public static MethodInfo GetProcessMethod()
         {
-            var allFlags = (BindingFlags)(-1);
+            return GetProcessMethodBeforeUnity2019() ?? GetProcessMethodAfterUnity2019();
+        }
 
+        private static MethodInfo GetProcessMethodBeforeUnity2019()
+        {
             var editorAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "UnityEditor");
             if (editorAssembly == null)
             {
@@ -37,16 +44,54 @@ namespace ThunderKit.Core
                     return null;
                 }
 
-                var uNetWeaverProgramType = uNetWeaverAssembly.GetType("Unity.UNetWeaver.Program");
-                if (uNetWeaverProgramType == null)
-                {
-                    return null;
-                }
-
-                return uNetWeaverProgramType.GetMethod("Process", allFlags);
+                return GetProcessMethodFromAssembly(uNetWeaverAssembly);
             }
 
             return null;
+        }
+
+        private static MethodInfo GetProcessMethodFromAssembly(Assembly uNetWeaverAssembly)
+        {
+            var uNetWeaverProgramType = uNetWeaverAssembly.GetType("Unity.UNetWeaver.Program");
+            if (uNetWeaverProgramType == null)
+            {
+                return null;
+            }
+
+            return uNetWeaverProgramType.GetMethod("Process", allFlags);
+        }
+
+        private static MethodInfo GetProcessMethodAfterUnity2019()
+        {
+            Assembly weaverAssembly = null;
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.GetName().Name == "com.unity.multiplayer-weaver.Editor")
+                {
+                    weaverAssembly = assembly;
+                }
+            }
+
+            if (weaverAssembly == null)
+            {
+                try
+                {
+                    var weaverPath = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "Library", "ScriptAssemblies", "com.unity.multiplayer-weaver.Editor.dll");
+                    weaverAssembly = Assembly.Load(weaverPath);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+
+            if (weaverAssembly == null)
+            {
+                return null;
+            }
+
+            return GetProcessMethodFromAssembly(weaverAssembly);
         }
     }
 }
