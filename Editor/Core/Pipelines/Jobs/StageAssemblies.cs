@@ -220,15 +220,41 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 var enginePath = InternalEditorUtility.GetEngineCoreModuleAssemblyPath();
                 var networkingDllPath = Path.Combine(EditorApplication.applicationContentsPath, "UnityExtensions", "Unity", "Networking", "UnityEngine.Networking.dll");
+                if (!File.Exists(networkingDllPath))
+                    networkingDllPath = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "Library", "ScriptAssemblies", "com.unity.multiplayer-hlapi.Runtime.dll");
                 var assemblyToWeavePath = Path.Combine(outputPath, assemblyName);
 
-                uNetProcessMethod.Invoke(null,
+                // Before 2019
+                if (uNetProcessMethod.GetParameters().Length == 8)
+                {
+                    uNetProcessMethod.Invoke(null,
                     new object[]
                     {
-                        enginePath, networkingDllPath,
-                        outputPath, new[] { assemblyToWeavePath }, definition.asm.allReferences, null,
-                        (Action<string>)Debug.LogWarning, (Action<string>)Debug.LogError
+                        enginePath,
+                        networkingDllPath,
+                        outputPath,
+                        new[] { assemblyToWeavePath },
+                        definition.asm.allReferences,
+                        null,
+                        (Action<string>)Debug.LogWarning,
+                        (Action<string>)Debug.LogError
                     });
+                }
+                // After 2019
+                else if (uNetProcessMethod.GetParameters().Length == 7)
+                {
+                    uNetProcessMethod.Invoke(null,
+                    new object[]
+                    {
+                        enginePath,
+                        networkingDllPath,
+                        outputPath,
+                        new[] { assemblyToWeavePath },
+                        definition.asm.allReferences,
+                        (Action<string>)Debug.LogWarning,
+                        (Action<string>)Debug.LogError
+                    });
+                }
             }
         }
     }
