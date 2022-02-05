@@ -173,7 +173,7 @@ public class MD4 : HashAlgorithm
 
 public static class FileIdUtil
 {
-    public static long Compute(Type t)
+    public static int Compute(Type t)
     {
         string toBeHashed = "s\0\0\0" + t.Namespace + t.Name;
 
@@ -181,7 +181,7 @@ public static class FileIdUtil
         {
             byte[] hashed = hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes(toBeHashed));
 
-            long result = 0;
+            int result = 0;
 
             for (int i = 3; i >= 0; --i)
             {
