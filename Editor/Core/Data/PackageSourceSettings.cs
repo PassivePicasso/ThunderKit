@@ -82,12 +82,7 @@ namespace ThunderKit.Core.Data
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
-#if UNITY_2020_2_OR_NEWER
         private void OnSelectionChanged(IEnumerable<object> sources)
-#else
-
-        private void OnSelectionChanged(List<object> sources)
-#endif
         {
             if (removeSourceButton == null || sources == null) return;
             removeSourceButton.userData = sources;
