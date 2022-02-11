@@ -230,7 +230,7 @@ namespace ThunderKit.Core.Windows
                 {
                     var newSelectedPage = pageIndex[newSelectedIndex];
                     UpdateSelectedPage(selectedPage, newSelectedPage);
-                    if (indexScroller.needsVertical)
+                    if (indexScroller.showVertical)
                     {
                         var dist = (float)(newSelectedIndex + modifier) / pageIndex.Count;
                         float highValue = indexScroller.verticalScroller.highValue * 1.25f;
@@ -295,18 +295,31 @@ namespace ThunderKit.Core.Windows
         }
 
 
-        public class PageEntry : BaseField<bool>
+        public class PageEntry : VisualElement, INotifyValueChanged<bool>
         {
             public Label Label { get; private set; }
             internal VisualElement container;
             private VisualElement ArrowIcon;
 
             public PageEntry parentEntry { get; private set; }
-            public PageEntry[] childEntries => container.OfType<PageEntry>().ToArray();
+            public PageEntry[] childEntries => container.Children().OfType<PageEntry>().ToArray();
+
+            bool toggled = false;
+            public bool value
+            {
+                get => toggled; set
+                {
+                    var oldValue = toggled;
+                    toggled = value;
+                    valueChanged?.Invoke(ChangeEvent<bool>.GetPooled(oldValue, value));
+                }
+            }
+
+            event EventCallback<ChangeEvent<bool>> valueChanged;
 
             public readonly string PagePath;
 
-            public PageEntry(string pageName, string name, string pagePath, Action<EventBase> onSelect)
+            public PageEntry(string pageName, string name, string pagePath, Action<EventBase> onSelect) 
             {
                 this.name = name;
                 PagePath = pagePath;
@@ -367,6 +380,24 @@ namespace ThunderKit.Core.Windows
                         instance.LoadSelection(PagePath);
                     }
                 }
+            }
+
+            public void RemoveOnValueChanged(EventCallback<ChangeEvent<bool>> eventCallback)
+            {
+                valueChanged -= eventCallback;
+            }
+            public void OnValueChanged(EventCallback<ChangeEvent<bool>> eventCallback)
+            {
+                valueChanged += eventCallback;
+            }
+
+            public void SetValueAndNotify(bool newValue)
+            {
+                value = newValue;
+            }
+            public void SetValueWithoutNotify(bool newValue)
+            {
+                toggled = newValue;
             }
         }
     }
