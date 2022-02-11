@@ -47,8 +47,11 @@ namespace ThunderKit.Core.Windows
             settingsList.itemsSource = settings;
             settingsList.selectionType = SelectionType.Multiple;
 
+#if UNITY_2020_2_OR_NEWER
+            settingsList.onSelectionChange += OnSettingsSelected;
+#else
             settingsList.onSelectionChanged += OnSettingsSelected;
-
+#endif
         }
 
         private void OnBindItem(VisualElement ve, int index)
