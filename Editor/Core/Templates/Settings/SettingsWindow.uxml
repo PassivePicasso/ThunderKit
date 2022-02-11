@@ -15,7 +15,9 @@
             <ui:VisualElement name="icon" class="header-icon TK_Server_Icon" />
             <ui:Label text="ThunderKit Settings" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
         </ui:VisualElement>
-        <ui:ScrollView name="settings-area"  class="grow"  show-horizontal-scroller="false" stretch-content-width="true"/>
-        
+        <ui:VisualElement name="header" style="flex-direction: row; flex-grow: 1;">
+            <ui:ListView name="settings-list" item-height="20" style="width: 200px; background-color: rgba(0, 0, 0, 0.15); margin-right: 4px;"/>
+            <ui:ScrollView name="settings-area"  class="grow"  show-horizontal-scroller="false" stretch-content-width="true" style="background-color: rgba(0, 0, 0, 0.05);"/>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
