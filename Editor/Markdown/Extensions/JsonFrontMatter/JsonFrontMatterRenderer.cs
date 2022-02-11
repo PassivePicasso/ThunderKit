@@ -48,9 +48,8 @@ namespace ThunderKit.Markdown.Extensions.Json
                     renderer.WriteElement(markdown);
                     markdown.RefreshContent();
                 }
-
-                if (!string.IsNullOrEmpty(frontMatter.pageStylePath) && !jsonFrontMatter.HasStyleSheetPath(frontMatter.pageStylePath))
-                    jsonFrontMatter.AddStyleSheetPath(frontMatter.pageStylePath);
+                if (!string.IsNullOrEmpty(frontMatter.pageStylePath))
+                    MultiVersionLoadStyleSheet(jsonFrontMatter, frontMatter.pageStylePath);
             }
             catch (Exception e)
             {
@@ -76,6 +75,18 @@ namespace ThunderKit.Markdown.Extensions.Json
             }
 
             return header;
+        }
+
+        public void MultiVersionLoadStyleSheet(VisualElement element, string sheetPath)
+        {
+#if UNITY_2019_1_OR_NEWER
+            var styleSheet = UnityEditor.AssetDatabase.LoadAssetAtPath<StyleSheet>(sheetPath);
+            if (!element.styleSheets.Contains(styleSheet))
+                element.styleSheets.Add(styleSheet);
+#elif UNITY_2018_1_OR_NEWER
+            if (!element.HasStyleSheetPath(sheetPath))
+                element.AddStyleSheetPath(sheetPath);
+#endif
         }
     }
 }
