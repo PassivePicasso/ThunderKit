@@ -20,6 +20,8 @@ namespace ThunderKit.Core.Data
     {
         static Type[] thunderKitSettingsTypes = null;
 
+        public virtual string DisplayName => ObjectNames.NicifyVariableName(name);
+
         [InitializeOnLoadMethod]
         static void Ensure()
         {
