@@ -92,31 +92,6 @@
     justify-content: center;
     margin-left: 10px;
 }
-
-.settings-header {
-    font-size: 12px;
-    -unity-font-style: normal;
-    background-color: rgba(0, 0, 0, 0.25);
-    padding-left: 3px;
-    padding-right: 3px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    margin-bottom: 2px;
-    flex-direction: row;
-}
-
-.settings-background {
-    background-color: rgba(191, 191, 191, 0.25);
-    border-left-color: rgba(0, 0, 0, 0.75);
-    border-right-color: rgba(0, 0, 0, 0.75);
-    border-top-color: rgba(0, 0, 0, 0.75);
-    border-bottom-color: rgba(0, 0, 0, 0.75);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-}
-
 .header-icon {
     width: 64px;
     height: 64px;
@@ -235,16 +210,6 @@ PageEntry.selected>.header>Label:hover {
     flex-shrink: 1;
 }
 
-.setting-header-icon {
-    width: 20px;
-    height: 20px;
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Setting_Icon.png');
-}
-
-.setting-background {
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
 .thunderkit-field {
     flex-direction: row;
     flex-grow: 1;
@@ -261,12 +226,12 @@ PageEntry.selected>.header>Label:hover {
 
 .thunderkit-header {
     -unity-font-style: bold;
-    font-size: 11px;
-    background-color: rgb(204, 204, 204);
-    color: rgb(0, 0, 0);
-    margin-left: 0;
-    margin-top: 0;
-    margin-right: 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-left: 4px;
+    margin-top: 4px;
+    margin-right: 4px;
+    margin-bottom: 4px;
 }
 
 .thunderkit-error {
@@ -283,23 +248,71 @@ PageEntry.selected>.header>Label:hover {
     margin-bottom: 1px;
 }
 
-.thunderkit-setting {
-    opacity: 0.25;
-    background-color: rgb(170, 170, 170);
-    border-color: rgb(0, 0, 0);
-    border-left-width: 1px;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    margin-left: 2px;
-    margin-top: 2px;
-    margin-right: 2px;
-    margin-bottom: 1px;
-}
-
 .configure-game-button {
 }
 
 .standard-spacer {
     height: 50px;
+}
+
+.setting-section {
+    background-color: rgba(0, 0, 0, 0.1);
+    margin-bottom: 4px;
+}
+
+.settings-header {
+    background-color: rgba(0, 0, 0, 0.25);
+    flex-direction: row;
+}
+.settings-header>Label {
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    font-size: 14px;
+    -unity-font-style: normal;
+    margin-top: -1px;
+    margin-left: 0px;
+    color: rgba(255, 255, 255, 0.75);
+}
+.settings-header>#icon {
+    margin-top: 1px;
+    width: 20px;
+    height: 20px;
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Setting_Icon.png');
+}
+
+#settings-list {
+    flex-grow: 1;
+    border-top-width: 1px; 
+    border-left-width: 1px; 
+    border-bottom-width: 1px; 
+    border-right-width: 1px; 
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+#settings-list ScrollView {
+    margin-top: 0px;
+}
+
+#settings-list Label {
+    margin-left: 0px;
+    margin-right: 0px;
+    border-top-width: 1px; 
+    border-left-width: 1px; 
+    border-bottom-width: 1px; 
+    border-right-width: 1px; 
+    border-color: rgba(0, 0, 0, 0);
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    font-size: 12px;
+    -unity-font-style: normal;
+    color: rgba(255, 255, 255, 0.75);
+}
+#settings-list Label:selected {
+    background-color: rgba(128, 0, 0, 0.5);
+}
+#settings-list Label:hover:selected {
+    background-color: rgba(128, 0, 0, 0.5);
+    border-color: rgba(128, 0, 0, 1);
+}
+#settings-list Label:hover {
+    background-color: rgba(128, 0, 0, 0.25);
+    border-color: rgba(128, 0, 0, 0.5);
 }
