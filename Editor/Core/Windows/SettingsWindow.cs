@@ -58,7 +58,7 @@ namespace ThunderKit.Core.Windows
         {
             var label = ve as Label;
             var setting = settingsList.itemsSource[index] as ThunderKitSetting;
-            label.text = ObjectNames.NicifyVariableName(setting.name);
+            label.text = setting.DisplayName;
         }
 
         private VisualElement OnMakeItem() => new Label();
@@ -71,7 +71,7 @@ namespace ThunderKit.Core.Windows
                 var settingSection = GetTemplateInstance("ThunderKitSettingSection");
                 var title = settingSection.Q<Label>("title");
                 if (title != null)
-                    title.text = setting.name;
+                    title.text = setting.DisplayName;
                 var properties = settingSection.Q<VisualElement>("properties");
                 try
                 {
