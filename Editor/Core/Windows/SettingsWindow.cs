@@ -35,7 +35,7 @@ namespace ThunderKit.Core.Windows
         {
             base.OnEnable();
 
-            settingsList = rootVisualElement.Q<ListView>("settings-list");
+            settingsList = rootVisualElement.Q("settings-list") as ListView;
             settingsArea = rootVisualElement.Q("settings-area");
             var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", searchFolders)
                 .Select(AssetDatabase.GUIDToAssetPath)
