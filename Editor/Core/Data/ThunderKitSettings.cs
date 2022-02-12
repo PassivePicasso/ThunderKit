@@ -33,6 +33,7 @@ namespace ThunderKit.Core.Data
             GetOrCreateSettings<ThunderKitSettings>();
         }
 
+        public override string DisplayName => "ThunderKit Settings";
 
         private static readonly string[] CopyFilePatterns = new[] { "*.dll", "*.mdb", "*.pdb" };
         static void LoadAllAssemblies(string somevalue, CompilerMessage[] message)
