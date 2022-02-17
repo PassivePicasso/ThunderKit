@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 
-namespace ThunderKit.Core.Pipelines.Jops
+namespace ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
     public class Zip : FlowPipelineJob
