@@ -86,7 +86,16 @@ namespace ThunderKit.Core.Config
 
             while (!foundExecutable)
             {
-                string path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
+                var path = string.Empty;
+                switch(Application.platform)
+                {
+                    case RuntimePlatform.WindowsEditor:
+                        path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
+                        break;
+                    case RuntimePlatform.OSXEditor:
+                        path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "app");
+                        break;
+                }
                 if (string.IsNullOrEmpty(path)) return;
                 settings.GameExecutable = Path.GetFileName(path);
                 settings.GamePath = Path.GetDirectoryName(path);
@@ -203,6 +212,7 @@ namespace ThunderKit.Core.Config
 
         public static void SetBitness(ThunderKitSettings settings)
         {
+            if (Application.platform != RuntimePlatform.WindowsEditor) return;
             var assembly = Path.Combine(settings.GamePath, settings.GameExecutable);
             using (var stream = File.OpenRead(assembly))
             using (var binStream = new BinaryReader(stream))
