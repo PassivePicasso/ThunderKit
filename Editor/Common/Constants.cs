@@ -14,8 +14,11 @@ namespace ThunderKit.Common
 
         public static readonly string TempDir = PathExtensions.Combine(Directory.GetCurrentDirectory(), "Temp", ThunderKit);
         public static readonly string Packages = "Packages";
-        public static readonly string[] AssetDatabaseFindFolders = new[] { "Packages", "Assets" };
         public static readonly string ThunderKitPackageName = "com.passivepicasso.thunderkit";
+
+        public static readonly string[] FindAllFolders = new[] { "Packages", "Assets" };
+        public static readonly string[] FindAssetsFolders = new[] { "Assets" };
+        public static readonly string[] FindPackagesFolders = new[] { "Packages" };
 
         [InitializeOnLoadMethod]
         static void SetupTempDir()

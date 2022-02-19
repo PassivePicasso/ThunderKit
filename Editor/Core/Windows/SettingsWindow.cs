@@ -18,7 +18,6 @@ namespace ThunderKit.Core.Windows
     using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class SettingsWindow : TemplatedWindow
     {
-        readonly static string[] searchFolders = new[] { "Assets", "Packages" };
         private ListView settingsList;
         private VisualElement settingsArea;
 
@@ -37,7 +36,7 @@ namespace ThunderKit.Core.Windows
 
             settingsList = rootVisualElement.Q("settings-list") as ListView;
             settingsArea = rootVisualElement.Q("settings-area");
-            var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", searchFolders)
+            var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", Constants.FindAllFolders)
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<ThunderKitSetting>)
                 .ToArray();
