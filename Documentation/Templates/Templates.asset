@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdae1e1d7d79c7140aa2c28477e5fd8f, type: 3}
-  m_Name: ThunderKit
+  m_Name: Templates
   m_EditorClassIdentifier: 
-  MainPage: {fileID: 4900000, guid: dc00ba5c2ce606144ae6f86a465386f8, type: 3}
+  MainPage: {fileID: 4900000, guid: 041b1c5bb1521ad44bcb3f89b0f22eb5, type: 3}

@@ -12,5 +12,7 @@ namespace ThunderKit.Core.Data
         {
             SelectNewAsset<DocumentationRoot>();
         }
+
+        public TextAsset MainPage;
     }
 }
