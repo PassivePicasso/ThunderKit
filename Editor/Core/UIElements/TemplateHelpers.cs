@@ -21,8 +21,6 @@ namespace ThunderKit.Core.UIElements
     {
         private static bool IsTemplatePath(string path) => path.Contains("Packages/com.passivepicasso.thunderkit");
 
-        private readonly static string[] SearchFolders = new string[] { "Assets", "Packages" };
-
         private static readonly Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
 
         public static string NicifyPackageName(string name) => ObjectNames.NicifyVariableName(name).Replace("_", " ");
@@ -104,7 +102,7 @@ namespace ThunderKit.Core.UIElements
 
         static VisualTreeAsset CreateTemplate(string name, Func<string, bool> isTemplatePath)
         {
-            var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
+            var searchResults = AssetDatabase.FindAssets(name, Constants.FindAllFolders);
             var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
             var templatePath = assetPaths
                 .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))

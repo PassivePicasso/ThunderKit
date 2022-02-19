@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 using Debug = UnityEngine.Debug;
+using ThunderKit.Common;
 
 namespace ThunderKit.Core.Inspectors
 {
@@ -17,7 +18,6 @@ namespace ThunderKit.Core.Inspectors
     {
         protected static GUISkin EditorSkin;
 
-        static readonly string[] searchFolders = new[] { "Assets", "Packages" };
         public class StepData
         {
             public SerializedProperty step;
@@ -345,7 +345,7 @@ namespace ThunderKit.Core.Inspectors
                 popup.Create = createFromScript;
 
                 var IconName = $"TK_{composableObject.GetType().Name}_Icon";
-                var icon = AssetDatabase.FindAssets($"t:Texture2D {IconName}", searchFolders)
+                var icon = AssetDatabase.FindAssets($"t:Texture2D {IconName}", Constants.FindAllFolders)
                              .Select(AssetDatabase.GUIDToAssetPath)
                              .Select(AssetDatabase.LoadAssetAtPath<Texture2D>)
                              .FirstOrDefault();

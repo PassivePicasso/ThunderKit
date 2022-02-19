@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ThunderKit.Common;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Manifests;
 using UnityEditor;
@@ -14,13 +15,12 @@ namespace ThunderKit.Core.Config
     public class ManifestUpdater : MonoBehaviour
     {
         static string[] JustPackages = new string[] { "Packages" };
-        static string[] PackagesAndAssets = new string[] { "Packages", "Assets" };
         const string MenuPath = "Tools/ThunderKit/Migration/Update Manifest Identity assignments";
         [MenuItem(MenuPath), InitializeOnLoadMethod]
         public static void UpdateAllManifests()
         {
             var remap = new Dictionary<string, string>();
-            var allManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", PackagesAndAssets);
+            var allManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders);
             var scriptRefRegex = new Regex("(.*?)\\{fileID: (\\d*?), guid: (\\w*?), type: (\\d)\\}");
             try
             {
