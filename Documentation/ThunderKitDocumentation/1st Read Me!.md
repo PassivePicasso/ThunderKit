@@ -33,7 +33,7 @@ MarkdownElement's links do not track visitation, so the color of links will not 
 
 The documentation in its current form doesn't easily allow free selection of text.
 ```
-However, you can select and copy from code block like this one
+However, you can select and copy from code blocks like this one
 ```
 
 ## About ThunderKit Documentation
