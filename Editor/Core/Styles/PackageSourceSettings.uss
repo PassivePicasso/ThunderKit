@@ -49,6 +49,7 @@
 
 #package-source-settings {
     flex-direction: row;
+    margin-top: -1px;
 }
 
 #add-source-button {

@@ -11,18 +11,17 @@
 }
 
 .section {
-	margin-top: 5px;
-	background-color: rgba(0,0,0,0.1);
-
 }
 
 #game-configuration-section{
 }
 
 #log-configuration-section {
+	margin-top: 4px;
 }
 
 #settings-window-section {
+	margin-top: 4px;
 }
 
 #game-config-button-container{
