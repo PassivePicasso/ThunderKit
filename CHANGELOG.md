@@ -30,7 +30,7 @@ Some documents have been reformatted to improve their layout flexibility
 
 ### Fixes and Improvements
 
-* Automatically generate a PackageSource for the ThunderKit Extensiosn Thunderstore
+* Automatically generate a PackageSource for the ThunderKit Extensions Thunderstore
 
 * Remove ThunderKit.Core.Editor namespace due to code clarity issues a namespace named Editor creates in Unity
 
