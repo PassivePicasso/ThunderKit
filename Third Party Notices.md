@@ -1,4 +1,4 @@
-﻿This notice serves only to indicate what open source assets are being used in the ThunderKit project and does not indicate an endorsement of this software package in any form.
+﻿This notice serves only to indicate what open source assets are being used in the ThunderKit project and does not indicate an endorsement of this software package in any form by their authors.
 
 This package contains third-party software components governed by the license(s) indicated below:
 
@@ -29,3 +29,10 @@ This package contains third-party software components governed by the license(s)
 * [https://github.com/mxstbr/markdown-test-file](https://github.com/mxstbr/markdown-test-file)
 * License:  [The MIT License](https://github.com/mxstbr/markdown-test-file/blob/master/LICENSE)
 * [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/MarkdownTestFile/LICENSE.txt)
+
+## Unity Toolbar Extender
+
+* `Copyright (c) 2018 Marijn Zwemmer`
+* [https://github.com/marijnz/unity-toolbar-extender](https://github.com/marijnz/unity-toolbar-extender)
+* License:  [The MIT License](https://github.com/marijnz/unity-toolbar-extender/blob/master/LICENSE)
+* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/UnityToolbarExtender/LICENSE.txt)
