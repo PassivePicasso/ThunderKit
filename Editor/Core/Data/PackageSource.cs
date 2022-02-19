@@ -48,7 +48,7 @@ namespace ThunderKit.Core.Data
                 if (sourceGroups == null)
                 {
                     sourceGroups = new Dictionary<string, List<PackageSource>>();
-                    var packageSources = AssetDatabase.FindAssets("t:PackageSource", new string[] { "Assets", "Packages" })
+                    var packageSources = AssetDatabase.FindAssets("t:PackageSource", Constants.FindAllFolders)
                         .Select(AssetDatabase.GUIDToAssetPath)
                         .Select(AssetDatabase.LoadAssetAtPath<PackageSource>);
                     foreach (var packageSource in packageSources)
