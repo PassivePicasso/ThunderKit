@@ -15,33 +15,8 @@ namespace ThunderKit.Core.Config
     using static ThunderKit.Common.PathExtensions;
     public class ConfigureGame
     {
-        //[InitializeOnLoadMethod]
-        //static void CleanupOnRemoveGame()
-        //{
-        //    EditorApplication.projectChanged += EditorApplication_projectChanged;
-        //}
-
-        //private static void EditorApplication_projectChanged()
-        //{
-        //    var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
-        //    if (string.IsNullOrEmpty(settings.GameExecutable) || string.IsNullOrEmpty(settings.GamePath)) return;
-
-        //    var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
-        //    var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
-        //    var isValid = AssetDatabase.IsValidFolder($"Packages/{name}");
-        //    if (isValid)
-        //        Debug.Log($"{packageName} is present in project.");
-        //    else
-        //        Debug.LogError($"{packageName} is not present in project.");
-
-        //}
-
-        public static void Configure()
+        public static void LoadGame(ThunderKitSettings settings)
         {
-            var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
-
-            LoadGame(settings);
-
             if (string.IsNullOrEmpty(settings.GamePath) || string.IsNullOrEmpty(settings.GameExecutable)) return;
 
             SetBitness(settings);
@@ -78,16 +53,15 @@ namespace ThunderKit.Core.Config
                 Directory.CreateDirectory(destinationFolder);
         }
 
-        private static void LoadGame(ThunderKitSettings settings)
+        public static void LocateGame(ThunderKitSettings settings)
         {
             string currentDir = Directory.GetCurrentDirectory();
-            var foundExecutable = !string.IsNullOrEmpty(settings.GamePath)
-                               && Directory.GetFiles(settings.GamePath ?? currentDir, Path.GetFileName(settings.GameExecutable)).Any();
+            var foundExecutable = false;
 
             while (!foundExecutable)
             {
                 var path = string.Empty;
-                switch(Application.platform)
+                switch (Application.platform)
                 {
                     case RuntimePlatform.WindowsEditor:
                         path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
