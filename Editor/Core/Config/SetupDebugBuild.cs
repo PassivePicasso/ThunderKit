@@ -26,7 +26,9 @@ namespace ThunderKit.Core.Config
     {
         private const string playerConnectionDebug1 = "player-connection-debug=1";
 
+#if UNITY_EDITOR_WIN
         [MenuItem(Constants.ThunderKitMenuRoot + "Setup Debug Build", priority = Constants.ThunderKitMenuPriority - 1)]
+#endif
         public static void Execute()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
