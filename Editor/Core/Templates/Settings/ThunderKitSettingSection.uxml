@@ -1,10 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <Style src="/Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss" />
     <ui:VisualElement class="grow setting-section">
-        <ui:VisualElement class="bm4 settings-header">
+        <ui:VisualElement class="settings-header">
             <ui:VisualElement name="icon" />
             <ui:Label text="ThunderKit Settings" display-tooltip-when-elided="true" name="title" />
         </ui:VisualElement>
-        <ui:VisualElement name="properties" class="m4" />
+        <ui:VisualElement name="properties" />
     </ui:VisualElement>
 </ui:UXML>

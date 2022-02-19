@@ -262,6 +262,7 @@ PageEntry.selected>.header>Label:hover {
 .settings-header {
     background-color: rgba(0, 0, 0, 0.25);
     flex-direction: row;
+    max-height: 22px;
 }
 .settings-header>Label {
     -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
