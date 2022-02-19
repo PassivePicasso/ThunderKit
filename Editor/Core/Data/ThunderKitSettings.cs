@@ -27,20 +27,23 @@ namespace ThunderKit.Core.Data
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
-            CompilationPipeline.assemblyCompilationFinished -= LoadAllAssemblies;
-            CompilationPipeline.assemblyCompilationFinished += LoadAllAssemblies;
-            LoadAllAssemblies(null, null);
+            EditorApplication.quitting -= EditorApplicationQuitting;
+            EditorApplication.quitting += EditorApplicationQuitting;
+
+            CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
+            CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
+
             GetOrCreateSettings<ThunderKitSettings>();
         }
 
-
-        private static readonly string[] CopyFilePatterns = new[] { "*.dll", "*.mdb", "*.pdb" };
-        static void LoadAllAssemblies(string somevalue, CompilerMessage[] message)
+        private static void EditorApplicationQuitting()
         {
-            var targetFiles = from pattern in CopyFilePatterns
-                              from file in Directory.GetFiles("Packages", pattern, SearchOption.AllDirectories)
-                              select file;
-            foreach (var file in targetFiles)
+            CopyAssemblyCSharp(null, null);
+        }
+
+        static void CopyAssemblyCSharp(string somevalue, CompilerMessage[] message)
+        {
+            foreach (var file in Directory.GetFiles("Packages", "Assembly-CSharp.dll", SearchOption.AllDirectories))
             {
                 var fileName = Path.GetFileName(file);
                 var outputPath = Combine("Library", "ScriptAssemblies", fileName);
