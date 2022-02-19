@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using ThunderKit.Core.UIElements;
+using ThunderKit.Common;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -17,8 +18,6 @@ namespace ThunderKit.Core.Data
     // Create a new type of Settings Asset.
     public class PackageSourceSettings : ThunderKitSetting
     {
-        const string SettingsTemplatesPath = "Packages/com.passivepicasso.thunderkit/Editor/Core/Templates/Settings";
-        const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
 
         public PackageSource[] PackageSources => AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
                 .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
@@ -33,7 +32,7 @@ namespace ThunderKit.Core.Data
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
-            var settingsElement = TemplateHelpers.LoadTemplateInstance(PackageSourceSettingsTemplatePath);
+            var settingsElement = TemplateHelpers.LoadTemplateInstance(Constants.PackageSourceSettingsTemplatePath);
             selectedSourceSettings = settingsElement.Q<ScrollView>("selected-source-settings");
             sourceList = settingsElement.Q<ListView>("sources-list");
             addSourceButton = settingsElement.Q<Button>("add-source-button");
@@ -47,7 +46,7 @@ namespace ThunderKit.Core.Data
             refreshButton.clickable.clicked += Refresh;
 
             addSourceButton.clickable.clicked += OpenAddSourceMenu;
-
+            
             sourceList.selectionType = SelectionType.Multiple;
             sourceList.makeItem = () => new Label() { name = "source-name-item" };
             sourceList.bindItem = (ve, i) =>
@@ -91,7 +90,7 @@ namespace ThunderKit.Core.Data
             {
                 try
                 {
-                    var settingsInstance = TemplateHelpers.LoadTemplateInstance($"{SettingsTemplatesPath}/{source.GetType().Name}.uxml");
+                    var settingsInstance = TemplateHelpers.LoadTemplateInstance($"{Constants.SettingsTemplatesPath}/{source.GetType().Name}.uxml");
                     selectedSourceSettings.Add(settingsInstance);
                     var nameField = settingsInstance.Q<TextField>("asset-name-field");
                     if (nameField != null)

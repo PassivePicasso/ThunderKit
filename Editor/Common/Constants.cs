@@ -20,6 +20,11 @@ namespace ThunderKit.Common
         public static readonly string[] FindAssetsFolders = new[] { "Assets" };
         public static readonly string[] FindPackagesFolders = new[] { "Packages" };
 
+        public const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
+        public const string SettingsTemplatesPath = "Packages/com.passivepicasso.thunderkit/Editor/Core/Templates/Settings";
+        public const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
+        public const string ThunderKitSettingsTemplatePath = SettingsTemplatesPath + "/ThunderKitSettings.uxml";
+
         [InitializeOnLoadMethod]
         static void SetupTempDir()
         {
