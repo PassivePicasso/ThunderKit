@@ -8,6 +8,7 @@ using ThunderKit.Markdown.ObjectRenderers;
 using ThunderKit.Markdown;
 using ThunderKit.Core.Data;
 using System;
+using UnityEngine;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -58,9 +59,6 @@ namespace ThunderKit.Core.Windows
 
                 instance = GetWindow<Documentation>("Documentation", consoleType.ToArray());
             }
-
-
-            instance.Initialize();
 
             return instance;
         }
@@ -133,10 +131,17 @@ namespace ThunderKit.Core.Windows
                     .ToArray();
 
                 var pages = new Dictionary<string, PageEntry>();
-                var rootPage = new PageEntry(root.asset.name, root.asset.name, "", OnSelect);
+                if (root.asset.MainPage == null)
+                {
+                    Debug.LogWarning($"Documentation Root: {root.asset.name}, has not been assigned a MainPain, skipping.");
+                    continue;
+                }
+                var mainPagePath = AssetDatabase.GetAssetPath(root.asset.MainPage);
+                var rootPage = new PageEntry(root.asset.name, root.asset.MainPage.name, mainPagePath, OnSelect);
                 pageList.Add(rootPage);
                 foreach (var pagePath in pageFiles)
                 {
+                    if (pagePath == mainPagePath) continue;
                     var pageName = Path.GetFileNameWithoutExtension(pagePath);
                     var containingDirectory = Path.GetDirectoryName(pagePath);
                     var pageNamePath = Path.Combine(containingDirectory, pageName);
@@ -146,6 +151,7 @@ namespace ThunderKit.Core.Windows
 
                     var pageEntry = new PageEntry(pageName, pageName, pagePath, OnSelect);
 
+                    pageEntry.RegisterCallback<KeyDownEvent>(OnNavigate);
 
                     if (parentPage != null) parentPage.AddChildPage(pageEntry);
                     else
@@ -153,8 +159,7 @@ namespace ThunderKit.Core.Windows
                     pages.Add(pageNamePath, pageEntry);
                 }
             }
-            if (currentPage == null)
-                LoadSelection("Packages/com.passivepicasso.thunderkit/Documentation/topics/1st Read Me!.md");
+            LoadSelection("Packages/com.passivepicasso.thunderkit/Documentation/ThunderKitDocumentation/About.md");
         }
 
         string GetPageName(string path)
@@ -319,7 +324,7 @@ namespace ThunderKit.Core.Windows
 
             public readonly string PagePath;
 
-            public PageEntry(string pageName, string name, string pagePath, Action<EventBase> onSelect) 
+            public PageEntry(string pageName, string name, string pagePath, Action<EventBase> onSelect)
             {
                 this.name = name;
                 PagePath = pagePath;
