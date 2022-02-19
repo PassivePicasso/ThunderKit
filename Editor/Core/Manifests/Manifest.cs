@@ -13,6 +13,8 @@ namespace ThunderKit.Core.Manifests
 {
     public class Manifest : ComposableObject
     {
+        public bool QuickAccess;
+
         [SerializeField, HideInInspector] private ManifestIdentity identity;
 
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Manifest), priority = Constants.ThunderKitMenuPriority)]
