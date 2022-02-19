@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Windows;
 using UnityEditor;
@@ -9,6 +10,48 @@ namespace ThunderKit.Core.Inspectors
     [CustomEditor(typeof(Pipeline), true)]
     public class PipelineEditor : ComposableObjectEditor
     {
+        protected override IEnumerable<string> ExcludedProperties()
+        {
+            yield return nameof(Pipeline.QuickAccess);
+        }
+        protected override void OnHeaderGUI()
+        {
+            base.OnHeaderGUI();
+            var pipeline = target as Pipeline;
+
+            var width = 100;
+            var rect = new Rect(46, 22, width, 15);
+            pipeline.QuickAccess = GUI.Toggle(rect, pipeline.QuickAccess, "Quick Access");
+
+            var cvw = EditorGUIUtility.currentViewWidth;
+            width = 160;
+            var buttonArea = new Rect(cvw - width - 50, 25, width, 15);
+            GUILayout.BeginArea(buttonArea);
+            using (var scope = new GUILayout.HorizontalScope())
+            {
+                try
+                {
+                    if (GUILayout.Button("Execute", GUILayout.Height(15)))
+                        _ = pipeline.Execute();
+                    if (GUILayout.Button("Log", GUILayout.Height(15), GUILayout.Width(50)))
+                    {
+                        var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
+                                                        .Select(AssetDatabase.GUIDToAssetPath)
+                                                        .Where(ap => ap.Contains(pipeline.name))
+                                                        .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
+                                                        .OrderByDescending(log => log.CreatedDate)
+                                                        .First();
+                        PipelineLogWindow.ShowLog(pipelineLog);
+                    }
+                }
+                catch { }
+                finally
+                {
+                    GUILayout.EndArea();
+                }
+            }
+        }
+
         protected override Rect OnBeforeElementHeaderGUI(Rect rect, ComposableElement element, ref string title)
         {
             var job = element as PipelineJob;
@@ -30,38 +73,6 @@ namespace ThunderKit.Core.Inspectors
             rect.x += offset;
             rect.width -= offset;
             return rect;
-        }
-        public override void OnInspectorGUI()
-        {
-            var pipeline = target as Pipeline;
-            if (!pipeline)
-            {
-                //this should never get hit?
-                Debug.LogError("Drawing PipelineEditor inspector for pipeline that is not targetted.");
-                return;
-            }
-            using (var scope = new GUILayout.HorizontalScope())
-            {
-                try
-                {
-                    if (GUILayout.Button("Execute"))
-                        _ = pipeline.Execute();
-                    if (GUILayout.Button("Show Log"))
-                    {
-                        var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
-                                                        .Select(AssetDatabase.GUIDToAssetPath)
-                                                        .Where(ap => ap.Contains(pipeline.name))
-                                                        .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
-                                                        .OrderByDescending(log => log.CreatedDate)
-                                                        .First();
-                        PipelineLogWindow.ShowLog(pipelineLog);
-                    }
-                }
-                catch { }
-            }
-            GUILayout.Space(4);
-
-            base.OnInspectorGUI();
         }
     }
 }
