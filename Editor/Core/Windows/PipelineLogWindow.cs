@@ -24,7 +24,7 @@ namespace ThunderKit.Core.Windows
         private static PipelineLogWindow window;
         public static bool IsOpen { get; private set; }
 
-        private PipelineLogSettings settings;
+        private ThunderKitSettings settings;
         private ListView logEntryListView;
         private bool locked = false;
         private PipelineLog pipelineLog;
@@ -38,7 +38,7 @@ namespace ThunderKit.Core.Windows
                 var consoleType = typeof(EditorWindow).Assembly.GetTypes().First(t => "ConsoleWindow".Equals(t.Name));
                 window = GetWindow<PipelineLogWindow>($"{pipelineLog.pipeline.name}", consoleType);
             }
-            window.settings = ThunderKitSetting.GetOrCreateSettings<PipelineLogSettings>();
+            window.settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             window.pipelineLog = pipelineLog;
             window.Initialize();
         }
