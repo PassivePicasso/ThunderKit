@@ -17,7 +17,11 @@ namespace ThunderKit.Core.Config
     {
         public static void LoadGame(ThunderKitSettings settings)
         {
-            if (string.IsNullOrEmpty(settings.GamePath) || string.IsNullOrEmpty(settings.GameExecutable)) return;
+            if (string.IsNullOrEmpty(settings.GamePath) || string.IsNullOrEmpty(settings.GameExecutable))
+            {
+                LocateGame(settings);
+                return;
+            }
 
             SetBitness(settings);
             EditorUtility.SetDirty(settings);
