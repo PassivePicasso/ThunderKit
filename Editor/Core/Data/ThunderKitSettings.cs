@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using UnityEditor.Compilation;
 using System.IO;
-using System;
 using System.Linq;
-using System.Reflection;
 using ThunderKit.Common;
+using ThunderKit.Core.Windows;
+using ThunderKit.Core.UIElements;
 using ThunderKit.Core.Config;
 using ThunderKit.Markdown;
-using ThunderKit.Core.Windows;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -24,6 +22,7 @@ namespace ThunderKit.Core.Data
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ThunderKitSetting
     {
+
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
@@ -49,9 +48,12 @@ namespace ThunderKit.Core.Data
                 FileUtil.ReplaceFile(file, outputPath);
             }
         }
-
-
         private SerializedObject thunderKitSettingsSO;
+
+        [SerializeField]
+        private bool FirstLoad = true;
+
+        public bool ShowOnStartup = true;
 
         public string GameExecutable;
 
@@ -59,6 +61,39 @@ namespace ThunderKit.Core.Data
 
         public bool Is64Bit;
 
+        public string DateTimeFormat = "HH:mm:ss:fff";
+
+        public string CreatedDateFormat = "MMM/dd HH:mm:ss";
+
+        [InitializeOnLoadMethod]
+        static void SettingsWindowSetup()
+        {
+            EditorApplication.wantsToQuit -= EditorApplication_wantsToQuit;
+            EditorApplication.wantsToQuit += EditorApplication_wantsToQuit;
+
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
+            if (settings.FirstLoad && settings.ShowOnStartup)
+                EditorApplication.update += ShowSettings;
+        }
+
+        private static void ShowSettings()
+        {
+            EditorApplication.update -= ShowSettings;
+            SettingsWindow.ShowSettings();
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
+            settings.FirstLoad = false;
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+        }
+
+        private static bool EditorApplication_wantsToQuit()
+        {
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
+            settings.FirstLoad = true;
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+            return true;
+        }
         public override void Initialize() => GamePath = "";
 
         public override void CreateSettingsUI(VisualElement rootElement)
@@ -70,8 +105,8 @@ namespace ThunderKit.Core.Data
                 {
                     Data =
 $@"
-**_Warning:_**   No game configured. Click the Locate Game button to setup your ThunderKit Project before continuing
-",
+            **_Warning:_**   No game configured. Click the Locate Game button to setup your ThunderKit Project before continuing
+            ",
                     MarkdownDataType = MarkdownDataType.Text
                 };
 
@@ -79,27 +114,28 @@ $@"
                 markdown.RefreshContent();
                 rootElement.Add(markdown);
             }
+            var settingsElement = TemplateHelpers.LoadTemplateInstance(Constants.ThunderKitSettingsTemplatePath);
+            rootElement.Add(settingsElement);
 
-            rootElement.Add(CreateStandardField(nameof(GameExecutable)));
-
-            rootElement.Add(CreateStandardField(nameof(GamePath)));
-
-            var configureButton = new Button(() =>
+            var browseButton = settingsElement.Q<Button>("browse-button");
+            browseButton.clickable.clicked += () =>
             {
-                ConfigureGame.Configure();
+                ConfigureGame.LocateGame(this);
                 if (!string.IsNullOrEmpty(GameExecutable) && !string.IsNullOrEmpty(GamePath))
                 {
                     if (markdown != null)
                         markdown.RemoveFromHierarchy();
                 }
-
-            });
-            configureButton.AddToClassList("configure-game-button");
-            configureButton.text = "Locate Game";
-            rootElement.Add(configureButton);
+            };
+            var loadButton = settingsElement.Q<Button>("load-button");
+            loadButton.clickable.clicked += () =>
+            {
+                ConfigureGame.LoadGame(this);
+            };
 
             if (thunderKitSettingsSO == null)
                 thunderKitSettingsSO = new SerializedObject(this);
+
             rootElement.Bind(thunderKitSettingsSO);
         }
     }
