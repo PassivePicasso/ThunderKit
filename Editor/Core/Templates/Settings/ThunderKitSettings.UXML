@@ -1,60 +1,64 @@
 <ui:UXML xmlns:ui="UnityEngine.Experimental.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements" editor-extension-mode="True">
     <Style src="/Packages/com.passivepicasso.thunderkit/Editor/Core/Styles/ThunderKitSettings.uss" />
-    <ui:VisualElement name="thunderkit-settings">
         
-        <ui:VisualElement name="game-configuration-section" class="section">
-            <ui:Label text="Locate and Load game files for project"/>
-                
-            <ui:VisualElement class="field-section">
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Game Executable" class="thunderkit-field-label"/>
-                    <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Game Path" class="thunderkit-field-label"/>
-                    <ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <ui:VisualElement name="game-config-button-container">
-                <ui:Button name="browse-button" text="Browse" class="browsebutton"/>
-                <ui:Button name="load-button" text="Load" class="browsebutton"/>
-            </ui:VisualElement>
-
+    <ui:VisualElement name="game-configuration-section" class="section">
+        <ui:VisualElement class="setting-section">
+            <ui:Label text="Locate and Load game files for project" class="thunderkit-header"/>
         </ui:VisualElement>
-
-        <ui:VisualElement name="log-configuration-section" class="section">
-            <ui:Label text="Log Date and Time formatting"/>
-            <ui:VisualElement style="flex-direction: row;">
                 
-                <ui:VisualElement class="field-section">
-                    <ui:VisualElement class="thunderkit-field">
-                        <ui:Label text="DateTime Format" class="thunderkit-field-label"/>
-                        <ui:TextField name="asset-name-field" binding-path="DateTimeFormat" class="thunderkit-field-input"/>
-                    </ui:VisualElement>
-                    <ui:VisualElement class="thunderkit-field">
-                        <ui:Label text="Created Date Format" class="thunderkit-field-label"/>
-                        <ui:TextField name="asset-name-field" binding-path="CreatedDateFormat" class="thunderkit-field-input"/>
-                    </ui:VisualElement>
-                </ui:VisualElement>
-
+        <ui:VisualElement class="field-section">
+            <ui:VisualElement class="thunderkit-field">
+                <ui:Label text="Game Executable" class="thunderkit-field-label"/>
+                <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="thunderkit-field">
+                <ui:Label text="Game Path" class="thunderkit-field-label"/>
+                <ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <ui:VisualElement name="settings-window-section" class="section">
-            <ui:Label text="Settings Window"/>
-            <ui:VisualElement style="flex-direction: row;">
-                
-                <ui:VisualElement class="field-section">
-                    <ui:VisualElement class="thunderkit-field">
-                        <ui:Label text="Show at Startup" class="thunderkit-field-label"/>
-                        <ui:Toggle name="asset-name-field" binding-path="ShowOnStartup" class="thunderkit-field-input"/>
-                    </ui:VisualElement>
-                </ui:VisualElement>
-
-            </ui:VisualElement>
+        <ui:VisualElement name="game-config-button-container">
+            <ui:Button name="browse-button" text="Browse" class="browsebutton"/>
+            <ui:Button name="load-button" text="Load" class="browsebutton"/>
         </ui:VisualElement>
 
     </ui:VisualElement>
+
+    <ui:VisualElement name="log-configuration-section" class="section">
+        <ui:VisualElement class="setting-section">
+            <ui:Label text="Log Date and Time formatting" class="thunderkit-header"/>
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-direction: row;">
+                
+            <ui:VisualElement class="field-section">
+                <ui:VisualElement class="thunderkit-field">
+                    <ui:Label text="DateTime Format" class="thunderkit-field-label"/>
+                    <ui:TextField name="asset-name-field" binding-path="DateTimeFormat" class="thunderkit-field-input"/>
+                </ui:VisualElement>
+                <ui:VisualElement class="thunderkit-field">
+                    <ui:Label text="Created Date Format" class="thunderkit-field-label"/>
+                    <ui:TextField name="asset-name-field" binding-path="CreatedDateFormat" class="thunderkit-field-input"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+    </ui:VisualElement>
+
+    <ui:VisualElement name="settings-window-section" class="section">
+        <ui:VisualElement class="setting-section">
+            <ui:Label text="Settings Window" class="thunderkit-header"/>
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-direction: row;">
+                
+            <ui:VisualElement class="field-section">
+                <ui:VisualElement class="thunderkit-field">
+                    <ui:Label text="Show at Startup" class="thunderkit-field-label"/>
+                    <ui:Toggle name="asset-name-field" binding-path="ShowOnStartup" class="thunderkit-field-input"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+    </ui:VisualElement>
+
 </ui:UXML>
 
