@@ -29,6 +29,10 @@ namespace ThunderKit.Core.Inspectors
         Dictionary<UnityEngine.Object, UnityEditor.Editor> Editors;
         SerializedProperty dataArray;
 
+        protected virtual IEnumerable<string> ExcludedProperties()
+        {
+            yield break;
+        }
         protected virtual Rect OnBeforeElementHeaderGUI(Rect rect, ComposableElement element, ref string title) => rect;
         protected virtual Rect OnAfterElementHeaderGUI(Rect rect, ComposableElement element) => rect;
         private void OnEnable()
@@ -47,13 +51,14 @@ namespace ThunderKit.Core.Inspectors
             //Evaluate Editor Skin settings
             if (!EditorSkin)
                 if (EditorGUIUtility.isProSkin)
-                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>("Packages/com.passivepicasso.thunderkit/Editor/Core/DarkSkin.guiskin");
+                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>("Packages/com.passivepicasso.thunderkit/Editor/Skins/DarkSkin.guiskin");
                 else
-                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>("Packages/com.passivepicasso.thunderkit/Editor/Core/LightSkin.guiskin");
+                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>("Packages/com.passivepicasso.thunderkit/Editor/Skins/LightSkin.guiskin");
 
             //Ensure SerializedObject is up to date with latest data
             serializedObject.Update();
-            DrawPropertiesExcluding(serializedObject, "m_Script", "Data");
+            var excludedProperties = ExcludedProperties().Append("m_Script").Append("Data").ToArray();
+            DrawPropertiesExcluding(serializedObject, excludedProperties);
             GUILayout.Space(4);
 
             dataArray = serializedObject.FindProperty(nameof(ComposableObject.Data));
