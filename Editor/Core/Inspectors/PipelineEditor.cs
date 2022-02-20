@@ -31,7 +31,12 @@ namespace ThunderKit.Core.Inspectors
                 rect.x += titleContentSize.x;
                 rect.y = 6;
             }
+            EditorGUI.BeginChangeCheck();
             pipeline.QuickAccess = GUI.Toggle(rect, pipeline.QuickAccess, quickAccessContent);
+            if(EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+            }
 
             width = 160;
             var buttonArea = new Rect(cvw - width - 50, 25, width, 15);
