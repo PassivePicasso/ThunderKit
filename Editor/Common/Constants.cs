@@ -24,7 +24,6 @@ namespace ThunderKit.Common
         public const string SettingsTemplatesPath = "Packages/com.passivepicasso.thunderkit/Editor/Core/Templates/Settings";
         public const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
         public const string ThunderKitSettingsTemplatePath = SettingsTemplatesPath + "/ThunderKitSettings.uxml";
-        public const string ThunderKitSkinPath = "Packages/com.passivepicasso.thunderkit/Editor/Skins/ThunderKitSkin.guiskin";
 
         public static class Icons
         {
