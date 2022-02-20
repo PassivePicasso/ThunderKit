@@ -18,10 +18,16 @@ namespace ThunderKit.Core.Pipelines
         }
 
         static PipelineToolbarPrefs pipelineToolbarPrefs;
-        private static GUISkin skin;
         private static readonly string PipelineToolbarPrefsKey = "ThunderKit_Pipeline_ToolbarPrefs";
+        private static Texture2D pipelineIcon, manifestIcon;
+        private static GUIStyle manifestStyle;
+        private static GUIStyle pipelineStyle;
+
         static PipelineToolbar()
         {
+            manifestIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(Constants.Icons.ManifestIconPath);
+            pipelineIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(Constants.Icons.PipelineIconPath);
+
             ToolbarExtender.LeftToolbarGUI.Add(OnToolbarGUI);
 
             if (EditorPrefs.HasKey(PipelineToolbarPrefsKey))
@@ -29,14 +35,34 @@ namespace ThunderKit.Core.Pipelines
                 var json = EditorPrefs.GetString(PipelineToolbarPrefsKey);
                 pipelineToolbarPrefs = JsonUtility.FromJson<PipelineToolbarPrefs>(json);
             }
-            skin = AssetDatabase.LoadAssetAtPath<GUISkin>(Constants.ThunderKitSkinPath);
+            manifestStyle = new GUIStyle()
+            {
+                normal = new GUIStyleState
+                {
+                    background = manifestIcon
+                },
+                margin = new RectOffset(0, 0, 0, 0),
+                overflow = new RectOffset(0, 7, 0, 0),
+                border = new RectOffset(0, 0, 0, 0),
+                padding = new RectOffset(0, 0, 0, 0),
+                fixedWidth = 17,
+                fixedHeight = 24
+            };
+            pipelineStyle = new GUIStyle(manifestStyle)
+            {
+                normal = new GUIStyleState
+                {
+                    background = pipelineIcon
+                }
+            };
+
         }
 
 
         static void OnToolbarGUI()
         {
             GUISkin origSkin = GUI.skin;
-            GUI.skin = skin;
+            GUI.skin = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector);
 
             var pipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}")
                 .Select(AssetDatabase.GUIDToAssetPath)
@@ -56,24 +82,21 @@ namespace ThunderKit.Core.Pipelines
             var selectedPipelineIndex = pipelines.FirstOrDefault(pair => pair.pipeline == pipelineToolbarPrefs.selectedPipeline).index;
             var selectedManifestIndex = manifests.FirstOrDefault(pair => pair.manifest == pipelineToolbarPrefs.selectedManifest).index;
 
-            GUILayout.Space(90);
             EditorGUI.BeginChangeCheck();
-            using (new EditorGUILayout.VerticalScope())
+            using (new EditorGUILayout.VerticalScope(GUILayout.Width(140)))
             {
-                GUILayout.Space(2);
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    GUILayout.Label(string.Empty, "PipelineIcon");
-                    selectedPipelineIndex = EditorGUILayout.Popup(selectedPipelineIndex, pipelineNames, "PipelinePopup");
+                    GUILayout.Label(string.Empty, pipelineStyle);
+                    selectedPipelineIndex = EditorGUILayout.Popup(selectedPipelineIndex, pipelineNames, "popup");
                 }
             }
-            using (new EditorGUILayout.VerticalScope())
+            using (new EditorGUILayout.VerticalScope(GUILayout.Width(140)))
             {
-                GUILayout.Space(2);
                 using (new EditorGUILayout.HorizontalScope())
                 {
-                    GUILayout.Label(string.Empty, "ManifestIcon");
-                    selectedManifestIndex = EditorGUILayout.Popup(selectedManifestIndex, manifestsNames, "ManifestPopup");
+                    GUILayout.Label(string.Empty, manifestStyle);
+                    selectedManifestIndex = EditorGUILayout.Popup(selectedManifestIndex, manifestsNames, "popup");
                 }
             }
             if (EditorGUI.EndChangeCheck())
@@ -84,7 +107,7 @@ namespace ThunderKit.Core.Pipelines
             }
             using (new EditorGUILayout.VerticalScope())
             {
-                GUILayout.Space(2);
+                GUILayout.Space(3);
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     var pipeline = pipelineToolbarPrefs.selectedPipeline;
@@ -112,7 +135,7 @@ namespace ThunderKit.Core.Pipelines
                         }
                     }
 
-                    if (GUILayout.Button("Log", GUILayout.Height(15)))
+                    if (GUILayout.Button("Log"))
                     {
                         var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
                                                         .Select(AssetDatabase.GUIDToAssetPath)
@@ -124,7 +147,7 @@ namespace ThunderKit.Core.Pipelines
                     }
                 }
             }
-            GUILayout.Space(90);
+            GUILayout.FlexibleSpace();
             GUI.skin = origSkin;
 
         }
