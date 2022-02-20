@@ -43,6 +43,21 @@ namespace ThunderKit.Core.Windows
             window.Initialize();
         }
 
+        public static void Update(PipelineLog pipelineLog)
+        {
+            if (window == null || !IsOpen)
+                ShowLog(pipelineLog);
+            else
+            {
+                window.nameLabel.text = pipelineLog.name;
+                window.createdDateLabel.text = pipelineLog.CreatedDate.ToString(window.settings.CreatedDateFormat);
+                window.logEntryListView.itemsSource = (IList)pipelineLog.Entries;
+                window.logEntryListView.Refresh();
+                window.Focus();
+                window.Repaint();
+            }
+        }
+
 
         [OnOpenAsset]
         public static bool OnOpen(int instanceId, int line)
