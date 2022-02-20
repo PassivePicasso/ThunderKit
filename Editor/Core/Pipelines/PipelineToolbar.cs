@@ -41,12 +41,12 @@ namespace ThunderKit.Core.Pipelines
                 {
                     background = manifestIcon
                 },
-                margin = new RectOffset(0, 0, 0, 0),
+                margin = new RectOffset(0, 0, 1, 0),
                 overflow = new RectOffset(0, 7, 0, 0),
                 border = new RectOffset(0, 0, 0, 0),
                 padding = new RectOffset(0, 0, 0, 0),
-                fixedWidth = 17,
-                fixedHeight = 24
+                fixedWidth = 13,
+                fixedHeight = 20
             };
             pipelineStyle = new GUIStyle(manifestStyle)
             {
@@ -63,6 +63,9 @@ namespace ThunderKit.Core.Pipelines
         {
             GUISkin origSkin = GUI.skin;
             GUI.skin = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector);
+            var popupStyle = GUI.skin.GetStyle("popup");
+            popupStyle.margin.top = 2;
+            popupStyle.padding.left = 4;
 
             var pipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}")
                 .Select(AssetDatabase.GUIDToAssetPath)
@@ -85,18 +88,20 @@ namespace ThunderKit.Core.Pipelines
             EditorGUI.BeginChangeCheck();
             using (new EditorGUILayout.VerticalScope(GUILayout.Width(140)))
             {
+                GUILayout.Space(1);
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     GUILayout.Label(string.Empty, pipelineStyle);
-                    selectedPipelineIndex = EditorGUILayout.Popup(selectedPipelineIndex, pipelineNames, "popup");
+                    selectedPipelineIndex = EditorGUILayout.Popup(selectedPipelineIndex, pipelineNames, popupStyle);
                 }
             }
             using (new EditorGUILayout.VerticalScope(GUILayout.Width(140)))
             {
+                GUILayout.Space(1);
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     GUILayout.Label(string.Empty, manifestStyle);
-                    selectedManifestIndex = EditorGUILayout.Popup(selectedManifestIndex, manifestsNames, "popup");
+                    selectedManifestIndex = EditorGUILayout.Popup(selectedManifestIndex, manifestsNames, popupStyle);
                 }
             }
             if (EditorGUI.EndChangeCheck())
@@ -107,7 +112,7 @@ namespace ThunderKit.Core.Pipelines
             }
             using (new EditorGUILayout.VerticalScope())
             {
-                GUILayout.Space(3);
+                GUILayout.Space(2);
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     var pipeline = pipelineToolbarPrefs.selectedPipeline;
