@@ -17,7 +17,6 @@ namespace ThunderKit.Core.Pipelines
             public Manifest selectedManifest;
         }
 
-        private const string SkinPath = "Packages/com.passivepicasso.thunderkit/Editor/Skins/ThunderKitSkin.guiskin";
         static PipelineToolbarPrefs pipelineToolbarPrefs;
         private static GUISkin skin;
         private static readonly string PipelineToolbarPrefsKey = "ThunderKit_Pipeline_ToolbarPrefs";
@@ -30,7 +29,7 @@ namespace ThunderKit.Core.Pipelines
                 var json = EditorPrefs.GetString(PipelineToolbarPrefsKey);
                 pipelineToolbarPrefs = JsonUtility.FromJson<PipelineToolbarPrefs>(json);
             }
-            skin = AssetDatabase.LoadAssetAtPath<GUISkin>(SkinPath);
+            skin = AssetDatabase.LoadAssetAtPath<GUISkin>(Constants.ThunderKitSkinPath);
         }
 
 
