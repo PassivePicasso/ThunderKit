@@ -83,13 +83,6 @@ namespace ThunderKit.Core.Windows
             {
                 ShowLog(pipelineLog);
             }
-            else 
-            {
-                if (logEntryListView != null)
-                    logEntryListView.itemsSource = Array.Empty<LogEntry>();
-                LogContextWindow.instance?.Clear();
-                this.pipelineLog = null;
-            }
         }
 
         public override void OnEnable()
