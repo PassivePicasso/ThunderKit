@@ -133,7 +133,7 @@ namespace ThunderKit.Core.Windows
                 var pages = new Dictionary<string, PageEntry>();
                 if (root.asset.MainPage == null)
                 {
-                    Debug.LogWarning($"Documentation Root: {root.asset.name}, has not been assigned a MainPain, skipping.");
+                    Debug.LogWarning($"Documentation Root: {root.asset.name}, has not been assigned a MainPain, skipping.", root.asset);
                     continue;
                 }
                 var mainPagePath = AssetDatabase.GetAssetPath(root.asset.MainPage);
