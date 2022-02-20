@@ -40,7 +40,11 @@
 	margin-bottom: 0px;
 	padding-top: 7px;
 	height: 24px;
-	width: 220px;
+	flex-grow: 1;
+	width: 230px;
+}
+.tab-button:disabled {
+	opacity: 1;
 }
 .tab-button>#Checkmark{
 	visibility: hidden;
@@ -53,20 +57,24 @@
 .tab-button:hover Label {
 	color: rgba(192,192,192,1);
 }
+.tab-button:hover Label:disabled {
+	color: rgba(192,192,192,1);
+}
 .tab-button:checked {
 	background-color: rgba(64,64,192,1);
 	background-image: none;
 }
-.tab-button:checked Label {
+.tab-button:checked Label:disabled {
 	color: rgba(192,192,192,1);
+	opacity: 1;
 }
 
 #tab-section {
 	flex-direction: column-reverse;
 	flex-grow: 1;
 	white-space: nowrap;
-	background-color: rgba(255,255,255,0.15);
-	border-bottom-width: 1px;
+	background-color: rgba(255,255,255,0.05);
+	border-bottom-width: 0px;
 	border-color: rgba(0,0,0,0.5);
 	font-size: 12px;
 	width: 234px;
@@ -74,6 +82,9 @@
 #tab-section .content-view {
 	flex-direction: column-reverse;
 	flex-grow: 1;
+}
+#tab-section .content-view Label {
+	color: black;
 }
 .grow {
 	flex-grow: 1;
