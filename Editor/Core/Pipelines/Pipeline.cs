@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Common.Logging;
 using ThunderKit.Core.Attributes;
+using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Windows;
 using ThunderKit.Markdown.ObjectRenderers;
@@ -179,7 +180,9 @@ namespace {0}
                         stackTrace = $"Stacktrace\r\n{exception.Message}\r\n\r\n" + sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
                         Log(Error, $"{exception.Message}", stackTrace);
                     }
-                    PipelineLogWindow.ShowLog(Logger);
+                    var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+                    if (settings.ShowLogWindow)
+                        PipelineLogWindow.ShowLog(Logger);
                 }
             }
             finally
