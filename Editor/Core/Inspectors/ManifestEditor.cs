@@ -20,7 +20,21 @@ namespace ThunderKit.Core.Inspectors
 
             var width = 100;
             var rect = new Rect(46, 22, width, 15);
-            manifest.QuickAccess = GUI.Toggle(rect, manifest.QuickAccess, "Quick Access");
+            var cvw = EditorGUIUtility.currentViewWidth;
+            var quickAccessContent = new GUIContent("Quick Access");
+            var titleContent = new GUIContent(manifest.name);
+            if (cvw < 350)
+            {
+                var titleContentSize = GUI.skin.button.CalcSize(titleContent);
+                rect.x += titleContentSize.x;
+                rect.y = 6;
+            }
+            EditorGUI.BeginChangeCheck();
+            manifest.QuickAccess = GUI.Toggle(rect, manifest.QuickAccess, quickAccessContent);
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedProperties();
+            }
         }
     }
 }
