@@ -68,14 +68,14 @@ namespace ThunderKit.Core.Pipelines
             popupStyle.margin.top = 2;
             popupStyle.padding.left = 4;
 
-            var pipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}")
+            var pipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<Pipeline>)
                 .Where(pipeline => pipeline.QuickAccess)
                 .Select((pipeline, index) => (pipeline, index))
                 .ToArray();
             var pipelineNames = pipelines.Select(pair => pair.pipeline.name).ToArray();
-            var manifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAssetsFolders)
+            var manifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<Manifest>)
                 .Where(manifest => manifest.QuickAccess)
@@ -107,8 +107,10 @@ namespace ThunderKit.Core.Pipelines
             }
             if (EditorGUI.EndChangeCheck())
             {
-                pipelineToolbarPrefs.selectedPipeline = pipelines[selectedPipelineIndex].pipeline;
-                pipelineToolbarPrefs.selectedManifest = manifests[selectedManifestIndex].manifest;
+                if (selectedPipelineIndex > -1 && selectedPipelineIndex < pipelines.Length)
+                    pipelineToolbarPrefs.selectedPipeline = pipelines[selectedPipelineIndex].pipeline;
+                if (selectedManifestIndex > -1 && selectedManifestIndex < manifests.Length)
+                    pipelineToolbarPrefs.selectedManifest = manifests[selectedManifestIndex].manifest;
                 EditorPrefs.SetString(PipelineToolbarPrefsKey, JsonUtility.ToJson(pipelineToolbarPrefs));
             }
             using (new EditorGUILayout.VerticalScope())
