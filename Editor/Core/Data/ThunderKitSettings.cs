@@ -65,6 +65,8 @@ namespace ThunderKit.Core.Data
 
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
 
+        public bool ShowLogWindow = true;
+
         [InitializeOnLoadMethod]
         static void SettingsWindowSetup()
         {

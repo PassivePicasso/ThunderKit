@@ -40,6 +40,10 @@
                     <ui:Label text="Created Date Format" class="thunderkit-field-label"/>
                     <ui:TextField name="asset-name-field" binding-path="CreatedDateFormat" class="thunderkit-field-input"/>
                 </ui:VisualElement>
+                <ui:VisualElement class="thunderkit-field">
+                    <ui:Label text="Show Log Window" tooltip="Show log window when executing a pipeline" class="thunderkit-field-label"/>
+                    <ui:Toggle name="asset-name-field" binding-path="ShowLogWindow" class="thunderkit-field-input"/>
+                </ui:VisualElement>
             </ui:VisualElement>
 
         </ui:VisualElement>

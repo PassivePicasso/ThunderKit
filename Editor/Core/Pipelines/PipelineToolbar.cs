@@ -5,6 +5,7 @@ using UnityToolbarExtender;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Common;
 using ThunderKit.Core.Windows;
+using ThunderKit.Core.Data;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -148,6 +149,7 @@ namespace ThunderKit.Core.Pipelines
                                                         .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
                                                         .OrderByDescending(log => log.CreatedDate)
                                                         .First();
+
                         PipelineLogWindow.ShowLog(pipelineLog);
                     }
                 }

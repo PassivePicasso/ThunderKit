@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ThunderKit.Core.Data;
 using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace ThunderKit.Core.Pipelines
         {
             entries.Insert(0, entry);
             EditorUtility.SetDirty(this);
+
             PipelineLogWindow.Update(this);
         }
 

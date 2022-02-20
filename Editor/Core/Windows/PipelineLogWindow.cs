@@ -45,16 +45,20 @@ namespace ThunderKit.Core.Windows
 
         public static void Update(PipelineLog pipelineLog)
         {
-            if (window == null || !IsOpen)
+            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+            if (((window == null || !IsOpen)) && settings?.ShowLogWindow == true)
                 ShowLog(pipelineLog);
-            else
+            else if (settings.ShowLogWindow == true)
             {
                 window.nameLabel.text = pipelineLog.name;
                 window.createdDateLabel.text = pipelineLog.CreatedDate.ToString(window.settings.CreatedDateFormat);
                 window.logEntryListView.itemsSource = (IList)pipelineLog.Entries;
                 window.logEntryListView.Refresh();
-                window.Focus();
-                window.Repaint();
+                if (settings.ShowLogWindow)
+                {
+                    window.Focus();
+                    window.Repaint();
+                }
             }
         }
 
@@ -118,7 +122,7 @@ namespace ThunderKit.Core.Windows
             }
             nameLabel = rootVisualElement.Q<Label>("name-label");
             createdDateLabel = rootVisualElement.Q<Label>("created-date-label");
-            
+
             nameLabel.text = pipelineLog.name;
             createdDateLabel.text = pipelineLog.CreatedDate.ToString(settings.CreatedDateFormat);
             logEntryListView.itemsSource = (IList)pipelineLog.Entries;

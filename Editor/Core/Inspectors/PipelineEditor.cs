@@ -19,11 +19,20 @@ namespace ThunderKit.Core.Inspectors
             base.OnHeaderGUI();
             var pipeline = target as Pipeline;
 
+
             var width = 100;
             var rect = new Rect(46, 22, width, 15);
-            pipeline.QuickAccess = GUI.Toggle(rect, pipeline.QuickAccess, "Quick Access");
-
             var cvw = EditorGUIUtility.currentViewWidth;
+            var quickAccessContent = new GUIContent("Quick Access");
+            var titleContent = new GUIContent(pipeline.name);
+            if (cvw < 350)
+            {
+                var titleContentSize = GUI.skin.button.CalcSize(titleContent);
+                rect.x += titleContentSize.x;
+                rect.y = 6;
+            }
+            pipeline.QuickAccess = GUI.Toggle(rect, pipeline.QuickAccess, quickAccessContent);
+
             width = 160;
             var buttonArea = new Rect(cvw - width - 50, 25, width, 15);
             GUILayout.BeginArea(buttonArea);
