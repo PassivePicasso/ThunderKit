@@ -8,7 +8,6 @@ using ThunderKit.Core.Windows;
 using static UnityEditor.EditorGUI;
 using static UnityEditor.EditorGUILayout;
 using System.IO;
-using System;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -17,27 +16,20 @@ namespace ThunderKit.Core.Pipelines
     {
         public struct PipelineToolbarPrefs
         {
-            public int pipelineInstanceId;
-            public int manifestInstanceId;
+            public string pipelineGuid;
+            public string manifestGuid;
             public Pipeline selectedPipeline
             {
-                get => AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
-                                 .Select(AssetDatabase.GUIDToAssetPath)
-                                 .Select(AssetDatabase.LoadAssetAtPath<Pipeline>)
-                                 .Where(obj => obj.QuickAccess)
-                                 .First(obj => obj.GetInstanceID() == pipelineToolbarPrefs.pipelineInstanceId);
-                set => pipelineInstanceId = value?.GetInstanceID() ?? 0;
+                get => AssetDatabase.LoadAssetAtPath<Pipeline>(AssetDatabase.GUIDToAssetPath(pipelineGuid));
+                set => AssetDatabase.TryGetGUIDAndLocalFileIdentifier(value, out pipelineGuid, out long _);
             }
             public Manifest selectedManifest
             {
-                get => AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
-                                 .Select(AssetDatabase.GUIDToAssetPath)
-                                 .Select(AssetDatabase.LoadAssetAtPath<Manifest>)
-                                 .Where(obj => obj.QuickAccess)
-                                 .First(obj => obj.GetInstanceID() == pipelineToolbarPrefs.manifestInstanceId);
-                set => manifestInstanceId = value?.GetInstanceID() ?? 0;
+                get => AssetDatabase.LoadAssetAtPath<Manifest>(AssetDatabase.GUIDToAssetPath(manifestGuid));
+                set => AssetDatabase.TryGetGUIDAndLocalFileIdentifier(value, out manifestGuid, out long _);
             }
         }
+
 
         private static readonly string PrefPath = "ProjectSettings/ThunderKit/PipelineToolbarPrefs.json";
         static PipelineToolbarPrefs pipelineToolbarPrefs;
@@ -158,32 +150,35 @@ namespace ThunderKit.Core.Pipelines
                     try
                     {
                         var pipeline = pipelineToolbarPrefs.selectedPipeline;
+                        var manifest = pipelineToolbarPrefs.selectedManifest;
 
-                        if (GUILayout.Button("Execute"))
-                        {
-                            var manifest = pipelineToolbarPrefs.selectedManifest;
-                            // pipeline.manifest is the correct field to use, stop checking every time.
-                            // pipeline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
-                            var originalManifest = pipeline.manifest;
-                            try
+                        using (new DisabledScope((!pipeline || !manifest)))
+                            if (GUILayout.Button("Execute"))
                             {
-                                if (manifest)
+                                // pipeline.manifest is the correct field to use, stop checking every time.
+                                // pipeline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
+                                var originalManifest = pipeline.manifest;
+                                try
                                 {
-                                    pipeline.manifest = manifest;
-                                    _ = pipeline.Execute();
-                                    pipeline.manifest = originalManifest;
+                                    if (manifest)
+                                    {
+                                        pipeline.manifest = manifest;
+                                        _ = pipeline.Execute();
+                                        pipeline.manifest = originalManifest;
+                                    }
+                                    else
+                                        _ = pipeline.Execute();
                                 }
-                                else
-                                    _ = pipeline.Execute();
-                            }
-                            finally
-                            {
-                                pipeline.manifest = originalManifest;
-                                EditorUtility.SetDirty(pipeline);
+                                finally
+                                {
+                                    pipeline.manifest = originalManifest;
+                                    EditorUtility.SetDirty(pipeline);
+                                }
                             }
 
-                        }
-                        var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
+                        PipelineLog pipelineLog = null;
+                        if (pipeline)
+                            pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
                                                        .Select(AssetDatabase.GUIDToAssetPath)
                                                        .Where(ap => ap.Contains(pipeline.name))
                                                        .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
