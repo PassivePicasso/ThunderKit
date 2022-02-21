@@ -9,7 +9,7 @@
 
 ---
 
-ThunderKit comes with a number of templates to accelerate common workflows. Additionally, user can publish and retrieve additional templates to and from the ThunderKit Extensions Thunderstore at https://thunderkit.thunderstore.io
+ThunderKit comes with a number of templates to accelerate common workflows. Additionally, users can publish and retrieve additional templates to and from the ThunderKit Extensions Thunderstore at [https://thunderkit.thunderstore.io](https://thunderkit.thunderstore.io)
 
 Contributions to these templates and this documentation are welcome.
 
