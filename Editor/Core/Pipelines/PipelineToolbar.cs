@@ -8,6 +8,7 @@ using ThunderKit.Core.Windows;
 using static UnityEditor.EditorGUI;
 using static UnityEditor.EditorGUILayout;
 using System.IO;
+using System;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -16,8 +17,26 @@ namespace ThunderKit.Core.Pipelines
     {
         public struct PipelineToolbarPrefs
         {
-            public Pipeline selectedPipeline;
-            public Manifest selectedManifest;
+            public int pipelineInstanceId;
+            public int manifestInstanceId;
+            public Pipeline selectedPipeline
+            {
+                get => AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
+                                 .Select(AssetDatabase.GUIDToAssetPath)
+                                 .Select(AssetDatabase.LoadAssetAtPath<Pipeline>)
+                                 .Where(obj => obj.QuickAccess)
+                                 .First(obj => obj.GetInstanceID() == pipelineToolbarPrefs.pipelineInstanceId);
+                set => pipelineInstanceId = value?.GetInstanceID() ?? 0;
+            }
+            public Manifest selectedManifest
+            {
+                get => AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
+                                 .Select(AssetDatabase.GUIDToAssetPath)
+                                 .Select(AssetDatabase.LoadAssetAtPath<Manifest>)
+                                 .Where(obj => obj.QuickAccess)
+                                 .First(obj => obj.GetInstanceID() == pipelineToolbarPrefs.manifestInstanceId);
+                set => manifestInstanceId = value?.GetInstanceID() ?? 0;
+            }
         }
 
         private static readonly string PrefPath = "ProjectSettings/ThunderKit/PipelineToolbarPrefs.json";
@@ -40,19 +59,18 @@ namespace ThunderKit.Core.Pipelines
             }
             else
             {
-                pipelineToolbarPrefs.selectedManifest =
-                    AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
-                                 .Select(AssetDatabase.GUIDToAssetPath)
-                                 .Select(AssetDatabase.LoadAssetAtPath<Manifest>)
-                                 .Where(manifest => manifest.QuickAccess)
-                                 .First();
-                pipelineToolbarPrefs.selectedPipeline =
-                    AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
-                                 .Select(AssetDatabase.GUIDToAssetPath)
-                                 .Select(AssetDatabase.LoadAssetAtPath<Pipeline>)
-                                 .Where(p => p.QuickAccess)
-                                 .First();
+                pipelineToolbarPrefs = default;
 
+                pipelineToolbarPrefs.selectedPipeline = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
+                    .Select(AssetDatabase.GUIDToAssetPath)
+                    .Select(AssetDatabase.LoadAssetAtPath<Pipeline>)
+                    .Where(pipeline => pipeline.QuickAccess)
+                    .FirstOrDefault();
+                pipelineToolbarPrefs.selectedManifest = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
+                    .Select(AssetDatabase.GUIDToAssetPath)
+                    .Select(AssetDatabase.LoadAssetAtPath<Manifest>)
+                    .Where(manifest => manifest.QuickAccess)
+                    .FirstOrDefault();
                 Directory.CreateDirectory(Path.GetDirectoryName(PrefPath));
                 File.WriteAllText(PrefPath, JsonUtility.ToJson(pipelineToolbarPrefs));
             }
