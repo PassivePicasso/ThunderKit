@@ -23,6 +23,8 @@ namespace ThunderKit.Core.Windows
 
         public static event Action OnSettingsLoading;
 
+        public override string Title => "Settings";
+
         [MenuItem(Constants.ThunderKitMenuRoot + "Settings")]
         public static void ShowSettings()
         {
@@ -42,7 +44,7 @@ namespace ThunderKit.Core.Windows
                 .ToArray();
 
             settingsList.makeItem = OnMakeItem;
-            settingsList.bindItem = OnBindItem; 
+            settingsList.bindItem = OnBindItem;
             settingsList.itemsSource = settings;
             settingsList.selectionType = SelectionType.Multiple;
 

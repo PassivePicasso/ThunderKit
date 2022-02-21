@@ -42,6 +42,7 @@ namespace ThunderKit.Core.Windows
             }
         }
 #endif
+        public virtual string Title { get => ObjectNames.NicifyVariableName(GetType().Name); }
 
         public Texture2D ThunderKitIcon;
 
@@ -49,7 +50,7 @@ namespace ThunderKit.Core.Windows
         {
             rootVisualElement.Clear();
             GetTemplateInstance(GetType().Name, rootVisualElement);
-            titleContent = new GUIContent(ObjectNames.NicifyVariableName(GetType().Name), ThunderKitIcon);
+            titleContent = new GUIContent(Title, ThunderKitIcon);
             rootVisualElement.Bind(new SerializedObject(this));
         }
     }
