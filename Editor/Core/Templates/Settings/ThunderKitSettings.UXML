@@ -6,16 +6,14 @@
             <ui:Label text="Locate and Load game files for project" class="thunderkit-header"/>
         </ui:VisualElement>
                 
-        <ui:VisualElement class="field-section">
+            <ui:VisualElement class="thunderkit-field" >
+                <ui:Label text="Game Path" class="thunderkit-field-label"/>
+                <ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
+            </ui:VisualElement>
             <ui:VisualElement class="thunderkit-field">
                 <ui:Label text="Game Executable" class="thunderkit-field-label"/>
                 <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
             </ui:VisualElement>
-            <ui:VisualElement class="thunderkit-field">
-                <ui:Label text="Game Path" class="thunderkit-field-label"/>
-                <ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
-            </ui:VisualElement>
-        </ui:VisualElement>
 
         <ui:VisualElement name="game-config-button-container">
             <ui:Button name="browse-button" text="Browse" class="browsebutton"/>
@@ -41,7 +39,7 @@
                     <ui:TextField name="asset-name-field" binding-path="CreatedDateFormat" class="thunderkit-field-input"/>
                 </ui:VisualElement>
                 <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Show Log Window" tooltip="Show log window when executing a pipeline" class="thunderkit-field-label"/>
+                    <ui:Label text="Display pipeline log during execution" tooltip="Show log window when executing a pipeline" class="thunderkit-field-label"/>
                     <ui:Toggle name="asset-name-field" binding-path="ShowLogWindow" class="thunderkit-field-input"/>
                 </ui:VisualElement>
             </ui:VisualElement>

@@ -11,10 +11,6 @@
 
     <Style src="/Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss" />
     <ui:VisualElement class="grow m4">
-        <ui:VisualElement name="header" class="bm4 page-header-container" style="flex-direction: row; flex-basis: 64px; justify-content: flex-start; align-items: center; background-color: rgba(0, 0, 0, 0.39);">
-            <ui:VisualElement name="icon" class="header-icon TK_ThunderKitSetting_2X_Icon" />
-            <ui:Label text="ThunderKit Settings" display-tooltip-when-elided="true" name="title" class="page-header" style="justify-content: center; margin-left: 10px;" />
-        </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
             <ui:VisualElement style="width: 200px; background-color: rgba(0, 0, 0, 0.25); margin-right: 4px;">
                 <ui:Label text="All ThunderKit Settings" class="thunderkit-header" />
