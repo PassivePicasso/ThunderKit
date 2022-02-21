@@ -5,7 +5,9 @@ using UnityToolbarExtender;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Common;
 using ThunderKit.Core.Windows;
-using ThunderKit.Core.Data;
+using static UnityEditor.EditorGUI;
+using static UnityEditor.EditorGUILayout;
+using System.IO;
 
 namespace ThunderKit.Core.Pipelines
 {
@@ -18,8 +20,8 @@ namespace ThunderKit.Core.Pipelines
             public Manifest selectedManifest;
         }
 
+        private static readonly string PrefPath = "ProjectSettings/ThunderKit/PipelineToolbarPrefs.json";
         static PipelineToolbarPrefs pipelineToolbarPrefs;
-        private static readonly string PipelineToolbarPrefsKey = "ThunderKit_Pipeline_ToolbarPrefs";
         private static Texture2D pipelineIcon, manifestIcon;
         private static GUIStyle manifestStyle;
         private static GUIStyle pipelineStyle;
@@ -31,11 +33,30 @@ namespace ThunderKit.Core.Pipelines
 
             ToolbarExtender.LeftToolbarGUI.Add(OnToolbarGUI);
 
-            if (EditorPrefs.HasKey(PipelineToolbarPrefsKey))
+            if (File.Exists(PrefPath))
             {
-                var json = EditorPrefs.GetString(PipelineToolbarPrefsKey);
+                var json = File.ReadAllText(PrefPath);
                 pipelineToolbarPrefs = JsonUtility.FromJson<PipelineToolbarPrefs>(json);
             }
+            else
+            {
+                pipelineToolbarPrefs.selectedManifest =
+                    AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
+                                 .Select(AssetDatabase.GUIDToAssetPath)
+                                 .Select(AssetDatabase.LoadAssetAtPath<Manifest>)
+                                 .Where(manifest => manifest.QuickAccess)
+                                 .First();
+                pipelineToolbarPrefs.selectedPipeline =
+                    AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
+                                 .Select(AssetDatabase.GUIDToAssetPath)
+                                 .Select(AssetDatabase.LoadAssetAtPath<Pipeline>)
+                                 .Where(p => p.QuickAccess)
+                                 .First();
+
+                Directory.CreateDirectory(Path.GetDirectoryName(PrefPath));
+                File.WriteAllText(PrefPath, JsonUtility.ToJson(pipelineToolbarPrefs));
+            }
+
             manifestStyle = new GUIStyle()
             {
                 normal = new GUIStyleState
@@ -56,10 +77,7 @@ namespace ThunderKit.Core.Pipelines
                     background = pipelineIcon
                 }
             };
-
         }
-
-
         static void OnToolbarGUI()
         {
             GUISkin origSkin = GUI.skin;
@@ -86,74 +104,82 @@ namespace ThunderKit.Core.Pipelines
             var selectedPipelineIndex = pipelines.FirstOrDefault(pair => pair.pipeline == pipelineToolbarPrefs.selectedPipeline).index;
             var selectedManifestIndex = manifests.FirstOrDefault(pair => pair.manifest == pipelineToolbarPrefs.selectedManifest).index;
 
-            EditorGUI.BeginChangeCheck();
-            using (new EditorGUILayout.VerticalScope(GUILayout.Width(140)))
+            BeginChangeCheck();
+            using (new VerticalScope(GUILayout.Width(140)))
             {
                 GUILayout.Space(1);
-                using (new EditorGUILayout.HorizontalScope())
+                using (new HorizontalScope())
                 {
                     GUILayout.Label(string.Empty, pipelineStyle);
-                    selectedPipelineIndex = EditorGUILayout.Popup(selectedPipelineIndex, pipelineNames, popupStyle);
+                    selectedPipelineIndex = Popup(selectedPipelineIndex, pipelineNames, popupStyle);
                 }
             }
-            using (new EditorGUILayout.VerticalScope(GUILayout.Width(140)))
+            using (new VerticalScope(GUILayout.Width(140)))
             {
                 GUILayout.Space(1);
-                using (new EditorGUILayout.HorizontalScope())
+                using (new HorizontalScope())
                 {
                     GUILayout.Label(string.Empty, manifestStyle);
-                    selectedManifestIndex = EditorGUILayout.Popup(selectedManifestIndex, manifestsNames, popupStyle);
+                    selectedManifestIndex = Popup(selectedManifestIndex, manifestsNames, popupStyle);
                 }
             }
-            if (EditorGUI.EndChangeCheck())
+            if (EndChangeCheck())
             {
                 if (selectedPipelineIndex > -1 && selectedPipelineIndex < pipelines.Length)
                     pipelineToolbarPrefs.selectedPipeline = pipelines[selectedPipelineIndex].pipeline;
                 if (selectedManifestIndex > -1 && selectedManifestIndex < manifests.Length)
                     pipelineToolbarPrefs.selectedManifest = manifests[selectedManifestIndex].manifest;
-                EditorPrefs.SetString(PipelineToolbarPrefsKey, JsonUtility.ToJson(pipelineToolbarPrefs));
+
+                File.WriteAllText(PrefPath, JsonUtility.ToJson(pipelineToolbarPrefs));
             }
-            using (new EditorGUILayout.VerticalScope())
+            using (new VerticalScope())
             {
                 GUILayout.Space(2);
-                using (new EditorGUILayout.HorizontalScope())
+                using (new HorizontalScope())
                 {
-                    var pipeline = pipelineToolbarPrefs.selectedPipeline;
-                    if (GUILayout.Button("Execute"))
+                    try
                     {
-                        var manifest = pipelineToolbarPrefs.selectedManifest;
-                        // pipeline.manifest is the correct field to use, stop checking every time.
-                        // pipeline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
-                        var originalManifest = pipeline.manifest;
-                        try
+                        var pipeline = pipelineToolbarPrefs.selectedPipeline;
+
+                        if (GUILayout.Button("Execute"))
                         {
-                            if (manifest)
+                            var manifest = pipelineToolbarPrefs.selectedManifest;
+                            // pipeline.manifest is the correct field to use, stop checking every time.
+                            // pipeline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
+                            var originalManifest = pipeline.manifest;
+                            try
                             {
-                                pipeline.manifest = manifest;
-                                _ = pipeline.Execute();
-                                pipeline.manifest = originalManifest;
+                                if (manifest)
+                                {
+                                    pipeline.manifest = manifest;
+                                    _ = pipeline.Execute();
+                                    pipeline.manifest = originalManifest;
+                                }
+                                else
+                                    _ = pipeline.Execute();
                             }
-                            else
-                                _ = pipeline.Execute();
-                        }
-                        finally
-                        {
-                            pipeline.manifest = originalManifest;
-                            EditorUtility.SetDirty(pipeline);
-                        }
-                    }
+                            finally
+                            {
+                                pipeline.manifest = originalManifest;
+                                EditorUtility.SetDirty(pipeline);
+                            }
 
-                    if (GUILayout.Button("Log"))
-                    {
+                        }
                         var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
-                                                        .Select(AssetDatabase.GUIDToAssetPath)
-                                                        .Where(ap => ap.Contains(pipeline.name))
-                                                        .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
-                                                        .OrderByDescending(log => log.CreatedDate)
-                                                        .First();
+                                                       .Select(AssetDatabase.GUIDToAssetPath)
+                                                       .Where(ap => ap.Contains(pipeline.name))
+                                                       .Select(AssetDatabase.LoadAssetAtPath<PipelineLog>)
+                                                       .OrderByDescending(log => log.CreatedDate)
+                                                       .FirstOrDefault();
+                        using (new DisabledScope(!pipelineLog))
+                            if (GUILayout.Button("Log"))
+                            {
+                                if (pipelineLog)
+                                    PipelineLogWindow.ShowLog(pipelineLog);
+                            }
 
-                        PipelineLogWindow.ShowLog(pipelineLog);
                     }
+                    finally { }
                 }
             }
             GUILayout.FlexibleSpace();
