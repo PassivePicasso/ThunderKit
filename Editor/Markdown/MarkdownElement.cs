@@ -1,6 +1,6 @@
 using Markdig;
 using Markdig.Renderers.Normalize;
-
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,7 +29,8 @@ namespace ThunderKit.Markdown
         private string data;
         public string Data
         {
-            get => data; set
+            get => data; 
+            set
             {
                 data = value;
             }
