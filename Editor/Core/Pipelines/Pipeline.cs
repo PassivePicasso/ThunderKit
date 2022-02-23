@@ -34,7 +34,8 @@ namespace ThunderKit.Core.Pipelines
         public string OutputRoot => "ThunderKit";
 
         public override string ElementTemplate =>
-@"using ThunderKit.Core.Pipelines;
+@"using System.Threading.Tasks;
+using ThunderKit.Core.Pipelines;
 
 namespace {0}
 {{
@@ -43,6 +44,7 @@ namespace {0}
     {{
         public override Task Execute(Pipeline pipeline)
         {{
+            return Task.CompletedTask;
         }}
     }}
 }}
