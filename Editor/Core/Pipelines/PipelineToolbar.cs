@@ -88,13 +88,21 @@ namespace ThunderKit.Core.Pipelines
                 }
             };
         }
+        static bool manifestContained, pipelineContained;
+        private static GUIStyle popupStyle;
+
         static void OnToolbarGUI()
         {
             GUISkin origSkin = GUI.skin;
-            GUI.skin = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector);
-            var popupStyle = GUI.skin.GetStyle("popup");
-            popupStyle.margin.top = 2;
-            popupStyle.padding.left = 4;
+            if (popupStyle == null)
+            {
+                var skin = GUI.skin;
+                GUI.skin = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector);
+                popupStyle = new GUIStyle(GUI.skin.GetStyle("popup"));
+                popupStyle.margin.top = 2;
+                popupStyle.padding.left = 4;
+                GUI.skin = skin;
+            }
 
             var pipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
                 .Select(AssetDatabase.GUIDToAssetPath)
@@ -115,24 +123,8 @@ namespace ThunderKit.Core.Pipelines
             var selectedManifestIndex = manifests.FirstOrDefault(pair => pair.manifest == pipelineToolbarPrefs.selectedManifest).index;
 
             BeginChangeCheck();
-            using (new VerticalScope(GUILayout.Width(140)))
-            {
-                GUILayout.Space(1);
-                using (new HorizontalScope())
-                {
-                    GUILayout.Label(string.Empty, pipelineStyle);
-                    selectedPipelineIndex = Popup(selectedPipelineIndex, pipelineNames, popupStyle);
-                }
-            }
-            using (new VerticalScope(GUILayout.Width(140)))
-            {
-                GUILayout.Space(1);
-                using (new HorizontalScope())
-                {
-                    GUILayout.Label(string.Empty, manifestStyle);
-                    selectedManifestIndex = Popup(selectedManifestIndex, manifestsNames, popupStyle);
-                }
-            }
+            selectedPipelineIndex = AdvancedPopup(pipelineToolbarPrefs.selectedPipeline, pipelineNames, selectedPipelineIndex, pipelineStyle);
+            selectedManifestIndex = AdvancedPopup(pipelineToolbarPrefs.selectedManifest, manifestsNames, selectedManifestIndex, manifestStyle);
             if (EndChangeCheck())
             {
                 if (selectedPipelineIndex > -1 && selectedPipelineIndex < pipelines.Length)
@@ -198,6 +190,29 @@ namespace ThunderKit.Core.Pipelines
             GUILayout.FlexibleSpace();
             GUI.skin = origSkin;
 
+        }
+
+        private static int AdvancedPopup(Object obj, string[] pipelineNames, int selectedPipelineIndex, GUIStyle labelStyle)
+        {
+            using (new VerticalScope(GUILayout.Width(140)))
+            {
+                GUILayout.Space(1);
+                using (new HorizontalScope())
+                {
+                    GUILayout.Label(string.Empty, labelStyle);
+                    var lastRect = GUILayoutUtility.GetLastRect();
+                    EditorGUIUtility.AddCursorRect(lastRect, MouseCursor.Link);
+                    if (Event.current.type == EventType.MouseDown && lastRect.Contains(Event.current.mousePosition))
+                    {
+                        EditorGUIUtility.PingObject(obj);
+                        Selection.activeObject = obj;
+                    }
+
+                    selectedPipelineIndex = Popup(selectedPipelineIndex, pipelineNames, popupStyle);
+                }
+            }
+
+            return selectedPipelineIndex;
         }
     }
 }
