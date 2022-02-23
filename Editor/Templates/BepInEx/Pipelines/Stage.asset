@@ -71,7 +71,7 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   ErrorStacktrace: 
-  Active: 1
+  Active: 0
   StagingPath: <StagingRoot>
   ExcludedManifests:
   - {fileID: 11400000, guid: bc5e6d3336544e5361d16e63ddfca327, type: 2}
