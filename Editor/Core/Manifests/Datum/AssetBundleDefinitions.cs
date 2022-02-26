@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Core.Manifests.Datums
+namespace ThunderKit.Core.Manifests.Datum
 {
 
     [Serializable]
