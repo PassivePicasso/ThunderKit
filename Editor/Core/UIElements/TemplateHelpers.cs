@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using ThunderKit.Common;
 using UnityEditor;
-using UnityEngine;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 #else
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
 
 namespace ThunderKit.Core.UIElements
