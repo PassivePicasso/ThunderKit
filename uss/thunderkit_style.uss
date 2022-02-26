@@ -148,6 +148,36 @@ PageEntry.selected>.header>Label:hover {
     background-color: rgba(128, 0, 0, 0.5);
 }
 
+.thunderkit-field Toggle > #Checkmark {
+    width: 64px;
+    -unity-slice-top: 0px;
+    -unity-slice-left: 0px;
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOff.png");
+}
+.thunderkit-field Toggle:checked > #Checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOn.png");
+}
+
+.thunderkit-field Toggle:focus > #Checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOffFocus.png");
+}
+.thunderkit-field Toggle:focus:checked > #Checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOnFocus.png");
+}
+.thunderkit-field Toggle:hover:focus:checked > #Checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOnFocus.png");
+}
+
+.thunderkit-field Toggle:active > #Checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActive.png");
+}
+.thunderkit-field Toggle:hover:active > #Checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActiveFocus.png");
+}
+.thunderkit-field Toggle:hover:active:checked > #Checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActiveFocus.png");
+}
+
 .pagelistview__page {
     flex-grow: 1;
     margin-top: 0px;
@@ -219,7 +249,7 @@ PageEntry.selected>.header>Label:hover {
 .thunderkit-field {
     margin-top: 0px;
     margin-bottom: 0px;
-    flex-direction: column;
+    flex-direction: row;
     flex-grow: 1;
     align-self: stretch;
     justify-content: space-between;
@@ -231,16 +261,6 @@ PageEntry.selected>.header>Label:hover {
     margin-top: -2px;
     margin-right: 4px;
     margin-bottom: 0px;
-    background-color: rgba(255,255,255,0.15);
-    border-color: rgba(255,255,255,0.5);
-    border-left-width: 1px;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 0px;
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
-	border-bottom-right-radius: 0px;
-	border-bottom-left-radius: 0px;
     padding-left: 4px;
     padding-top: 4px;
     padding-bottom: 4px;
@@ -249,12 +269,6 @@ PageEntry.selected>.header>Label:hover {
 .thunderkit-field-input {
     flex-grow: 1;
     max-width: 400px;
-    background-color: rgba(128,128,128,0.1);
-    border-color: rgba(255,255,255,0.5);
-    border-left-width: 1px;
-    border-top-width: 0px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
     padding-left: 8px;
     padding-top: 4px;
     padding-right: 8px;
@@ -263,10 +277,6 @@ PageEntry.selected>.header>Label:hover {
     margin-top: -1px;
     margin-right: 4px;
     margin-bottom: 6px;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-right-radius: 8px;
-	border-bottom-left-radius: 8px;
 }
 .thunderkit-field-input TextInput {
     background-color: rgba(128,128,128,0);
