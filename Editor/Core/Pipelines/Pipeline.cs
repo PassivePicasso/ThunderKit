@@ -164,7 +164,11 @@ namespace {0}
             catch (Exception e)
             {
                 if (!isRoot)
+                {
+                    Job().Errored = true;
+                    Job().ErrorMessage = e.Message;
                     throw;
+                }
                 else
                 {
                     var exceptionList = new List<Exception>();
