@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 #else
 using UnityEngine.Experimental.UIElements;
+using UnityEngine.Experimental.UIElements.StyleEnums;
 #endif
 
 namespace ThunderKit.Markdown
@@ -69,7 +70,10 @@ namespace ThunderKit.Markdown
 #elif UNITY_2018_1_OR_NEWER
             AddSheet(MarkdownStylePath, "2018");
 #endif
+            RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+
         }
+
 
         private void MarkdownFileWatcher_DocumentUpdated(object sender, (string path, MarkdownFileWatcher.ChangeType change) e)
         {
@@ -157,6 +161,12 @@ namespace ThunderKit.Markdown
             var document = Markdig.Markdown.Parse(NormalizedMarkdown, pipeline);
             renderer.LoadDocument(this);
             renderer.Render(document);
+        }
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (childCount == 0) return;
+            ContentHeight = Children().Sum(child => child.layout.height);
         }
 
         public new class UxmlFactory : UxmlFactory<MarkdownElement, UxmlTraits> { }

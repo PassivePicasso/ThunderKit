@@ -1,0 +1,23 @@
+<ui:UXML xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:ui="UnityEngine.UIElements" 
+xmlns:uie="UnityEditor.UIElements" 
+xmlns:engine="UnityEngine.Experimental.UIElements" 
+xmlns:editor="UnityEditor.Experimental.UIElements" 
+upm="UnityEditor.PackageManager.UI" 
+editor-extension-mode="True">
+    <Style src="/Packages/com.passivepicasso.thunderkit/USS/markdown.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/USS/thunderkit_style.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/USS/markdown_editor.uss" />
+    <ui:VisualElement name="markdown-editor-window-area" class="grow">
+        <ui:VisualElement name="toolbar" class="horizontal toolbar">
+            <ui:Button text="H1" display-tooltip-when-elided="true" class="toolbar-button"/>
+            <ui:Button text="H2" display-tooltip-when-elided="true" class="toolbar-button"/>
+            <ui:Button text="H3" display-tooltip-when-elided="true" class="toolbar-button"/>
+            <ui:Button text="H4" display-tooltip-when-elided="true" class="toolbar-button"/>
+            <ui:Button text="H5" display-tooltip-when-elided="true" class="toolbar-button"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="text-area"/>
+        <engine:Scroller name="main-scroller" low-value="0" high-value="1"/>
+        <ui:VisualElement name="rend-area"/>
+    </ui:VisualElement>
+</ui:UXML>
