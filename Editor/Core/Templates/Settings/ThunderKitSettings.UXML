@@ -25,7 +25,7 @@
 
     <ui:VisualElement name="log-configuration-section" class="section">
         <ui:VisualElement class="setting-section">
-            <ui:Label text="Log Date and Time formatting" class="thunderkit-header"/>
+            <ui:Label text="Log Configuration" class="thunderkit-header"/>
         </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row;">
                 
@@ -42,6 +42,7 @@
                     <ui:Label text="Display pipeline log during execution" tooltip="Show log window when executing a pipeline" class="thunderkit-field-label"/>
                     <ui:Toggle name="asset-name-field" binding-path="ShowLogWindow" class="thunderkit-field-input"/>
                 </ui:VisualElement>
+
             </ui:VisualElement>
 
         </ui:VisualElement>
