@@ -51,9 +51,9 @@ namespace ThunderKit.Core.Inspectors
             //Evaluate Editor Skin settings
             if (!EditorSkin)
                 if (EditorGUIUtility.isProSkin)
-                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>(Constants.ThunderKitRoot + "/Editor/Skins/DarkSkin.guiskin");
+                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>(Constants.ThunderKitRoot + "/Skins/DarkSkin.guiskin");
                 else
-                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>(Constants.ThunderKitRoot + "/Editor/Skins/LightSkin.guiskin");
+                    EditorSkin = AssetDatabase.LoadAssetAtPath<GUISkin>(Constants.ThunderKitRoot + "/Skins/LightSkin.guiskin");
 
             //Ensure SerializedObject is up to date with latest data
             serializedObject.Update();
