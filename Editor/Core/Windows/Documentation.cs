@@ -75,7 +75,7 @@ namespace ThunderKit.Core.Windows
                     break;
                 case MarkdownFileWatcher.ChangeType.Deleted:
                     if (currentPage == e.path) currentPage = null;
-                    LoadSelection("Packages/com.passivepicasso.thunderkit/Documentation/topics/1st Read Me!.md");
+                    LoadSelection(Constants.ThunderKitRoot + "/Documentation/topics/1st Read Me!.md");
                     break;
             }
         }
@@ -159,7 +159,7 @@ namespace ThunderKit.Core.Windows
                     pages.Add(pageNamePath, pageEntry);
                 }
             }
-            LoadSelection("Packages/com.passivepicasso.thunderkit/Documentation/ThunderKitDocumentation/About.md");
+            LoadSelection(Constants.ThunderKitRoot + "/Documentation/ThunderKitDocumentation/About.md");
         }
 
         string GetPageName(string path)
