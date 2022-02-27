@@ -1,38 +1,38 @@
 
 .TK_ComposableObject_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ComposableObject_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_ComposableObject_2X_Icon.png');
 }
 
 .TK_Manifest_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Manifest_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Manifest_2X_Icon.png');
 }
 
 .TK_PackageSource_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PackageSource_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_PackageSource_2X_Icon.png');
 }
 
 .TK_PathReference_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PathReference_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_PathReference_2X_Icon.png');
 }
 
 .TK_Pipeline_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Pipeline_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Pipeline_2X_Icon.png');
 }
 
 .TK_Server_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Server_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Server_Icon.png');
 }
 
 .TK_ThunderKitSetting_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ThunderKitSetting_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_ThunderKitSetting_2X_Icon.png');
 }
 
 .TK_UnityPackage_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_UnityPackage_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_UnityPackage_2X_Icon.png');
 }
 
 .TK_Documentation_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Documentation_2X_Icon.png');
 }
 
 .horizontal {
@@ -161,37 +161,37 @@ PageEntry.selected>.header>Label:hover {
     height: 20px;
     -unity-slice-top: 0;
     -unity-slice-left: 0;
-	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOff.png");
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Toggle/PNG/ToggleOff.png");
 }
 .thunderkit-field Toggle:checked #Checkmark,
 .thunderkit-field Toggle:checked #unity-checkmark {
-	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOn.png");
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Toggle/PNG/ToggleOn.png");
 }
 
 .thunderkit-field Toggle:focus #Checkmark,
 .thunderkit-field Toggle:focus #unity-checkmark {
-	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOffFocus.png");
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Toggle/PNG/ToggleOffFocus.png");
 }
 .thunderkit-field Toggle:focus:checked #Checkmark,
 .thunderkit-field Toggle:focus:checked #unity-checkmark {
-	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOnFocus.png");
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Toggle/PNG/ToggleOnFocus.png");
 }
 .thunderkit-field Toggle:hover:focus:checked #Checkmark,
 .thunderkit-field Toggle:hover:focus:checked #unity-checkmark {
-	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOnFocus.png");
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Toggle/PNG/ToggleOnFocus.png");
 }
 
 .thunderkit-field Toggle:active #Checkmark,
 .thunderkit-field Toggle:active #unity-checkmark {
-	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActive.png");
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Toggle/PNG/ToggleActive.png");
 }
 .thunderkit-field Toggle:hover:active #Checkmark,
 .thunderkit-field Toggle:hover:active #unity-checkmark {
-	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActiveFocus.png");
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Toggle/PNG/ToggleActiveFocus.png");
 }
 .thunderkit-field Toggle:hover:active:checked #Checkmark,
 .thunderkit-field Toggle:hover:active:checked #unity-checkmark {
-	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActiveFocus.png");
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Toggle/PNG/ToggleActiveFocus.png");
 }
 
 .pagelistview__page {
@@ -328,7 +328,7 @@ PageEntry.selected>.header>Label:hover {
     margin-top: 1px;
     width: 20px;
     height: 20px;
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Setting_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Setting_Icon.png');
 }
 
 #settings-list {
