@@ -35,6 +35,7 @@ namespace ThunderKit.Markdown
                 data = value;
             }
         }
+        public float ContentHeight { get; private set; }
         private string Markdown { get; set; }
         private string NormalizedMarkdown { get; set; }
         public MarkdownDataType MarkdownDataType { get; set; }
