@@ -161,7 +161,7 @@ namespace ThunderKit.Markdown
         public new class UxmlFactory : UxmlFactory<MarkdownElement, UxmlTraits> { }
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            static string NormalizeName(string text) => ObjectNames.NicifyVariableName(text).ToLower();
+            static string NormalizeName(string text) => ObjectNames.NicifyVariableName(text).ToLower().Replace(" ", "-");
 
             private readonly UxmlStringAttributeDescription m_text = new UxmlStringAttributeDescription { name = "data" };
             private readonly UxmlEnumAttributeDescription<MarkdownDataType> m_dataType = new UxmlEnumAttributeDescription<MarkdownDataType> { name = "markdown-data-type" };
