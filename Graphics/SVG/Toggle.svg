@@ -8,7 +8,7 @@
    version="1.1"
    id="svg5"
    sodipodi:docname="Toggle.svg"
-   inkscape:export-filename="E:\Projects\ThunderKit_Development\com.passivepicasso.thunderkit\Graphics\PNG\ToggleOnFocus.png"
+   inkscape:export-filename="E:\Projects\ThunderKit_Development\com.passivepicasso.thunderkit\Graphics\PNG\ToggleOn.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
@@ -48,7 +48,7 @@
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g12178" />
+     inkscape:current-layer="layer1" />
   <defs
      id="defs2" />
   <g
@@ -68,7 +68,7 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Channel"
-     style="display:none">
+     style="display:inline">
     <rect
        style="fill:#808080;fill-opacity:0.5;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect53"
@@ -86,7 +86,7 @@
      inkscape:groupmode="layer"
      id="g12455"
      inkscape:label="ChannelFocus"
-     style="display:inline">
+     style="display:none">
     <rect
        style="fill:#808080;fill-opacity:0.5;fill-rule:evenodd;stroke:#3357d9;stroke-width:0.264583;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect12453"
@@ -104,9 +104,9 @@
      inkscape:label="SliderOn"
      inkscape:groupmode="layer"
      id="layer1"
-     style="display:none">
+     style="display:inline">
     <rect
-       style="opacity:1;fill:#1a1a1a;fill-opacity:0.776224;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#00d50c;fill-opacity:0.74509805;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect53-7"
        width="12.912863"
        height="6.7757249"
@@ -133,9 +133,9 @@
      inkscape:label="SliderOnFocus"
      inkscape:groupmode="layer"
      id="g12205"
-     style="display:inline;opacity:1">
+     style="display:none;opacity:1">
     <rect
-       style="opacity:1;fill:#1a1a1a;fill-opacity:0.776224;fill-rule:evenodd;stroke:#3357d9;stroke-width:0.264583;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#00d50c;fill-opacity:0.745327;fill-rule:evenodd;stroke:#3357d9;stroke-width:0.264583;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect12199"
        width="12.912863"
        height="6.7757249"

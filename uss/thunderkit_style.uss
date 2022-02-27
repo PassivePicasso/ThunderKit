@@ -128,8 +128,8 @@ PageEntry>.header>.in-foldout {
     width: 16px;
     height: 15px;
 	background-image: resource("Builtin Skins/LightSkin/Images/IN foldout.png");
-    slice-top: 15px;
-    slice-left: 16px;
+    -unity-slice-top: 15;
+    -unity-slice-left: 16;
 }
 PageEntry>.header>.in-foldout-on {
     position: absolute;
@@ -148,33 +148,41 @@ PageEntry.selected>.header>Label:hover {
     background-color: rgba(128, 0, 0, 0.5);
 }
 
-.thunderkit-field Toggle > #Checkmark {
+.thunderkit-field Toggle #Checkmark,
+.thunderkit-field Toggle #unity-checkmark {
     width: 64px;
-    -unity-slice-top: 0px;
-    -unity-slice-left: 0px;
+    -unity-slice-top: 0;
+    -unity-slice-left: 0;
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOff.png");
 }
-.thunderkit-field Toggle:checked > #Checkmark {
+.thunderkit-field Toggle:checked #Checkmark,
+.thunderkit-field Toggle:checked #unity-checkmark {
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOn.png");
 }
 
-.thunderkit-field Toggle:focus > #Checkmark {
+.thunderkit-field Toggle:focus #Checkmark,
+.thunderkit-field Toggle:focus #unity-checkmark {
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOffFocus.png");
 }
-.thunderkit-field Toggle:focus:checked > #Checkmark {
+.thunderkit-field Toggle:focus:checked #Checkmark,
+.thunderkit-field Toggle:focus:checked #unity-checkmark {
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOnFocus.png");
 }
-.thunderkit-field Toggle:hover:focus:checked > #Checkmark {
+.thunderkit-field Toggle:hover:focus:checked #Checkmark,
+.thunderkit-field Toggle:hover:focus:checked #unity-checkmark {
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleOnFocus.png");
 }
 
-.thunderkit-field Toggle:active > #Checkmark {
+.thunderkit-field Toggle:active #Checkmark,
+.thunderkit-field Toggle:active #unity-checkmark {
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActive.png");
 }
-.thunderkit-field Toggle:hover:active > #Checkmark {
+.thunderkit-field Toggle:hover:active #Checkmark,
+.thunderkit-field Toggle:hover:active #unity-checkmark {
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActiveFocus.png");
 }
-.thunderkit-field Toggle:hover:active:checked > #Checkmark {
+.thunderkit-field Toggle:hover:active:checked #Checkmark,
+.thunderkit-field Toggle:hover:active:checked #unity-checkmark {
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/PNG/ToggleActiveFocus.png");
 }
 
@@ -203,43 +211,6 @@ PageEntry.selected>.header>Label:hover {
     border-top-width: 0;
     border-right-width: 0;
     border-bottom-width: 0;
-}
-
-.unity-toggle__checkmark {
-    margin-left: 1px;
-    margin-top: 1px;
-    margin-right: -1px;
-    margin-bottom: -1px;
-}
-
-.unity-toggle-checkmark {
-    margin-left: 1px;
-    margin-top: 1px;
-    margin-right: -1px;
-    margin-bottom: -1px;
-}
-
-.unity-foldout__toggle {
-    margin-left: 0;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.unity-foldout-toggle {
-    margin-left: 0px;
-    margin-top: 4px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
 }
 
 .shrink {
@@ -320,9 +291,6 @@ PageEntry.selected>.header>Label:hover {
     margin-top: 3px;
     margin-right: 2px;
     margin-bottom: 1px;
-}
-
-.configure-game-button {
 }
 
 .standard-spacer {
