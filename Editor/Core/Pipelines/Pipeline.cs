@@ -141,8 +141,6 @@ namespace {0}
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                     {
                         progressBar.Update($"Clearing PipelineJob state: {Job().name}");
-                        Job().Errored = false;
-                        Job().ErrorMessage = string.Empty;
                     }
 
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
@@ -164,11 +162,7 @@ namespace {0}
             catch (Exception e)
             {
                 if (!isRoot)
-                {
-                    Job().Errored = true;
-                    Job().ErrorMessage = e.Message;
                     throw;
-                }
                 else
                 {
                     var exceptionList = new List<Exception>();
@@ -204,16 +198,6 @@ namespace {0}
             var contextualMessage = $"{pipelineLink} {message}";
             LogEntry entry = new LogEntry(logLevel, DateTime.Now, contextualMessage, context);
             Logger.Log(entry);
-        }
-
-        public void ClearErrors()
-        {
-            foreach (var job in Jobs)
-            {
-                job.Errored = false;
-                job.ErrorMessage = string.Empty;
-                job.ErrorStacktrace = string.Empty;
-            }
         }
 
         PipelineJob Job() => currentJobs[JobIndex];
