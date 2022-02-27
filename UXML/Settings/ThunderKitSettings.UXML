@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.Experimental.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements" editor-extension-mode="True">
-    <Style src="/Packages/com.passivepicasso.thunderkit/Editor/Core/Styles/ThunderKitSettings.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/USS/ThunderKitSettings.uss" />
         
     <ui:VisualElement name="game-configuration-section" class="section">
         <ui:VisualElement class="setting-section">

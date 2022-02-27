@@ -20,19 +20,20 @@ namespace ThunderKit.Common
         public static readonly string[] FindAssetsFolders = new[] { "Assets" };
         public static readonly string[] FindPackagesFolders = new[] { "Packages" };
 
-        public const string DocumentationStylePath = "Packages/com.passivepicasso.thunderkit/uss/thunderkit_style.uss";
-        public const string SettingsTemplatesPath = "Packages/com.passivepicasso.thunderkit/Editor/Core/Templates/Settings";
+        public const string ThunderKitRoot = "Packages/com.passivepicasso.thunderkit";
+        public const string DocumentationStylePath = ThunderKitRoot + "/USS/thunderkit_style.uss";
+        public const string SettingsTemplatesPath = ThunderKitRoot + "/UXML/Settings";
         public const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
         public const string ThunderKitSettingsTemplatePath = SettingsTemplatesPath + "/ThunderKitSettings.uxml";
 
         public static class Icons
         {
-            public const string ManifestIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Manifest_Icon.png";
-            public const string PipelineIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Pipeline_Icon.png";
-            public const string DocumentationIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Documentation_Icon.png";
-            public const string PackageSourceIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_PackageSource_Icon.png";
-            public const string PathReferenceIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_PathReference_Icon.png";
-            public const string SettingIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Setting_Icon.png";
+            public const string ManifestIconPath = ThunderKitRoot + "/Graphics/Rasters/Icons/TK_Manifest_Icon.png";
+            public const string PipelineIconPath = ThunderKitRoot + "/Graphics/Rasters/Icons/TK_Pipeline_Icon.png";
+            public const string DocumentationIconPath = ThunderKitRoot + "/Graphics/Rasters/Icons/TK_Documentation_Icon.png";
+            public const string PackageSourceIconPath = ThunderKitRoot + "/Graphics/Rasters/Icons/TK_PackageSource_Icon.png";
+            public const string PathReferenceIconPath = ThunderKitRoot + "/Graphics/Rasters/Icons/TK_PathReference_Icon.png";
+            public const string SettingIconPath = ThunderKitRoot + "/Graphics/Rasters/Icons/TK_Setting_Icon.png";
         }
 
         [InitializeOnLoadMethod]
