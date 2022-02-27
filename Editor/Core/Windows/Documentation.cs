@@ -65,7 +65,6 @@ namespace ThunderKit.Core.Windows
 
         private void MarkdownFileWatcher_DocumentUpdated(object sender, (string path, MarkdownFileWatcher.ChangeType change) e)
         {
-            var page = currentPage;
             Initialize();
             switch (e.change)
             {
