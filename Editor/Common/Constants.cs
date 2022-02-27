@@ -27,12 +27,12 @@ namespace ThunderKit.Common
 
         public static class Icons
         {
-            public const string ManifestIconPath = "Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Manifest_Icon.png";
-            public const string PipelineIconPath = "Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Pipeline_Icon.png";
-            public const string DocumentationIconPath = "Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Documentation_Icon.png";
-            public const string PackageSourceIconPath = "Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_PackageSource_Icon.png";
-            public const string PathReferenceIconPath = "Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_PathReference_Icon.png";
-            public const string SettingIconPath = "Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Setting_Icon.png";
+            public const string ManifestIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Manifest_Icon.png";
+            public const string PipelineIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Pipeline_Icon.png";
+            public const string DocumentationIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Documentation_Icon.png";
+            public const string PackageSourceIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_PackageSource_Icon.png";
+            public const string PathReferenceIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_PathReference_Icon.png";
+            public const string SettingIconPath = "Packages/com.passivepicasso.thunderkit/Graphics/Icons/TK_Setting_Icon.png";
         }
 
         [InitializeOnLoadMethod]
