@@ -22,7 +22,7 @@ namespace ThunderKit.Markdown
     public enum MarkdownDataType { Implicit, Source, Text }
     public class MarkdownElement : VisualElement
     {
-        const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
+        const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/uss/markdown.uss";
         private readonly UIElementRenderer renderer;
         private readonly MarkdownPipelineBuilder mpb;
         private readonly MarkdownPipeline pipeline;
