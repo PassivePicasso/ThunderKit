@@ -36,3 +36,11 @@ This package contains third-party software components governed by the license(s)
 * [https://github.com/marijnz/unity-toolbar-extender](https://github.com/marijnz/unity-toolbar-extender)
 * License:  [The MIT License](https://github.com/marijnz/unity-toolbar-extender/blob/master/LICENSE)
 * [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/UnityToolbarExtender/LICENSE.txt)
+
+## AssetsTools.NET 
+
+* `Copyright (c) 2020 nesrak1`
+* [https://github.com/nesrak1/AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET)
+* License:  [The MIT License](https://github.com/nesrak1/AssetsTools.NET/blob/master/LICENSE)
+* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/AssetsTools.NET/LICENSE.txt)
+* This library was modified to remove it's Mono.Cecil dependency for compatibility reasons

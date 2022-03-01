@@ -3,7 +3,8 @@
     "references": [
         "ThunderKit.Common",
         "ThunderKit.Markdown",
-        "ToolbarExtender.Editor"
+        "ToolbarExtender.Editor",
+        "AssetsExporter"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
