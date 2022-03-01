@@ -62,6 +62,8 @@ namespace ThunderKit.Core.Data
 
         public string GamePath;
 
+        public int IncludedSettings;
+
         public bool Is64Bit;
 
         public string DateTimeFormat = "HH:mm:ss:fff";

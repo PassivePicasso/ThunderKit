@@ -1,0 +1,14 @@
+{
+    "name": "AssetsTools.NET",
+    "references": [
+        "UnityVersion"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

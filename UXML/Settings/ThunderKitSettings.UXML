@@ -14,6 +14,10 @@
                 <ui:Label text="Game Executable" class="thunderkit-field-label"/>
                 <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
             </ui:VisualElement>
+            <ui:VisualElement class="thunderkit-field">
+                <ui:Label text="Included Settings" class="thunderkit-field-label"/>
+                <uie:MaskField name="asset-name-field" binding-path="IncludedSettings" choices="AudioManager, ClusterInputManager, DynamicsManager, EditorBuildSettings, EditorSettings, GraphicsSettings, InputManager, NavMeshAreas, NetworkManager, Physics2DSettings, PresetManager, ProjectSettings, QualitySettings, TagManager, TimeManager, UnityConnectSettings, VFXManager, XRSettings " class="thunderkit-field-input"/>
+            </ui:VisualElement>
 
         <ui:VisualElement name="game-config-button-container">
             <ui:Button name="browse-button" text="Browse" class="browsebutton"/>
