@@ -183,7 +183,7 @@ namespace ThunderKit.Core.Config
                 if (Directory.Exists(pluginsPath))
                 {
                     var packagePluginsPath = Path.Combine(packagePath, "plugins");
-                    var plugins = Directory.GetFiles(pluginsPath, "*.dll");
+                    var plugins = Directory.GetFiles(pluginsPath, "*.dll", SearchOption.AllDirectories);
                     GetReferences(packagePluginsPath, plugins, EmptySet, EmptySet);
                 }
             }
