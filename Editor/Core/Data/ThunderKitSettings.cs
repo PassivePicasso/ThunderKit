@@ -62,6 +62,10 @@ namespace ThunderKit.Core.Data
 
         public string GamePath;
 
+        public string GameDataPath => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameExecutable)}_Data");
+
+        public string StreamingAssetsPath => Path.Combine(GameDataPath, "StreamingAssets");
+
         public int IncludedSettings;
 
         public bool Is64Bit;
