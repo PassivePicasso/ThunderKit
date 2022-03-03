@@ -179,7 +179,7 @@ namespace ThunderKit.Core.Config
                 var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
                 GetReferences(packagePath, managedAssemblies, new HashSet<string>(blackList.ToArray()), new HashSet<string>(loadedGameAssemblies));
 
-                var pluginsPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Plugins");
+                var pluginsPath = Combine(settings.GameDataPath, "Plugins");
                 if (Directory.Exists(pluginsPath))
                 {
                     var packagePluginsPath = Path.Combine(packagePath, "plugins");
