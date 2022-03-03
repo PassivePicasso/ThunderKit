@@ -26,6 +26,8 @@ namespace ThunderKit.Common
         public const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
         public const string ThunderKitSettingsTemplatePath = SettingsTemplatesPath + "/ThunderKitSettings.uxml";
 
+        public static readonly string ClassDataPath = Path.Combine("Packages", "com.passivepicasso.thunderkit", "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk");
+
         public static class Icons
         {
             public const string ManifestIconPath = ThunderKitRoot + "/Graphics/Rasters/Icons/TK_Manifest_Icon.png";
