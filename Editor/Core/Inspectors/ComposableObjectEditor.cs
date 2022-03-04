@@ -10,6 +10,7 @@ using UnityEngine;
 using static UnityEditor.EditorGUIUtility;
 using Debug = UnityEngine.Debug;
 using ThunderKit.Common;
+using UnityEngine.Profiling;
 
 namespace ThunderKit.Core.Inspectors
 {
@@ -48,6 +49,7 @@ namespace ThunderKit.Core.Inspectors
         }
         public override void OnInspectorGUI()
         {
+            Profiler.BeginSample("ComposableObjectEditor");
             //Evaluate Editor Skin settings
             if (!EditorSkin)
                 if (EditorGUIUtility.isProSkin)
@@ -102,16 +104,14 @@ namespace ThunderKit.Core.Inspectors
                     step.isExpanded = EditorGUI.Foldout(foldoutRect, step.isExpanded, title);
                     if (step.isExpanded)
                     {
-                        editor.serializedObject.Update();
+                        editor.serializedObject.UpdateIfRequiredOrScript();
+                        EditorGUI.BeginChangeCheck();
                         editor.OnInspectorGUI();
-                        if (GUI.changed)
+                        if(EditorGUI.EndChangeCheck())
                         {
-                            EditorUtility.SetDirty(editor.serializedObject.targetObject);
                             editor.serializedObject.ApplyModifiedProperties();
                             Repaint();
                         }
-                        Repaint();
-                        editor.serializedObject.ApplyModifiedProperties();
                     }
 
                     foldoutRect = OnAfterElementHeaderGUI(foldoutRect, element);
@@ -140,8 +140,7 @@ namespace ThunderKit.Core.Inspectors
                 serializedObject.ApplyModifiedProperties();
                 Repaint();
             }
-            Repaint();
-            serializedObject.ApplyModifiedProperties();
+            Profiler.EndSample();
         }
         private void ShowContextMenu(int i, SerializedProperty step)
         {
