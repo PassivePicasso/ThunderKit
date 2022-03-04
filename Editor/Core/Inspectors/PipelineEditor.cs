@@ -10,16 +10,21 @@ namespace ThunderKit.Core.Inspectors
     [CustomEditor(typeof(Pipeline), true)]
     public class PipelineEditor : ComposableObjectEditor
     {
+#if UNITY_2019_1_OR_NEWER
+        private const int ButtonHeight = 18;
+#elif UNITY_2018_1_OR_NEWER
+        private const int ButtonHeight = 15;
+#endif
+
         protected override IEnumerable<string> ExcludedProperties()
         {
             yield return nameof(Pipeline.QuickAccess);
         }
+
         protected override void OnHeaderGUI()
         {
             base.OnHeaderGUI();
             var pipeline = target as Pipeline;
-
-
             var width = 100;
             var rect = new Rect(46, 22, width, 15);
             var cvw = EditorGUIUtility.currentViewWidth;
@@ -33,21 +38,21 @@ namespace ThunderKit.Core.Inspectors
             }
             EditorGUI.BeginChangeCheck();
             pipeline.QuickAccess = GUI.Toggle(rect, pipeline.QuickAccess, quickAccessContent);
-            if(EditorGUI.EndChangeCheck())
+            if (EditorGUI.EndChangeCheck())
             {
                 serializedObject.ApplyModifiedProperties();
             }
 
             width = 160;
-            var buttonArea = new Rect(cvw - width - 50, 25, width, 15);
+            var buttonArea = new Rect(cvw - width - 52, 10 + ButtonHeight, width, ButtonHeight + 2);
             GUILayout.BeginArea(buttonArea);
             using (var scope = new GUILayout.HorizontalScope())
             {
                 try
                 {
-                    if (GUILayout.Button("Execute", GUILayout.Height(15)))
+                    if (GUILayout.Button("Execute", GUILayout.Height(ButtonHeight)))
                         _ = pipeline.Execute();
-                    if (GUILayout.Button("Log", GUILayout.Height(15), GUILayout.Width(50)))
+                    if (GUILayout.Button("Log", GUILayout.Height(ButtonHeight), GUILayout.Width(50)))
                     {
                         var pipelineLog = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}")
                                                         .Select(AssetDatabase.GUIDToAssetPath)
