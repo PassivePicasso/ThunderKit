@@ -1,4 +1,4 @@
-﻿#if ENABLE_VSTU
+﻿#if ENABLE_VSTU && UNITY_2019_1_OR_NEWER
 
 using SyntaxTree.VisualStudio.Unity.Bridge;
 using System.Collections.Generic;
