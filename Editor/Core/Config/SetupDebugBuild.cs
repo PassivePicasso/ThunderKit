@@ -36,7 +36,7 @@ namespace ThunderKit.Core.Config
             var gamePath = settings.GamePath;
             var gameName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
             var gameMonoPath = Path.Combine(gamePath, $"MonoBleedingEdge");
-            var gameDataPath = Path.Combine(gamePath, $"{gameName}_Data");
+            var gameDataPath = settings.GameDataPath;
             var gameManagedPath = Path.Combine(gameDataPath, "Managed");
             var gameBootConfigFile = Path.Combine(gameDataPath, "boot.config");
 
