@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests;
 using UnityEditor;
 using UnityEngine;
@@ -8,11 +9,6 @@ namespace ThunderKit.Core.Inspectors
     [CustomEditor(typeof(Manifest), true)]
     public class ManifestEditor : ComposableObjectEditor
     {
-        protected override IEnumerable<string> ExcludedProperties()
-        {
-            yield return nameof(Manifest.QuickAccess);
-        }
-
         protected override void OnHeaderGUI()
         {
             base.OnHeaderGUI();
@@ -29,10 +25,15 @@ namespace ThunderKit.Core.Inspectors
                 rect.x += titleContentSize.x;
                 rect.y = 6;
             }
+
+            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+
             EditorGUI.BeginChangeCheck();
-            manifest.QuickAccess = GUI.Toggle(rect, manifest.QuickAccess, quickAccessContent);
+            var quickAccess = GUI.Toggle(rect, settings.QuickAccessManifests?.Contains(manifest) ?? false, quickAccessContent);
             if (EditorGUI.EndChangeCheck())
             {
+                settings.SetQuickAccess(manifest, quickAccess);
+
                 serializedObject.ApplyModifiedProperties();
             }
         }
