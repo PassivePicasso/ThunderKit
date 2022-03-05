@@ -1,14 +1,13 @@
 ﻿using System.Linq;
+using ThunderKit.Common;
+using ThunderKit.Core.Data;
+using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;
 using UnityToolbarExtender;
-using ThunderKit.Core.Manifests;
-using ThunderKit.Common;
-using ThunderKit.Core.Windows;
 using static UnityEditor.EditorGUI;
 using static UnityEditor.EditorGUILayout;
-using System.IO;
-using ThunderKit.Core.Data;
 
 namespace ThunderKit.Core.Pipelines
 {
