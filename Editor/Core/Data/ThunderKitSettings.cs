@@ -78,9 +78,11 @@ namespace ThunderKit.Core.Data
 
         public bool ShowLogWindow = true;
 
+        public Pipeline selectedPipeline;
+        public Manifest selectedManifest;
         public Pipeline[] QuickAccessPipelines;
-        public string[] QuickAccessPipelineNames;
         public Manifest[] QuickAccessManifests;
+        public string[] QuickAccessPipelineNames;
         public string[] QuickAccessManifestNames;
 
         [InitializeOnLoadMethod]
@@ -92,6 +94,17 @@ namespace ThunderKit.Core.Data
             var settings = GetOrCreateSettings<ThunderKitSettings>();
             if (settings.FirstLoad && settings.ShowOnStartup)
                 EditorApplication.update += ShowSettings;
+
+            EditorApplication.projectChanged += EditorApplication_projectChanged;
+            settings.QuickAccessPipelineNames = settings.QuickAccessPipelines.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
+            settings.QuickAccessManifestNames = settings.QuickAccessManifests.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
+        }
+
+        private static void EditorApplication_projectChanged()
+        {
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
+            settings.QuickAccessPipelineNames = settings.QuickAccessPipelines.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
+            settings.QuickAccessManifestNames = settings.QuickAccessManifests.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
         }
 
         private static void ShowSettings()
@@ -161,18 +174,18 @@ $@"
         public void SetQuickAccess(Pipeline pipeline, bool quickAccess)
         {
             if (quickAccess)
-                QuickAccessPipelines = (QuickAccessPipelines ?? System.Array.Empty<Pipeline>()).Append(pipeline).OrderBy(m => m.name).ToArray();
+                QuickAccessPipelines = (QuickAccessPipelines ?? System.Array.Empty<Pipeline>()).Where(a => a).Append(pipeline).OrderBy(m => m.name).ToArray();
             else
-                QuickAccessPipelines = (QuickAccessPipelines ?? System.Array.Empty<Pipeline>()).Where(m => m.name != pipeline.name).OrderBy(name => name).ToArray();
+                QuickAccessPipelines = (QuickAccessPipelines ?? System.Array.Empty<Pipeline>()).Where(a => a).Where(m => m.name != pipeline.name).OrderBy(name => name).ToArray();
 
             QuickAccessPipelineNames = QuickAccessPipelines.Select(m => m.name).OrderBy(name => name).ToArray();
         }
         public void SetQuickAccess(Manifest manifest, bool quickAccess)
         {
             if (quickAccess)
-                QuickAccessManifests = (QuickAccessManifests ?? System.Array.Empty<Manifest>()).Append(manifest).OrderBy(m => m.name).ToArray();
+                QuickAccessManifests = (QuickAccessManifests ?? System.Array.Empty<Manifest>()).Where(a => a).Append(manifest).OrderBy(m => m.name).ToArray();
             else
-                QuickAccessManifests = (QuickAccessManifests ?? System.Array.Empty<Manifest>()).Where(m => m.name != manifest.name).OrderBy(name => name).ToArray();
+                QuickAccessManifests = (QuickAccessManifests ?? System.Array.Empty<Manifest>()).Where(a => a).Where(m => m.name != manifest.name).OrderBy(name => name).ToArray();
 
             QuickAccessManifestNames = QuickAccessManifests.Select(m => m.name).OrderBy(name => name).ToArray();
         }
