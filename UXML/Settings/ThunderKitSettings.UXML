@@ -22,7 +22,6 @@
         <ui:VisualElement name="game-config-button-container">
             <ui:Button name="browse-button" text="Browse" class="browsebutton"/>
             <ui:Button name="load-button" text="Load" class="browsebutton"/>
-            <ui:Button name="update-button" text="Update" class="browsebutton"/>
         </ui:VisualElement>
 
     </ui:VisualElement>
