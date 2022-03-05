@@ -15,7 +15,6 @@ MonoBehaviour:
   Data:
   - {fileID: 114377500999387282}
   - {fileID: 114550336587131730}
-  lastName: AssetBundleStaging
 --- !u!114 &114377500999387282
 MonoBehaviour:
   m_ObjectHideFlags: 1

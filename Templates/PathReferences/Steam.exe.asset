@@ -26,7 +26,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67c19b2c06aa8614d99f5956929e3dab, type: 3}
   m_Name: RegistryLookup
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
   KeyName: HKEY_CURRENT_USER\SOFTWARE\Valve\Steam
   ValueName: SteamExe

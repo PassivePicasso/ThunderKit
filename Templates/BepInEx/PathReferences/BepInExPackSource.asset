@@ -15,7 +15,6 @@ MonoBehaviour:
   Data:
   - {fileID: 114479067402122698}
   - {fileID: 114974057467109836}
-  lastName: BepInExPackSource
 --- !u!114 &114479067402122698
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -28,8 +27,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4fa9e4f9ff58a344b7da26cb499b387, type: 3}
   m_Name: FindDirectory
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
   searchOption: 0
   searchPattern: '*BepInExPack*'
   path: Packages
@@ -45,6 +42,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
   m_Name: Constant
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
   Value: BepInExPack

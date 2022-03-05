@@ -17,8 +17,6 @@ MonoBehaviour:
   - {fileID: 114559832304535298}
   - {fileID: 114679819151059082}
   manifest: {fileID: 0}
-  Logger: {fileID: 0}
-  runLog: []
 --- !u!114 &114316524637315588
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -31,9 +29,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
   m_Name: ExecutePipeline
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   OverrideManifest: 1
   targetpipeline: {fileID: 11400000, guid: de415cdbd4e965a45918136f9d614d1d, type: 2}
@@ -49,9 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
   m_Name: ExecutePipeline
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   OverrideManifest: 1
   targetpipeline: {fileID: 11400000, guid: f01cad00317fb4746937e42cc9e7f19a, type: 2}
@@ -67,9 +59,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
   m_Name: ExecutePipeline
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   OverrideManifest: 1
   targetpipeline: {fileID: 11400000, guid: bee6483f5bcf7054b86d13321eef27e5, type: 2}
