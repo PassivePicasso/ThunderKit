@@ -8,25 +8,61 @@ using ThunderKit.Core.Windows;
 using static UnityEditor.EditorGUI;
 using static UnityEditor.EditorGUILayout;
 using System.IO;
+using ThunderKit.Core.Data;
 
 namespace ThunderKit.Core.Pipelines
 {
     [InitializeOnLoad]
     public class PipelineToolbar
     {
+        private static readonly string DefaultGuid = default(GUID).ToString();
         public struct PipelineToolbarPrefs
         {
             public string pipelineGuid;
             public string manifestGuid;
+            private Pipeline _selectedPipeline;
+            private Manifest _selectedManifest;
+
             public Pipeline selectedPipeline
             {
-                get => AssetDatabase.LoadAssetAtPath<Pipeline>(AssetDatabase.GUIDToAssetPath(pipelineGuid));
-                set => AssetDatabase.TryGetGUIDAndLocalFileIdentifier(value, out pipelineGuid, out long _);
+                get
+                {
+                    if (string.IsNullOrEmpty(pipelineGuid) || pipelineGuid == DefaultGuid)
+                        return null;
+                    if (_selectedPipeline)
+                        return _selectedPipeline;
+                    return _selectedPipeline = AssetDatabase.LoadAssetAtPath<Pipeline>(AssetDatabase.GUIDToAssetPath(pipelineGuid));
+                }
+                set
+                {
+                    if (value)
+                        AssetDatabase.TryGetGUIDAndLocalFileIdentifier(value, out pipelineGuid, out long _);
+                    else
+                        pipelineGuid = DefaultGuid;
+
+                    _selectedPipeline = value;
+                }
             }
             public Manifest selectedManifest
             {
-                get => AssetDatabase.LoadAssetAtPath<Manifest>(AssetDatabase.GUIDToAssetPath(manifestGuid));
-                set => AssetDatabase.TryGetGUIDAndLocalFileIdentifier(value, out manifestGuid, out long _);
+                get
+                {
+                    if (string.IsNullOrEmpty(manifestGuid) || manifestGuid == DefaultGuid)
+                        return null;
+                    if (_selectedManifest)
+                        return _selectedManifest;
+                    return _selectedManifest = AssetDatabase.LoadAssetAtPath<Manifest>(AssetDatabase.GUIDToAssetPath(manifestGuid));
+                }
+
+                set
+                {
+                    if (value)
+                        AssetDatabase.TryGetGUIDAndLocalFileIdentifier(value, out manifestGuid, out long _);
+                    else
+                        manifestGuid = default(GUID).ToString();
+
+                    _selectedManifest = value;
+                }
             }
         }
 
@@ -34,6 +70,7 @@ namespace ThunderKit.Core.Pipelines
         private static readonly string PrefPath = "ProjectSettings/ThunderKit/PipelineToolbarPrefs.json";
         static PipelineToolbarPrefs pipelineToolbarPrefs;
         private static Texture2D pipelineIcon, manifestIcon;
+        private static ThunderKitSettings settings;
         private static GUIStyle manifestStyle;
         private static GUIStyle pipelineStyle;
 
@@ -41,8 +78,9 @@ namespace ThunderKit.Core.Pipelines
         {
             manifestIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(Constants.Icons.ManifestIconPath);
             pipelineIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(Constants.Icons.PipelineIconPath);
+            settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
 
-            ToolbarExtender.LeftToolbarGUI.Add(OnToolbarGUI);
+            ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUI);
 
             if (File.Exists(PrefPath))
             {
@@ -53,16 +91,9 @@ namespace ThunderKit.Core.Pipelines
             {
                 pipelineToolbarPrefs = default;
 
-                pipelineToolbarPrefs.selectedPipeline = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
-                    .Select(AssetDatabase.GUIDToAssetPath)
-                    .Select(AssetDatabase.LoadAssetAtPath<Pipeline>)
-                    .Where(pipeline => pipeline.QuickAccess)
-                    .FirstOrDefault();
-                pipelineToolbarPrefs.selectedManifest = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
-                    .Select(AssetDatabase.GUIDToAssetPath)
-                    .Select(AssetDatabase.LoadAssetAtPath<Manifest>)
-                    .Where(manifest => manifest.QuickAccess)
-                    .FirstOrDefault();
+                pipelineToolbarPrefs.selectedPipeline = settings.QuickAccessPipelines.First();
+                pipelineToolbarPrefs.selectedManifest = settings.QuickAccessManifests.First();
+
                 Directory.CreateDirectory(Path.GetDirectoryName(PrefPath));
                 File.WriteAllText(PrefPath, JsonUtility.ToJson(pipelineToolbarPrefs));
             }
@@ -88,6 +119,8 @@ namespace ThunderKit.Core.Pipelines
                 }
             };
         }
+
+
         static bool manifestContained, pipelineContained;
         private static GUIStyle popupStyle;
 
@@ -103,34 +136,26 @@ namespace ThunderKit.Core.Pipelines
                 popupStyle.padding.left = 4;
                 GUI.skin = skin;
             }
+            var pipelineNames = settings.QuickAccessPipelineNames ?? System.Array.Empty<string>();
+            var manifestNames = settings.QuickAccessManifestNames ?? System.Array.Empty<string>();
 
-            var pipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(AssetDatabase.LoadAssetAtPath<Pipeline>)
-                .Where(pipeline => pipeline.QuickAccess)
-                .Select((pipeline, index) => (pipeline, index))
-                .ToArray();
-            var pipelineNames = pipelines.Select(pair => pair.pipeline.name).ToArray();
-            var manifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(AssetDatabase.LoadAssetAtPath<Manifest>)
-                .Where(manifest => manifest.QuickAccess)
-                .Select((manifest, index) => (manifest, index))
-                .ToArray();
-            var manifestsNames = manifests.Select(pair => pair.manifest.name).ToArray();
-
-            var selectedPipelineIndex = pipelines.FirstOrDefault(pair => pair.pipeline == pipelineToolbarPrefs.selectedPipeline).index;
-            var selectedManifestIndex = manifests.FirstOrDefault(pair => pair.manifest == pipelineToolbarPrefs.selectedManifest).index;
+            var selectedPipelineIndex = pipelineNames.Length > 0 && pipelineToolbarPrefs.selectedPipeline?.name != null
+                                      ? System.Array.IndexOf(pipelineNames, pipelineToolbarPrefs.selectedPipeline.name)
+                                      : -1;
+            var selectedManifestIndex = manifestNames.Length > 0 && pipelineToolbarPrefs.selectedManifest?.name != null
+                                      ? System.Array.IndexOf(manifestNames, pipelineToolbarPrefs.selectedManifest.name) 
+                                      : -1;
 
             BeginChangeCheck();
             selectedPipelineIndex = AdvancedPopup(pipelineToolbarPrefs.selectedPipeline, pipelineNames, selectedPipelineIndex, pipelineStyle);
-            selectedManifestIndex = AdvancedPopup(pipelineToolbarPrefs.selectedManifest, manifestsNames, selectedManifestIndex, manifestStyle);
+            selectedManifestIndex = AdvancedPopup(pipelineToolbarPrefs.selectedManifest, manifestNames, selectedManifestIndex, manifestStyle);
             if (EndChangeCheck())
             {
-                if (selectedPipelineIndex > -1 && selectedPipelineIndex < pipelines.Length)
-                    pipelineToolbarPrefs.selectedPipeline = pipelines[selectedPipelineIndex].pipeline;
-                if (selectedManifestIndex > -1 && selectedManifestIndex < manifests.Length)
-                    pipelineToolbarPrefs.selectedManifest = manifests[selectedManifestIndex].manifest;
+                if (selectedPipelineIndex > -1 && selectedPipelineIndex < settings.QuickAccessPipelines.Length)
+                    pipelineToolbarPrefs.selectedPipeline = settings.QuickAccessPipelines[selectedPipelineIndex];
+
+                if (selectedManifestIndex > -1 && selectedManifestIndex < settings.QuickAccessManifests.Length)
+                    pipelineToolbarPrefs.selectedManifest = settings.QuickAccessManifests[selectedManifestIndex];
 
                 File.WriteAllText(PrefPath, JsonUtility.ToJson(pipelineToolbarPrefs));
             }

@@ -24,7 +24,6 @@ namespace ThunderKit.Core.Pipelines
         public static void Create() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
         public Manifest manifest;
-        public bool QuickAccess;
 
         public Manifest[] Manifests { get; private set; }
         public IEnumerable<ManifestDatum> Datums => Manifests.SelectMany(manifest => manifest.Data.OfType<ManifestDatum>());
