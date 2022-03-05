@@ -6,7 +6,7 @@ using ThunderKit.Common.Configuration;
 using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Common.Package
+namespace ThunderKit.Core.Utilities
 {
     public static class PackageHelper
     {

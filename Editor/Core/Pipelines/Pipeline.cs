@@ -8,6 +8,7 @@ using ThunderKit.Common.Logging;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Utilities;
 using ThunderKit.Core.Windows;
 using ThunderKit.Markdown.ObjectRenderers;
 using UnityEditor;

@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace ThunderKit.Core
+namespace ThunderKit.Core.Utilities
 {
     public static class ScriptEditorHelper
     {

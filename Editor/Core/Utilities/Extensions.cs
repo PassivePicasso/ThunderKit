@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using ThunderKit.Core.Data;
 using UnityEditor;
 
-namespace ThunderKit.Core
+namespace ThunderKit.Core.Utilities
 {
     public static class Extensions
     {

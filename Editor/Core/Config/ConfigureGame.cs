@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -42,6 +42,15 @@ namespace ThunderKit.Core.Config
             SetupPackageManifest(settings, packageName);
 
             ImportGameSettings(settings);
+
+            try
+            {
+                AssetDatabase.Refresh();
+            }
+            catch
+            {
+                Debug.LogWarning("Error during refresh");
+            }
         }
 
         private static void ImportGameSettings(ThunderKitSettings settings)
@@ -183,6 +192,7 @@ namespace ThunderKit.Core.Config
 
                 var installedGameAssemblies = Directory.EnumerateFiles(Combine("Packages", packageName), $"*.dll", SearchOption.AllDirectories)
                                        .Union(Directory.EnumerateFiles(Combine("Packages", packageName), $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
+                                       .Select(path => Path.GetFileName(path))
                                        .ToArray();
 
                 var managedPath = Combine(settings.GameDataPath, "Managed");

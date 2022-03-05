@@ -7,7 +7,7 @@ using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using static ThunderKit.Core.ScriptableHelper;
+using static ThunderKit.Core.Utilities.ScriptableHelper;
 
 namespace ThunderKit.Core.Manifests
 {

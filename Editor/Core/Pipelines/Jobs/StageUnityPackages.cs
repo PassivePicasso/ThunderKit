@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Presets;
 using UnityEngine;
+using ThunderKit.Core.Utilities;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
