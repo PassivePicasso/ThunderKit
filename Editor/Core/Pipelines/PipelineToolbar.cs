@@ -121,22 +121,22 @@ namespace ThunderKit.Core.Pipelines
             var pipelineNames = settings.QuickAccessPipelineNames ?? System.Array.Empty<string>();
             var manifestNames = settings.QuickAccessManifestNames ?? System.Array.Empty<string>();
 
-            var selectedPipelineName = settings.selectedPipeline != null ? settings.selectedPipeline.name : string.Empty;
-            var selectedManifestName = settings.selectedManifest != null ? settings.selectedManifest.name : string.Empty;
+            var selectedPipelineName = settings.SelectedPipeline != null ? settings.SelectedPipeline.name : string.Empty;
+            var selectedManifestName = settings.SelectedManifest != null ? settings.SelectedManifest.name : string.Empty;
 
             var selectedPipelineIndex = System.Array.IndexOf(pipelineNames, selectedPipelineName);
             var selectedManifestIndex = System.Array.IndexOf(manifestNames, selectedManifestName);
 
             BeginChangeCheck();
-            selectedPipelineIndex = AdvancedPopup(settings.selectedPipeline, pipelineNames, selectedPipelineIndex, pipelineStyle);
-            selectedManifestIndex = AdvancedPopup(settings.selectedManifest, manifestNames, selectedManifestIndex, manifestStyle);
+            selectedPipelineIndex = AdvancedPopup(settings.SelectedPipeline, pipelineNames, selectedPipelineIndex, pipelineStyle);
+            selectedManifestIndex = AdvancedPopup(settings.SelectedManifest, manifestNames, selectedManifestIndex, manifestStyle);
             if (EndChangeCheck())
             {
                 if (selectedPipelineIndex > -1 && selectedPipelineIndex < settings.QuickAccessPipelines.Length)
-                    settings.selectedPipeline = settings.QuickAccessPipelines[selectedPipelineIndex];
+                    settings.SelectedPipeline = settings.QuickAccessPipelines[selectedPipelineIndex];
 
                 if (selectedManifestIndex > -1 && selectedManifestIndex < settings.QuickAccessManifests.Length)
-                    settings.selectedManifest = settings.QuickAccessManifests[selectedManifestIndex];
+                    settings.SelectedManifest = settings.QuickAccessManifests[selectedManifestIndex];
             }
             using (new VerticalScope())
             {
@@ -145,8 +145,8 @@ namespace ThunderKit.Core.Pipelines
                 {
                     try
                     {
-                        var pipeline = settings.selectedPipeline;
-                        var manifest = settings.selectedManifest;
+                        var pipeline = settings.SelectedPipeline;
+                        var manifest = settings.SelectedManifest;
 
                         using (new DisabledScope((!pipeline)))
                             if (GUILayout.Button("Execute"))

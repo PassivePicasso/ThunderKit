@@ -78,8 +78,8 @@ namespace ThunderKit.Core.Data
 
         public bool ShowLogWindow = true;
 
-        public Pipeline selectedPipeline;
-        public Manifest selectedManifest;
+        public Pipeline SelectedPipeline;
+        public Manifest SelectedManifest;
         public Pipeline[] QuickAccessPipelines;
         public Manifest[] QuickAccessManifests;
         public string[] QuickAccessPipelineNames;
