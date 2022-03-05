@@ -11,6 +11,7 @@ using static UnityEditor.EditorGUIUtility;
 using Debug = UnityEngine.Debug;
 using ThunderKit.Common;
 using UnityEngine.Profiling;
+using ThunderKit.Core.Utilities;
 
 namespace ThunderKit.Core.Inspectors
 {

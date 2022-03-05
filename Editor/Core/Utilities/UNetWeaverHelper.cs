@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace ThunderKit.Core
+namespace ThunderKit.Core.Utilities
 {
     public static class UNetWeaverHelper
     {

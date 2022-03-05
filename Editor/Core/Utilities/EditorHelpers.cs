@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Core
+namespace ThunderKit.Core.Utilities
 {
     public static class EditorHelpers
     {

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Common.Logging;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 

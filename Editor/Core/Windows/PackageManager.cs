@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ThunderKit.Common;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Actions;
 using UnityEditor;
@@ -9,6 +8,7 @@ using UnityEngine;
 using PackageSource = ThunderKit.Core.Data.PackageSource;
 using System;
 using ThunderKit.Common.Configuration;
+using ThunderKit.Core.Utilities;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;

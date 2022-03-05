@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ThunderKit.Common;
+using ThunderKit.Core.Utilities;
 using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;

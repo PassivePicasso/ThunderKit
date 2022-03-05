@@ -2,6 +2,7 @@
 using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Core.Attributes;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;

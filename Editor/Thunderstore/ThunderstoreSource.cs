@@ -6,8 +6,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using ThunderKit.Core;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 

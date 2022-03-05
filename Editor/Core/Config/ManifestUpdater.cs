@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 
