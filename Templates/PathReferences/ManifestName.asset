@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114881343918206536}
-  lastName: ManifestName
 --- !u!114 &114881343918206536
 MonoBehaviour:
   m_ObjectHideFlags: 1

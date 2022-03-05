@@ -27,8 +27,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2efd008a408bd8449ad573ac2d5003ce, type: 3}
   m_Name: ManifestName
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
 --- !u!114 &114583779416969120
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -41,6 +39,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ceeada0f3a252c4fa6ec9b0c93543ce, type: 3}
   m_Name: OutputReference
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
   reference: {fileID: 11400000, guid: 371792ec97ec57144b02b2f8b4a37e74, type: 2}

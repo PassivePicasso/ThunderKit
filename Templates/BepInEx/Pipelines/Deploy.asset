@@ -12,9 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
   m_Name: Copy
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   PerManifest: 1
   ExcludedManifests: []
@@ -35,9 +32,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
   m_Name: ExecutePipeline
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   OverrideManifest: 0
   targetpipeline: {fileID: 0}
@@ -61,7 +55,6 @@ MonoBehaviour:
   - {fileID: 2078919326612615040}
   - {fileID: 114803605343111210}
   manifest: {fileID: 0}
-  QuickAccess: 0
 --- !u!114 &114803605343111210
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -74,9 +67,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
   m_Name: Copy
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   PerManifest: 0
   ExcludedManifests: []
@@ -97,9 +87,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
   m_Name: Copy
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   PerManifest: 0
   ExcludedManifests: []
@@ -120,9 +107,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
   m_Name: Copy
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   PerManifest: 1
   ExcludedManifests: []
@@ -143,9 +127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
   m_Name: Copy
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   PerManifest: 0
   ExcludedManifests: []
@@ -166,9 +147,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
   m_Name: Copy
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   PerManifest: 1
   ExcludedManifests: []

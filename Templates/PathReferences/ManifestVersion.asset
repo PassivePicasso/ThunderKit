@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114049497066950108}
-  lastName: ManifestVersion
 --- !u!114 &114049497066950108
 MonoBehaviour:
   m_ObjectHideFlags: 1

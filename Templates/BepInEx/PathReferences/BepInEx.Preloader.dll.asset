@@ -29,8 +29,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
   m_Name: Constant
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
   Value: core
 --- !u!114 &114458043065444658
 MonoBehaviour:
@@ -44,8 +42,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
   m_Name: Constant
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
   Value: BepInEx.Preloader.dll
 --- !u!114 &114642075530544352
 MonoBehaviour:
@@ -59,8 +55,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ceeada0f3a252c4fa6ec9b0c93543ce, type: 3}
   m_Name: OutputReference
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
   reference: {fileID: 11400000, guid: f09ef0d1102d0d941877f27a623c8b04, type: 2}
 --- !u!114 &114734133523331920
 MonoBehaviour:
@@ -74,6 +68,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
   m_Name: Constant
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
   Value: BepInEx

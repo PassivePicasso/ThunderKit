@@ -15,7 +15,6 @@ MonoBehaviour:
   Data:
   - {fileID: 114877556266927788}
   - {fileID: 114979852580270194}
-  lastName: GameExecutable
 --- !u!114 &114877556266927788
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -28,8 +27,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df39480b01ece8c459c9db887486877f, type: 3}
   m_Name: GamePath
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
 --- !u!114 &114979852580270194
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -42,5 +39,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 590bd9fa6d6a2ba4b966390dfd0a9085, type: 3}
   m_Name: GameExecutable
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
