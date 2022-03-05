@@ -19,6 +19,7 @@ namespace ThunderKit.Core.Config
     public class ConfigureGame
     {
         private static readonly HashSet<string> EmptySet = new HashSet<string>();
+        private static readonly HashSet<string> UnityStandardAssemblies = new HashSet<string>();
 
         public static void LoadGame(ThunderKitSettings settings)
         {
@@ -36,16 +37,22 @@ namespace ThunderKit.Core.Config
             var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
             AssertDestinations(packageName);
 
-            GetReferences(packageName, settings);
+            ImportAssemblies(packageName, settings);
 
             SetupPackageManifest(settings, packageName);
 
-            var classDataPath = Path.GetFullPath(Path.Combine(Constants.ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
+            ImportGameSettings(settings);
+        }
+
+        private static void ImportGameSettings(ThunderKitSettings settings)
+        {
+            var classDataPath = Path.GetFullPath(Combine(Constants.ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
 
             var unityVersion = Application.unityVersion;
-            var gameManagerTemp = Path.Combine(Directory.GetCurrentDirectory(), "Temp", "ImportedProjectSettings");
+            var gameManagerTemp = Combine(Directory.GetCurrentDirectory(), "Temp", "ImportedProjectSettings");
             var editorDirectory = Path.GetDirectoryName(EditorApplication.applicationPath);
-            GameExporter.ExportGlobalGameManagers(Path.Combine(settings.GamePath, settings.GameExecutable), gameManagerTemp, editorDirectory, classDataPath, unityVersion);
+            var executablePath = Combine(settings.GamePath, settings.GameExecutable);
+            GameExporter.ExportGlobalGameManagers(executablePath, gameManagerTemp, settings.GameDataPath, editorDirectory, classDataPath, unityVersion);
 
             var includedSettings = (IncludedSettings)settings.IncludedSettings;
             foreach (IncludedSettings include in (IncludedSettings[])Enum.GetValues(typeof(IncludedSettings)))
@@ -53,8 +60,8 @@ namespace ThunderKit.Core.Config
                 if (!includedSettings.HasFlag(include)) continue;
 
                 string settingName = $"{include}.asset";
-                string settingPath = Path.Combine("ProjectSettings", settingName);
-                string tempSettingPath = Path.Combine(gameManagerTemp, "ProjectSettings", settingName);
+                string settingPath = Combine("ProjectSettings", settingName);
+                string tempSettingPath = Combine(gameManagerTemp, "ProjectSettings", settingName);
                 if (!File.Exists(tempSettingPath)) continue;
 
                 File.Copy(tempSettingPath, settingPath, true);
@@ -67,14 +74,14 @@ namespace ThunderKit.Core.Config
         private static void SetupPackageManifest(ThunderKitSettings settings, string packageName)
         {
             var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Combine(settings.GamePath, settings.GameExecutable));
             var outputDir = Combine("Packages", packageName);
             PackageHelper.GeneratePackageManifest(name, outputDir, packageName, fileVersionInfo.CompanyName, "1.0.0", $"Imported assemblies from game {packageName}");
         }
 
         private static void AssertDestinations(string packageName)
         {
-            var destinationFolder = Path.Combine("Packages", packageName);
+            var destinationFolder = Combine("Packages", packageName);
             if (!Directory.Exists(destinationFolder))
                 Directory.CreateDirectory(destinationFolder);
 
@@ -96,9 +103,9 @@ namespace ThunderKit.Core.Config
                     case RuntimePlatform.WindowsEditor:
                         path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
                         break;
-                    //case RuntimePlatform.LinuxEditor:
-                    //    path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "????");
-                    //    break;
+                    case RuntimePlatform.LinuxEditor:
+                        path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "*");
+                        break;
                     //case RuntimePlatform.OSXEditor:
                     //    path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "app");
                     //    break;
@@ -115,7 +122,6 @@ namespace ThunderKit.Core.Config
             EditorUtility.SetDirty(settings);
         }
 
-
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
             var versionMatch = false;
@@ -123,12 +129,11 @@ namespace ThunderKit.Core.Config
 
             var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
 
-            var dataPath = Path.Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data");
-            var informationFile = Path.Combine(dataPath, "globalgamemanagers");
+            var informationFile = Combine(settings.GameDataPath, "globalgamemanagers");
             var playerVersion = string.Empty;
             if (!File.Exists(informationFile))
             {
-                informationFile = Path.Combine(dataPath, "data.unity3d");
+                informationFile = Combine(settings.GameDataPath, "data.unity3d");
             }
             if (File.Exists(informationFile))
             {
@@ -140,7 +145,7 @@ namespace ThunderKit.Core.Config
             }
             else
             {
-                var exePath = Path.Combine(settings.GamePath, settings.GameExecutable);
+                var exePath = Combine(settings.GamePath, settings.GameExecutable);
                 var fvi = FileVersionInfo.GetVersionInfo(exePath);
                 playerVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
                 if (playerVersion.Count(f => f == '.') == 2)
@@ -152,13 +157,102 @@ namespace ThunderKit.Core.Config
             return versionMatch;
         }
 
-        private static void GetReferences(string packageName, ThunderKitSettings settings)
+        private static void ImportAssemblies(string packageName, ThunderKitSettings settings)
         {
             try
             {
+                string nativeAssemblyExtension = string.Empty;
+
+                switch (Application.platform)
+                {
+                    case RuntimePlatform.OSXEditor:
+                        nativeAssemblyExtension = "dylib";
+                        break;
+                    case RuntimePlatform.WindowsEditor:
+                        nativeAssemblyExtension = "dll";
+                        break;
+                    case RuntimePlatform.LinuxEditor:
+                        nativeAssemblyExtension = "so";
+                        break;
+                }
+
                 AssetDatabase.StartAssetEditing();
                 EditorApplication.LockReloadAssemblies();
-                Debug.Log("Acquiring references");
+
+                BuildAssemblyBlacklist();
+
+                var installedGameAssemblies = Directory.EnumerateFiles(Combine("Packages", packageName), $"*.dll", SearchOption.AllDirectories)
+                                       .Union(Directory.EnumerateFiles(Combine("Packages", packageName), $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
+                                       .ToArray();
+
+                var managedPath = Combine(settings.GameDataPath, "Managed");
+                var packagePath = Combine("Packages", packageName);
+                var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
+                ImportFilteredAssemblies(packagePath, managedAssemblies, UnityStandardAssemblies, new HashSet<string>(installedGameAssemblies));
+
+                var pluginsPath = Combine(settings.GameDataPath, "Plugins");
+                if (Directory.Exists(pluginsPath))
+                {
+                    var packagePluginsPath = Combine(packagePath, "plugins");
+                    var plugins = Directory.GetFiles(pluginsPath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories);
+                    ImportFilteredAssemblies(packagePluginsPath, plugins, EmptySet, EmptySet);
+                }
+            }
+            finally
+            {
+                EditorApplication.UnlockReloadAssemblies();
+                AssetDatabase.StopAssetEditing();
+            }
+        }
+
+        private static void ImportFilteredAssemblies(string destinationFolder, IEnumerable<string> assemblies, HashSet<string> blackList, HashSet<string> whitelist)
+        {
+            foreach (var assemblyPath in assemblies)
+            {
+                var asmPath = assemblyPath.Replace("\\", "/");
+                string assemblyFileName = Path.GetFileName(asmPath);
+                if (!whitelist.Contains(assemblyFileName)
+                  && blackList.Contains(assemblyFileName))
+                    continue;
+
+                var destinationFile = Combine(destinationFolder, assemblyFileName);
+
+                var destinationMetaData = Combine(destinationFolder, $"{assemblyFileName}.meta");
+
+                try
+                {
+                    if (File.Exists(destinationFile)) File.Delete(destinationFile);
+                    File.Copy(asmPath, destinationFile);
+
+                    PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
+                }
+                catch (Exception ex)
+                {
+
+                    Debug.LogWarning($"Could not update assembly: {destinationFile}", AssetDatabase.LoadAssetAtPath<Object>(destinationFile));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Collect list of Assemblies that should not be imported from the game.
+        /// These are assemblies that would be automatically provided by Unity to the environment
+        /// </summary>
+        /// <param name="byEditorFiles"></param>
+        private static void BuildAssemblyBlacklist(bool byEditorFiles = false)
+        {
+            UnityStandardAssemblies.Clear();
+            if (byEditorFiles)
+            {
+                var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
+                var extensionsFolder = Combine(editorPath, "Data", "Managed");
+                foreach (var asmFile in Directory.GetFiles(extensionsFolder, "*.dll", SearchOption.AllDirectories))
+                {
+                    UnityStandardAssemblies.Add(Path.GetFileName(asmFile));
+                }
+            }
+            else
+            {
                 var blackList = AppDomain.CurrentDomain.GetAssemblies()
 #if NET_4_6
                 .Where(asm => !asm.IsDynamic)
@@ -184,62 +278,15 @@ namespace ThunderKit.Core.Config
                         }
                     })
                     .OrderBy(s => s);
-
-                var installedGameAssemblies = Directory.EnumerateFiles(Path.Combine("Packages", packageName), "*.dll", SearchOption.AllDirectories).ToArray();
-
-                var managedPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
-                var packagePath = Path.Combine("Packages", packageName);
-                var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
-                GetReferences(packagePath, managedAssemblies, new HashSet<string>(blackList.ToArray()), new HashSet<string>(installedGameAssemblies));
-
-                var pluginsPath = Combine(settings.GameDataPath, "Plugins");
-                if (Directory.Exists(pluginsPath))
-                {
-                    var packagePluginsPath = Path.Combine(packagePath, "plugins");
-                    var plugins = Directory.GetFiles(pluginsPath, "*.dll", SearchOption.AllDirectories);
-                    GetReferences(packagePluginsPath, plugins, EmptySet, EmptySet);
-                }
-            }
-            finally
-            {
-                EditorApplication.UnlockReloadAssemblies();
-                AssetDatabase.StopAssetEditing();
-            }
-        }
-
-        private static void GetReferences(string destinationFolder, IEnumerable<string> assemblies, HashSet<string> blackList, HashSet<string> whitelist)
-        {
-            foreach (var assemblyPath in assemblies)
-            {
-                var asmPath = assemblyPath.Replace("\\", "/");
-                string assemblyFileName = Path.GetFileName(asmPath);
-                if (!whitelist.Contains(assemblyFileName)
-                  && blackList.Contains(assemblyFileName))
-                    continue;
-
-                var destinationFile = Path.Combine(destinationFolder, assemblyFileName).Replace("\\", "/");
-
-                var destinationMetaData = Path.Combine(destinationFolder, $"{assemblyFileName}.meta").Replace("\\", "/");
-
-                try
-                {
-                    if (File.Exists(destinationFile)) File.Delete(destinationFile);
-                    File.Copy(asmPath, destinationFile);
-
-                    PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
-                }
-                catch (Exception ex)
-                {
-
-                    Debug.LogWarning($"Could not update assembly: {destinationFile}", AssetDatabase.LoadAssetAtPath<Object>(destinationFile));
-                }
+                foreach (var asm in blackList)
+                    UnityStandardAssemblies.Add(asm);
             }
         }
 
         public static void SetBitness(ThunderKitSettings settings)
         {
             if (Application.platform != RuntimePlatform.WindowsEditor) return;
-            var assembly = Path.Combine(settings.GamePath, settings.GameExecutable);
+            var assembly = Combine(settings.GamePath, settings.GameExecutable);
             using (var stream = File.OpenRead(assembly))
             using (var binStream = new BinaryReader(stream))
             {

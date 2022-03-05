@@ -50,7 +50,7 @@ namespace AssetsExporter
         private readonly Dictionary<AssetsFileInstance, Dictionary<long, string>> fileAssetIdToPath;
         private readonly Dictionary<AssetsFileInstance, string> fileToOutputPath;
 
-        private GameExporter(string pathToExecutable, string outputDirectory, string editorPath, string classDataPath)
+        private GameExporter(string pathToExecutable, string outputDirectory, string dataPath, string editorPath, string classDataPath)
         {
             pptrExporterInfo = new PPtrExporterInfo();
             exporterInfo = new Dictionary<string, object>
@@ -66,23 +66,22 @@ namespace AssetsExporter
 
             this.editorPath = editorPath;
             this.outputDirectory = outputDirectory;
-            var gameName = Path.GetFileNameWithoutExtension(pathToExecutable);
-            dataFolder = Path.Combine(Path.GetDirectoryName(pathToExecutable), $"{gameName}_Data");
+            dataFolder = dataPath;
             outputProjectSettingsDirectory = Path.Combine(outputDirectory, "ProjectSettings");
             outputAssetsPathDirectory = Path.Combine(outputDirectory, "Assets");
         }
 
-        public static void ExportGame(string pathToExecutable, string outputDirectory, string editorPath, string classDataPath)
+        public static void ExportGame(string pathToExecutable, string outputDirectory, string dataPath, string editorPath, string classDataPath)
         {
-            using (var exporter = new GameExporter(pathToExecutable, outputDirectory, editorPath, classDataPath))
+            using (var exporter = new GameExporter(pathToExecutable, outputDirectory, dataPath, editorPath, classDataPath))
             {
                 exporter.Export();
             }
         }
 
-        public static void ExportGlobalGameManagers(string pathToExecutable, string outputDirectory, string editorPath, string classDataPath, string unityVersion)
+        public static void ExportGlobalGameManagers(string pathToExecutable, string outputDirectory, string dataPath, string editorPath, string classDataPath, string unityVersion)
         {
-            using (var exporter = new GameExporter(pathToExecutable, outputDirectory, editorPath, classDataPath))
+            using (var exporter = new GameExporter(pathToExecutable, outputDirectory, dataPath, editorPath, classDataPath))
             {
                 Directory.CreateDirectory(exporter.outputProjectSettingsDirectory);
                 Directory.CreateDirectory(exporter.outputAssetsPathDirectory);
