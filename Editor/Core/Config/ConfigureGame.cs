@@ -11,6 +11,7 @@ using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace ThunderKit.Core.Config
 {
@@ -42,9 +43,25 @@ namespace ThunderKit.Core.Config
             var classDataPath = Path.GetFullPath(Path.Combine(Constants.ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
 
             var unityVersion = Application.unityVersion;
-            GameExporter.ExportGlobalGameManagers(Path.Combine(settings.GamePath, settings.GameExecutable), "e:\\TestOutput", Path.GetDirectoryName(EditorApplication.applicationPath), classDataPath, unityVersion);
+            var gameManagerTemp = Path.Combine(Directory.GetCurrentDirectory(), "Temp", "ImportedProjectSettings");
+            var editorDirectory = Path.GetDirectoryName(EditorApplication.applicationPath);
+            GameExporter.ExportGlobalGameManagers(Path.Combine(settings.GamePath, settings.GameExecutable), gameManagerTemp, editorDirectory, classDataPath, unityVersion);
 
-            AssetDatabase.Refresh();
+            var includedSettings = (IncludedSettings)settings.IncludedSettings;
+            foreach (IncludedSettings include in (IncludedSettings[])Enum.GetValues(typeof(IncludedSettings)))
+            {
+                if (!includedSettings.HasFlag(include)) continue;
+
+                string settingName = $"{include}.asset";
+                string settingPath = Path.Combine("ProjectSettings", settingName);
+                string tempSettingPath = Path.Combine(gameManagerTemp, "ProjectSettings", settingName);
+                if (!File.Exists(tempSettingPath)) continue;
+
+                File.Copy(tempSettingPath, settingPath, true);
+                File.SetLastWriteTime(settingPath, DateTime.Now);
+                File.SetLastAccessTime(settingPath, DateTime.Now);
+                File.SetCreationTime(settingPath, DateTime.Now);
+            }
         }
 
         private static void SetupPackageManifest(ThunderKitSettings settings, string packageName)
@@ -79,6 +96,9 @@ namespace ThunderKit.Core.Config
                     case RuntimePlatform.WindowsEditor:
                         path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
                         break;
+                    //case RuntimePlatform.LinuxEditor:
+                    //    path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "????");
+                    //    break;
                     //case RuntimePlatform.OSXEditor:
                     //    path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "app");
                     //    break;
@@ -87,21 +107,14 @@ namespace ThunderKit.Core.Config
                         return;
                 }
                 if (string.IsNullOrEmpty(path)) return;
+                //For Linux, we will have to check the selected file to see if the GameExecutable_Data folder exists, we can use this to verify the executable was selected
                 settings.GameExecutable = Path.GetFileName(path);
                 settings.GamePath = Path.GetDirectoryName(path);
                 foundExecutable = Directory.GetFiles(settings.GamePath, settings.GameExecutable).Any();
             }
             EditorUtility.SetDirty(settings);
-
-            //var ggms = Directory.EnumerateFiles(settings.GamePath, "globalgamemanagers", SearchOption.AllDirectories).ToArray();
-            //if (ggms.Any())
-            //{
-            //    foreach (var ggm in ggms)
-            //        Debug.Log($"Found GGM: {ggm}");
-            //    //var am = new AssetsManager();
-            //    //am.LoadBundleDependencies
-            //}
         }
+
 
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
@@ -172,12 +185,12 @@ namespace ThunderKit.Core.Config
                     })
                     .OrderBy(s => s);
 
-                var loadedGameAssemblies = Directory.EnumerateFiles(Path.Combine("Packages", packageName), "*.dll", SearchOption.AllDirectories).ToArray();
+                var installedGameAssemblies = Directory.EnumerateFiles(Path.Combine("Packages", packageName), "*.dll", SearchOption.AllDirectories).ToArray();
 
                 var managedPath = Combine(settings.GamePath, $"{Path.GetFileNameWithoutExtension(settings.GameExecutable)}_Data", "Managed");
                 var packagePath = Path.Combine("Packages", packageName);
                 var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
-                GetReferences(packagePath, managedAssemblies, new HashSet<string>(blackList.ToArray()), new HashSet<string>(loadedGameAssemblies));
+                GetReferences(packagePath, managedAssemblies, new HashSet<string>(blackList.ToArray()), new HashSet<string>(installedGameAssemblies));
 
                 var pluginsPath = Combine(settings.GameDataPath, "Plugins");
                 if (Directory.Exists(pluginsPath))
@@ -208,10 +221,18 @@ namespace ThunderKit.Core.Config
 
                 var destinationMetaData = Path.Combine(destinationFolder, $"{assemblyFileName}.meta").Replace("\\", "/");
 
-                if (File.Exists(destinationFile)) File.Delete(destinationFile);
-                File.Copy(asmPath, destinationFile);
+                try
+                {
+                    if (File.Exists(destinationFile)) File.Delete(destinationFile);
+                    File.Copy(asmPath, destinationFile);
 
-                PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
+                    PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
+                }
+                catch (Exception ex)
+                {
+
+                    Debug.LogWarning($"Could not update assembly: {destinationFile}", AssetDatabase.LoadAssetAtPath<Object>(destinationFile));
+                }
             }
         }
 
