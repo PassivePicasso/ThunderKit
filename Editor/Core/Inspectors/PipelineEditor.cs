@@ -16,6 +16,11 @@ namespace ThunderKit.Core.Inspectors
 #elif UNITY_2018_1_OR_NEWER
         private const int ButtonHeight = 15;
 #endif
+        protected override IEnumerable<string> ExcludedProperties()
+        {
+            yield return nameof(Pipeline.QuickAccess);
+        }
+
         protected override void OnHeaderGUI()
         {
             base.OnHeaderGUI();
@@ -34,11 +39,10 @@ namespace ThunderKit.Core.Inspectors
 
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             EditorGUI.BeginChangeCheck();
-            var quickAccess = GUI.Toggle(rect, settings.QuickAccessPipelines?.Contains(pipeline) ?? false, quickAccessContent);
+            pipeline.QuickAccess = GUI.Toggle(rect, pipeline.QuickAccess, quickAccessContent);
             if (EditorGUI.EndChangeCheck())
             {
-                settings.SetQuickAccess(pipeline, quickAccess);
-
+                settings.SetQuickAccess(pipeline, pipeline.QuickAccess);
                 serializedObject.ApplyModifiedProperties();
             }
 

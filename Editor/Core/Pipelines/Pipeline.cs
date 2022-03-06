@@ -24,6 +24,8 @@ namespace ThunderKit.Core.Pipelines
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
         public static void Create() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
+        public bool QuickAccess;
+
         public Manifest manifest;
 
         public Manifest[] Manifests { get; private set; }

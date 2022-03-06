@@ -98,6 +98,16 @@ namespace ThunderKit.Core.Data
                 EditorApplication.update += ShowSettings;
 
             EditorApplication.projectChanged += EditorApplication_projectChanged;
+            settings.QuickAccessPipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(path => AssetDatabase.LoadAssetAtPath<Pipeline>(path))
+                .Where(pipeline => pipeline.QuickAccess)
+                .ToArray();
+            settings.QuickAccessManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(path => AssetDatabase.LoadAssetAtPath<Manifest>(path))
+                .Where(manifest => manifest.QuickAccess)
+                .ToArray();
             settings.QuickAccessPipelineNames = settings.QuickAccessPipelines.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
             settings.QuickAccessManifestNames = settings.QuickAccessManifests.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
         }
