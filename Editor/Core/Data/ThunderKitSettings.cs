@@ -10,6 +10,8 @@ using ThunderKit.Core.Config;
 using ThunderKit.Markdown;
 using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Utilities;
+using System.Collections.Generic;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -66,7 +68,20 @@ namespace ThunderKit.Core.Data
 
         public string GameDataPath => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameExecutable)}_Data");
 
+        public string ManagedAssembliesPath => Path.Combine(GameDataPath, $"Managed");
+
         public string StreamingAssetsPath => Path.Combine(GameDataPath, "StreamingAssets");
+
+        public string PackageName
+        {
+            get
+            {
+                var gameName = Path.GetFileNameWithoutExtension(GameExecutable);
+                return gameName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
+            }
+        }
+        public string PackagePath => $"Packages/{PackageName}";
+        public string PackagePluginsPath => $"Packages/{PackageName}/plugins";
 
         public int IncludedSettings;
 
@@ -85,6 +100,7 @@ namespace ThunderKit.Core.Data
         public string[] QuickAccessPipelineNames;
         public string[] QuickAccessManifestNames;
 
+        public GuidMode OldGuidGenerationMode = GuidMode.Original;
         public GuidMode GuidGenerationMode = GuidMode.Original;
         private MarkdownElement markdown;
 
@@ -142,7 +158,6 @@ namespace ThunderKit.Core.Data
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
-            MarkdownElement markdown = null;
             if (string.IsNullOrEmpty(GameExecutable) || string.IsNullOrEmpty(GamePath))
             {
                 markdown = new MarkdownElement
@@ -158,24 +173,31 @@ $@"
                 markdown.RefreshContent();
                 rootElement.Add(markdown);
             }
+
             var settingsElement = TemplateHelpers.LoadTemplateInstance(Constants.ThunderKitSettingsTemplatePath);
+            settingsElement.AddEnvironmentAwareSheets(Constants.ThunderKitSettingsTemplatePath);
+
             rootElement.Add(settingsElement);
 
+            var guidGenerationModeField = settingsElement.Q<EnumField>("guid-mode-field");
+#if UNITY_2019_1_OR_NEWER
+            guidGenerationModeField.RegisterValueChangedCallback(OnGuidChanged);
+#elif UNITY_2018_1_OR_NEWER
+            guidGenerationModeField.OnValueChanged(OnGuidChanged);
+#endif
+            guidGenerationModeField.value = GuidGenerationMode;
+
             var browseButton = settingsElement.Q<Button>("browse-button");
-            browseButton.clickable.clicked += () =>
-            {
-                ConfigureGame.LocateGame(this);
-                if (!string.IsNullOrEmpty(GameExecutable) && !string.IsNullOrEmpty(GamePath))
-                {
-                    if (markdown != null)
-                        markdown.RemoveFromHierarchy();
-                }
-            };
+            browseButton.clickable.clicked -= BrowserForGame;
+            browseButton.clickable.clicked += BrowserForGame;
+
             var loadButton = settingsElement.Q<Button>("load-button");
-            loadButton.clickable.clicked += () =>
-            {
-                ConfigureGame.LoadGame(this);
-            };
+            loadButton.clickable.clicked -= LoadGame;
+            loadButton.clickable.clicked += LoadGame;
+
+            var updateButton = settingsElement.Q<Button>("update-button");
+            updateButton.clickable.clicked -= UpdateGuids;
+            updateButton.clickable.clicked += UpdateGuids;
 
             if (thunderKitSettingsSO == null)
                 thunderKitSettingsSO = new SerializedObject(this);
@@ -183,6 +205,65 @@ $@"
             rootElement.Bind(thunderKitSettingsSO);
         }
 
+        void OnGuidChanged(ChangeEvent<System.Enum> evt)
+        {
+            var guidMode = (GuidMode)evt.newValue;
+            GuidGenerationMode = guidMode;
+        }
+
+        private void LoadGame()
+        {
+            ConfigureGame.LoadGame(this);
+            OldGuidGenerationMode = GuidGenerationMode;
+        }
+
+        private void BrowserForGame()
+        {
+            ConfigureGame.LocateGame(this);
+            if (!string.IsNullOrEmpty(GameExecutable) && !string.IsNullOrEmpty(GamePath))
+            {
+                if (markdown != null)
+                    markdown.RemoveFromHierarchy();
+            }
+
+        }
+
+        private void UpdateGuids()
+        {
+            string nativeAssemblyExtension = string.Empty;
+
+            switch (Application.platform)
+            {
+                case RuntimePlatform.OSXEditor:
+                    nativeAssemblyExtension = "dylib";
+                    break;
+                case RuntimePlatform.WindowsEditor:
+                    nativeAssemblyExtension = "dll";
+                    break;
+                case RuntimePlatform.LinuxEditor:
+                    nativeAssemblyExtension = "so";
+                    break;
+            }
+            Dictionary<string, string> guidMaps = new Dictionary<string, string>();
+
+            foreach (var installedAssembly in Directory.EnumerateFiles(PackagePath, $"*.dll", SearchOption.TopDirectoryOnly))
+            {
+                var asmPath = installedAssembly.Replace("\\", "/");
+                string assemblyFileName = Path.GetFileName(asmPath);
+                var destinationMetaData = Combine(PackagePath, $"{assemblyFileName}.meta");
+                guidMaps[PackageHelper.GetFileNameHash(assemblyFileName, OldGuidGenerationMode)] = PackageHelper.GetFileNameHash(assemblyFileName, GuidGenerationMode);
+                PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
+            }
+            foreach (var installedAssembly in Directory.EnumerateFiles(PackagePluginsPath, $"*.{nativeAssemblyExtension}", SearchOption.TopDirectoryOnly))
+            {
+                var asmPath = installedAssembly.Replace("\\", "/");
+                string assemblyFileName = Path.GetFileName(asmPath);
+                var destinationMetaData = Combine(PackagePluginsPath, $"{assemblyFileName}.meta");
+                guidMaps[PackageHelper.GetFileNameHash(assemblyFileName, OldGuidGenerationMode)] = PackageHelper.GetFileNameHash(assemblyFileName, GuidGenerationMode);
+                PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
+            }
+            OldGuidGenerationMode = GuidGenerationMode;
+        }
 
         public void SetQuickAccess(Pipeline pipeline, bool quickAccess)
         {
