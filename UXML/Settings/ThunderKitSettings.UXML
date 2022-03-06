@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.Experimental.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements" editor-extension-mode="True">
-    <Style src="/Packages/com.passivepicasso.thunderkit/USS/ThunderKitSettings.uss" />
         
     <ui:VisualElement name="game-configuration-section" class="section">
         <ui:VisualElement class="setting-section">
@@ -16,12 +15,18 @@
             </ui:VisualElement>
             <ui:VisualElement class="thunderkit-field">
                 <ui:Label text="Included Settings" class="thunderkit-field-label"/>
-                <uie:MaskField name="asset-name-field" binding-path="IncludedSettings" choices="AudioManager, ClusterInputManager, DynamicsManager, EditorBuildSettings, EditorSettings, GraphicsSettings, InputManager, NavMeshAreas, NetworkManager, Physics2DSettings, PresetManager, ProjectSettings, QualitySettings, TagManager, TimeManager, UnityConnectSettings, VFXManager, XRSettings " class="thunderkit-field-input"/>
+                <uie:MaskField name="included-settings-field" binding-path="IncludedSettings" choices="AudioManager, ClusterInputManager, DynamicsManager, EditorBuildSettings, EditorSettings, GraphicsSettings, InputManager, NavMeshAreas, NetworkManager, Physics2DSettings, PresetManager, ProjectSettings, QualitySettings, TagManager, TimeManager, UnityConnectSettings, VFXManager, XRSettings " class="thunderkit-field-input"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="thunderkit-field">
+                <ui:Label text="Assembly Identity Algorithm" tooltip="The algorithm used to generate GUIDs for Assemblies in the project, this shouldn't be changed after an initial import unless you know what the implications are" class="thunderkit-field-label"/>
+                <uie:EnumField name="guid-mode-field" class="thunderkit-field-input" value="Stabilized" type="ThunderKit.Core.Data.ThunderKitSettings+GuidMode, ThunderKit.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+                    <ui:Button name="update-button" text="Update" class="standardbutton updatebutton"/>
+                </uie:EnumField>
             </ui:VisualElement>
 
         <ui:VisualElement name="game-config-button-container">
-            <ui:Button name="browse-button" text="Browse" class="browsebutton"/>
-            <ui:Button name="load-button" text="Load" class="browsebutton"/>
+            <ui:Button name="browse-button" text="Browse" class="standardbutton"/>
+            <ui:Button name="load-button" text="Load" class="standardbutton"/>
         </ui:VisualElement>
 
     </ui:VisualElement>

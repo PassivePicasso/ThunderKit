@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <Style src="/Packages/com.passivepicasso.thunderkit/USS/thunderkit_style.uss" />
     <ui:VisualElement class="grow setting-section">
         <ui:VisualElement class="settings-header">
             <ui:VisualElement name="icon" />
