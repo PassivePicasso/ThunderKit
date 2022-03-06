@@ -64,6 +64,27 @@ namespace ThunderKit.Core.Utilities
             File.WriteAllText(metadataPath, metaData);
         }
 
+        public static string GetFileNameHash(string assemblyPath, ThunderKitSettings.GuidMode mode)
+        {
+            string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
+            string result;
+            switch (mode)
+            {
+                case ThunderKitSettings.GuidMode.AssetRipperCompatibility:
+                    result = GetAssetRipperStringHash(shortName);
+                    break;
+                case ThunderKitSettings.GuidMode.Stabilized:
+                    result = GetStringHashUTF8(shortName);
+                    break;
+                case ThunderKitSettings.GuidMode.Original:
+                default:
+                    result = GetStringHash(shortName);
+                    break;
+            }
+            return result;
+        }
+
+
         public static string GetFileNameHash(string assemblyPath)
         {
             string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
@@ -82,7 +103,6 @@ namespace ThunderKit.Core.Utilities
                     result = GetStringHash(shortName);
                     break;
             }
-            Debug.Log($"Importing {assemblyPath} with Identity: {result}");
             return result;
         }
 

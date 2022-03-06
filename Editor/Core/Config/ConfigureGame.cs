@@ -82,10 +82,8 @@ namespace ThunderKit.Core.Config
 
         private static void SetupPackageManifest(ThunderKitSettings settings, string packageName)
         {
-            var name = packageName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Combine(settings.GamePath, settings.GameExecutable));
-            var outputDir = Combine("Packages", packageName);
-            PackageHelper.GeneratePackageManifest(name, outputDir, packageName, fileVersionInfo.CompanyName, "1.0.0", $"Imported assemblies from game {packageName}");
+            PackageHelper.GeneratePackageManifest(settings.PackageName, settings.PackagePath, packageName, fileVersionInfo.CompanyName, "1.0.0", $"Imported assemblies from game {packageName}");
         }
 
         private static void AssertDestinations(string packageName)
@@ -190,21 +188,20 @@ namespace ThunderKit.Core.Config
 
                 BuildAssemblyBlacklist();
 
-                var installedGameAssemblies = Directory.EnumerateFiles(Combine("Packages", packageName), $"*.dll", SearchOption.AllDirectories)
-                                       .Union(Directory.EnumerateFiles(Combine("Packages", packageName), $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
+                var installedGameAssemblies = Directory.EnumerateFiles(settings.PackagePath, $"*.dll", SearchOption.AllDirectories)
+                                       .Union(Directory.EnumerateFiles(settings.PackagePath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
                                        .Select(path => Path.GetFileName(path))
                                        .ToArray();
 
-                var managedPath = Combine(settings.GameDataPath, "Managed");
                 var packagePath = Combine("Packages", packageName);
-                var managedAssemblies = Directory.GetFiles(managedPath, "*.dll");
+                var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories);
                 ImportFilteredAssemblies(packagePath, managedAssemblies, UnityStandardAssemblies, new HashSet<string>(installedGameAssemblies));
 
                 var pluginsPath = Combine(settings.GameDataPath, "Plugins");
                 if (Directory.Exists(pluginsPath))
                 {
                     var packagePluginsPath = Combine(packagePath, "plugins");
-                    var plugins = Directory.GetFiles(pluginsPath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories);
+                    var plugins = Directory.EnumerateFiles(pluginsPath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories);
                     ImportFilteredAssemblies(packagePluginsPath, plugins, EmptySet, EmptySet);
                 }
             }
