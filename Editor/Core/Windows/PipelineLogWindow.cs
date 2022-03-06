@@ -36,7 +36,7 @@ namespace ThunderKit.Core.Windows
             if (window == null || !IsOpen)
             {
                 var consoleType = typeof(EditorWindow).Assembly.GetTypes().First(t => "ConsoleWindow".Equals(t.Name));
-                window = GetWindow<PipelineLogWindow>($"{pipelineLog.pipeline.name}", consoleType);
+                window = GetWindow<PipelineLogWindow>($"{pipelineLog.pipeline?.name ?? pipelineLog.name}", consoleType);
             }
             window.settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             window.pipelineLog = pipelineLog;
