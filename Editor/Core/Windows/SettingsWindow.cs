@@ -36,6 +36,9 @@ namespace ThunderKit.Core.Windows
         {
             base.OnEnable();
 
+            
+            rootVisualElement.AddEnvironmentAwareSheets($"{Constants.ThunderKitRoot}/USS/thunderkit.uss");
+
             settingsList = rootVisualElement.Q("settings-list") as ListView;
             settingsArea = rootVisualElement.Q("settings-area");
             var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", Constants.FindAllFolders)
@@ -70,6 +73,7 @@ namespace ThunderKit.Core.Windows
             foreach (var setting in obj.OfType<ThunderKitSetting>())
             {
                 var settingSection = GetTemplateInstance("ThunderKitSettingSection");
+
                 var title = settingSection.Q<Label>("title");
                 if (title != null)
                     title.text = setting.DisplayName;
@@ -78,11 +82,12 @@ namespace ThunderKit.Core.Windows
                 {
                     setting.CreateSettingsUI(properties);
                 }
-                catch
+                catch(Exception ex)
                 {
                     var errorLabel = new Label($"Failed to load settings user interface");
                     errorLabel.AddToClassList("thunderkit-error");
                     properties.Add(errorLabel);
+                    Debug.LogError(ex);
                 }
                 settingsArea.Add(settingSection);
             }

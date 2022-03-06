@@ -1,0 +1,74 @@
+﻿.standardbutton {
+	height: 17px;
+	margin-top: 2px;
+	margin-bottom: 0px;
+	padding-top: 0px;
+	padding-bottom: 2px;
+}
+
+#guid-mode-field {
+	padding-left: 70px;
+}
+
+.updatebutton {
+	position: absolute;
+	top: -3px;
+	left: 5px;
+	width: 60px;
+	height: 21px;
+}
+
+.field-section {
+    flex-grow: 1;
+}
+
+.section {
+}
+
+#game-configuration-section{
+}
+
+#log-configuration-section {
+	margin-top: 4px;
+}
+
+#settings-window-section {
+	margin-top: 4px;
+}
+
+#game-config-button-container{
+	flex-direction: row;
+	justify-content: flex-end;
+}
+
+.thunderkit-field-input, .thunderkit-field-input .unity-base-field__input {
+	padding-top: 1px;
+	padding-bottom: 2px;
+	height: 19px;
+	margin-top: -1px;
+	margin-bottom: -1px;
+    margin-left: 1px;
+    margin-right: 0px;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+.thunderkit-field MarkdownElement {
+	font-size: 5px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.thunderkit-field MarkdownElement * {
+	font-size: 11px;
+}

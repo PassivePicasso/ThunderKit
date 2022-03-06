@@ -43,13 +43,8 @@ namespace ThunderKit.Core.UIElements
 
             instance.AddToClassList("grow");
 
-            AddSheet(instance, templatePath);
-            AddSheet(instance, templatePath, "_style");
+            instance.AddEnvironmentAwareSheets(templatePath);
 
-            if (EditorGUIUtility.isProSkin)
-                AddSheet(instance, templatePath, "_Dark");
-            else
-                AddSheet(instance, templatePath, "_Light");
             return instance;
         }
 
@@ -63,17 +58,37 @@ namespace ThunderKit.Core.UIElements
 #elif UNITY_2018_1_OR_NEWER
             "2018";
 #endif
-        public static void AddSheet(VisualElement element, string templatePath, string modifier = "")
+        /// <summary>
+        /// Selectively adds a set of predetermined style sheets based upon the environment
+        /// Variations:
+        /// templatePath
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="templatePath">Path to UXML template file</param>
+        public static void AddEnvironmentAwareSheets(this VisualElement instance, string templatePath)
         {
-            string path = templatePath.Replace(".uxml", $"{modifier}_{editorVersion}.uss");
-            if (!File.Exists(path))
-            {
-                path = templatePath.Replace(".uxml", $"{modifier}.uss");
-                if (!File.Exists(path))
-                    return;
-            }
-            MultiVersionLoadStyleSheet(element, path);
+            instance.AddSheet(templatePath);
+            instance.AddSheet(templatePath, "_style");
+            instance.AddSheet(templatePath, $"_{editorVersion}");
 
+            if (EditorGUIUtility.isProSkin)
+                instance.AddSheet(templatePath, "_Dark");
+            else
+                instance.AddSheet(templatePath, "_Light");
+        }
+
+        public static void AddSheet(this VisualElement element, string templatePath, string modifier = "")
+        {
+            string path = string.Empty;
+            
+            if (templatePath.EndsWith(".uxml"))
+                path = templatePath.Replace(".uxml", $"{modifier}.uss");
+            else if (templatePath.EndsWith(".uss"))
+                path = templatePath.Replace(".uss", $"{modifier}.uss");
+
+            if (!File.Exists(path))
+                return;
+            MultiVersionLoadStyleSheet(element, path);
         }
 
         public static void MultiVersionLoadStyleSheet(VisualElement element, string sheetPath)

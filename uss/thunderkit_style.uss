@@ -155,10 +155,10 @@ PageEntry.selected>.header>Label:hover {
 }
 .thunderkit-field Toggle #Checkmark,
 .thunderkit-field Toggle #unity-checkmark {
-    padding-left: 0;
-    margin-left: 0;
+    margin-top: 1px;
+    margin-left: 7px;
     width: 71px;
-    height: 20px;
+    height: 18px;
     -unity-slice-top: 0;
     -unity-slice-left: 0;
 	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleOff.png");
@@ -259,16 +259,13 @@ PageEntry.selected>.header>Label:hover {
     margin-bottom: 0px;
 }
 .thunderkit-field-input TextInput {
-    background-color: rgba(128,128,128,0);
+    background-image: unset;
+    background-color: rgba(128,128,128,0.25);
     border-color: rgba(255,255,255,0);
     margin-left: 0px;
     margin-top: 0px;
     margin-right: 0px;
     margin-bottom: 0px;
-    padding-left: 0px;
-    padding-top: 0px;
-    padding-right: 0px;
-    padding-bottom: 0px;
     border-left-width: 0px;
     border-top-width: 0px;
     border-right-width: 0px;
