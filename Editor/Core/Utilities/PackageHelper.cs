@@ -74,6 +74,9 @@ namespace ThunderKit.Core.Utilities
                 case ThunderKitSettings.GuidMode.AssetRipperCompatibility:
                     result = GetAssetRipperStringHash(shortName);
                     break;
+                case ThunderKitSettings.GuidMode.Stabilized:
+                    result = GetStringHashUTF8(shortName);
+                    break;
                 case ThunderKitSettings.GuidMode.Original:
                 default:
                     result = GetStringHash(shortName);
@@ -88,6 +91,16 @@ namespace ThunderKit.Core.Utilities
             using (var md5 = MD5.Create())
             {
                 byte[] hashBytes = md5.ComputeHash(Encoding.Default.GetBytes(value));
+                var guid = new Guid(hashBytes);
+                var cleanedGuid = guid.ToString().ToLower().Replace("-", "");
+                return cleanedGuid;
+            }
+        }
+        public static string GetStringHashUTF8(string value)
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
                 var guid = new Guid(hashBytes);
                 var cleanedGuid = guid.ToString().ToLower().Replace("-", "");
                 return cleanedGuid;

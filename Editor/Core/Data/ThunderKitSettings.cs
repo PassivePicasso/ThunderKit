@@ -24,7 +24,7 @@ namespace ThunderKit.Core.Data
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ThunderKitSetting
     {
-        public enum GuidMode { Original, AssetRipperCompatibility }
+        public enum GuidMode { Original, Stabilized, AssetRipperCompatibility }
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
@@ -85,7 +85,8 @@ namespace ThunderKit.Core.Data
         public string[] QuickAccessPipelineNames;
         public string[] QuickAccessManifestNames;
 
-        public GuidMode GuidGenerationMode;
+        public GuidMode GuidGenerationMode = GuidMode.Original;
+        private MarkdownElement markdown;
 
         [InitializeOnLoadMethod]
         static void SettingsWindowSetup()
