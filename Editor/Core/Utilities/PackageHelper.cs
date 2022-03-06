@@ -87,9 +87,8 @@ namespace ThunderKit.Core.Utilities
         {
             using (var md5 = MD5.Create())
             {
-                byte[] shortNameBytes = Encoding.Default.GetBytes(value);
-                var shortNameHash = md5.ComputeHash(shortNameBytes);
-                var guid = new Guid(shortNameHash);
+                byte[] hashBytes = md5.ComputeHash(Encoding.Default.GetBytes(value));
+                var guid = new Guid(hashBytes);
                 var cleanedGuid = guid.ToString().ToLower().Replace("-", "");
                 return cleanedGuid;
             }
