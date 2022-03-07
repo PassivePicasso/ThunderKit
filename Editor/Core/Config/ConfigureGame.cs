@@ -193,10 +193,11 @@ namespace ThunderKit.Core.Config
                     installedGameAssemblies = Directory.EnumerateFiles(settings.PackagePath, $"*.dll", SearchOption.AllDirectories)
                                            .Union(Directory.EnumerateFiles(settings.PackagePath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
                                            .Select(path => Path.GetFileName(path))
+                                           .Distinct()
                                            .ToArray();
 
                 var packagePath = Combine("Packages", packageName);
-                var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories);
+                var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories).Distinct();
                 ImportFilteredAssemblies(packagePath, managedAssemblies, UnityStandardAssemblies, new HashSet<string>(installedGameAssemblies));
 
                 var pluginsPath = Combine(settings.GameDataPath, "Plugins");
