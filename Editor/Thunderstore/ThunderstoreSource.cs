@@ -100,8 +100,6 @@ namespace ThunderKit.Integrations.Thunderstore
                 var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies));
                 AddPackageGroup(tsp.owner, tsp.name, tsp.Latest.description, tsp.full_name, tsp.categories, versions);
             }
-
-
             SourceUpdated();
         }
 
@@ -134,7 +132,6 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public void ReloadPages(bool force = false)
         {
-            Debug.Log($"Updating Package listing: {PackageListApi}");
             using (var client = new GZipWebClient())
             {
                 client.DownloadStringCompleted += Client_DownloadStringCompleted;
