@@ -153,6 +153,10 @@ PageEntry.selected>.header>Label:hover {
     padding-right: 0;
     padding-bottom: 0;
 }
+.thunderkit-field Toggle {
+    margin-right: 9px;
+    flex-grow: 0;
+}
 .thunderkit-field Toggle #Checkmark,
 .thunderkit-field Toggle #unity-checkmark {
     margin-top: 1px;
@@ -259,7 +263,7 @@ PageEntry.selected>.header>Label:hover {
     margin-bottom: 0px;
 }
 .thunderkit-field-input TextInput {
-    background-image: unset;
+    background-image: none;
     background-color: rgba(128,128,128,0.25);
     border-color: rgba(255,255,255,0);
     margin-left: 0px;
