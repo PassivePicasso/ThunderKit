@@ -188,10 +188,12 @@ namespace ThunderKit.Core.Config
 
                 BuildAssemblyBlacklist();
 
-                var installedGameAssemblies = Directory.EnumerateFiles(settings.PackagePath, $"*.dll", SearchOption.AllDirectories)
-                                       .Union(Directory.EnumerateFiles(settings.PackagePath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
-                                       .Select(path => Path.GetFileName(path))
-                                       .ToArray();
+                string[] installedGameAssemblies = Array.Empty<string>();
+                if (Directory.Exists(settings.PackagePath))
+                    installedGameAssemblies = Directory.EnumerateFiles(settings.PackagePath, $"*.dll", SearchOption.AllDirectories)
+                                           .Union(Directory.EnumerateFiles(settings.PackagePath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
+                                           .Select(path => Path.GetFileName(path))
+                                           .ToArray();
 
                 var packagePath = Combine("Packages", packageName);
                 var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories);
