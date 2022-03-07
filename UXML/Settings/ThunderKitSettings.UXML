@@ -5,28 +5,33 @@
             <ui:Label text="Locate and Load game files for project" class="thunderkit-header"/>
         </ui:VisualElement>
                 
-            <ui:VisualElement class="thunderkit-field" >
-                <ui:Label text="Game Path" class="thunderkit-field-label"/>
-                <ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
-            </ui:VisualElement>
-            <ui:VisualElement class="thunderkit-field">
-                <ui:Label text="Game Executable" class="thunderkit-field-label"/>
-                <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
-            </ui:VisualElement>
-            <ui:VisualElement class="thunderkit-field">
-                <ui:Label text="Included Settings" class="thunderkit-field-label"/>
-                <uie:MaskField name="included-settings-field" binding-path="IncludedSettings" choices="AudioManager, ClusterInputManager, DynamicsManager, EditorBuildSettings, EditorSettings, GraphicsSettings, InputManager, NavMeshAreas, NetworkManager, Physics2DSettings, PresetManager, ProjectSettings, QualitySettings, TagManager, TimeManager, UnityConnectSettings, VFXManager, XRSettings " class="thunderkit-field-input"/>
-            </ui:VisualElement>
-            <ui:VisualElement class="thunderkit-field">
-                <ui:Label text="Assembly Identity Algorithm" tooltip="The algorithm used to generate GUIDs for Assemblies in the project, this shouldn't be changed after an initial import unless you know what the implications are" class="thunderkit-field-label"/>
-                <uie:EnumField name="guid-mode-field" class="thunderkit-field-input" value="Stabilized" type="ThunderKit.Core.Data.ThunderKitSettings+GuidMode, ThunderKit.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-                    <ui:Button name="update-button" text="Update" class="standardbutton updatebutton"/>
-                </uie:EnumField>
-            </ui:VisualElement>
+        <ui:VisualElement class="thunderkit-field" >
+            <ui:Label text="Game Path" class="thunderkit-field-label"/>
+            <ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Game Executable" class="thunderkit-field-label"/>
+            <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
+        </ui:VisualElement>
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Included Project Settings" class="thunderkit-field-label"
+                      tooltip="Project Settings to import if available in the game files"
+            />
+            <uie:MaskField name="included-settings-field" binding-path="IncludedSettings" choices="AudioManager, ClusterInputManager, DynamicsManager, EditorBuildSettings, EditorSettings, GraphicsSettings, InputManager, NavMeshAreas, NetworkManager, Physics2DSettings, PresetManager, ProjectSettings, QualitySettings, TagManager, TimeManager, UnityConnectSettings, VFXManager, XRSettings " class="thunderkit-field-input"
+                           tooltip="Project Settings to import if available in the game files"
+            />
+        </ui:VisualElement>
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Assembly Identity Algorithm" tooltip="The algorithm used to generate GUIDs for Assemblies in the project" class="thunderkit-field-label"/>
+            <uie:EnumField name="guid-mode-field" class="thunderkit-field-input" value="Stabilized" type="ThunderKit.Core.Data.ThunderKitSettings+GuidMode, ThunderKit.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                           tooltip="The algorithm used to generate GUIDs for Assemblies in the project">
+                <ui:Button name="update-button" text="Update" class="standardbutton updatebutton" tooltip="Update imported game assembly's GUIDs with the selected algorithm, this will not update assets in the project to match, use the ChangeGuidMode job to convert assets"/>
+            </uie:EnumField>
+        </ui:VisualElement>
 
         <ui:VisualElement name="game-config-button-container">
             <ui:Button name="browse-button" text="Browse" class="standardbutton"/>
-            <ui:Button name="load-button" text="Load" class="standardbutton"/>
+            <ui:Button name="load-button" text="Import" class="standardbutton"/>
         </ui:VisualElement>
 
     </ui:VisualElement>
