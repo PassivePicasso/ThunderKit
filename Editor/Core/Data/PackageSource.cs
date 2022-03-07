@@ -105,7 +105,6 @@ namespace ThunderKit.Core.Data
             groupMap[dependencyId] = group;
 
             group.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
-            AssetDatabase.AddObjectToAsset(group, this);
 
             var versionData = versions.ToArray();
             group.Versions = new PackageVersion[versionData.Length];
@@ -120,7 +119,6 @@ namespace ThunderKit.Core.Data
                 packageVersion.group = group;
                 packageVersion.version = version;
                 packageVersion.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
-                AssetDatabase.AddObjectToAsset(packageVersion, group);
                 group.Versions[i] = packageVersion;
 
                 if (!dependencyMap.TryGetValue(packageVersion.dependencyId, out var packageDeps))
@@ -148,13 +146,9 @@ namespace ThunderKit.Core.Data
         internal void Clear()
         {
             foreach (var package in Packages)
-            {
                 if (package)
-                {
-                    AssetDatabase.RemoveObjectFromAsset(package);
                     DestroyImmediate(package);
-                }
-            }
+
             Packages.Clear();
         }
 
