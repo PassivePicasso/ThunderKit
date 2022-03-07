@@ -3,11 +3,15 @@
 using SyntaxTree.VisualStudio.Unity.Bridge;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UnityEditor;
 using UnityEditor.PackageManager;
+using UnityEngine;
+using PackageInfo = UnityEditor.PackageManager.PackageInfo;
+
 [InitializeOnLoad]
 public class ProjectFileHook
 {
@@ -22,7 +26,7 @@ public class ProjectFileHook
             get { return Encoding.UTF8; }
         }
     }
-    static readonly Dictionary<string, string> localPackageSources = new Dictionary<string, string>();
+    static readonly Dictionary<string, (string asmDefPath, PackageInfo packageInfo)> localPackageSources = new Dictionary<string, (string asmDefPath, PackageInfo packageInfo)>();
 
     // -----------------------------------------------------------
     static ProjectFileHook()
@@ -39,7 +43,7 @@ public class ProjectFileHook
                 {
                     foreach (var asmDef in Directory.EnumerateFiles(package.resolvedPath, "*.asmdef", SearchOption.AllDirectories))
                     {
-                        localPackageSources[Path.GetFileNameWithoutExtension(asmDef)] = asmDef;
+                        localPackageSources[Path.GetFileNameWithoutExtension(asmDef)] = (asmDef, package);
                     }
                 }
             }
@@ -52,9 +56,9 @@ public class ProjectFileHook
             if (!localPackageSources.ContainsKey(assemblyName))
                 return content;
 
-            // parse the document and make some changes
+            // parse the document and  make some changes
             XDocument document = XDocument.Parse(content);
-            AdjustDocument(document, localPackageSources[assemblyName]);
+            AdjustDocument(document, assemblyName);
 
             // save the changes using the Utf8StringWriter
             Utf8StringWriter str = new Utf8StringWriter();
@@ -62,30 +66,65 @@ public class ProjectFileHook
 
             return str.ToString();
         };
+        ProjectFilesGenerator.SolutionFileGeneration += OnGenerateSolution;
     }
 
-    // -----------------------------------------------------------
-    static void AdjustDocument(XDocument document, string asmRoot)
+    private static string OnGenerateSolution(string fileName, string fileContent)
     {
-        var directoryName = Path.GetDirectoryName(asmRoot).Replace("\\", "\\\\");
+        Debug.Log($"Generating: {fileName}\r\n\r\n{fileContent}");
+        return fileContent;
+    }
 
-        // get namespace of document
-        XNamespace ns = document.Root.Name.Namespace;
+
+    // -----------------------------------------------------------
+    static void AdjustDocument(XDocument document, string assemblyName)
+    {
+        var ns = document.Root.Name.Namespace;
+        var data = localPackageSources[assemblyName];
+        var directoryName = data.packageInfo.resolvedPath.Replace("\\", "\\\\"); //Path.GetDirectoryName(data.asmDefPath).Replace("\\", "\\\\");
+        var compileReferenceRefex = new Regex($"{directoryName}.*?\\\\(.*\\.*$)");
+        //var lastItemGroup = document.Root.Descendants(ns + "ItemGroup").Last();
+
+        //var userExtensions = EditorSettings.projectGenerationUserExtensions
+        //    .SelectMany(ext => Directory.EnumerateFiles(directoryName, $"*.{ext}", SearchOption.AllDirectories))
+        //    .ToArray();
+
+        //foreach (var ext in EditorSettings.projectGenerationUserExtensions)
+        //{
+        //    var extensionReferenceCheck = new Regex($@"{directoryName.Replace("\\", "\\\\")}.*?\\(.*\.{ext}$)");
+        //    var itemGroup = new XElement(ns + "ItemGroup");
+        //    foreach (var include in userExtensions)
+        //    {
+        //        var none = new XElement(ns + "None");
+        //        none.SetAttributeValue("Include", include);
+        //        Match match = extensionReferenceCheck.Match(include);
+        //        if (match.Success)
+        //        {
+        //            var capture = match.Groups[1].Value.Replace("\\", "/");
+        //            none.Add(new XElement(ns + "Link")
+        //            {
+        //                Value = capture
+        //            });
+        //        }
+        //        itemGroup.Add(none);
+        //    }
+        //    lastItemGroup.AddBeforeSelf(itemGroup);
+        //}
 
         // get all Compile elements
         IEnumerable<XElement> compileElements = document.Root.Descendants(ns + "Compile");
+        IEnumerable<XElement> noneElements = document.Root.Descendants(ns + "None");
 
         // regex to find which part of Include attribute of Compile element to use for Link element value
         // check for Editor or Runtime (recommended folders: https://docs.unity3d.com/Manual/cus-layout.html)
-        Regex regex = new Regex($@"{directoryName}.*?\\(.*\.cs$)");
 
         // add child Link element to each Compile element
-        foreach (XElement el in compileElements)
+        foreach (XElement el in compileElements.Union(noneElements))
         {
 
             string fileName = el.Attribute("Include").Value;
 
-            Match match = regex.Match(fileName);
+            Match match = compileReferenceRefex.Match(fileName);
 
             if (match.Success)
             {
