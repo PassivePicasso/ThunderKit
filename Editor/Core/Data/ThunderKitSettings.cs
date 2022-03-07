@@ -263,6 +263,8 @@ $@"
                 PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
             }
             OldGuidGenerationMode = GuidGenerationMode;
+            new SerializedObject(this).ApplyModifiedProperties();
+            AssetDatabase.Refresh();
         }
 
         public void SetQuickAccess(Pipeline pipeline, bool quickAccess)
