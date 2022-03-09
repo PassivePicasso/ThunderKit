@@ -29,6 +29,11 @@
             </uie:EnumField>
         </ui:VisualElement>
 
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Attempt Addressable Import" class="thunderkit-field-label"/>
+            <ui:Toggle name="asset-name-field" binding-path="AttemptAddressableImport" class="thunderkit-field-input"/>
+        </ui:VisualElement>
+
         <ui:VisualElement name="game-config-button-container">
             <ui:Button name="browse-button" text="Browse" class="standardbutton"/>
             <ui:Button name="load-button" text="Import" class="standardbutton"/>
