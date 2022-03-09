@@ -65,8 +65,6 @@ namespace ThunderKit.Core.Pipelines
             }
         }
 
-
-        private static readonly string PrefPath = "ProjectSettings/ThunderKit/PipelineToolbarPrefs.json";
         private static Texture2D pipelineIcon, manifestIcon;
         private static ThunderKitSettings settings;
         private static GUIStyle manifestStyle;

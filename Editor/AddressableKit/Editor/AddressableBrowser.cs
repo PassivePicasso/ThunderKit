@@ -131,6 +131,11 @@ namespace ThunderKit.RemoteAddressables
                 {
                     await Task.Delay(100);
                     preview = UpdatePreview(result);
+                    try
+                    {
+                        Addressables.Release(result);
+                    }
+                    catch { }
                 }
 
             return preview;

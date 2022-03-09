@@ -284,9 +284,8 @@ namespace ThunderKit.Core.Config
 
                     PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
                 }
-                catch (Exception ex)
+                catch
                 {
-
                     Debug.LogWarning($"Could not update assembly: {destinationFile}", AssetDatabase.LoadAssetAtPath<Object>(destinationFile));
                 }
             }

@@ -67,8 +67,6 @@ namespace AssetsExporter
             {
                 return GatherAllTextureAssets(assetsManager, rootAsset);
             }
-#warning TODO: AnimatorController also has subAssets, such as AnimatorState, AnimatorStateMachine and BlendTree???
-#warning TODO: TimelineAsset can have AnimationClips ("m_Tracks"), but it's also just a scriptable object and not a special type {fileID: 337831424, guid: 6a10b2909283487f913b00d94cd3faf5, type: 3}
             return new[] { rootAsset };
         }
 
