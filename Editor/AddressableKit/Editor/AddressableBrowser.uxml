@@ -2,9 +2,14 @@
 <ui:UXML
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ui="UnityEngine.Experimental.UIElements"
+    xmlns:uie="UnityEditor.Experimental.UIElements"
 >
     <Style src="/Packages/com.passivepicasso.thunderkit/USS/thunderkit_style.uss" />
     <ui:VisualElement class="grow m4">
+        <ui:VisualElement style="flex-direction: row; background-color: rgba(0,0,0,0.1);">
+            <ui:Label text="Search" class="thunderkit-header" />
+            <ui:TextField name="search-input"  binding-path="searchInput" class="thunderkit-field-input"/>
+        </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
             <ui:VisualElement style="background-color: rgba(0, 0, 0, 0.25); margin-right: 4px; flex-grow: 0.5;">
                 <ui:Label text="Directories" class="thunderkit-header" />

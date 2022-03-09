@@ -35,12 +35,17 @@ namespace ThunderKit.RemoteAddressables
         private ListView directory;
         private ListView directoryContent;
         private Texture sceneIcon;
+        private TextField searchBox;
+
+        public bool caseSensitive;
+        public string searchInput;
 
         public override void OnEnable()
         {
             base.OnEnable();
             sceneIcon = EditorGUIUtility.IconContent("d_UnityLogo").image;
 
+            searchBox = rootVisualElement.Q<TextField>("search-input");
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
 
@@ -69,7 +74,56 @@ namespace ThunderKit.RemoteAddressables
             directory.Refresh();
             directory.onSelectionChanged += Directory_onSelectionChanged;
             directoryContent.onSelectionChanged += DirectoryContent_onSelectionChanged;
+
+            searchBox.RegisterValueChangedCallback(OnSearchChanged);
         }
+
+        private void OnSearchChanged(ChangeEvent<string> evt)
+        {
+            bool noFilter = string.IsNullOrEmpty(evt.newValue);
+            if (noFilter)
+                directory.itemsSource = CatalogDirectories;
+            else
+            {
+                var matches = DirectoryContents.Where(kvp => kvp.Value.Any(v => CompareSearch(evt.newValue, v))).ToArray();
+                directory.itemsSource = matches.Select(kvp => kvp.Key).ToList();
+            }
+        }
+
+        struct KeyData
+        {
+            public string name;
+            public string type;
+            public string address;
+
+            public System.Type Type => System.Type.GetType(type);
+        }
+        HashSet<KeyData> DataCache = new HashSet<KeyData>();
+        void BuildDataCache()
+        {
+            foreach (var item in Addressables.ResourceLocators)
+            {
+                foreach (var key in item.Keys)
+                {
+                    try
+                    {
+                        var assetOp = Addressables.LoadAssetAsync<Object>(key);
+                        assetOp.Completed += obj =>
+                        {
+                            var result = obj.Result;
+                            DataCache.Add(new KeyData
+                            {
+                                name = result.name,
+                                type = result.GetType().AssemblyQualifiedName,
+                                address = key.ToString()
+                            });
+                        };
+                    }
+                    catch { }
+                }
+            }
+        }
+
 
         async void BindAsset(VisualElement element, int i)
         {
@@ -197,7 +251,22 @@ namespace ThunderKit.RemoteAddressables
         {
             var selected = obj.First().ToString();
             var addresses = DirectoryContents[selected];
-            directoryContent.itemsSource = addresses;
+            var matches = addresses.Where(address => CompareSearch(searchInput, address)).ToArray();
+            directoryContent.itemsSource = matches;
+        }
+
+        bool CompareSearch(string search, string value)
+        {
+            var filter = search;
+            var input = value;
+
+            if (!caseSensitive)
+            {
+                filter = filter.ToLowerInvariant();
+                input = input.ToLowerInvariant();
+            }
+
+            return input.Contains(filter.ToLowerInvariant());
         }
     }
 }
