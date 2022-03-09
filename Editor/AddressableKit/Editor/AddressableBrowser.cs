@@ -103,8 +103,8 @@ namespace ThunderKit.RemoteAddressables
                 loadSceneBtn.RemoveFromClassList("hidden");
                 loadSceneBtn.clickable = new Clickable(() =>
                 {
-                    var address = directoryContent.itemsSource[i] as string;
-                    Addressables.LoadSceneAsync(address);
+                    var text = directoryContent.itemsSource[i] as string;
+                    Addressables.LoadSceneAsync(text);
                 });
             }
             else
