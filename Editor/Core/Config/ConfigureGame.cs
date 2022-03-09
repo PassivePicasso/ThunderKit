@@ -6,9 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
+using ThunderKit.Common.Configuration;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Utilities;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -43,6 +45,14 @@ namespace ThunderKit.Core.Config
 
             ImportGameSettings(settings);
 
+            if (settings.AttemptAddressableImport)
+            {
+                if (ImportAddressableData(settings))
+                {
+                    EditorApplication.update += UpdateDefines;
+                }
+            }
+
             try
             {
                 AssetDatabase.Refresh();
@@ -51,6 +61,13 @@ namespace ThunderKit.Core.Config
             {
                 Debug.LogWarning("Error during refresh");
             }
+        }
+
+        private static void UpdateDefines()
+        {
+            if (EditorApplication.isUpdating) return;
+            ScriptingSymbolManager.AddScriptingDefine("TK_ADDRESSABLE");
+            EditorApplication.update -= UpdateDefines;
         }
 
         private static void ImportGameSettings(ThunderKitSettings settings)
@@ -80,10 +97,41 @@ namespace ThunderKit.Core.Config
             }
         }
 
+        private static bool ImportAddressableData(ThunderKitSettings settings)
+        {
+            if (!File.Exists(settings.AddressableAssetsCatalog)) return false;
+            if (!File.Exists(settings.AddressableAssetsSettings)) return false;
+
+            try
+            {
+                string destinationFolder = Combine("Assets", "StreamingAssets", "aa");
+                Directory.CreateDirectory(destinationFolder);
+
+                var destinationCatalog = Combine(destinationFolder, "catalog.json");
+                var destinationSettings = Combine(destinationFolder, "settings.json");
+                if (File.Exists(destinationCatalog)) File.Delete(destinationCatalog);
+                if (File.Exists(destinationSettings)) File.Delete(destinationSettings);
+
+                //var catalog = File.ReadAllText(settings.AddressableAssetsCatalog);
+                //catalog = catalog.Replace(AddressableRuntimePath, ThunderKitRuntimePath);
+                //File.WriteAllText(destinationCatalog, catalog);
+
+                File.Copy(settings.AddressableAssetsCatalog, destinationCatalog);
+                File.Copy(settings.AddressableAssetsSettings, destinationSettings);
+
+                return true;
+            }
+            catch(Exception e)
+            {
+                Debug.LogError(e);
+                return false;
+            }
+        }
+
         private static void SetupPackageManifest(ThunderKitSettings settings, string packageName)
         {
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Combine(settings.GamePath, settings.GameExecutable));
-            PackageHelper.GeneratePackageManifest(settings.PackageName, settings.PackagePath, packageName, fileVersionInfo.CompanyName, "1.0.0", $"Imported assemblies from game {packageName}");
+            PackageHelper.GeneratePackageManifest(settings.PackageName, settings.PackageFilePath, packageName, fileVersionInfo.CompanyName, "1.0.0", $"Imported assemblies from game {packageName}");
         }
 
         private static void AssertDestinations(string packageName)

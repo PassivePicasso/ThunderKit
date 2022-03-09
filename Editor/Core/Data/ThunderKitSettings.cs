@@ -72,6 +72,21 @@ namespace ThunderKit.Core.Data
 
         public string StreamingAssetsPath => Path.Combine(GameDataPath, "StreamingAssets");
 
+        public string AddressableAssetsPath => Path.Combine(StreamingAssetsPath, "aa");
+
+        public string AddressableAssetsCatalog => Path.Combine(AddressableAssetsPath, "catalog.json");
+
+        public string AddressableAssetsSettings => Path.Combine(AddressableAssetsPath, "settings.json");
+
+        public static string EditTimePath
+        {
+            get
+            {
+                var settings = GetOrCreateSettings<ThunderKitSettings>();
+                return settings.AddressableAssetsPath;
+            }
+        }
+
         public string PackageName
         {
             get
@@ -81,7 +96,8 @@ namespace ThunderKit.Core.Data
             }
         }
         public string PackagePath => $"Packages/{PackageName}";
-        public string PackagePluginsPath => $"Packages/{PackageName}/plugins";
+        public string PackageFilePath => $"Packages/{Path.GetFileNameWithoutExtension(GameExecutable)}";
+        public string PackagePluginsPath => $"{PackagePath}/plugins";
 
         public int IncludedSettings;
 
@@ -92,6 +108,8 @@ namespace ThunderKit.Core.Data
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
 
         public bool ShowLogWindow = true;
+
+        public bool AttemptAddressableImport = true;
 
         public Pipeline SelectedPipeline;
         public Manifest SelectedManifest;
@@ -222,7 +240,6 @@ namespace ThunderKit.Core.Data
                 if (markdown != null)
                     markdown.RemoveFromHierarchy();
             }
-
         }
 
         private void UpdateGuids()
