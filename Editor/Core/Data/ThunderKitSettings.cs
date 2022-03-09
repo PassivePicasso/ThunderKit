@@ -162,11 +162,8 @@ namespace ThunderKit.Core.Data
             {
                 markdown = new MarkdownElement
                 {
-                    Data =
-$@"
-            **_Warning:_**   No game configured. Click the Locate Game button to setup your ThunderKit Project before continuing
-            ",
-                    MarkdownDataType = MarkdownDataType.Text
+                    Data = $"{Constants.ThunderKitRoot}/UXML/Settings/ThunderKitSettingsWarning.md",
+                    MarkdownDataType = MarkdownDataType.Source
                 };
 
                 markdown.AddToClassList("m4");
