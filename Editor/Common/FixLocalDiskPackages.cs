@@ -71,7 +71,6 @@ public class ProjectFileHook
 
     private static string OnGenerateSolution(string fileName, string fileContent)
     {
-        Debug.Log($"Generating: {fileName}\r\n\r\n{fileContent}");
         return fileContent;
     }
 
