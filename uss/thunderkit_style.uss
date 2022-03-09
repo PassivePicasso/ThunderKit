@@ -369,3 +369,11 @@ PageEntry.selected>.header>Label:hover {
     background-color: rgba(128, 0, 0, 0.25);
     border-color: rgba(128, 0, 0, 0.5);
 }
+
+.warning Label {
+    color: rgba(200, 128, 0, 1);
+}
+
+.error Label {
+    color: rgba(255, 70, 0, 1);
+}
