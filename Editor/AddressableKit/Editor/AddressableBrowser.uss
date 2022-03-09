@@ -1,0 +1,21 @@
+#addressable-icon {
+	width: 64px;
+	height: 64px;
+}
+
+#addressable-label {
+	margin-left: 5px;
+	align-self: center;
+	padding-bottom: 1px;
+	flex-grow: 1;
+}
+
+#addressable-copy-button {
+	height: 20px;
+	align-self: center;
+}
+
+#addressable-asset {
+	flex-direction: row;
+	justify-content: space-between;
+}
