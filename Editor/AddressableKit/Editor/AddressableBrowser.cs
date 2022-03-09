@@ -77,7 +77,11 @@ namespace ThunderKit.RemoteAddressables
             var label = element.Q<Label>(NameLabel);
             var copyBtn = element.Q<Button>(CopyButton);
             var loadSceneBtn = element.Q<Button>(LoadSceneButton);
-            copyBtn.clickable = new Clickable(OnCopy);
+            copyBtn.clickable = new Clickable(() =>
+            {
+                var text = directoryContent.itemsSource[i] as string;
+                EditorGUIUtility.systemCopyBuffer = text;
+            });
             var address = (string)directoryContent.itemsSource[i];
             label.text = address;
 
@@ -97,7 +101,11 @@ namespace ThunderKit.RemoteAddressables
             if (address.EndsWith(".unity") && EditorApplication.isPlaying)
             {
                 loadSceneBtn.RemoveFromClassList("hidden");
-                loadSceneBtn.clickable = new Clickable(LoadScene);
+                loadSceneBtn.clickable = new Clickable(() =>
+                {
+                    var address = directoryContent.itemsSource[i] as string;
+                    Addressables.LoadSceneAsync(address);
+                });
             }
             else
                 loadSceneBtn.AddToClassList("hidden");
@@ -180,30 +188,11 @@ namespace ThunderKit.RemoteAddressables
             return element;
         }
 
-        private void LoadScene()
-        {
-            if (directoryContent.selectedIndex > -1 && directoryContent.selectedIndex < directoryContent.itemsSource.Count)
-            {
-                var address = directoryContent.itemsSource[directoryContent.selectedIndex] as string;
-                Addressables.LoadSceneAsync(address);
-            }
-        }
-
-        private void OnCopy()
-        {
-            if (directoryContent.selectedIndex > -1 && directoryContent.selectedIndex < directoryContent.itemsSource.Count)
-            {
-                var text = directoryContent.itemsSource[directoryContent.selectedIndex] as string;
-                EditorGUIUtility.systemCopyBuffer = text;
-            }
-        }
-
         private void Directory_onSelectionChanged(List<object> obj)
         {
             var selected = obj.First().ToString();
             var addresses = DirectoryContents[selected];
             directoryContent.itemsSource = addresses;
-            //directoryContent.Refresh();
         }
     }
 }
