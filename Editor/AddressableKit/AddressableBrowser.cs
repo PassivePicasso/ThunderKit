@@ -262,11 +262,12 @@ namespace ThunderKit.RemoteAddressables
 
             if (!caseSensitive)
             {
-                filter = filter.ToLowerInvariant();
+                if (!string.IsNullOrEmpty(filter))
+                    filter = filter.ToLowerInvariant();
                 input = input.ToLowerInvariant();
             }
 
-            return input.Contains(filter.ToLowerInvariant());
+            return string.IsNullOrEmpty(filter) ? true : input.Contains(filter);
         }
     }
 }
