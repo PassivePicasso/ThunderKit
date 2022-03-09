@@ -68,7 +68,7 @@ namespace ThunderKit.Markdown
         {
             if (slice.IsEmpty)
                 return;
-
+            
             var text = slice.ToString();
             for (int i = 0; i < text.Length;)
             {
