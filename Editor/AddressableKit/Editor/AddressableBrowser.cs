@@ -1,25 +1,22 @@
+#if TK_ADDRESSABLE
 using System.Linq;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using ThunderKit.Common;
-using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using AddressablesKit;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ThunderKit.Core.Windows;
 #if UNITY_2019_1_OR_NEWER
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #else
 using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-namespace ThunderKit.Core.Windows
+namespace ThunderKit.RemoteAddressables
 {
-    using static ThunderKit.Core.UIElements.TemplateHelpers;
     public class AddressableBrowser : TemplatedWindow
     {
         [MenuItem(Constants.ThunderKitMenuRoot + "Addressable Browser")]
@@ -39,14 +36,10 @@ namespace ThunderKit.Core.Windows
         private ListView directoryContent;
         private Texture sceneIcon;
 
-        public override async void OnEnable()
+        public override void OnEnable()
         {
+            base.OnEnable();
             sceneIcon = EditorGUIUtility.IconContent("d_UnityLogo").image;
-            //await Addressables.InitializeAsync().Task;
-
-            rootVisualElement.Clear();
-            GetTemplateInstance(GetType().Name, rootVisualElement, path => path.StartsWith("Assets/AddressableKit/Editor/"));
-            titleContent = new GUIContent(Title, ThunderKitIcon);
 
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
@@ -214,3 +207,4 @@ namespace ThunderKit.Core.Windows
         }
     }
 }
+#endif

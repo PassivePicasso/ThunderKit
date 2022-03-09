@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#if TK_ADDRESSABLE
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
 
-namespace AddressablesKit
+namespace ThunderKit.RemoteAddressables
 {
     public class AddressableGraphicsSettings
     {
@@ -25,3 +24,4 @@ namespace AddressablesKit
         }
     }
 }
+#endif
