@@ -2,14 +2,10 @@
     "name": "AddressableKit.Editor",
     "references": [
         "GUID:48abf88f565f4bb4fb35fbe2385f0894",
-        "GUID:280569ac301428d4d950fdf647900922",
-        "GUID:8745aee917fbaed40a0843eaa44d35a9"
+        "GUID:280569ac301428d4d950fdf647900922"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
-    "excludePlatforms": [
-        "Editor"
-    ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
@@ -17,5 +13,9 @@
         "Unity.Addressables.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [
+        "TK_ADDRESSABLE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
