@@ -6,7 +6,7 @@ using System.IO;
 
 namespace ThunderKit.RemoteAddressables
 {
-    static class IDTransformer
+    static class AddressTransformer
     {
         //Implement a method to transform the internal ids of locations
         static string MyCustomTransform(IResourceLocation location)
