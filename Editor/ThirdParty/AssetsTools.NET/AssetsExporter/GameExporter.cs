@@ -152,8 +152,6 @@ namespace AssetsExporter
         private void ReadEditorExtensionAssemblies()
         {
             var extensionsFolder = Path.Combine(editorPath, "Data", "UnityExtensions");
-            foreach (var ivyFile in Directory.GetFiles(extensionsFolder, "ivy.xml", SearchOption.AllDirectories))
-            {
                 var xml = XDocument.Load(ivyFile);
                 foreach (var artifact in xml.XPathSelectElements("//artifact"))
                 {
