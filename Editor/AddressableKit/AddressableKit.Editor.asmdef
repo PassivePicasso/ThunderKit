@@ -1,9 +1,10 @@
 {
     "name": "AddressableKit.Editor",
     "references": [
-        "GUID:48abf88f565f4bb4fb35fbe2385f0894",
-        "GUID:280569ac301428d4d950fdf647900922"
+        "ThunderKit.Common",
+        "ThunderKit.Core"
     ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -17,7 +18,5 @@
     "autoReferenced": true,
     "defineConstraints": [
         "TK_ADDRESSABLE"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
+    ]
 }
