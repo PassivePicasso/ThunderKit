@@ -1,4 +1,5 @@
 ﻿using AssetsExporter;
+using AssetsTools.NET.Extra;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -121,7 +122,7 @@ namespace ThunderKit.Core.Config
 
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.LogError(e);
                 return false;
@@ -180,7 +181,7 @@ namespace ThunderKit.Core.Config
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
             var versionMatch = false;
-            var regs = new Regex(".*?(\\d{1,4}\\.\\d+\\.\\d+).*");
+            var regs = new Regex(".*?(\\d{1,4}\\.\\d+\\.\\d+\\w\\d+).*");
 
             var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
 
@@ -192,9 +193,12 @@ namespace ThunderKit.Core.Config
             }
             if (File.Exists(informationFile))
             {
-                var firstGrand = File.ReadLines(informationFile).First();
+                var am = new AssetsManager();
+                var ggm = am.LoadAssetsFile(informationFile, false);
 
-                playerVersion = regs.Replace(firstGrand, match => match.Groups[1].Value);
+                playerVersion = ggm.table.file.typeTree.unityVersion;
+
+                am.UnloadAll(true);
 
                 versionMatch = unityVersion.Equals(playerVersion);
             }

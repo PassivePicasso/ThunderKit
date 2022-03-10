@@ -1,12 +1,13 @@
 {
     "name": "ThunderKit.Core",
+    "rootNamespace": "",
     "references": [
         "ThunderKit.Common",
         "ThunderKit.Markdown",
         "ToolbarExtender.Editor",
-        "AssetsExporter"
+        "AssetsExporter",
+        "AssetsTools.NET"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -18,5 +19,7 @@
         "Markdig.Signed.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
