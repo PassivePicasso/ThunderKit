@@ -152,16 +152,19 @@ namespace AssetsExporter
         private void ReadEditorExtensionAssemblies()
         {
             var extensionsFolder = Path.Combine(editorPath, "Data", "UnityExtensions");
-                var xml = XDocument.Load(ivyFile);
-                foreach (var artifact in xml.XPathSelectElements("//artifact"))
+            if (Directory.Exists(extensionsFolder))
+                foreach (var ivyFile in Directory.GetFiles(extensionsFolder, "ivy.xml", SearchOption.AllDirectories))
                 {
-                    var assemblyName = Path.GetFileName(artifact.Attribute("name").Value);
-                    var ext = artifact.Attribute("ext").Value;
-                    var guid = Guid.Parse(artifact.Attribute(XName.Get("guid", "http://ant.apache.org/ivy/extra")).Value);
-                    //There can be duplicate names with different guids, for now just taking the last one
-                    pptrExporterInfo.unityExtensionAssebmlies[$"{assemblyName}.{ext}"] = guid;
+                    var xml = XDocument.Load(ivyFile);
+                    foreach (var artifact in xml.XPathSelectElements("//artifact"))
+                    {
+                        var assemblyName = Path.GetFileName(artifact.Attribute("name").Value);
+                        var ext = artifact.Attribute("ext").Value;
+                        var guid = Guid.Parse(artifact.Attribute(XName.Get("guid", "http://ant.apache.org/ivy/extra")).Value);
+                        //There can be duplicate names with different guids, for now just taking the last one
+                        pptrExporterInfo.unityExtensionAssebmlies[$"{assemblyName}.{ext}"] = guid;
+                    }
                 }
-            }
         }
 
         private void ExportLevel(AssetsFileInstance levelFile, string sceneAssetPath)
