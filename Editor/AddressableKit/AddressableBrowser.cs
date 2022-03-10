@@ -74,8 +74,11 @@ namespace ThunderKit.RemoteAddressables
             directory.Refresh();
             directory.onSelectionChanged += Directory_onSelectionChanged;
             directoryContent.onSelectionChanged += DirectoryContent_onSelectionChanged;
-
+#if UNITY_2019_1_OR_NEWER
             searchBox.RegisterValueChangedCallback(OnSearchChanged);
+#else 
+            searchBox.OnValueChanged(OnSearchChanged);
+#endif
         }
 
         private void OnSearchChanged(ChangeEvent<string> evt)
@@ -215,13 +218,14 @@ namespace ThunderKit.RemoteAddressables
             return preview;
         }
 
-        private void DirectoryContent_onSelectionChanged(List<object> obj)
+        private async void DirectoryContent_onSelectionChanged(List<object> obj)
         {
             try
             {
                 var first = obj.OfType<string>().First();
                 if (first.EndsWith(".unity")) return;
-                var firstObj = Addressables.LoadAssetAsync<Object>(first).WaitForCompletion();
+                var firstOp = Addressables.LoadAssetAsync<Object>(first);
+                var firstObj = await firstOp.Task;
                 firstObj.hideFlags |= HideFlags.NotEditable;
                 Selection.activeObject = firstObj;
             }
