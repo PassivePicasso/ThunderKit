@@ -22,6 +22,9 @@ namespace ThunderKit.Core.Data
 
         public virtual string DisplayName => ObjectNames.NicifyVariableName(name);
 
+        protected Action OnChanged;
+
+        private Editor editor;
         [InitializeOnLoadMethod]
         static void Ensure()
         {
@@ -76,7 +79,38 @@ namespace ThunderKit.Core.Data
 
         public virtual void Initialize() { }
         public virtual IEnumerable<string> Keywords() => Enumerable.Empty<string>();
-        public virtual void CreateSettingsUI(VisualElement rootElement) { }
+        public virtual void CreateSettingsUI(VisualElement rootElement)
+        {
+            if (!editor)
+                editor = Editor.CreateEditor(this);
+            var serializedObject = new SerializedObject(this);
+            var imgui = new IMGUIContainer(() =>
+            {
+                EditorGUIUtility.labelWidth = 250;
+                EditorGUI.BeginChangeCheck();
+                DrawPropertiesExcluding(serializedObject, "m_Script");
+                if(EditorGUI.EndChangeCheck())
+                {
+                    serializedObject.ApplyModifiedProperties();
+                    OnChanged?.Invoke();
+                }
+            });
+            imgui.AddToClassList("m4");
+            rootElement.Add(imgui);
+        }
+        static void DrawPropertiesExcluding(SerializedObject obj, params string[] propertyToExclude)
+        {
+            SerializedProperty iterator = obj.GetIterator();
+            bool enterChildren = true;
+            while (iterator.NextVisible(enterChildren))
+            {
+                enterChildren = false;
+                if (!propertyToExclude.Contains(iterator.name))
+                {
+                    EditorGUILayout.PropertyField(iterator, true);
+                }
+            }
+        }
         protected static VisualElement CreateStandardField(string fieldPath)
         {
             var container = new VisualElement();
