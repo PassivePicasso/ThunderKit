@@ -186,7 +186,7 @@ namespace ThunderKit.RemoteAddressables
             if (result)
                 while (AssetPreview.IsLoadingAssetPreviews())
                 {
-                    await Task.Delay(100);
+                    await Task.Delay(500);
                     preview = UpdatePreview(result);
                     try
                     {
