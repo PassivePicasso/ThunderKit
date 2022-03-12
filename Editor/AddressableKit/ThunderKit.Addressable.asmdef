@@ -1,5 +1,5 @@
 {
-    "name": "AddressableExtension",
+    "name": "ThunderKit.Addressable",
     "references": [
         "ThunderKit.Common",
         "ThunderKit.Core",
