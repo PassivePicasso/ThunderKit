@@ -1,8 +1,8 @@
 ﻿#if TK_ADDRESSABLE
 using System.IO;
-using System.Threading.Tasks;
 using ThunderKit.Core.Data;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Rendering;
@@ -18,31 +18,39 @@ namespace ThunderKit.RemoteAddressables
         public string CustomDeferredShading;
         public string CustomDeferredScreenspaceShadows;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         [InitializeOnLoadMethod]
-        public static async Task SetAllShaders()
+        public static void OnLoad()
         {
             Addressables.InternalIdTransformFunc = RedirectInternalIdsToGameDirectory;
+            SetAllShaders();
+            CompilationPipeline.compilationStarted -= ClearSlectionIfUnsavable;
+            CompilationPipeline.compilationStarted += ClearSlectionIfUnsavable;
+        }
+
+        private static void ClearSlectionIfUnsavable(object obj)
+        {
+            if (!Selection.activeObject) return;
+            if (Selection.activeObject.hideFlags.HasFlag(HideFlags.DontSave))
+                Selection.activeObject = null;
+        }
+
+        public static void SetAllShaders()
+        {
             AssetBundle.UnloadAllAssetBundles(true);
-            var initializeOpertaion = Addressables.InitializeAsync();
-            bool wait = true;
-            while (wait && !initializeOpertaion.IsDone)
-            {
-                EditorApplication.QueuePlayerLoopUpdate();
-                await Task.Delay(500);
-            }
+            Addressables.InitializeAsync().WaitForCompletion();
+
             var settings = GetOrCreateSettings<AddressableGraphicsSettings>();
-            await SetShader(settings.CustomDeferredShading, BuiltinShaderType.DeferredShading);
-            await SetShader(settings.CustomDeferredReflection, BuiltinShaderType.DeferredReflections);
-            await SetShader(settings.CustomDeferredScreenspaceShadows, BuiltinShaderType.ScreenSpaceShadows);
+            SetShader(settings.CustomDeferredShading, BuiltinShaderType.DeferredShading);
+            SetShader(settings.CustomDeferredReflection, BuiltinShaderType.DeferredReflections);
+            SetShader(settings.CustomDeferredScreenspaceShadows, BuiltinShaderType.ScreenSpaceShadows);
         }
 
         public static void UnsetAllShaders()
         {
             var settings = GetOrCreateSettings<AddressableGraphicsSettings>();
-             UnsetShader(settings.CustomDeferredShading, BuiltinShaderType.DeferredShading);
-             UnsetShader(settings.CustomDeferredReflection, BuiltinShaderType.DeferredReflections);
-             UnsetShader(settings.CustomDeferredScreenspaceShadows, BuiltinShaderType.ScreenSpaceShadows);
+            UnsetShader(settings.CustomDeferredShading, BuiltinShaderType.DeferredShading);
+            UnsetShader(settings.CustomDeferredReflection, BuiltinShaderType.DeferredReflections);
+            UnsetShader(settings.CustomDeferredScreenspaceShadows, BuiltinShaderType.ScreenSpaceShadows);
         }
 
         static string RedirectInternalIdsToGameDirectory(IResourceLocation location)
@@ -56,18 +64,11 @@ namespace ThunderKit.RemoteAddressables
             return path;
         }
 
-        public static async Task SetShader(string address, BuiltinShaderType shaderType)
+        public static void SetShader(string address, BuiltinShaderType shaderType)
         {
             if (!string.IsNullOrEmpty(address))
             {
-                var cdrOp = Addressables.LoadAssetAsync<Shader>(address);
-                bool wait = true;
-                while (wait && !cdrOp.IsDone)
-                {
-                    EditorApplication.QueuePlayerLoopUpdate();
-                    await Task.Delay(500);
-                }
-                var cdr = cdrOp.Result;
+                var cdr = Addressables.LoadAssetAsync<Shader>(address).WaitForCompletion();
                 cdr.hideFlags = HideFlags.HideAndDontSave;
                 GraphicsSettings.SetCustomShader(shaderType, cdr);
                 GraphicsSettings.SetShaderMode(shaderType, BuiltinShaderMode.UseCustom);
@@ -87,7 +88,7 @@ namespace ThunderKit.RemoteAddressables
         public override void CreateSettingsUI(VisualElement rootElement)
         {
             base.CreateSettingsUI(rootElement);
-            rootElement.Add(new Button(async () => await SetAllShaders()) { text = "Reload" });
+            rootElement.Add(new Button(() => SetAllShaders()) { text = "Reload" });
         }
     }
 }
