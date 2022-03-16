@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using ThunderKit.Common;
 using ThunderKit.Core.Utilities;
 using ThunderKit.Core.Windows;
 using UnityEditor;
@@ -13,16 +11,7 @@ namespace ThunderKit.Core.Pipelines
 {
     public class PipelineLog : ScriptableObject
     {
-        public static List<PipelineLog> PipelineLogs { get; private set; }
-
-        [InitializeOnLoadMethod]
-        static void LoadLogs()
-        {
-            PipelineLogs = AssetDatabase.FindAssets($"t:{nameof(PipelineLog)}", Constants.FindAssetsFolders)
-                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-                .Select(path => AssetDatabase.LoadAssetAtPath<PipelineLog>(path))
-                .ToList();
-        }
+        public static List<PipelineLog> PipelineLogs { get; } = new List<PipelineLog>();
 
         public Pipeline pipeline;
 
@@ -38,6 +27,7 @@ namespace ThunderKit.Core.Pipelines
         {
             PipelineLogs.Add(this);
         }
+
 
         public void Log(LogEntry entry)
         {

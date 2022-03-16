@@ -173,7 +173,7 @@ namespace ThunderKit.Core.Pipelines
                         PipelineLog pipelineLog = null;
                         if (pipeline)
                             pipelineLog = PipelineLog.PipelineLogs
-                                                     .Where(pl => pl.pipeline = pipeline)
+                                                     .Where(pl => pl.pipeline == pipeline)
                                                      .OrderByDescending(log => log.CreatedDate)
                                                      .FirstOrDefault();
                         using (new DisabledScope(!pipelineLog))
