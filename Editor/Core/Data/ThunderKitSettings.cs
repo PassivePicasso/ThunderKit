@@ -115,8 +115,6 @@ namespace ThunderKit.Core.Data
         public Manifest SelectedManifest;
         public Pipeline[] QuickAccessPipelines;
         public Manifest[] QuickAccessManifests;
-        public string[] QuickAccessPipelineNames;
-        public string[] QuickAccessManifestNames;
 
         public GuidMode OldGuidGenerationMode = GuidMode.Original;
         public GuidMode GuidGenerationMode = GuidMode.Original;
@@ -132,7 +130,6 @@ namespace ThunderKit.Core.Data
             if (settings.FirstLoad && settings.ShowOnStartup)
                 EditorApplication.update += ShowSettings;
 
-            EditorApplication.projectChanged += EditorApplication_projectChanged;
             settings.QuickAccessPipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
                 .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
                 .Select(path => AssetDatabase.LoadAssetAtPath<Pipeline>(path))
@@ -143,15 +140,6 @@ namespace ThunderKit.Core.Data
                 .Select(path => AssetDatabase.LoadAssetAtPath<Manifest>(path))
                 .Where(manifest => manifest.QuickAccess)
                 .ToArray();
-            settings.QuickAccessPipelineNames = settings.QuickAccessPipelines.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
-            settings.QuickAccessManifestNames = settings.QuickAccessManifests.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
-        }
-
-        private static void EditorApplication_projectChanged()
-        {
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            settings.QuickAccessPipelineNames = settings.QuickAccessPipelines.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
-            settings.QuickAccessManifestNames = settings.QuickAccessManifests.Where(a => a).Select(m => m.name).OrderBy(name => name).ToArray();
         }
 
         private static void ShowSettings()
@@ -287,8 +275,6 @@ namespace ThunderKit.Core.Data
                 QuickAccessPipelines = (QuickAccessPipelines ?? System.Array.Empty<Pipeline>()).Where(a => a).Append(pipeline).OrderBy(m => m.name).ToArray();
             else
                 QuickAccessPipelines = (QuickAccessPipelines ?? System.Array.Empty<Pipeline>()).Where(a => a).Where(m => m.name != pipeline.name).OrderBy(name => name).ToArray();
-
-            QuickAccessPipelineNames = QuickAccessPipelines.Select(m => m.name).OrderBy(name => name).ToArray();
         }
         public void SetQuickAccess(Manifest manifest, bool quickAccess)
         {
@@ -296,8 +282,6 @@ namespace ThunderKit.Core.Data
                 QuickAccessManifests = (QuickAccessManifests ?? System.Array.Empty<Manifest>()).Where(a => a).Append(manifest).OrderBy(m => m.name).ToArray();
             else
                 QuickAccessManifests = (QuickAccessManifests ?? System.Array.Empty<Manifest>()).Where(a => a).Where(m => m.name != manifest.name).OrderBy(name => name).ToArray();
-
-            QuickAccessManifestNames = QuickAccessManifests.Select(m => m.name).OrderBy(name => name).ToArray();
         }
     }
 }
