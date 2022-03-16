@@ -1,4 +1,5 @@
 #if TK_ADDRESSABLE
+using System.Reflection;
 using System.Linq;
 using ThunderKit.Common;
 using UnityEditor;
@@ -8,17 +9,29 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ThunderKit.Core.Windows;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using UnityEditor.Experimental.SceneManagement;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
 using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
+using Object = UnityEngine.Object;
 
 namespace ThunderKit.RemoteAddressables
 {
     public class AddressableBrowser : TemplatedWindow
     {
+        private const string Library = "Library";
+        private const string SimplyAddress = "SimplyAddress";
+        private const string Previews = "Previews";
+
+        private static string PreviewRoot => Path.Combine(Library, SimplyAddress, Previews);
+
+        public static readonly Dictionary<string, Texture2D> PreviewCache = new Dictionary<string, Texture2D>();
+
         [MenuItem(Constants.ThunderKitMenuRoot + "Addressable Browser")]
         public static void ShowAddressableBrowser() => GetWindow<AddressableBrowser>();
 
@@ -120,6 +133,7 @@ namespace ThunderKit.RemoteAddressables
                                 type = result.GetType().AssemblyQualifiedName,
                                 address = key.ToString()
                             });
+                            Addressables.Release(assetOp);
                         };
                     }
                     catch { }
@@ -160,17 +174,27 @@ namespace ThunderKit.RemoteAddressables
                 loadSceneBtn.RemoveFromClassList("hidden");
                 loadSceneBtn.clickable = new Clickable(() =>
                 {
-                    var text = directoryContent.itemsSource[i] as string;
-                    Addressables.LoadSceneAsync(text);
+                    var currentAddress = directoryContent.itemsSource[i] as string;
+                    Addressables.LoadSceneAsync(currentAddress);
                 });
             }
             else
                 loadSceneBtn.AddToClassList("hidden");
         }
 
-        private async Task<Texture> RenderIcon(string address)
+        private async Task<Texture2D> RenderIcon(string address)
         {
-            Texture preview = null;
+            string previewCachePath = Path.Combine(PreviewRoot, $"{address}.png");
+            if (File.Exists(previewCachePath))
+            {
+                var texture = new Texture2D(128, 128);
+                texture.LoadImage(File.ReadAllBytes(previewCachePath));
+                texture.Apply();
+                PreviewCache[address] = texture;
+                return texture;
+            }
+
+            Texture2D preview = null;
             Object result = null;
             try
             {
@@ -188,19 +212,48 @@ namespace ThunderKit.RemoteAddressables
                 {
                     await Task.Delay(500);
                     preview = UpdatePreview(result);
-                    try
+                    if (preview)
                     {
-                        Addressables.Release(result);
+                        var clone = DuplicateTexture(preview);
+                        if (clone)
+                        {
+                            var png = clone.EncodeToPNG();
+                            var fileName = $"{Path.GetFileName(address)}.png";
+                            string addressFolder = Path.GetDirectoryName(address);
+                            var finalFolder = Path.Combine(PreviewRoot, addressFolder);
+                            Directory.CreateDirectory(finalFolder);
+                            var filePath = Path.Combine(finalFolder, fileName);
+                            File.WriteAllBytes(filePath, png);
+                        }
                     }
-                    catch { }
                 }
 
             return preview;
         }
 
-        private static Texture UpdatePreview(Object result)
+
+        Texture2D DuplicateTexture(Texture2D source)
         {
-            Texture preview;
+            RenderTexture renderTex = RenderTexture.GetTemporary(
+                        source.width,
+                        source.height,
+                        0,
+                        RenderTextureFormat.Default,
+                        RenderTextureReadWrite.Linear);
+
+            Graphics.Blit(source, renderTex);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = renderTex;
+            Texture2D readableText = new Texture2D(source.width, source.height);
+            readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
+            readableText.Apply();
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTex);
+            return readableText;
+        }
+        private static Texture2D UpdatePreview(Object result)
+        {
+            Texture2D preview;
             switch (result)
             {
                 case GameObject gobj when gobj.GetComponentsInChildren<SkinnedMeshRenderer>().Any()
