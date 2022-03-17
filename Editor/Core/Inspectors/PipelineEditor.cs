@@ -77,16 +77,18 @@ namespace ThunderKit.Core.Inspectors
         protected override Rect OnBeforeElementHeaderGUI(Rect rect, ComposableElement element, ref string title)
         {
             var job = element as PipelineJob;
-            var toggleRect = new Rect(rect.x + 2, rect.y + 1, 14, EditorGUIUtility.singleLineHeight);
-            var titleContent = new GUIContent(title);
-            job.Active = GUI.Toggle(toggleRect, job.Active, titleContent);
-            toggleRect.x += 16;
-            var size = GUI.skin.label.CalcSize(titleContent);
-            toggleRect.width = size.x;
-            toggleRect.height = size.y;
-            GUI.Label(toggleRect, title);
-            title = string.Empty;
-
+            if (job)
+            {
+                var toggleRect = new Rect(rect.x + 2, rect.y + 1, 14, EditorGUIUtility.singleLineHeight);
+                var titleContent = new GUIContent(title);
+                job.Active = GUI.Toggle(toggleRect, job.Active, titleContent);
+                toggleRect.x += 16;
+                var size = GUI.skin.label.CalcSize(titleContent);
+                toggleRect.width = size.x;
+                toggleRect.height = size.y;
+                GUI.Label(toggleRect, title);
+                title = string.Empty;
+            }
             return rect;
         }
         protected override Rect OnAfterElementHeaderGUI(Rect rect, ComposableElement element)

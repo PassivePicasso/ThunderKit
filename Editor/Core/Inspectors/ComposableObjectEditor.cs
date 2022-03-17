@@ -18,6 +18,7 @@ namespace ThunderKit.Core.Inspectors
     [CustomEditor(typeof(ComposableObject), true)]
     public class ComposableObjectEditor : UnityEditor.Editor
     {
+        const string MissingScriptReference = "Missing Script Reference";
         protected static GUISkin EditorSkin;
 
         public class StepData
@@ -66,30 +67,35 @@ namespace ThunderKit.Core.Inspectors
 
             dataArray = serializedObject.FindProperty(nameof(ComposableObject.Data));
             CleanDataArray();
+
+            var boxSkin = EditorSkin.box;
+            var popupIcon = IconContent("_Popup");
+            var stopIcon = IconContent("console.erroricon.sml");
+
             for (int i = 0; i < dataArray.arraySize; i++)
             {
-                var step = dataArray.GetArrayElementAtIndex(i);
-                var stepType = step.objectReferenceValue.GetType();
-                var element = step.objectReferenceValue as ComposableElement;
+                var foldoutRect = GUILayoutUtility.GetRect(currentViewWidth - 50, singleLineHeight + 3);
+                var standardSize = singleLineHeight + standardVerticalSpacing;
+                var menuRect = new Rect(foldoutRect.x + 1 + foldoutRect.width - standardSize, foldoutRect.y + 1, standardSize, standardSize);
 
-                if (!Editors.TryGetValue(step.objectReferenceValue, out var editor))
-                    Editors[step.objectReferenceValue] = editor = CreateEditor(step.objectReferenceValue);
+                GUI.Box(new Rect(foldoutRect.x - 24, foldoutRect.y - 1, foldoutRect.width + 30, foldoutRect.height + 1), new GUIContent(string.Empty), boxSkin);
+
+                var step = dataArray.GetArrayElementAtIndex(i);
+                var element = step.objectReferenceValue as ComposableElement;
+                var title = string.Empty;
+                Editor editor = null;
+                if (element)
+                {
+                    title = $"{i} - {ObjectNames.NicifyVariableName(element.GetType().Name)}";
+                    if (!Editors.TryGetValue(element, out editor))
+                        Editors[element] = editor = CreateEditor(element);
+                }
+                else
+                    title = $"{i} - {MissingScriptReference}";
+
 
                 try
                 {
-                    var title = $"{i} - {ObjectNames.NicifyVariableName(stepType.Name)}";
-                    var foldoutRect = GUILayoutUtility.GetRect(currentViewWidth - 50, singleLineHeight + 3);
-
-                    var boxSkin = EditorSkin.box;
-
-                    GUI.Box(new Rect(foldoutRect.x - 24, foldoutRect.y - 1, foldoutRect.width + 30, foldoutRect.height + 1), new GUIContent(string.Empty), boxSkin);
-
-                    var standardSize = singleLineHeight + standardVerticalSpacing;
-                    Rect menuRect = new Rect(foldoutRect.x + 1 + foldoutRect.width - standardSize, foldoutRect.y + 1, standardSize, standardSize);
-
-                    var popupIcon = IconContent("_Popup");
-                    var stopIcon = IconContent("console.erroricon.sml");
-
                     switch (Event.current.type)
                     {
                         case EventType.Repaint:
@@ -99,32 +105,51 @@ namespace ThunderKit.Core.Inspectors
                             ShowContextMenu(i, step);
                             break;
                     }
+                }
+                catch (Exception e) { Debug.LogException(e); }
 
+                try
+                {
                     foldoutRect = OnBeforeElementHeaderGUI(foldoutRect, element, ref title);
+                }
+                catch (Exception e) { Debug.LogException(e); }
 
+                if (!editor)
+                {
+                    foldoutRect.x -= stopIcon.image.width;
+                    EditorGUI.LabelField(foldoutRect, new GUIContent(title, stopIcon.image));
+                }
+                else
+                {
                     step.isExpanded = EditorGUI.Foldout(foldoutRect, step.isExpanded, title);
                     if (step.isExpanded)
-                    {
-                        editor.serializedObject.UpdateIfRequiredOrScript();
-                        EditorGUI.BeginChangeCheck();
-                        editor.OnInspectorGUI();
-                        if(EditorGUI.EndChangeCheck())
+                        try
                         {
-                            editor.serializedObject.ApplyModifiedProperties();
-                            Repaint();
+                            editor.serializedObject.UpdateIfRequiredOrScript();
+                            EditorGUI.BeginChangeCheck();
+                            editor.OnInspectorGUI();
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                editor.serializedObject.ApplyModifiedProperties();
+                                Repaint();
+                            }
                         }
-                    }
-
+                        catch (Exception e) { Debug.LogException(e); }
+                }
+                try
+                {
                     foldoutRect = OnAfterElementHeaderGUI(foldoutRect, element);
+                }
+                catch (Exception e) { Debug.LogException(e); }
+
+                try
+                {
                     foldoutRect.width -= menuRect.width;
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && foldoutRect.Contains(Event.current.mousePosition))
                         step.isExpanded = !step.isExpanded;
+                }
+                catch (Exception e) { Debug.LogException(e); }
 
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
             }
 
             var composableObject = target as ComposableObject;
@@ -147,15 +172,22 @@ namespace ThunderKit.Core.Inspectors
         {
             var menu = new GenericMenu();
             var stepData = new StepData { step = step, index = i, dataArray = dataArray };
+            Action<string, bool, GenericMenu.MenuFunction2> AddMenuItemAction = (header, toggled, action) =>
+            {
+                if (step.objectReferenceValue)
+                    menu.AddItem(new GUIContent(header), toggled, action, stepData);
+                else
+                    menu.AddDisabledItem(new GUIContent(header));
+            };
 
             if (step.objectReferenceValue is ManifestIdentity)
                 menu.AddDisabledItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))));
             else
-                menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Remove))), false, Remove, stepData);
+                AddMenuItemAction((ObjectNames.NicifyVariableName(nameof(Remove))), false, Remove);
 
             menu.AddSeparator("");
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Duplicate))), false, Duplicate, stepData);
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(Copy))), false, Copy, stepData);
+            AddMenuItemAction((ObjectNames.NicifyVariableName(nameof(Duplicate))), false, Duplicate);
+            AddMenuItemAction((ObjectNames.NicifyVariableName(nameof(Copy))), false, Copy);
 
             var currentroot = step.serializedObject.targetObject as ComposableObject;
 
@@ -163,18 +195,19 @@ namespace ThunderKit.Core.Inspectors
             {
                 menu.AddItem(new GUIContent($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} above"), false, PasteNewAbove, stepData);
                 menu.AddItem(new GUIContent($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} below"), false, PasteNew, stepData);
-                menu.AddItem(new GUIContent($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} values"), false, PasteValues, stepData);
+
+                AddMenuItemAction($"Paste {ObjectNames.NicifyVariableName(ClipboardItem.name)} values", false, PasteValues);
             }
             else
                 menu.AddDisabledItem(new GUIContent($"Paste"));
 
             menu.AddSeparator("");
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToTop))), false, MoveToTop, stepData);
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveUp))), false, MoveUp, stepData);
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveDown))), false, MoveDown, stepData);
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(MoveToBottom))), false, MoveToBottom, stepData);
+            AddMenuItemAction((ObjectNames.NicifyVariableName(nameof(MoveToTop))), false, MoveToTop);
+            AddMenuItemAction((ObjectNames.NicifyVariableName(nameof(MoveUp))), false, MoveUp);
+            AddMenuItemAction((ObjectNames.NicifyVariableName(nameof(MoveDown))), false, MoveDown);
+            AddMenuItemAction((ObjectNames.NicifyVariableName(nameof(MoveToBottom))), false, MoveToBottom);
             menu.AddSeparator("");
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(nameof(EditScript))), false, EditScript, stepData);
+            AddMenuItemAction((ObjectNames.NicifyVariableName(nameof(EditScript))), false, EditScript);
             menu.ShowAsContext();
         }
 
