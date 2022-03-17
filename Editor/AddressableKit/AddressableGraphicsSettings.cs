@@ -69,11 +69,18 @@ namespace ThunderKit.RemoteAddressables
             if (!string.IsNullOrEmpty(address))
             {
                 var cdr = Addressables.LoadAssetAsync<Shader>(address).WaitForCompletion();
-                cdr.hideFlags = HideFlags.HideAndDontSave;
-                GraphicsSettings.SetCustomShader(shaderType, cdr);
-                GraphicsSettings.SetShaderMode(shaderType, BuiltinShaderMode.UseCustom);
+                if (cdr)
+                {
+                    cdr.hideFlags = HideFlags.HideAndDontSave;
+                    GraphicsSettings.SetCustomShader(shaderType, cdr);
+                    GraphicsSettings.SetShaderMode(shaderType, BuiltinShaderMode.UseCustom);
+                    return;
+                }
+                else
+                    Debug.LogError($"Custom {shaderType} shader at address \"{address}\" is destroyed and can't be assigned");
             }
-            else GraphicsSettings.SetShaderMode(shaderType, BuiltinShaderMode.UseBuiltin);
+
+            GraphicsSettings.SetShaderMode(shaderType, BuiltinShaderMode.UseBuiltin);
         }
 
         public static void UnsetShader(string address, BuiltinShaderType shaderType)
