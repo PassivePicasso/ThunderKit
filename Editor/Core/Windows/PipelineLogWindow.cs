@@ -56,7 +56,6 @@ namespace ThunderKit.Core.Windows
                 window.logEntryListView.Refresh();
                 if (settings.ShowLogWindow)
                 {
-                    window.Focus();
                     window.Repaint();
                 }
             }
@@ -127,7 +126,12 @@ namespace ThunderKit.Core.Windows
 #if UNITY_2020_1_OR_NEWER
         private void UpdateContextWindow(IEnumerable<object> obj) => LogContextWindow.ShowContext(obj.OfType<LogEntry>().First());
 #else
-        private void UpdateContextWindow(object obj) => LogContextWindow.ShowContext((LogEntry)obj);
+        private void UpdateContextWindow(object obj)
+        {
+            LogEntry entry = (LogEntry)obj;
+            if (entry.context != null && entry.context.Length > 0)
+                LogContextWindow.ShowContext(entry);
+        }
 #endif
         private void UpdateContextWindowSelect(
 #if UNITY_2020_1_OR_NEWER
@@ -151,7 +155,8 @@ namespace ThunderKit.Core.Windows
         {
             var entry = (LogEntry)logEntryListView.itemsSource[entryIndex];
             var timeStamp = element.Q<Label>("time-stamp");
-
+            var shotContextButton = element.Q<Button>("show-context-button");
+            
             var icon = element.Q<VisualElement>("icon-log-level");
             var messageElement = element.Q<MarkdownElement>("message-label");
 
@@ -170,6 +175,17 @@ namespace ThunderKit.Core.Windows
             messageElement.RefreshContent();
             timeStamp.text = entry.time.ToString(settings.DateTimeFormat);
             element.userData = entry.context;
+            if (entry.context != null && entry.context.Length > 0)
+            {
+                shotContextButton.RemoveFromClassList("hidden");
+                shotContextButton.clickable = new Clickable(() => UpdateContextWindow(entry));
+            }
+            else
+            {
+                shotContextButton.AddToClassList("hidden");
+                shotContextButton.clickable = new Clickable(() => { });
+
+            }
         }
         string LevelClass(LogLevel value) => $"{value}".ToLower();
 

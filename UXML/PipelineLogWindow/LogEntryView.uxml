@@ -19,6 +19,9 @@ xsi:schemaLocation="
         </ui:VisualElement>
         <ui:VisualElement name="message-container" style="overflow: hidden; -unity-text-align: middle-left; flex-grow: 1;">
             <ThunderKit.Markdown.MarkdownElement name="message-label" markdown-data-type="Text" />
+            <ui:Button name="show-context-button" class="hidden" tooltip="Show additional context information">
+                <ui:Image name="show-context-button-icon"/>
+            </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
