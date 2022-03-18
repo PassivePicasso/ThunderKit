@@ -1,4 +1,9 @@
-﻿#logentry-list-view .asset-icon {
+﻿
+.hidden {
+	visibility: hidden;
+}
+
+#logentry-list-view .asset-icon {
 	width: 14px;
 	height: 14px;
 	margin-top: 0px;
@@ -36,7 +41,7 @@
 }
 #message-container{
 	justify-content: center;
-	padding-right: 150px;
+	padding-right: 35px;
 }
 #icon-log-level {
 	width: 32px;
@@ -85,17 +90,24 @@
 	white-space: nowrap;
 	background-color: rgba(255,255,255,0.15);
 	border-bottom-width: 1px;
+	border-top-width: 1px;
 	border-color: rgba(0,0,0,0.5);
 	font-size: 12px;
-	margin-top: -3px;
+	padding-left: 2px;
+
 }
 .name-section {
 	flex-direction: row;
 	border-right-width: 1px;
 	border-color: rgba(0,0,0,0.5);
+	padding-top: 2px;
+	padding-left: 2px;
+	padding-right: 4px;
 }
 .date-section {
 	flex-direction: row;
+	padding-top: 2px;
+	padding-left: 4px;
 }
 .log-text {
 	width: 190px;
@@ -136,4 +148,20 @@
 }
 #log-entry:selected.information {
 	background-color: rgba(255,255,255,0.25);
+}
+
+#log-entry #show-context-button {
+	width: 22px;
+	height: 22px;
+	position: absolute;
+	right: 5px;
+	padding-left: 2px;
+	padding-top: 2px;
+	padding-right: 2px;
+	padding-bottom: 2px;
+}
+#show-context-button-icon {
+	width: 16px;
+	height: 16px;
+	background-image: resource("d_ViewToolZoom");
 }
