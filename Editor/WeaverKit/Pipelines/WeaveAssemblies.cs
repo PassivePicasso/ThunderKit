@@ -36,7 +36,7 @@ namespace ThunderKit.WeaverKit
 
         [PathReferenceResolver, Tooltip("Location where the StageAssemblies job cache the assemblies before being staged")]
         public string assemblyArtifactPath = "<AssemblyStaging>";
-        [Tooltip($"If true, the weaved assemblies will  be cached on \"assemblyArtifactPath\\WeavedAssemblies\", otherwise theyre stored in \"assemblyArtifactPath\"")]
+        [Tooltip("If true, the weaved assemblies will  be cached on \"assemblyArtifactPath\\WeavedAssemblies\", otherwise theyre stored in \"assemblyArtifactPath\"")]
         public bool cacheAssembliesOnSubfolder = false;
 
         [HideInInspector]
@@ -46,7 +46,7 @@ namespace ThunderKit.WeaverKit
         public static string WeaverExe = "<WeaverExe>";
         public static string WeaverTemp = "<WeaverTemp>";
 
-        public override Task Execute(Pipeline pipeline)
+        public override async Task Execute(Pipeline pipeline)
         {
             List<Task> tasks = new List<Task>();
             var resolvedArtifactPath = PathReference.ResolvePath(assemblyArtifactPath, pipeline, this);
@@ -56,7 +56,7 @@ namespace ThunderKit.WeaverKit
             {
                 var scriptPath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this)));
                 pipeline.Log(LogLevel.Warning, $"No AssemblyDefinitions found, skipping.");
-                return Task.CompletedTask;
+                return;
             }
 
             for (int i = 0; i < definitionDatums.Length; i++)
@@ -113,15 +113,35 @@ namespace ThunderKit.WeaverKit
                     Directory.Delete(Path.GetFullPath(tempPath), true);
                 }
             }
-            Task.WaitAll(tasks.ToArray());
-            return Task.CompletedTask;
+
+            await Task.WhenAll(tasks);
+
+            List<string> logger = new List<string>();
+            int num = 0;
+            foreach (var (asmDef, datum) in deserializedAsmDefs)
+            {
+                var assemblyName = $"{asmDef.name}.dll";
+                var weavedAssemblyPath = cacheAssembliesOnSubfolder ? Path.Combine(resolvedArtifactPath, "WeavedAssemblies") : resolvedArtifactPath;
+                var origPath = Path.Combine(weavedAssemblyPath, assemblyName);
+
+                foreach (var stagingPath in datum.StagingPaths)
+                {
+                    string resolvedPath = PathReference.ResolvePath(stagingPath, pipeline, this);
+                    string finalizedPath = Path.Combine(resolvedPath, assemblyName);
+
+                    FileUtil.ReplaceFile(origPath, finalizedPath);
+                    logger.Add($"* Moved weaved assembly {assemblyName} from ***{origPath}*** to ***{finalizedPath}***");
+                    num++;
+                }
+            }
+            pipeline.Log(LogLevel.Information, $"Moveed a total of {num} waved assemblies to the stagingPaths.", logger.ToArray());
         }
         private string GetCoreDLL(Pipeline pipeline)
         {
             //If serialized path is valid, use it. otherwise, try to find automatically.
             if (File.Exists(unityEngineAssemblyPath))
             {
-                pipeline.Log(LogLevel.Information, $"Using {unityEngineAssemblyPath} for weaving process.");
+                pipeline.Log(LogLevel.Information, $"Using {unityEngineAssemblyPath} for weaving process as arg0.");
                 return unityEngineAssemblyPath;
             }
 
@@ -141,16 +161,16 @@ namespace ThunderKit.WeaverKit
 
                 unityEngineAssemblyPath = Path.GetFullPath(coreModulePath);
 
-                pipeline.Log(LogLevel.Information, $"Using {unityEngineAssemblyPath} for weaving process.");
+                pipeline.Log(LogLevel.Information, $"Using {unityEngineAssemblyPath} for weaving process as arg0.");
                 return unityEngineAssemblyPath;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 pipeline.Log(LogLevel.Error, $"Exception: {ex}. prompting user to manually select the Core dll.");
                 string currentDir = EditorApplication.applicationContentsPath;
                 var foundAssembly = false;
 
-                while(!foundAssembly)
+                while (!foundAssembly)
                 {
                     var assemblyPath = string.Empty;
                     switch (Application.platform)
@@ -182,15 +202,18 @@ namespace ThunderKit.WeaverKit
                     unityEngineAssemblyPath = assemblyPath;
                     foundAssembly = true;
                 }
-                pipeline.Log(LogLevel.Information, $"Using {unityEngineAssemblyPath} for weaving process.");
+                pipeline.Log(LogLevel.Information, $"Using {unityEngineAssemblyPath} for weaving process as arg0.");
                 return unityEngineAssemblyPath;
             }
         }
 
         private string GetUNetAssemblyPath(Pipeline pipeline)
         {
-            if (uNetAssemblyPath != string.Empty)
+            if (File.Exists(uNetAssemblyPath))
+            {
+                pipeline.Log(LogLevel.Information, $"Using {uNetAssemblyPath} for weaving process as arg1.");
                 return uNetAssemblyPath;
+            }
 
             Assembly networkingAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(asm => asm.GetName().Name == "com.unity.multiplayer-hlapi.Runtime")
@@ -200,7 +223,7 @@ namespace ThunderKit.WeaverKit
                 throw new NullReferenceException($"Could not find the Multiplayer High Level API runtime dll. Weaving cannot be performed.");
 
             uNetAssemblyPath = networkingAssembly.Location;
-            pipeline.Log(LogLevel.Information, $"Using {uNetAssemblyPath} for weaving process.");
+            pipeline.Log(LogLevel.Information, $"Using {uNetAssemblyPath} for weaving process as arg1.");
             return uNetAssemblyPath;
         }
 
@@ -210,7 +233,7 @@ namespace ThunderKit.WeaverKit
             string fullArtifactPath = Path.GetFullPath(resolvedArtifactPath);
 
             string outputPath = cacheAssembliesOnSubfolder ? Path.Combine(fullArtifactPath, "WeavedAssemblies") : fullArtifactPath;
-            pipeline.Log(LogLevel.Information, $"Using {outputPath} for weaving process.");
+            pipeline.Log(LogLevel.Information, $"Using {outputPath} for weaving process as arg2");
             return outputPath;
         }
 
@@ -228,7 +251,7 @@ namespace ThunderKit.WeaverKit
             if (!File.Exists(Path.Combine(fullTempPath, ".gitignore")))
             {
                 pipeline.Log(LogLevel.Information, $"Creating .gitignore for temp folder.");
-                CreateGitIgnore(fullTempPath);
+                CreateGitIgnore();
             }
 
             Assembly[] allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -245,10 +268,10 @@ namespace ThunderKit.WeaverKit
                 }
                 catch (Exception ex) { pipeline.Log(LogLevel.Error, ex.ToString()); }
             }
-            pipeline.Log(LogLevel.Information, $"Copied a total of {copiedAssemblies.Count} to the temporary folder.", copiedAssemblies.ToArray());
+            pipeline.Log(LogLevel.Information, $"Copied a total of {copiedAssemblies.Count} to the temporary folder for arg4", copiedAssemblies.ToArray());
             return fullTempPath;
 
-            void CreateGitIgnore(string fullTempPath)
+            void CreateGitIgnore()
             {
                 using (var fileStream = File.Create(Path.Combine(fullTempPath, ".gitignore")))
                 using (var writer = new StreamWriter(fileStream, Encoding.UTF8))
@@ -274,7 +297,7 @@ namespace ThunderKit.WeaverKit
                 string fullPath = Path.GetFullPath(assemblyPath);
                 assemblyPaths.Add(fullPath);
             }
-            pipeline.Log(LogLevel.Information, $"Got a total of {assemblyPaths.Count} assemblies to weave.", assemblyPaths.ToArray());
+            pipeline.Log(LogLevel.Information, $"Got a total of {assemblyPaths.Count} assemblies to weave as arg3", assemblyPaths.ToArray());
             return assemblyPaths.ToArray();
         }
 
@@ -303,11 +326,11 @@ namespace ThunderKit.WeaverKit
 
             var process = Process.Start(psi);
             process.EnableRaisingEvents = true;
-            process.OutputDataReceived += (sender, args) =>
+            process.OutputDataReceived += (sender, dataArgs) =>
             {
-                pipeline.Log(LogLevel.Information, $"{sender} - {args.Data}");
+                pipeline.Log(LogLevel.Information, $"{sender} - {dataArgs.Data}");
             };
-            while(!process.HasExited)
+            while (!process.HasExited)
             {
                 await Task.Delay(100);
             }
