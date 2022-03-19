@@ -103,7 +103,6 @@ namespace ThunderKit.WeaverKit
                 throw new Exception();
 
             string coreModulePath = Path.Combine(managedFolder, "UnityEngine.dll");
-            Debug.Log(coreModulePath);
 
             if (!File.Exists(Path.GetFullPath(coreModulePath)))
                 throw new Exception();
