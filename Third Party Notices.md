@@ -44,3 +44,10 @@ This package contains third-party software components governed by the license(s)
 * License:  [The MIT License](https://github.com/nesrak1/AssetsTools.NET/blob/master/LICENSE)
 * [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/AssetsTools.NET/LICENSE.txt)
 * This library was modified to remove it's Mono.Cecil dependency for compatibility reasons
+
+## Unity.UNETWeaver
+
+* `Copyright (c) 2018 - Present, Unity`
+* License: [Unity Reference Only License](https://unity3d.com/legal/licenses/Unity_Reference_Only_License)
+* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/UNetWeaver/LICENSE.txt)
+* This library was modified to include it's Mono.Cecil dependency on the binary for compatibility reasons
