@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if TK_UNET
+#if UNITY_2019_1_OR_NEWER
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +17,7 @@ using System.Reflection;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
-namespace ThunderKit.WeaverKit
+namespace ThunderKit.UNetUtil
 {
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor, RequiresManifestDatumType(typeof(AssemblyDefinitions))]
     public class WeaveAssemblies : PipelineJob
@@ -337,3 +339,5 @@ namespace ThunderKit.WeaverKit
         }
     }
 }
+#endif
+#endif

@@ -94,6 +94,12 @@ namespace ThunderKit.Pipelines.Jobs
                         assets.AddRange(dependencies);
                     }
 
+                    #if TK_UNET
+                    #if UNITY_2019_1_OR_NEWER
+                    ThunderKit.UNetUtil.AssetUtil.CheckNetworkIdentities(asset, pipeline);
+                    #endif
+                    #endif
+
                     build.assetNames = assets
                         .Select(ap => ap.Replace("\\", "/"))
                         .Where(dap => !ArrayUtility.Contains(excludedExtensions, Path.GetExtension(dap)) &&

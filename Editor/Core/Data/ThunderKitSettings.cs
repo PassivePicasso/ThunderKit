@@ -78,6 +78,8 @@ namespace ThunderKit.Core.Data
 
         public string AddressableAssetsSettings => Path.Combine(AddressableAssetsPath, "settings.json");
 
+        public string HLAPIRuntimeAssembly => Path.Combine(ManagedAssembliesPath, "com.unity.multiplayer-hlapi.Runtime.dll");
+
         public static string EditTimePath
         {
             get

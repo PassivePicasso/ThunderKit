@@ -50,9 +50,16 @@ namespace ThunderKit.Core.Config
             {
                 if (ImportAddressableData(settings))
                 {
-                    EditorApplication.update += UpdateDefines;
+                    EditorApplication.update += UpdateAdressables;
                 }
             }
+            #if UNITY_2019_1_OR_NEWER
+            //UNet related things should only be done on projects that are on 2019.1 or newer.
+            if(ShouldAddScriptingDefine(settings))
+            {
+                EditorApplication.update += UpdateUNet;
+            }
+            #endif
 
             try
             {
@@ -64,12 +71,21 @@ namespace ThunderKit.Core.Config
             }
         }
 
-        private static void UpdateDefines()
+        private static void UpdateAdressables()
         {
             if (EditorApplication.isUpdating) return;
             ScriptingSymbolManager.AddScriptingDefine("TK_ADDRESSABLE");
-            EditorApplication.update -= UpdateDefines;
+            EditorApplication.update -= UpdateAdressables;
         }
+
+        #if UNITY_2019_1_OR_NEWER
+        private static void UpdateUNet()
+        {
+            if (EditorApplication.isUpdating) return;
+            ScriptingSymbolManager.AddScriptingDefine("TK_UNET");
+            EditorApplication.update -= UpdateUNet;
+        }
+        #endif
 
         private static void ImportGameSettings(ThunderKitSettings settings)
         {
@@ -129,6 +145,14 @@ namespace ThunderKit.Core.Config
             }
         }
 
+        #if UNITY_2019_1_OR_NEWER
+        //If the HLAPI runtime assembly doesnt exist in managed, dont add scripting define.
+        private static bool ShouldAddScriptingDefine(ThunderKitSettings settings)
+        {
+            return File.Exists(settings.HLAPIRuntimeAssembly);
+        }
+        #endif
+        
         private static void SetupPackageManifest(ThunderKitSettings settings, string packageName)
         {
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Combine(settings.GamePath, settings.GameExecutable));
