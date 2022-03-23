@@ -116,8 +116,17 @@ namespace ThunderKit.Core.Pipelines
                 popupStyle.padding.left = 4;
                 GUI.skin = skin;
             }
-            var pipelineNames = settings.QuickAccessPipelines.Select(p => p.name).ToArray() ?? System.Array.Empty<string>();
-            var manifestNames = settings.QuickAccessManifests.Select(p => p.name).ToArray() ?? System.Array.Empty<string>();
+            var pipelineNames = settings.QuickAccessPipelines
+                                        .Where(p => p)
+                                        .Select(p => p.name)
+                                        .ToArray() 
+                             ?? System.Array.Empty<string>();
+
+            var manifestNames = settings.QuickAccessManifests
+                                        .Where(p => p)
+                                        .Select(p => p.name)
+                                        .ToArray() 
+                             ?? System.Array.Empty<string>();
 
             var selectedPipelineName = settings.SelectedPipeline != null ? settings.SelectedPipeline.name : string.Empty;
             var selectedManifestName = settings.SelectedManifest != null ? settings.SelectedManifest.name : string.Empty;
