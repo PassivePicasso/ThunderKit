@@ -33,7 +33,7 @@
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 10;
+	border-bottom-right-radius: 10px;
 	margin-left: 0px;
 	margin-top: -7px;
 	margin-right: 0px;
@@ -83,9 +83,15 @@
 	flex-direction: column-reverse;
 	flex-grow: 1;
 }
-#tab-section .content-view Label {
+#tab-section #unity-content-container {
+	flex-direction: column-reverse;
+}
+
+#tab-context Label
+{
 	color: black;
 }
+
 .grow {
 	flex-grow: 1;
 }
