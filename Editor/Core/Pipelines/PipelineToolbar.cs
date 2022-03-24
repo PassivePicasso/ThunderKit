@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests;
@@ -119,13 +120,13 @@ namespace ThunderKit.Core.Pipelines
             var pipelineNames = settings.QuickAccessPipelines
                                         .Where(p => p)
                                         .Select(p => p.name)
-                                        .ToArray() 
+                                        .ToArray()
                              ?? System.Array.Empty<string>();
 
             var manifestNames = settings.QuickAccessManifests
                                         .Where(p => p)
                                         .Select(p => p.name)
-                                        .ToArray() 
+                                        .ToArray()
                              ?? System.Array.Empty<string>();
 
             var selectedPipelineName = settings.SelectedPipeline != null ? settings.SelectedPipeline.name : string.Empty;
@@ -158,25 +159,7 @@ namespace ThunderKit.Core.Pipelines
                         using (new DisabledScope((!pipeline)))
                             if (GUILayout.Button("Execute"))
                             {
-                                // pipeline.manifest is the correct field to use, stop checking every time.
-                                // pipeline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
-                                var originalManifest = pipeline.manifest;
-                                try
-                                {
-                                    if (manifest)
-                                    {
-                                        pipeline.manifest = manifest;
-                                        _ = pipeline.Execute();
-                                        pipeline.manifest = originalManifest;
-                                    }
-                                    else
-                                        _ = pipeline.Execute();
-                                }
-                                finally
-                                {
-                                    pipeline.manifest = originalManifest;
-                                    EditorUtility.SetDirty(pipeline);
-                                }
+                                RunPipeline(pipeline, manifest);
                             }
 
                         PipelineLog pipelineLog = null;
@@ -199,6 +182,27 @@ namespace ThunderKit.Core.Pipelines
             GUILayout.FlexibleSpace();
             GUI.skin = origSkin;
 
+        }
+
+        static async void RunPipeline(Pipeline pipeline, Manifest manifest)
+        {
+            // pipeline.manifest is the correct field to use, stop checking every time.
+            // pipeline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
+            var originalManifest = pipeline.manifest;
+            try
+            {
+                if (manifest)
+                {
+                    pipeline.manifest = manifest;
+                    await pipeline.Execute();
+                }
+                else
+                    await pipeline.Execute();
+            }
+            finally
+            {
+                pipeline.manifest = originalManifest;
+            }
         }
 
         private static int AdvancedPopup(Object obj, string[] pipelineNames, int selectedPipelineIndex, GUIStyle labelStyle)
