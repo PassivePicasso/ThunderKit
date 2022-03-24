@@ -42,9 +42,8 @@ namespace ThunderKit.Core.Config
 
             ImportAssemblies(packageName, settings);
 
-            SetupPackageManifest(settings, packageName);
-
             ImportGameSettings(settings);
+
 
             if (settings.AttemptAddressableImport)
             {
@@ -53,7 +52,7 @@ namespace ThunderKit.Core.Config
                     EditorApplication.update += UpdateDefines;
                 }
             }
-
+            EditorApplication.update += UpdateGamePackage;
             try
             {
                 AssetDatabase.Refresh();
@@ -64,11 +63,21 @@ namespace ThunderKit.Core.Config
             }
         }
 
+        private static void UpdateGamePackage()
+        {
+            if (EditorApplication.isUpdating) return;
+            EditorApplication.update -= UpdateGamePackage;
+            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+            var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
+            SetupPackageManifest(settings, packageName);
+            PlayerSettings.assemblyVersionValidation = false;
+        }
+
         private static void UpdateDefines()
         {
             if (EditorApplication.isUpdating) return;
-            ScriptingSymbolManager.AddScriptingDefine("TK_ADDRESSABLE");
             EditorApplication.update -= UpdateDefines;
+            ScriptingSymbolManager.AddScriptingDefine("TK_ADDRESSABLE");
         }
 
         private static void ImportGameSettings(ThunderKitSettings settings)
@@ -131,8 +140,7 @@ namespace ThunderKit.Core.Config
 
         private static void SetupPackageManifest(ThunderKitSettings settings, string packageName)
         {
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Combine(settings.GamePath, settings.GameExecutable));
-            PackageHelper.GeneratePackageManifest(settings.PackageName, settings.PackageFilePath, packageName, fileVersionInfo.CompanyName, "1.0.0", $"Imported assemblies from game {packageName}");
+            PackageHelper.GeneratePackageManifest(settings.PackageName, settings.PackageFilePath, packageName, PlayerSettings.companyName, Application.version, $"Imported assemblies from game {packageName}");
         }
 
         private static void AssertDestinations(string packageName)
