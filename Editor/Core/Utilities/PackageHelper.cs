@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Common.Package;
 using ThunderKit.Core.Data;
@@ -12,14 +13,16 @@ namespace ThunderKit.Core.Utilities
 {
     public static class PackageHelper
     {
-        public static void GeneratePackageManifest(string packageName, string outputDir, string displayName, string authorAlias, string modVersion, string description = null)
+        static readonly Regex versionRegex = new Regex("(\\d+\\.\\d+\\.\\d+)(\\..*?)?");
+        public static void GeneratePackageManifest(string packageName, string outputDir, string displayName, string authorAlias, string version, string description = null)
         {
             string unityVersion = Application.unityVersion.Substring(0, Application.unityVersion.LastIndexOf("."));
             var author = new Author
             {
                 name = authorAlias,
             };
-            var packageManifest = new PackageManagerManifest(author, packageName, ObjectNames.NicifyVariableName(displayName), modVersion, unityVersion, description);
+            var ver = versionRegex.Match(version).Groups[1].Value;
+            var packageManifest = new PackageManagerManifest(author, packageName, ObjectNames.NicifyVariableName(displayName), ver, unityVersion, description);
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
             ScriptingSymbolManager.AddScriptingDefine(packageName);
 
