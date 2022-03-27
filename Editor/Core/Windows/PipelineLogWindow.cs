@@ -178,7 +178,11 @@ namespace ThunderKit.Core.Windows
             if (entry.context != null && entry.context.Length > 0)
             {
                 shotContextButton.RemoveFromClassList("hidden");
+#if UNITY_2020_1_OR_NEWER
+                shotContextButton.clickable = new Clickable(() => UpdateContextWindow(new object[] { entry }));
+#else
                 shotContextButton.clickable = new Clickable(() => UpdateContextWindow(entry));
+#endif
             }
             else
             {
