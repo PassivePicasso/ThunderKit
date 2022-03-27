@@ -2,7 +2,7 @@
 
 namespace ThunderKit.RemoteAddressables
 {
-    public class GraphicsSettingsPreProcessor : AssetModificationProcessor
+    public class GraphicsSettingsPreProcessor : UnityEditor.AssetModificationProcessor
     {
         private const string GraphicsSettingsPath = "ProjectSettings/GraphicsSettings.asset";
 
