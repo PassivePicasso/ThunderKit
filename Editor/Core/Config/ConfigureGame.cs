@@ -70,7 +70,6 @@ namespace ThunderKit.Core.Config
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
             SetupPackageManifest(settings, packageName);
-            PlayerSettings.assemblyVersionValidation = false;
         }
 
         private static void UpdateDefines()
