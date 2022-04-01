@@ -10,7 +10,7 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.UIElements;
 
-namespace ThunderKit.RemoteAddressables
+namespace ThunderKit.Addressable.Tools
 {
     public class AddressableGraphicsSettings : ThunderKitSetting
     {

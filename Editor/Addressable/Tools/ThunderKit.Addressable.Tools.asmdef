@@ -1,5 +1,5 @@
 {
-    "name": "ThunderKit.Addressable",
+    "name": "ThunderKit.Addressable.Tools",
     "references": [
         "ThunderKit.Common",
         "ThunderKit.Core",
