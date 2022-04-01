@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
-using ThunderKit.Common.Configuration;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Utilities;
 using UnityEditor;
