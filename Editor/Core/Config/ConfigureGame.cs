@@ -100,6 +100,7 @@ namespace ThunderKit.Core.Config
                 if (!File.Exists(tempSettingPath)) continue;
 
                 File.Copy(tempSettingPath, settingPath, true);
+                //Update times as necessary to trigger unity import
                 File.SetLastWriteTime(settingPath, DateTime.Now);
                 File.SetLastAccessTime(settingPath, DateTime.Now);
                 File.SetCreationTime(settingPath, DateTime.Now);
