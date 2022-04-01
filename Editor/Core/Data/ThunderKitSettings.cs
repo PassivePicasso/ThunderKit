@@ -190,6 +190,52 @@ namespace ThunderKit.Core.Data
 #endif
             guidGenerationModeField.value = GuidGenerationMode;
 
+            var importProcessorsListView = settingsElement.Q<ListView>("import-extensions-listview");
+            importProcessorsListView.makeItem = () =>
+            {
+                var element = new VisualElement { name = "extension-listview-item" };
+                element.AddToClassList("thunderkit-field");
+                var label = new Label { name = "extension-label" };
+                var toggle = new Toggle { name = "extension-enabled-toggle" };
+                element.Add(label);
+                element.Add(toggle);
+                return element;
+            };
+            importProcessorsListView.bindItem = (visualElement, index) =>
+            {
+                var label = visualElement.Q<Label>("extension-label");
+                var toggle = visualElement.Q<Toggle>("extension-enabled-toggle");
+
+                var instance = importProcessorsListView.itemsSource[index];
+                var type = instance.GetType();
+                var enabledProperty = type.GetProperty("Enabled", publicInstanceBinding);
+                var nameProperty = type.GetProperty("Name", publicInstanceBinding);
+
+                label.text = nameProperty.GetValue(instance) as string;
+
+                var onEnabledChanged = new EventCallback<ChangeEvent<bool>>(evt =>
+                {
+                    var enabled = (bool)evt.newValue;
+                    enabledProperty.SetValue(importProcessorsListView.itemsSource[index], enabled);
+                });
+                toggle.value = (bool)enabledProperty.GetValue(importProcessorsListView.itemsSource[index]);
+#if UNITY_2019_1_OR_NEWER
+                if (toggle.userData is EventCallback<ChangeEvent<bool>> callback)
+                    toggle.UnregisterValueChangedCallback(callback);
+
+                toggle.RegisterValueChangedCallback(onEnabledChanged);
+#elif UNITY_2018_1_OR_NEWER
+                toggle.OnValueChanged(OnEnabledChanged);
+#endif
+                toggle.userData = onEnabledChanged;
+            };
+            importProcessorsListView.itemsSource = ConfigureGame.AssemblyProcessors.Cast<object>()
+                                            .Union(ConfigureGame.BlacklistProcessors)
+                                            .Union(ConfigureGame.WhitelistProcessors)
+                                            .Union(ConfigureGame.ConfigureActions)
+                                            .ToList();
+
+
             var browseButton = settingsElement.Q<Button>("browse-button");
             browseButton.clickable.clicked -= BrowserForGame;
             browseButton.clickable.clicked += BrowserForGame;
