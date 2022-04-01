@@ -29,9 +29,11 @@
             </uie:EnumField>
         </ui:VisualElement>
 
-        <ui:VisualElement class="thunderkit-field">
-            <ui:Label text="Attempt Addressable Import" class="thunderkit-field-label"/>
-            <ui:Toggle name="asset-name-field" binding-path="AttemptAddressableImport" class="thunderkit-field-input"/>
+        <ui:VisualElement name="import-extensions-section">
+            <ui:VisualElement class="settings-header">
+                <ui:Label text="Import Extensions" name="import-extensions-header"/>
+            </ui:VisualElement>
+            <ui:ListView name="import-extensions-listview" item-height="28"/>
         </ui:VisualElement>
 
         <ui:VisualElement name="game-config-button-container">

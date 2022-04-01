@@ -21,53 +21,57 @@ namespace ThunderKit.Core.Config
 {
     using static ThunderKit.Common.PathExtensions;
 
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public class GameConfiguratorAssemblyAttribute : Attribute { }
-
-    public class PostImportProcessor { public virtual void Execute() { } }
-    public class AssemblyImportProcessor
-    {
-        public virtual bool IsBlacklisted(string path) => false;
-        public virtual bool IsWhitelisted(string path) => false;
-        public virtual string RedirectAssembly(string path) => path;
-    }
-
     public static class ConfigureGame
     {
         private static readonly HashSet<string> EmptySet = new HashSet<string>();
-        private static readonly HashSet<string> UnityStandardAssemblies = new HashSet<string>();
-        static IEnumerable<PostImportProcessor> Configurators { get; set; }
+        public static IReadOnlyList<BlacklistProcessor> BlacklistProcessors { get; private set; }
+        public static IReadOnlyList<WhitelistProcessor> WhitelistProcessors { get; private set; }
+        public static IReadOnlyList<AssemblyProcessor> AssemblyProcessors { get; private set; }
+        public static IReadOnlyList<ConfigureAction> ConfigureActions { get; private set; }
 
         [InitializeOnLoadMethod]
         static void InitializeConfigurators()
         {
             var builder = new StringBuilder("Loaded GameConfigurators:");
             builder.AppendLine();
-            Configurators = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .Where(asm => asm != null)
-                .Where(asm => asm.GetCustomAttribute<GameConfiguratorAssemblyAttribute>() != null)
-                .SelectMany(asm =>
-                {
-                    try
-                    {
-                        return asm.GetTypes();
-                    }
-                    catch (ReflectionTypeLoadException e)
-                    {
-                        return e.Types.Where(t => t != null);
-                    }
-                })
-                .Where(t => t.GetInterfaces().Contains(typeof(PostImportProcessor)))
+            var configurationAssemblies = AppDomain.CurrentDomain
+                            .GetAssemblies()
+                            .Where(asm => asm != null)
+                            .Where(asm => asm.GetCustomAttribute<GameConfiguratorAssemblyAttribute>() != null);
+            var loadedTypes = configurationAssemblies
+               .SelectMany(asm =>
+               {
+                   try
+                   {
+                       return asm.GetTypes();
+                   }
+                   catch (ReflectionTypeLoadException e)
+                   {
+                       return e.Types.Where(t => t != null);
+                   }
+               }).ToArray();
+
+            BlacklistProcessors = CreateImporters<BlacklistProcessor>(builder, loadedTypes);
+            WhitelistProcessors = CreateImporters<WhitelistProcessor>(builder, loadedTypes);
+            AssemblyProcessors = CreateImporters<AssemblyProcessor>(builder, loadedTypes);
+            ConfigureActions = CreateImporters<ConfigureAction>(builder, loadedTypes);
+
+            Debug.Log(builder.ToString());
+        }
+
+        private static List<T> CreateImporters<T>(StringBuilder builder, Type[] loadedTypes) where T : ImportExtension<T>
+        {
+            var importers = loadedTypes.Where(t => typeof(T).IsAssignableFrom(t))
                 .Select(t =>
                 {
-                    var configurator = Activator.CreateInstance(t) as PostImportProcessor;
+                    var configurator = Activator.CreateInstance(t) as T;
                     builder.AppendLine(configurator.GetType().AssemblyQualifiedName);
                     return configurator;
                 })
                 .Where(t => t != null)
                 .ToList();
-            Debug.Log(builder.ToString());
+            importers.Sort();
+            return importers;
         }
 
         public static void LoadGame(ThunderKitSettings settings)
@@ -90,16 +94,10 @@ namespace ThunderKit.Core.Config
 
             ImportGameSettings(settings);
 
-            foreach (var configurator in Configurators)
-                configurator.Execute();
+            foreach (var configurator in ConfigureActions)
+                if (configurator.Enabled)
+                    configurator.Execute();
 
-            if (settings.AttemptAddressableImport)
-            {
-                if (ImportAddressableData(settings))
-                {
-                    EditorApplication.update += UpdateDefines;
-                }
-            }
             EditorApplication.update += UpdateGamePackage;
             try
             {
@@ -118,13 +116,6 @@ namespace ThunderKit.Core.Config
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
             SetupPackageManifest(settings, packageName);
-        }
-
-        private static void UpdateDefines()
-        {
-            if (EditorApplication.isUpdating) return;
-            EditorApplication.update -= UpdateDefines;
-            ScriptingSymbolManager.AddScriptingDefine("TK_ADDRESSABLE");
         }
 
         private static void ImportGameSettings(ThunderKitSettings settings)
@@ -152,37 +143,6 @@ namespace ThunderKit.Core.Config
                 File.SetLastWriteTime(settingPath, DateTime.Now);
                 File.SetLastAccessTime(settingPath, DateTime.Now);
                 File.SetCreationTime(settingPath, DateTime.Now);
-            }
-        }
-
-        private static bool ImportAddressableData(ThunderKitSettings settings)
-        {
-            if (!File.Exists(settings.AddressableAssetsCatalog)) return false;
-            if (!File.Exists(settings.AddressableAssetsSettings)) return false;
-
-            try
-            {
-                string destinationFolder = Combine("Assets", "StreamingAssets", "aa");
-                Directory.CreateDirectory(destinationFolder);
-
-                var destinationCatalog = Combine(destinationFolder, "catalog.json");
-                var destinationSettings = Combine(destinationFolder, "settings.json");
-                if (File.Exists(destinationCatalog)) File.Delete(destinationCatalog);
-                if (File.Exists(destinationSettings)) File.Delete(destinationSettings);
-
-                //var catalog = File.ReadAllText(settings.AddressableAssetsCatalog);
-                //catalog = catalog.Replace(AddressableRuntimePath, ThunderKitRuntimePath);
-                //File.WriteAllText(destinationCatalog, catalog);
-
-                File.Copy(settings.AddressableAssetsCatalog, destinationCatalog);
-                File.Copy(settings.AddressableAssetsSettings, destinationSettings);
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                return false;
             }
         }
 
@@ -294,20 +254,13 @@ namespace ThunderKit.Core.Config
                 AssetDatabase.StartAssetEditing();
                 EditorApplication.LockReloadAssemblies();
 
-                BuildAssemblyBlacklist();
-
-                string[] installedGameAssemblies = Array.Empty<string>();
-                if (Directory.Exists(settings.PackagePath))
-                    installedGameAssemblies = Directory.EnumerateFiles(settings.PackagePath, $"*.dll", SearchOption.AllDirectories)
-                                           .Union(Directory.EnumerateFiles(settings.PackagePath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
-                                           .Select(path => Path.GetFileName(path))
-                                           .Distinct()
-                                           .ToArray();
+                var blackList = BuildAssemblyBlacklist();
+                var whitelist = BuildAssemblyWhitelist(settings, nativeAssemblyExtension);
 
                 var packagePath = Combine("Packages", packageName);
-                var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories).Distinct()
-                    ;
-                ImportFilteredAssemblies(packagePath, managedAssemblies, UnityStandardAssemblies, new HashSet<string>(installedGameAssemblies));
+                var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories).Distinct().ToList();
+
+                ImportFilteredAssemblies(packagePath, managedAssemblies, blackList, whitelist);
 
                 var pluginsPath = Combine(settings.GameDataPath, "Plugins");
                 if (Directory.Exists(pluginsPath))
@@ -324,49 +277,41 @@ namespace ThunderKit.Core.Config
             }
         }
 
-        private static void ImportFilteredAssemblies(string destinationFolder, IEnumerable<string> assemblies, HashSet<string> blackList, HashSet<string> whitelist)
+        private static HashSet<string> BuildAssemblyWhitelist(ThunderKitSettings settings, string nativeAssemblyExtension)
         {
-            foreach (var assemblyPath in assemblies)
-            {
-                var asmPath = assemblyPath.Replace("\\", "/");
-                string assemblyFileName = Path.GetFileName(asmPath);
-                if (!whitelist.Contains(assemblyFileName)
-                  && blackList.Contains(assemblyFileName))
-                    continue;
+            string[] installedGameAssemblies = Array.Empty<string>();
+            if (Directory.Exists(settings.PackagePath))
+                installedGameAssemblies = Directory.EnumerateFiles(settings.PackagePath, $"*.dll", SearchOption.AllDirectories)
+                                       .Union(Directory.EnumerateFiles(settings.PackagePath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
+                                       .Select(path => Path.GetFileName(path))
+                                       .Distinct()
+                                       .ToArray();
 
-                var destinationFile = Combine(destinationFolder, assemblyFileName);
 
-                var destinationMetaData = Combine(destinationFolder, $"{assemblyFileName}.meta");
+            var whitelist = new HashSet<string>(installedGameAssemblies);
 
-                try
-                {
-                    if (File.Exists(destinationFile)) File.Delete(destinationFile);
-                    File.Copy(asmPath, destinationFile);
+            var enumerable = whitelist as IEnumerable<string>;
 
-                    PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
-                }
-                catch
-                {
-                    Debug.LogWarning($"Could not update assembly: {destinationFile}", AssetDatabase.LoadAssetAtPath<Object>(destinationFile));
-                }
-            }
+            foreach (var processor in WhitelistProcessors)
+                if (processor.Enabled)
+                    enumerable = processor.Process(enumerable);
+            return whitelist;
         }
-
         /// <summary>
         /// Collect list of Assemblies that should not be imported from the game.
         /// These are assemblies that would be automatically provided by Unity to the environment
         /// </summary>
         /// <param name="byEditorFiles"></param>
-        private static void BuildAssemblyBlacklist(bool byEditorFiles = false)
+        private static HashSet<string> BuildAssemblyBlacklist(bool byEditorFiles = false)
         {
-            UnityStandardAssemblies.Clear();
+            var result = new HashSet<string>();
             if (byEditorFiles)
             {
                 var editorPath = Path.GetDirectoryName(EditorApplication.applicationPath);
                 var extensionsFolder = Combine(editorPath, "Data", "Managed");
                 foreach (var asmFile in Directory.GetFiles(extensionsFolder, "*.dll", SearchOption.AllDirectories))
                 {
-                    UnityStandardAssemblies.Add(Path.GetFileName(asmFile));
+                    result.Add(Path.GetFileName(asmFile));
                 }
             }
             else
@@ -397,7 +342,47 @@ namespace ThunderKit.Core.Config
                     })
                     .OrderBy(s => s);
                 foreach (var asm in blackList)
-                    UnityStandardAssemblies.Add(asm);
+                    result.Add(asm);
+            }
+
+            var enumerable = result as IEnumerable<string>;
+
+            foreach (var processor in BlacklistProcessors)
+                if (processor.Enabled)
+                    enumerable = processor.Process(enumerable);
+
+            return new HashSet<string>(enumerable);
+        }
+
+        private static void ImportFilteredAssemblies(string destinationFolder, IEnumerable<string> assemblies, HashSet<string> blackList, HashSet<string> whitelist)
+        {
+            foreach (var assemblyPath in assemblies)
+            {
+                var asmPath = assemblyPath.Replace("\\", "/");
+                foreach (var processor in AssemblyProcessors)
+                    if (processor.Enabled)
+                        asmPath = processor.Process(asmPath);
+
+                string assemblyFileName = Path.GetFileName(asmPath);
+                if (!whitelist.Contains(assemblyFileName)
+                  && blackList.Contains(assemblyFileName))
+                    continue;
+
+                var destinationFile = Combine(destinationFolder, assemblyFileName);
+
+                var destinationMetaData = Combine(destinationFolder, $"{assemblyFileName}.meta");
+
+                try
+                {
+                    if (File.Exists(destinationFile)) File.Delete(destinationFile);
+                    File.Copy(asmPath, destinationFile);
+
+                    PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
+                }
+                catch
+                {
+                    Debug.LogWarning($"Could not update assembly: {destinationFile}", AssetDatabase.LoadAssetAtPath<Object>(destinationFile));
+                }
             }
         }
 
