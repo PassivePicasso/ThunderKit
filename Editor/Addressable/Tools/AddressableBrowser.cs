@@ -1,5 +1,4 @@
 #if TK_ADDRESSABLE
-using System.Reflection;
 using System.Linq;
 using ThunderKit.Common;
 using UnityEditor;
@@ -9,9 +8,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ThunderKit.Core.Windows;
-using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
-using UnityEditor.Experimental.SceneManagement;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -20,7 +16,7 @@ using UnityEngine.Experimental.UIElements;
 #endif
 using Object = UnityEngine.Object;
 
-namespace ThunderKit.RemoteAddressables
+namespace ThunderKit.Addressable.Tools
 {
     public class AddressableBrowser : TemplatedWindow
     {

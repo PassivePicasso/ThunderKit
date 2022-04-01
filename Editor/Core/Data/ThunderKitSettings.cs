@@ -12,6 +12,8 @@ using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Utilities;
 using System.Collections.Generic;
+using System.Reflection;
+using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -26,6 +28,7 @@ namespace ThunderKit.Core.Data
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ThunderKitSetting
     {
+        private const BindingFlags publicInstanceBinding = BindingFlags.Public | BindingFlags.Instance;
         public enum GuidMode { Original, Stabilized, AssetRipperCompatibility }
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
@@ -55,6 +58,7 @@ namespace ThunderKit.Core.Data
                 FileUtil.ReplaceFile(file, outputPath);
             }
         }
+
         private SerializedObject thunderKitSettingsSO;
 
         [SerializeField]
@@ -108,8 +112,6 @@ namespace ThunderKit.Core.Data
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
 
         public bool ShowLogWindow = true;
-
-        public bool AttemptAddressableImport = true;
 
         public Pipeline SelectedPipeline;
         public Manifest SelectedManifest;
