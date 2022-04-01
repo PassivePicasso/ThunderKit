@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Utilities;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -19,10 +20,55 @@ using Object = UnityEngine.Object;
 namespace ThunderKit.Core.Config
 {
     using static ThunderKit.Common.PathExtensions;
-    public class ConfigureGame
+
+    [AttributeUsage(AttributeTargets.Assembly)]
+    public class GameConfiguratorAssemblyAttribute : Attribute { }
+
+    public class PostImportProcessor { public virtual void Execute() { } }
+    public class AssemblyImportProcessor
+    {
+        public virtual bool IsBlacklisted(string path) => false;
+        public virtual bool IsWhitelisted(string path) => false;
+        public virtual string RedirectAssembly(string path) => path;
+    }
+
+    public static class ConfigureGame
     {
         private static readonly HashSet<string> EmptySet = new HashSet<string>();
         private static readonly HashSet<string> UnityStandardAssemblies = new HashSet<string>();
+        static IEnumerable<PostImportProcessor> Configurators { get; set; }
+
+        [InitializeOnLoadMethod]
+        static void InitializeConfigurators()
+        {
+            var builder = new StringBuilder("Loaded GameConfigurators:");
+            builder.AppendLine();
+            Configurators = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Where(asm => asm != null)
+                .Where(asm => asm.GetCustomAttribute<GameConfiguratorAssemblyAttribute>() != null)
+                .SelectMany(asm =>
+                {
+                    try
+                    {
+                        return asm.GetTypes();
+                    }
+                    catch (ReflectionTypeLoadException e)
+                    {
+                        return e.Types.Where(t => t != null);
+                    }
+                })
+                .Where(t => t.GetInterfaces().Contains(typeof(PostImportProcessor)))
+                .Select(t =>
+                {
+                    var configurator = Activator.CreateInstance(t) as PostImportProcessor;
+                    builder.AppendLine(configurator.GetType().AssemblyQualifiedName);
+                    return configurator;
+                })
+                .Where(t => t != null)
+                .ToList();
+            Debug.Log(builder.ToString());
+        }
 
         public static void LoadGame(ThunderKitSettings settings)
         {
@@ -44,6 +90,8 @@ namespace ThunderKit.Core.Config
 
             ImportGameSettings(settings);
 
+            foreach (var configurator in Configurators)
+                configurator.Execute();
 
             if (settings.AttemptAddressableImport)
             {
@@ -257,7 +305,8 @@ namespace ThunderKit.Core.Config
                                            .ToArray();
 
                 var packagePath = Combine("Packages", packageName);
-                var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories).Distinct();
+                var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories).Distinct()
+                    ;
                 ImportFilteredAssemblies(packagePath, managedAssemblies, UnityStandardAssemblies, new HashSet<string>(installedGameAssemblies));
 
                 var pluginsPath = Combine(settings.GameDataPath, "Plugins");
