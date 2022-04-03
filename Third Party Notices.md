@@ -59,3 +59,4 @@ This package contains third-party software components governed by the license(s)
 * [https://github.com/LogosBible/bsdiff.net](https://github.com/LogosBible/bsdiff.net)
 * License:  [The MIT License](https://raw.githubusercontent.com/LogosBible/bsdiff.net/master/ReadMe.txt)
 * [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/BsDiff/LICENSE.md)
+* BsTool is a replacement for the original project's 2 programs, BsDiff and BsPatch, providing an API instead of programs
