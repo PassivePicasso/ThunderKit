@@ -42,5 +42,20 @@ This package contains third-party software components governed by the license(s)
 * `Copyright (c) 2020 nesrak1`
 * [https://github.com/nesrak1/AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET)
 * License:  [The MIT License](https://github.com/nesrak1/AssetsTools.NET/blob/master/LICENSE)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/AssetsTools.NET/LICENSE.txt)
+* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/AssetsTools.NET/LICENSE.md)
 * This library was modified to remove it's Mono.Cecil dependency for compatibility reasons
+
+## SharpZipLib
+
+* `Copyright © 2000-2018 SharpZipLib Contributors`
+* [https://github.com/icsharpcode/SharpZipLib](https://github.com/icsharpcode/SharpZipLib)
+* License:  [The MIT License](https://github.com/icsharpcode/SharpZipLib/blob/master/LICENSE.txt)
+* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/SharpZipLib/LICENSE.md)
+
+## BsDiff
+
+* `Copyright 2003-2005 Colin Percival`
+* `Copyright 2010 Logos Bible Software`
+* [https://github.com/LogosBible/bsdiff.net](https://github.com/LogosBible/bsdiff.net)
+* License:  [The MIT License](https://raw.githubusercontent.com/LogosBible/bsdiff.net/master/ReadMe.txt)
+* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/BsDiff/LICENSE.md)
