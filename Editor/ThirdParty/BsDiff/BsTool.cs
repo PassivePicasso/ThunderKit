@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.IO;
+using UnityEngine;
 
 namespace BsDiff
 {
@@ -22,7 +23,7 @@ namespace BsDiff
             }
             catch (FileNotFoundException ex)
             {
-                Console.Error.WriteLine("Could not open '{0}'.", ex.FileName);
+                Debug.LogError($"Could not open '{ex.FileName}'.\r\n{ex.Message}");
             }
         }
 
@@ -41,7 +42,7 @@ namespace BsDiff
             }
             catch (FileNotFoundException ex)
             {
-                Console.Error.WriteLine("Could not open '{0}'.", ex.FileName);
+                Debug.LogError($"Could not open '{ex.FileName}'.\r\n{ex.Message}");
             }
         }
     }

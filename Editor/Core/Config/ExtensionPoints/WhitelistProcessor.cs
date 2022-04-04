@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ThunderKit.Core.Config
 {
     [Serializable]
-    public abstract class WhitelistProcessor : ImportExtension<WhitelistProcessor>
+    public abstract class WhitelistProcessor : ImportExtension
     {
         /// <summary>
         /// Modify or provide assembly whitelist of filenames

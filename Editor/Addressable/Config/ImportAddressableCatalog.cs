@@ -1,24 +1,33 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
+using ThunderKit.Common;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
+#if UNITY_2019
+using UnityEngine.UIElements;
+#elif UNITY_2018
+using UnityEngine.Experimental.UIElements;
+#endif
+
 
 namespace ThunderKit.Addressable.Config
 {
     using static ThunderKit.Common.PathExtensions;
-    public class AddressableImportAction : ConfigureAction
+    public class ImportAddressableCatalog : OptionalExecutor
     {
-        public override string Name => "Import Addressable Catalog";
+        public override int Priority => Constants.GameConfigurationPriority.AddressableCatalog;
 
-        public override void Execute()
+        public override Task Execute()
         {
             if (ImportAddressableData(ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>()))
             {
                 EditorApplication.update += UpdateDefines;
             }
+            return Task.CompletedTask;
         }
 
         private static void UpdateDefines()

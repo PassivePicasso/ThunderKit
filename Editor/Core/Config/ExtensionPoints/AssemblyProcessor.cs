@@ -6,7 +6,7 @@ namespace ThunderKit.Core.Config
     /// Redirect where assemblies source path
     /// </summary>
     [Serializable]
-    public abstract class AssemblyProcessor : ImportExtension<AssemblyProcessor>
+    public abstract class AssemblyProcessor : ImportExtension
     {
         /// <summary>
         /// Redirect where an assembly should be imported from

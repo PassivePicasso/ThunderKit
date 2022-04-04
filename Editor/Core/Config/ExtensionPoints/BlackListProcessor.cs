@@ -8,7 +8,7 @@ namespace ThunderKit.Core.Config
     /// The blacklist is overriden by the whitelist
     /// </summary>
     [Serializable]
-    public abstract class BlacklistProcessor : ImportExtension<BlacklistProcessor>
+    public abstract class BlacklistProcessor : ImportExtension
     {
         /// <summary>
         /// Modify or provide assembly blacklist of filenames

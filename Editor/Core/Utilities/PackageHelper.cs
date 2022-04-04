@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Common.Package;
+using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
@@ -67,41 +69,22 @@ namespace ThunderKit.Core.Utilities
             File.WriteAllText(metadataPath, metaData);
         }
 
-        public static string GetFileNameHash(string assemblyPath, ThunderKitSettings.GuidMode mode)
-        {
-            string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-            string result;
-            switch (mode)
-            {
-                case ThunderKitSettings.GuidMode.AssetRipperCompatibility:
-                    result = GetAssetRipperStringHash(shortName);
-                    break;
-                case ThunderKitSettings.GuidMode.Stabilized:
-                    result = GetStringHashUTF8(shortName);
-                    break;
-                case ThunderKitSettings.GuidMode.Original:
-                default:
-                    result = GetStringHash(shortName);
-                    break;
-            }
-            return result;
-        }
-
 
         public static string GetFileNameHash(string assemblyPath)
         {
             string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+            var importAssemblies = settings.ConfigurationExecutors.OfType<ImportAssemblies>().First();
             string result;
-            switch (settings.GuidGenerationMode)
+            switch (importAssemblies.GuidGenerationMode)
             {
-                case ThunderKitSettings.GuidMode.AssetRipperCompatibility:
+                case GuidMode.AssetRipperCompatibility:
                     result = GetAssetRipperStringHash(shortName);
                     break;
-                case ThunderKitSettings.GuidMode.Stabilized:
+                case GuidMode.Stabilized:
                     result = GetStringHashUTF8(shortName);
                     break;
-                case ThunderKitSettings.GuidMode.Original:
+                case GuidMode.Original:
                 default:
                     result = GetStringHash(shortName);
                     break;
