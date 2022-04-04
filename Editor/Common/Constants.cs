@@ -28,6 +28,13 @@ namespace ThunderKit.Common
 
         public static readonly string ClassDataPath = Path.Combine("Packages", "com.passivepicasso.thunderkit", "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk");
 
+        public static class GameConfigurationPriority
+        {
+            public const int AssemblyImport = 1000;
+            public const int GameSettingsImport = 500;
+            public const int CreateGamePackage = 0;
+            public const int AddressableCatalog = -500;
+        }
         public static class Icons
         {
             public const string ManifestIconPath = ThunderKitRoot + "/Graphics/Rasters/Icons/TK_Manifest_Icon.png";

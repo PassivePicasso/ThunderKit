@@ -26,30 +26,16 @@
 	left: 40%;
 	right: 40%;
 }
-#import-extensions-listview #extension-listview-item {
-	background-color: rgba(0,0,0,0);
-}
-#import-extensions-field-label{
-    -unity-text-align: top-left;
-}
-#import-extensions-listview {
-	height: 140px;
-	background-color: rgba(128,128,128,0.1);
+#extension-listview-item-header{
+	flex-direction: row;
 }
 #extension-listview-item{
-	flex-direction: row;
+	flex-direction: column;
 }
 .import-extensions-field ListView {
     max-width: 600px;
 
 }
-#import-extensions-section {
-	margin-top: 0px;
-	margin-bottom: 4px;
-    margin-left: 6px;
-    margin-right: 8px;
-}
-
 #log-configuration-section {
 	margin-top: 4px;
 }
