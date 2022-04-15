@@ -8,7 +8,7 @@
 
 ---
 
-[GameExecutable](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/GameExecutable.cs) will return the value of GameExecutable in your [ThunderKitSettings](menulink://Tools/ThunderKit/Settings)
+[GameExecutable](assetlink://GUID/590bd9fa6d6a2ba4b966390dfd0a9085) will return the value of GameExecutable in your [ThunderKitSettings](menulink://Tools/ThunderKit/Settings)
 
 ## Remarks
 

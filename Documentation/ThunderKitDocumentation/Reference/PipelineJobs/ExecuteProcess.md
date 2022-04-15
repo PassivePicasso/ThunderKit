@@ -8,7 +8,7 @@
 
 ---
 
-[ExecuteProcess](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/ExecuteProcess.cs) starts a new process
+[ExecuteProcess](assetlink://GUID/77f65d4371163fb4695da79ab8df0e84) starts a new process
 
 ## Fields
 * **Working Directory**
@@ -29,4 +29,4 @@ Execute Process can be used to launch games, external build processes, or any ot
 
 Use PathReferences to simplify the fields of ExecuteProcess and to provide a centralized set of variables to make it easier to manage multiple build pipelines.
 
-The [BepInEx Launch Pipeline](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Tempaltes/BepInEx/Pipelines/Launch.asset) uses Execute Process to launch the configured game and pass parameters necessary to load BepInEx with winhttp.dll and doorstop
+The [BepInEx Launch Pipeline](assetlink://GUID/bee6483f5bcf7054b86d13321eef27e5) uses Execute Process to launch the configured game and pass parameters necessary to load BepInEx with winhttp.dll and doorstop

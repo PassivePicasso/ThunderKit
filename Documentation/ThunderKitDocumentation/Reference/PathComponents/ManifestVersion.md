@@ -8,7 +8,7 @@
 
 ---
 
-[ManifestVersion](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/ManifestVersion.cs) can only be executed in the context of a Pipeline with an assigned Manifest.
+[ManifestVersion](assetlink://GUID/41b82db3744610d4ba6a7edd9df00836) can only be executed in the context of a Pipeline with an assigned Manifest.
 
 ## Context
 

@@ -8,11 +8,11 @@
 
 ---
 
-[StageUnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageUnityPackages.cs) builds and deploys Unity Asset Packages
+[StageUnityPackages](assetlink://GUID/d087870ea8abaed4ca4c717444be0165) builds and deploys Unity Asset Packages
 
 ## Required ManifestDatums
 
-* [UnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/UnityPackages.cs)
+* [UnityPackages](assetlink://GUID/dda4ac7962f04724eacfeb26af5e2b75)
 
 ## Remarks
 

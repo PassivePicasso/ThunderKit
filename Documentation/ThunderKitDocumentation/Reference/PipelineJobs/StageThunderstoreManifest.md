@@ -8,12 +8,12 @@
 
 ---
 
-[StageThunderstoreManifest](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/StageThunderstoreManifest.cs) creates Thunderstore manifest.json files
+[StageThunderstoreManifest](assetlink://GUID/dc52389347ae9634bbb7e74eba886518) creates Thunderstore manifest.json files
 
 ## Required ManifestDatums
 
-* [ThunderstoreData](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreData.cs)
+* [ThunderstoreData](assetlink://GUID/e0a82fec78ebc734d9ad1346cd40b5f9)
 
 ## Remarks
 
-The [StageThunderstoreManifest](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/StageThunderstoreManifest.cs) PipelineJob looks for ThunderstoreData ManifestDatums and will output a manifest.json to each StaginPath on each ThunderstoreData ManifestDatum attached to the current Manifests.
+The [StageThunderstoreManifest](assetlink://GUID/dc52389347ae9634bbb7e74eba886518) PipelineJob looks for ThunderstoreData ManifestDatums and will output a manifest.json to each StaginPath on each ThunderstoreData ManifestDatum attached to the current Manifests.

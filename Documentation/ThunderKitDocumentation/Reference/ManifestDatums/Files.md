@@ -8,7 +8,7 @@
 
 ---
 
-The [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssemblyDefinitions.cs) ManifestDatum stores references to Unity AssemblyDefinition objects.
+The [Files](assetlink://GUID/4b243ff405b33b94dbf5b6775dd9aa33) ManifestDatum stores references to assets inside your unity project.
 
 ## Fields
 * **Files**
@@ -22,9 +22,9 @@ The [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Edi
 
 ## PipelineJobs
 
-* [StageManifestFiles](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageManifestFiles.cs) 
+* [StageManifestFiles](assetlink://GUID/3570c76eb7a5c3c45942d9295a150917) 
   - Copies each asset referenced in each Files ManifestDatum to the output paths defined in its Staging Paths.
 
 ## Remarks
 
-Use this ManifestDatum to specify and group files to be deployed by Pipelines using the [StageManifestFiles](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageManifestFiles.cs) PipelineJob
+Use this ManifestDatum to specify and group files to be deployed by Pipelines using the [StageManifestFiles](assetlink://GUID/3570c76eb7a5c3c45942d9295a150917) PipelineJob

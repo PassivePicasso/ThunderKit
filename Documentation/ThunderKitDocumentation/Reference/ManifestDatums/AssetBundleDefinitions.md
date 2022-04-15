@@ -8,7 +8,7 @@
 
 ---
 
-[AssetBundleDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssetBundleDefinitions.cs) allow you to specify what assets you would like to include in your project output in the form of Unity AssetBundle(s)
+[AssetBundleDefinitions](assetlink://GUID/17d1008b78cb6e846889b7778282fbef) allow you to specify what assets you would like to include in your project output in the form of Unity AssetBundle(s)
 
 ## Fields
 
@@ -24,7 +24,7 @@
 
 ## PipelineJobs
 
-* [StageAssetBundles](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssetBundles.cs) 
+* [StageAssetBundles](assetlink://GUID/924ee63e6c016f14d8a1560b288f15a3) 
   - Builds and deploys AssetBundles defined by AssetBundleDefinitions
 
 ## Remarks

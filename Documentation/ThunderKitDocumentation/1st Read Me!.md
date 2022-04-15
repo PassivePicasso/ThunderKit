@@ -40,9 +40,9 @@ However, you can select and copy from code blocks like this one
 
 ThunderKit Documentation is built on a [UIToolkit](https://docs.unity3d.com/2018.4/Documentation/Manual/UIElements.html) Markdown system.
 
-See the [Documentation Folder](assetlink://Packages/com.passivepicasso.thunderkit/Documentation) for the Markdown files that makes up this documentation.
+See the [Documentation Folder](assetlink://GUID/8a4cd14903a156d48ac381bd86e23e48) for the Markdown files that makes up this documentation.
 
-ThunderKit's [MarkdownElement](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Markdown/MarkdownElement.cs) renders Markdown using  
-[Markdig 18.3](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/MarkDig/license.txt) 
+ThunderKit's [MarkdownElement](assetlink://GUID/ec19b76b765719a4fb4383a4fa9324ea) renders Markdown using  
+[Markdig 18.3](assetlink://GUID/a3cea14f6fefce94082492a3e8df5358) 
 
 Go to the [Markdig GitHub Repository](https://github.com/xoofx/markdig) for more information about Markdig.
