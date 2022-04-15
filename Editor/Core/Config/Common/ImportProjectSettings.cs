@@ -30,6 +30,8 @@ namespace ThunderKit.Core.Config.Common
 
         public override void Execute()
         {
+            if (IncludedSettings == 0) return;
+
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var classDataPath = Path.GetFullPath(Path.Combine(Constants.ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
 
