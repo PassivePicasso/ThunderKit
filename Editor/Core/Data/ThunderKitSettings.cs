@@ -57,8 +57,6 @@ namespace ThunderKit.Core.Data
                 .Select(path => AssetDatabase.LoadAssetAtPath<Manifest>(path))
                 .Where(manifest => manifest.QuickAccess)
                 .ToArray();
-
-            EditorApplication.update += SetupConfigurators;
         }
         private static void EditorApplicationQuitting() => CopyAssemblyCSharp(null, null);
         private static bool EditorApplication_wantsToQuit()
@@ -88,9 +86,7 @@ namespace ThunderKit.Core.Data
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
         }
-
-        private static IEnumerable<System.Reflection.Assembly> configurationAssemblies;
-
+        #region Properties
         public override string DisplayName => "ThunderKit Settings";
         public string GameDataPath => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameExecutable)}_Data");
         public string ManagedAssembliesPath => Path.Combine(GameDataPath, $"Managed");
@@ -117,13 +113,13 @@ namespace ThunderKit.Core.Data
         public string PackagePath => $"Packages/{PackageName}";
         public string PackageFilePath => $"Packages/{Path.GetFileNameWithoutExtension(GameExecutable)}";
         public string PackagePluginsPath => $"{PackagePath}/plugins";
-
+        #endregion
+        #region Fields
         [SerializeField]
         private bool FirstLoad = true;
         public bool ShowOnStartup = true;
         public string GameExecutable;
         public string GamePath;
-        public int IncludedSettings;
         public bool Is64Bit;
         public string DateTimeFormat = "HH:mm:ss:fff";
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
@@ -133,97 +129,17 @@ namespace ThunderKit.Core.Data
         public Manifest SelectedManifest;
         public Pipeline[] QuickAccessPipelines;
         public Manifest[] QuickAccessManifests;
-        public Executor[] ConfigurationExecutors;
         private MarkdownElement markdown;
         private SerializedObject thunderKitSettingsSO;
+        public ImportConfiguration ImportConfiguration;
+
+        #endregion
 
         public override void Initialize()
         {
             GamePath = "";
         }
 
-
-        private static void SetupConfigurators()
-        {
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            if (EditorApplication.isUpdating) return;
-
-            var builder = new StringBuilder("Loaded GameConfigurators:");
-            builder.AppendLine();
-            if (configurationAssemblies == null)
-                configurationAssemblies = AppDomain.CurrentDomain
-                                .GetAssemblies()
-                                .Where(asm => asm != null)
-                                .Where(asm => asm.GetCustomAttribute<GameConfiguratorAssemblyAttribute>() != null);
-
-            var loadedTypes = configurationAssemblies
-#if NET_4_6
-                .Where(asm => !asm.IsDynamic)
-#else
-                .Where(asm =>
-                {
-                    if (asm.ManifestModule is System.Reflection.Emit.ModuleBuilder mb)
-                        return !mb.IsTransient();
-
-                    return true;
-                })
-#endif
-               .SelectMany(asm =>
-               {
-                   try
-                   {
-                       return asm.GetTypes();
-                   }
-                   catch (ReflectionTypeLoadException e)
-                   {
-                       return e.Types;
-                   }
-               })
-               .Where(t => t != null)
-               .Where(t => !t.IsAbstract && !t.IsInterface)
-               .ToArray();
-
-
-            var settingsPath = AssetDatabase.GetAssetPath(settings);
-            var objects = AssetDatabase.LoadAllAssetRepresentationsAtPath(settingsPath);
-            var existingExecutors = new HashSet<Executor>(objects.OfType<Executor>());
-
-            int currentExecutorCount = existingExecutors.Count;
-
-            var executors = loadedTypes.Where(t => typeof(Executor).IsAssignableFrom(t))
-                .Where(t => !existingExecutors.Any(executor => executor.GetType() == t))
-                .Select(t =>
-                {
-                    if (existingExecutors.Any(gc => gc.GetType() == t))
-                        return null;
-
-                    var configurator = CreateInstance(t) as Executor;
-                    if (configurator)
-                    {
-                        configurator.name = configurator.Name;
-                        builder.AppendLine(configurator.GetType().AssemblyQualifiedName);
-                    }
-                    return configurator;
-                })
-                .Where(configurator => configurator != null)
-                .Union(existingExecutors)
-                .Distinct()
-                .OrderByDescending(configurator => configurator.Priority)
-                .ToList();
-
-            foreach (var element in executors)
-                if (AssetDatabase.GetAssetPath(element) != settingsPath)
-                    AssetDatabase.AddObjectToAsset(element, settingsPath);
-
-            var updatedExectors = executors.ToArray();
-            settings.ConfigurationExecutors = updatedExectors;
-            if (currentExecutorCount != updatedExectors.Length)
-            {
-                AssetDatabase.ImportAsset(settingsPath);
-                Debug.Log(builder.ToString());
-            }
-
-        }
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
@@ -245,47 +161,6 @@ namespace ThunderKit.Core.Data
 
             rootElement.Add(settingsElement);
 
-            var executorView = settingsElement.Q<VisualElement>("executor-element");
-            foreach (var executor in ConfigurationExecutors)
-            {
-                try
-                {
-                    VisualElement element = null;
-                    if (executor is OptionalExecutor oe)
-                    {
-                        element = new VisualElement { name = "extension-listview-item" };
-
-                        var header = new VisualElement { name = "extension-listview-item-header" };
-                        header.AddToClassList("thunderkit-field");
-                        var label = new Label { name = "extension-label", bindingPath = nameof(Executor.extensionName) };
-                        header.Add(label);
-                        var toggle = new Toggle { name = "extension-enabled-toggle", bindingPath = nameof(OptionalExecutor.enabled) };
-                        header.Add(toggle);
-
-                        element.Add(header);
-                    }
-
-                    var child = executor.CreateUI();
-                    if (child != null)
-                    {
-                        if (element == null)
-                            element = new VisualElement { name = "extension-listview-item" };
-                        element.Add(child);
-                    }
-
-                    if (element != null)
-                    {
-                        executorView.Add(element);
-                        element.Bind(new SerializedObject(executor));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e);
-                }
-            }
-            //ConfigureListView(settingsElement.Q<ListView>("import-extensions-listview"));
-
             var browseButton = settingsElement.Q<Button>("browse-button");
             browseButton.clickable.clicked -= BrowserForGame;
             browseButton.clickable.clicked += BrowserForGame;
@@ -300,50 +175,17 @@ namespace ThunderKit.Core.Data
             rootElement.Bind(thunderKitSettingsSO);
         }
 
-        private void ConfigureListView(ListView importProcessorsListView)
+        private void LoadGame()
         {
-            importProcessorsListView.bindItem = (visualElement, index) =>
-            {
-                var label = visualElement.Q<Label>("extension-label");
-                var toggle = visualElement.Q<Toggle>("extension-enabled-toggle");
+            if (!ImportConfiguration)
+                ImportConfiguration = GetOrCreateSettings<ImportConfiguration>();
 
-                var instance = importProcessorsListView.itemsSource[index];
-                var type = instance.GetType();
-                var enabledProperty = type.GetProperty("Enabled", publicInstanceBinding);
-                var nameProperty = type.GetProperty("Name", publicInstanceBinding);
-
-                label.text = nameProperty.GetValue(instance) as string;
-
-                var onEnabledChanged = new EventCallback<ChangeEvent<bool>>(evt =>
-                {
-                    var enabled = (bool)evt.newValue;
-                    enabledProperty.SetValue(importProcessorsListView.itemsSource[index], enabled);
-                });
-                toggle.value = (bool)enabledProperty.GetValue(importProcessorsListView.itemsSource[index]);
-#if UNITY_2019_1_OR_NEWER
-                if (toggle.userData is EventCallback<ChangeEvent<bool>> callback)
-                    toggle.UnregisterValueChangedCallback(callback);
-
-                toggle.RegisterValueChangedCallback(onEnabledChanged);
-#elif UNITY_2018_1_OR_NEWER
-                if (toggle.userData is EventCallback<ChangeEvent<bool>> callback)
-                    toggle.UnregisterCallback(callback);
-
-                toggle.OnValueChanged(onEnabledChanged);
-#endif
-                toggle.userData = onEnabledChanged;
-            };
-
-            importProcessorsListView.itemsSource = ConfigurationExecutors.ToList();
-        }
-
-        private async void LoadGame()
-        {
-            await GameConfigurator.LoadGame(this);
+            ImportConfiguration.ConfigurationIndex = 0;
+            ImportConfiguration.ImportGame();
         }
         private void BrowserForGame()
         {
-            GameConfigurator.LocateGame(this);
+            ImportConfiguration.LocateGame(this);
             if (!string.IsNullOrEmpty(GameExecutable) && !string.IsNullOrEmpty(GamePath))
             {
                 if (markdown != null)
