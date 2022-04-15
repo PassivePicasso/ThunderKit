@@ -10,7 +10,7 @@ namespace ThunderKit.Core.Config
 {
     public class CreateGamePackage : Executor
     {
-        public override int Priority => Constants.GameConfigurationPriority.CreateGamePackage;
+        public override int Priority => Constants.ConfigPriority.CreateGamePackage;
 
         public override async Task Execute()
         {

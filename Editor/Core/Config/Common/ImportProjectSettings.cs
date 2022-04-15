@@ -21,7 +21,7 @@ namespace ThunderKit.Core.Config.Common
     public class ImportProjectSettings : Executor
     {
         private const string TemplatePath = Constants.SettingsTemplatesPath + "/ImportProjectSettings.uxml";
-        public override int Priority => Constants.GameConfigurationPriority.GameSettingsImport;
+        public override int Priority => Constants.ConfigPriority.ProjectSettingsImport;
 
         public int IncludedSettings;
 
