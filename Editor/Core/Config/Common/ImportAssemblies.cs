@@ -81,7 +81,7 @@ namespace ThunderKit.Core.Config
             return importers;
         }
 
-        public override int Priority => Constants.GameConfigurationPriority.AssemblyImport;
+        public override int Priority => Constants.ConfigPriority.AssemblyImport;
 
         public GuidMode OldGuidGenerationMode = GuidMode.Original;
         public GuidMode GuidGenerationMode = GuidMode.Original;
