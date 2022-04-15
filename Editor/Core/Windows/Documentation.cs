@@ -44,12 +44,21 @@ namespace ThunderKit.Core.Windows
                     string path = schemelessUri.StartsWith("GUID/") ?
                     AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length))
                     : schemelessUri;
-                    Debug.Log(path);
 
                     ShowThunderKitDocumentation(path);
                 },
                 label =>
                 {
+                    string schemelessUri = label.tooltip.Substring("documentation://".Length);
+
+                    if (schemelessUri.Length != 0)
+                    {
+                        string path = schemelessUri.StartsWith("GUID/") ?
+                        AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length))
+                        : schemelessUri;
+                        label.tooltip = $"documentation://{path}";
+                    }
+
                     var container = new VisualElement();
 
                     var icon = new Image();
