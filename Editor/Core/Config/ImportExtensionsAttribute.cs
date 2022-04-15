@@ -3,5 +3,5 @@
 namespace ThunderKit.Core.Config
 {
     [AttributeUsage(AttributeTargets.Assembly)]
-    public class GameConfiguratorAssemblyAttribute : Attribute { }
+    public class ImportExtensionsAttribute : Attribute { }
 }
