@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using Markdig.Renderers.Html;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 #else
 using UnityEngine.Experimental.UIElements;
 #endif
@@ -33,7 +32,12 @@ namespace ThunderKit.Markdown.ObjectRenderers
             {
                 var schemelessUri = link.Substring("assetlink://".Length);
                 if (schemelessUri.Length == 0) return;
-                var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(schemelessUri);
+                
+                string path = schemelessUri.StartsWith("GUID/") ? 
+                AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length)) 
+                : schemelessUri;
+
+                var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
                 EditorGUIUtility.PingObject(asset);
                 Selection.activeObject = asset;
             },
@@ -43,11 +47,15 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 if (schemelessUri.Length == 0)
                     return label;
 
+                string path = schemelessUri.StartsWith("GUID/") ?
+                AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length))
+                : schemelessUri;
+
                 var container = new VisualElement();
 
                 var icon = new Image();
                 icon.AddToClassList("asset-icon");
-                icon.image = AssetDatabase.GetCachedIcon(schemelessUri);
+                icon.image = AssetDatabase.GetCachedIcon(path);
 
                 container.Add(icon);
                 container.Add(label);
