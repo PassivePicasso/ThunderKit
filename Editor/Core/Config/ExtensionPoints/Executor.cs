@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
-using ThunderKit.Core.Config;
-using UnityEngine;
-#if UNITY_2019
+﻿#if UNITY_2019
 using UnityEngine.UIElements;
 #elif UNITY_2018
 using UnityEngine.Experimental.UIElements;
