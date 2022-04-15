@@ -32,10 +32,10 @@ The [ManifestIdentity](assetlink://GUID/f22bb7fd1d3b56a48bc52f8e407901d6) stores
   
 ## PipelineJobs
 
-* [StageDependencies](assetlink://GUID/1b4f4581088b47744a114c282abc085d)
+* [StageDependencies](documentation://GUID/af852fc5b31304e498e9def1c01db5c1)
   - Uses the ManifestIdentity.Dependencies array to deploy dependencies loaded by the ThunderKit Package Manager
 
-* [StageThunderstoreManifest](assetlink://GUID/dc52389347ae9634bbb7e74eba886518) 
+* [StageThunderstoreManifest](documentation://GUID/74a0394c4eaea384e89e7a3688053c2b) 
   - Uses ManifestIdentity information to construct a manifest json file for Thunderstore
 
 ## Remarks

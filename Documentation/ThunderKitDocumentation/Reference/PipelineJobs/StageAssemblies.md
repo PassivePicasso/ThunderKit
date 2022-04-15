@@ -21,7 +21,7 @@
 
 ## Required ManifestDatums
 
-* [AssemblyDefinitions](assetlink://GUID/2b7e13dda513544419a89926bd12ad8a)
+* [AssemblyDefinitions](documentation://GUID/cef5acb6a795c5d4d9031261ea82e891)
 
 ## Remarks
 
