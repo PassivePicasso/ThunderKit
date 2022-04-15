@@ -1,17 +1,20 @@
 ﻿using AssetsExporter;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.UIElements;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
+using System.Collections;
 #if UNITY_2019
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 #elif UNITY_2018
 using UnityEngine.Experimental.UIElements;
+using UnityEditor.Experimental.UIElements;
 #endif
 
 
@@ -25,7 +28,7 @@ namespace ThunderKit.Core.Config.Common
 
         public int IncludedSettings;
 
-        public override async Task Execute()
+        public override void Execute()
         {
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var classDataPath = Path.GetFullPath(Path.Combine(Constants.ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
@@ -37,6 +40,7 @@ namespace ThunderKit.Core.Config.Common
             GameExporter.ExportGlobalGameManagers(executablePath, gameManagerTemp, settings.GameDataPath, editorDirectory, classDataPath, unityVersion);
 
             var includedSettings = (IncludedSettings)IncludedSettings;
+            var importedSettings = new List<string>();
             foreach (IncludedSettings include in (IncludedSettings[])Enum.GetValues(typeof(IncludedSettings)))
             {
                 if (!includedSettings.HasFlag(include)) continue;
@@ -51,11 +55,16 @@ namespace ThunderKit.Core.Config.Common
                 File.SetLastWriteTime(settingPath, DateTime.Now);
                 File.SetLastAccessTime(settingPath, DateTime.Now);
                 File.SetCreationTime(settingPath, DateTime.Now);
-                AssetDatabase.ImportAsset(settingPath);
+                importedSettings.Add(settingPath);
             }
 
-            while (EditorApplication.isUpdating)
-                await Task.Yield();
+            AssetDatabase.ImportAsset(importedSettings[0]);
+
+            var escape = false;
+            while (EditorApplication.isUpdating && !escape)
+            {
+                var x = escape;
+            }
         }
 
         public override VisualElement CreateUI()

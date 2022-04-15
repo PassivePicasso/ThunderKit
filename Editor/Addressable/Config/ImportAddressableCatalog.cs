@@ -1,18 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
-#if UNITY_2019
-using UnityEngine.UIElements;
-#elif UNITY_2018
-using UnityEngine.Experimental.UIElements;
-#endif
-
 
 namespace ThunderKit.Addressable.Config
 {
@@ -21,13 +14,12 @@ namespace ThunderKit.Addressable.Config
     {
         public override int Priority => Constants.ConfigPriority.AddressableCatalog;
 
-        public override Task Execute()
+        public override void Execute()
         {
             if (ImportAddressableData(ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>()))
             {
                 EditorApplication.update += UpdateDefines;
             }
-            return Task.CompletedTask;
         }
 
         private static void UpdateDefines()
