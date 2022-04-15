@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using ThunderKit.Core.Controls;
 using UnityEditor;
 using UnityEditorInternal;
@@ -11,10 +12,10 @@ namespace ThunderKit.Core.Utilities
         public static void EditScript(ScriptableObject scriptableObject)
         {
             var script = MonoScript.FromScriptableObject(scriptableObject);
-            var scriptPath = AssetDatabase.GetAssetPath(script);
+            var path = AssetDatabase.GetAssetPath(script);
+            var assetFilePath = Path.GetFullPath(path);
 
-            InternalEditorUtility.OpenFileAtLineExternal(scriptPath, -1);
-
+            InternalEditorUtility.OpenFileAtLineExternal(assetFilePath, -1);
         }
         public static void GetDetails(string typeFullName, out string destinationPath, out string nameSpace, out string fileName)
         {
