@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Threading.Tasks;
 using ThunderKit.Core.Config;
-using Unity.EditorCoroutines.Editor;
 using UnityEngine;
 #if UNITY_2019
 using UnityEngine.UIElements;
