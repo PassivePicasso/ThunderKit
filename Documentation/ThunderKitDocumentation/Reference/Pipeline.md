@@ -23,4 +23,4 @@ Each PipelineJob will use a ManifestDatum's StagingPaths to deploy its content, 
 
 Some PipelineJobs include the ability to Exclude Manifests.  This can be used to exclude Manifests which have special deployment requirements,  such as a Mod Loader.  In these situations you may need to have explicit control over where and how the content of that Manifest is deployed.  
 
-The [Default-BepInEx](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/BepInEx/Manifests/Default-BepInEx.asset) template uses this to deploy BepInEx separately so that mods can properly be installed into its plugins, patchers and monomod folders.
+The [Default-BepInEx](assetlink://GUID/bc5e6d3336544e5361d16e63ddfca327) template uses this to deploy BepInEx separately so that mods can properly be installed into its plugins, patchers and monomod folders.

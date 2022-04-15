@@ -8,7 +8,7 @@
 
 ---
 
-[Resolver](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/Resolver.cs) takes a string that it will resolve using the PathReference system.
+[Resolver](assetlink://GUID/6bfead62a54d1b04d9ce0a82f51655a1) takes a string that it will resolve using the PathReference system.
 
 ## Fields
 * **Value**

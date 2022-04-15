@@ -8,7 +8,7 @@
 
 ---
 
-The [ThunderstoreData](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/ThunderstoreData.cs) ManifestDatum stores a URL and identifies the Manifest as being a Thunderstore compatible Manifest.
+The [ThunderstoreData](assetlink://GUID/e0a82fec78ebc734d9ad1346cd40b5f9) ManifestDatum stores a URL and identifies the Manifest as being a Thunderstore compatible Manifest.
 
 ## Fields
 * **Url**
@@ -22,7 +22,7 @@ The [ThunderstoreData](assetlink://Packages/com.passivepicasso.thunderkit/Editor
 
 ## PipelineJobs
 
-* [StageThunderstoreManifest](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/StageThunderstoreManifest.cs)
+* [StageThunderstoreManifest](documentation://GUID/74a0394c4eaea384e89e7a3688053c2b)
   - Generates a manifest.json file compatible with Thunderstore and outputs it to **StagingPaths** defined in this ManifestDatum.
 
 ## Remarks
@@ -31,4 +31,4 @@ Thunderstore Packages are required to contain a manifest.json file.
 
 This ManifestDatum collects additional Thunderstore specific information and identifies the Manifest as being Thunderstore compatible.
 
-The [StageThunderstoreManifest](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Integrations/Thunderstore/StageThunderstoreManifest.cs) PipelineJob looks for this ManifestDatum and will output a Manifest.json to  each StaginPath on each ThunderstoreData ManifestDatum attached to the current Manifests.
+The [StageThunderstoreManifest](assetlink://GUID/dc52389347ae9634bbb7e74eba886518) PipelineJob looks for this ManifestDatum and will output a Manifest.json to  each StaginPath on each ThunderstoreData ManifestDatum attached to the current Manifests.

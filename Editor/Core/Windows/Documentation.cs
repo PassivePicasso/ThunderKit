@@ -37,8 +37,38 @@ namespace ThunderKit.Core.Windows
                 "documentation",
                 link =>
                 {
-                    var path = link.Substring("documentation://".Length);
+                    var schemelessUri = link.Substring("documentation://".Length);
+
+                    if (schemelessUri.Length == 0) return;
+
+                    string path = schemelessUri.StartsWith("GUID/") ?
+                    AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length))
+                    : schemelessUri;
+
                     ShowThunderKitDocumentation(path);
+                },
+                label =>
+                {
+                    string schemelessUri = label.tooltip.Substring("documentation://".Length);
+
+                    if (schemelessUri.Length != 0)
+                    {
+                        string path = schemelessUri.StartsWith("GUID/") ?
+                        AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length))
+                        : schemelessUri;
+                        label.tooltip = $"documentation://{path}";
+                    }
+
+                    var container = new VisualElement();
+
+                    var icon = new Image();
+                    icon.AddToClassList("asset-icon");
+                    icon.image = AssetDatabase.LoadAssetAtPath<Texture>(AssetDatabase.GUIDToAssetPath("2f1c3b93b0c7f4046a4d826cc0460f12"));
+
+                    container.Add(icon);
+                    container.Add(label);
+
+                    return container;
                 });
         }
 

@@ -7,40 +7,40 @@ This package contains third-party software components governed by the license(s)
 * `Copyright (c) 2018, Alexandre Mutel`
 * [https://github.com/xoofx/markdig](https://github.com/xoofx/markdig)
 * License : [BSD 2-Clause "Simplified"](https://github.com/xoofx/markdig/blob/master/license.txt)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/Markdig/license.txt)
+* [Local License](assetlink://GUID/a3cea14f6fefce94082492a3e8df5358)
 
 ## Cascadia Code
 
 * `Copyright (c) 2019 - Present, Microsoft Corporation,`
 * [https://github.com/microsoft/cascadia-code](https://github.com/microsoft/cascadia-code)
 * License:  [SIL Open Font License, Version 1.1](http://scripts.sil.org/OFL)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/LICENSE.txt)
+* [Local License](assetlink://GUID/85695bdaec736cc46b8c43c5373e2bb9)
 
 ## SharpCompress (v21.0)
 
 * `Copyright (c) 2014  Adam Hathcock`
 * [https://github.com/adamhathcock/sharpcompress](https://github.com/adamhathcock/sharpcompress)
 * License:  [The MIT License](https://github.com/adamhathcock/sharpcompress/blob/master/LICENSE.txt)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/SharpCompress/LICENSE.txt)
+* [Local License](assetlink://GUID/4b02e94a011feed41b58d7b116780ac0)
 
 ## Markdown Test File
 
 * `Copyright (c) 2017 Max Stoiber`
 * [https://github.com/mxstbr/markdown-test-file](https://github.com/mxstbr/markdown-test-file)
 * License:  [The MIT License](https://github.com/mxstbr/markdown-test-file/blob/master/LICENSE)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/MarkdownTestFile/LICENSE.txt)
+* [Local License](assetlink://GUID/d2e46d9c9f4288b4e85e7ba448d018d6)
 
 ## Unity Toolbar Extender
 
 * `Copyright (c) 2018 Marijn Zwemmer`
 * [https://github.com/marijnz/unity-toolbar-extender](https://github.com/marijnz/unity-toolbar-extender)
 * License:  [The MIT License](https://github.com/marijnz/unity-toolbar-extender/blob/master/LICENSE)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/UnityToolbarExtender/LICENSE.txt)
+* [Local License](assetlink://GUID/47661bbef8f7c4848bc22482e40dbd26)
 
 ## AssetsTools.NET 
 
 * `Copyright (c) 2020 nesrak1`
 * [https://github.com/nesrak1/AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET)
 * License:  [The MIT License](https://github.com/nesrak1/AssetsTools.NET/blob/master/LICENSE)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/AssetsTools.NET/LICENSE.txt)
+* [Local License](assetlink://GUID/8b84cdaefe6cec6489553433fa4cfcf6)
 * This library was modified to remove it's Mono.Cecil dependency for compatibility reasons

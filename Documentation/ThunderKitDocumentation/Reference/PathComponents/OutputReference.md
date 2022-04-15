@@ -8,7 +8,7 @@
 
 ---
 
-[OutputReference](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/OutputReference.cs) allows you to reference another PathReference using Unity's Asset system.
+[OutputReference](assetlink://GUID/0ceeada0f3a252c4fa6ec9b0c93543ce) allows you to reference another PathReference using Unity's Asset system.
 
 ## Fields
 * **Reference**
