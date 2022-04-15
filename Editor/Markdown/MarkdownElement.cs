@@ -73,7 +73,18 @@ namespace ThunderKit.Markdown
             this.AddManipulator(new ContextualMenuManipulator((evt) =>
             {
                 if (MarkdownDataType == MarkdownDataType.Implicit || MarkdownDataType == MarkdownDataType.Source)
+                {
                     evt.menu.AppendAction("Edit Markdown", OpenMarkdown);
+                    evt.menu.AppendAction("Select Markdown Source", (dma) =>
+                    {
+                        var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(data);
+                        if (asset != null)
+                        {
+                            EditorGUIUtility.PingObject(asset);
+                            Selection.activeObject = asset;
+                        }
+                    });
+                }
             }));
         }
 

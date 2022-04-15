@@ -28,15 +28,26 @@ These initial steps are the universal basic setup for any ThunderKit project.
     - Unity 2018 does not full integration for Git and operates on an installed version
 3. Create a new Unity Project with the installed version of Unity
 4. Install ThunderKit
-      - Navigate to the Project folder with your file explorer and open the Packages folder 
-      - Open the manifest.json file in this folder and add the following to the top of dependencies
-      `"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git",` 
-      - Save and close the manifest.json file and focus Unity to complete the process.
-
+    - there are two ways of installing thunderkit.
+    - Manual:
+        - Navigate to the Project folder with your file explorer and open the Packages folder 
+        - Open the manifest.json file in this folder and add the following to the top of dependencies
+        `"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git",` 
+        - Save and close the manifest.json file and focus Unity to complete the process.
+    - Unity Package Manager
+        - Open the Unity Package Manager
+        - Click the Plus icon at the top left corner
+        - Select "Add Package from Git URL..."
+        - Paste the following on the text field
+        `"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git",` 
+        - Click add and close the package manager
 5. Verify that the [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) window opened automatically.
     - If the ThunderKit Settings window did not open after the installation completes, check the Console for errors
 
-6. Click on Locate Game under the ThunderKit settings to locate and select the games executable
+6. Click on Browse under the ThunderKit settings to locate and select the games executable
+7. Configure the import process to your liking.
+    * More information about the import options can be found on the Thunderkit Documentation.
+8. Hit Import
       * It may take some time for ThunderKit and Unity to complete the configuration
 7. Open the project window from the main menu via Windows/General/Project
 8. Create a Manifest by right clicking in any folder under assets and selecting ThunderKit/Manifest
