@@ -8,7 +8,7 @@
 
 ---
 
-[UnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/AssetReference.cs) stores an array of UnityPackage assets for use by the StageUnityPackages PipelineJob
+[UnityPackages](assetlink://GUID/dda4ac7962f04724eacfeb26af5e2b75) stores an array of UnityPackage assets for use by the StageUnityPackages PipelineJob
 
 UnityPackages are an interface to Unity [Asset Packages](https://docs.unity3d.com/2018.4/Documentation/Manual/AssetPackages.html)
 

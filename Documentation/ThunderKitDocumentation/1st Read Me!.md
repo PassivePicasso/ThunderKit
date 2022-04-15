@@ -25,6 +25,8 @@ your inspector. Open the [Project window](menulink://Window/General/Project) and
 
 - [Internet Hyperlinks](http://) are links to websites such as the [Unity Manual](https://docs.unity3d.com/Manual/index.html) or [ThunderKit Git Repository](https://github.com/PassivePicasso/ThunderKit) and will launch in your default Web Browser.
 
+- [Documentation Links](documentation://) use the `documentation://` scheme and are shortcuts to Documentation pages. These can be used to quickly browse between relevant topics, such as a manifest datum and it's respective pipeline job.
+
 This page will be updated as more types of links are added.
 
 MarkdownElement's links do not track visitation, so the color of links will not change from usage.
@@ -40,9 +42,9 @@ However, you can select and copy from code blocks like this one
 
 ThunderKit Documentation is built on a [UIToolkit](https://docs.unity3d.com/2018.4/Documentation/Manual/UIElements.html) Markdown system.
 
-See the [Documentation Folder](assetlink://Packages/com.passivepicasso.thunderkit/Documentation) for the Markdown files that makes up this documentation.
+See the [Documentation Folder](assetlink://GUID/8a4cd14903a156d48ac381bd86e23e48) for the Markdown files that makes up this documentation.
 
-ThunderKit's [MarkdownElement](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Markdown/MarkdownElement.cs) renders Markdown using  
-[Markdig 18.3](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/MarkDig/license.txt) 
+ThunderKit's [MarkdownElement](assetlink://GUID/ec19b76b765719a4fb4383a4fa9324ea) renders Markdown using  
+[Markdig 18.3](assetlink://GUID/a3cea14f6fefce94082492a3e8df5358) 
 
 Go to the [Markdig GitHub Repository](https://github.com/xoofx/markdig) for more information about Markdig.

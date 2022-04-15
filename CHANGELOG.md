@@ -1,3 +1,7 @@
+## 5.0.0
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc in felis ac enim facilisis laoreet. Donec viverra augue at ipsum ultrices, non viverra eros vestibulum. Nam scelerisque, est ac pretium pretium, nunc elit blandit neque, et tincidunt dolor neque sed neque. Suspendisse condimentum augue nisl, non placerat purus aliquet sed. Cras tristique posuere ullamcorper. Morbi elementum orci quam, eu ullamcorper lectus sagittis sit amet. Aliquam at lorem sit amet mi gravida dignissim. Etiam vitae dui in elit ornare auctor. Sed nisl erat, semper eget luctus quis, ullamcorper ac diam. Nam finibus quam tellus, a mollis nisl cursus ut. Nunc hendrerit malesuada euismod. Aliquam eu libero efficitur, volutpat tortor quis, vehicula tortor.
+
 ## 4.1.1
 
 ### Pipelines and Logging

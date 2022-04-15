@@ -8,7 +8,7 @@
 
 ---
 
-The [ManifestIdentity](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/ManifestIdentity.cs) stores unique identifying information used by ThunderKit to construct dependency information for package stores and mod loaders.
+The [ManifestIdentity](assetlink://GUID/f22bb7fd1d3b56a48bc52f8e407901d6) stores unique identifying information used by ThunderKit to construct dependency information for package stores and mod loaders.
 
 ### Fields
 * **Author**
@@ -32,10 +32,10 @@ The [ManifestIdentity](assetlink://Packages/com.passivepicasso.thunderkit/Editor
   
 ## PipelineJobs
 
-* [StageDependencies](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageDependencies.cs)
+* [StageDependencies](documentation://GUID/af852fc5b31304e498e9def1c01db5c1)
   - Uses the ManifestIdentity.Dependencies array to deploy dependencies loaded by the ThunderKit Package Manager
 
-* [StageThunderstoreManifest](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageThunderstoreManifest.cs) 
+* [StageThunderstoreManifest](documentation://GUID/74a0394c4eaea384e89e7a3688053c2b) 
   - Uses ManifestIdentity information to construct a manifest json file for Thunderstore
 
 ## Remarks

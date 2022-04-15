@@ -8,7 +8,7 @@
 
 ---
 
-The [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssemblyDefinitions.cs) ManifestDatum stores references to Unity AssemblyDefinition objects.
+The [AssemblyDefinitions](assetlink://GUID/2b7e13dda513544419a89926bd12ad8a) ManifestDatum stores references to Unity AssemblyDefinition objects.
 
 ## Fields
 * **Definitions**
@@ -22,7 +22,7 @@ The [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Edi
 
 ## PipelineJobs
 
-* [StageAssemblies](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssemblies.cs) 
+* [StageAssemblies](documentation://GUID/c18be5deeb5af6d48b59ed26056ba2fc) 
   - Copies each assembly referenced in each AssemblyDefinition ManifestDatum to the output paths defined in its Staging Paths.
 
 ## Remarks

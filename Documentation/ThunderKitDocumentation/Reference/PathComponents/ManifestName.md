@@ -8,7 +8,7 @@
 
 ---
 
-[ManifestName](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/ManifestName.cs) can only be executed in the context of a Pipeline with an assigned Manifest.
+[ManifestName](assetlink://GUID/2efd008a408bd8449ad573ac2d5003ce) can only be executed in the context of a Pipeline with an assigned Manifest.
 
 ## Context
 

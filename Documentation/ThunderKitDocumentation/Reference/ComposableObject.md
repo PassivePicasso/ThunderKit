@@ -16,3 +16,9 @@ a existing and new ComposableObjects when a script template is specified.
 Manifests, Pipelines, and PathReferences are built upon ComposableObject so that they can benefit from this common feature set, and to allow users to add new functionality as needed. The Add Script window will allow you to create new components for each of these systems.
 
 Continue reading below to gain an understanding of the existing systems ThunderKit uses to help you develop, test, and deploy your mods.
+
+[Manifest Documentation](documentation://GUID/02282fc15986c8941b791e56e592db1f)
+
+[Pipeline Documentation](documentation://GUID/3cc273aff4638a242a847ff6c94a0521)
+
+[Path Documentation](documentation://GUID/38dcf73e153c4aa4ab413bcd9c568be8)
