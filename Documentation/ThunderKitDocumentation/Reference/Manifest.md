@@ -16,4 +16,4 @@ All Manifests are prepopulated with a ManifestIdentity. The ManifestIdentity is 
 
 ManifestDatums all have an array named Staging Paths.  This array of strings informs Pipelines where the information is expected to be written out to. As previously mentioned, the StagingPaths array can utilize PathReferences by invoking one with the arrow bracket operators <>.
 
-If you would like to check out an example, inspect the [Default-BepInEx](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/BepInEx/Manifests/Default-BepInEx.asset) manifest in the ThunderKit Package.
+If you would like to check out an example, inspect the [Default-BepInEx](assetlink://GUID/bc5e6d3336544e5361d16e63ddfca327) manifest in the ThunderKit Package.

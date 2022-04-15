@@ -18,7 +18,7 @@ In the second a PathReference has access to the same information, plus it can ac
 
 In ThunderKit Pipelines and Manifests any place you can enter a path to a file or a folder, you can use a PathReference by invoking it in the field to ensure common paths are always used correctly.  You can invokea path reference by naming it in arrow brackets.
 
-For example, you can use the [ManifestPluginStaging](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/PathReferences/ManifestPluginStaging.asset) PathReference in Staging Paths by calling it with arrow brackets.
+For example, you can use the [ManifestPluginStaging](assetlink://GUID/8bd8f966c2445394ab9c356e6227c6a0) PathReference in Staging Paths by calling it with arrow brackets.
 
 If you wanted to put all your Manifest's AssetBundles into a subfolder named AssetBundles in your mod output you add the following to your Manifest's AssetBundleDefinition's Staging Paths.
 
@@ -28,6 +28,6 @@ When the StageAssetBundles PipelineJob executes against your Manifest, it will o
 
 Where ProjectRoot is the name of the folder your project is in, and ManifestName is the value you entered for your Manifest's ManifestIdentity's Name field.
 
-ThunderKit comes with a number of already defined [PathReferences](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/PathReferences). Please note that some adjustments may be needed for different games and mod loaders.
+ThunderKit comes with a number of already defined [PathReferences](assetlink://GUID/8c6243a7bb8ce734ab8ae4ccf164bfb7). Please note that some adjustments may be needed for different games and mod loaders.
 
 Finally it is important to note that fields which can use PathReferences do not automatically resolve. PipelineJobs must be built to resolve PathReferences using `PathReference.

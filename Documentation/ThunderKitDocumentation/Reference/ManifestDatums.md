@@ -16,9 +16,9 @@ ManifestDatums and PipelineJobs are paired together in ThunderKit.  When you cre
 
 Some pairs that already exist are;
 
-1. ManifestDatum [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssemblyDefinitions.cs) and PipelineJob [StageAssemblies](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssemblies.cs)
-2. ManifestDatum [AssetBundleDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssetBundleDefinitions.cs) and PipelineJob [StageAssetBundles](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssetBundles.cs)
-3. ManifestDatum [UnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/UnityPackages.cs) and PipelineJob [StageUnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageUnityPackages.cs)
+1. ManifestDatum [AssemblyDefinitions](assetlink://GUID/2b7e13dda513544419a89926bd12ad8a) and PipelineJob [StageAssemblies](assetlink://GUID/b5b20fac9c71fd64183cb7a8f359d73a)
+2. ManifestDatum [AssetBundleDefinitions](assetlink://GUID/17d1008b78cb6e846889b7778282fbef) and PipelineJob [StageAssetBundles](assetlink://GUID/924ee63e6c016f14d8a1560b288f15a3)
+3. ManifestDatum [UnityPackages](assetlink://GUID/dda4ac7962f04724eacfeb26af5e2b75) and PipelineJob [StageUnityPackages](assetlink://GUID/d087870ea8abaed4ca4c717444be0165)
 
 Examine these pairs of types to gain a better understanding of how to build your own customized set of data.
 

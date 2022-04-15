@@ -8,7 +8,7 @@
 
 ---
 
-[Copy](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Copy.cs) copy file(s) with configuration options
+[Copy](assetlink://GUID/03063c7a6ec04cc4c82c75cf9bcc8db8) copy file(s) with configuration options
 
 ## Fields
 * **Recursive**
@@ -33,13 +33,13 @@
 
 PathReferences are resources which can define dynamic paths, you can use them in fields that support PathReferences by invoking them with arrow brackets.
 
-For example if you use [ManifestPluginStaging](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/PathReferences/ManifestPluginStaging.asset) in StagingPaths in your Manifest's ManifestDatums
-You could then use [ManifestPluginStaging](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/PathReferences/ManifestPluginStaging.asset) in Copy with Per Manifest toggled to copy those files to another location
+For example if you use [ManifestPluginStaging](assetlink://GUID/8bd8f966c2445394ab9c356e6227c6a0) in StagingPaths in your Manifest's ManifestDatums
+You could then use [ManifestPluginStaging](assetlink://GUID/8bd8f966c2445394ab9c356e6227c6a0) in Copy with Per Manifest toggled to copy those files to another location
 
 This way you can deploy assets from multiple Manifests in your project simultaneously.
 
 However, if the Per Manifest option is not toggled, an error will occur when using those PathReferences as they utilize information from Manifests to complete their task
 
-The [BepInEx Launch Pipeline](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/BepInEx/Pipelines/Launch.asset) uses Copy for its deployment steps.
+The [BepInEx Launch Pipeline](assetlink://GUID/bee6483f5bcf7054b86d13321eef27e5) uses Copy for its deployment steps.
 
 First it will use a Copy with Per Manifest and Recursive enabled, and Source Required disabled to copy plugins, patchers and monomods to the bepinex output directory.

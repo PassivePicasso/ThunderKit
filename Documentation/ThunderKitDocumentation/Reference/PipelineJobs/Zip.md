@@ -8,7 +8,7 @@
 
 ---
 
-[Zip](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Zip.cs) provides the ability to zip a directory
+[Zip](assetlink://GUID/8808e815b3ce9c94e9552cb1dee9e305) provides the ability to zip a directory
 
 ## Fields
 

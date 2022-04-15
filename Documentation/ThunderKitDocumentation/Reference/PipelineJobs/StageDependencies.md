@@ -8,7 +8,7 @@
 
 ---
 
-[StageDependencies](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageDependencies.cs) deploys Dependencies found in Manifests that are not in the project Assets folder
+[StageDependencies](assetlink://GUID/1b4f4581088b47744a114c282abc085d) deploys Dependencies found in Manifests that are not in the project Assets folder
 
 ## Fields
 * **Staging Path**
@@ -17,7 +17,7 @@
 
 ## Required ManifestDatums
 
-* [ManifestIdentity](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/ManifestIdentity.cs)
+* [ManifestIdentity](assetlink://GUID/f22bb7fd1d3b56a48bc52f8e407901d6)
 
 ## Remarks
 

@@ -8,7 +8,7 @@
 
 ---
 
-[Constant](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/Constant.cs) will return the provided literal value
+[Constant](assetlink://GUID/cebc722807299b54bb8733330087d5e3) will return the provided literal value
 
 ## Fields
 
