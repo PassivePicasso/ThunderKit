@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.Experimental.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements" editor-extension-mode="True">
+        
+    <ui:VisualElement name="game-configuration-section" class="section">
+        <ui:VisualElement name="executor-element"/>
+    </ui:VisualElement>
+
+</ui:UXML>
+
