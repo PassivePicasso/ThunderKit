@@ -1,3 +1,3 @@
 ﻿using ThunderKit.Core.Config;
 
-[assembly: GameConfiguratorAssembly]
+[assembly: ImportExtensions]
