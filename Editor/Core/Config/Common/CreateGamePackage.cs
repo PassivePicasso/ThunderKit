@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System;
+using System.IO;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Utilities;
@@ -12,14 +12,24 @@ namespace ThunderKit.Core.Config
     {
         public override int Priority => Constants.ConfigPriority.CreateGamePackage;
 
-        public override async Task Execute()
+        public override void Execute()
         {
-            while (EditorApplication.isUpdating)
-                await Task.Yield();
-
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
-            PackageHelper.GeneratePackageManifest(settings.PackageName, settings.PackageFilePath, packageName, PlayerSettings.companyName, Application.version, $"Imported assemblies from game {packageName}");
+            PackageHelper.GeneratePackageManifest(settings.PackageName,
+                settings.PackageFilePath, packageName,
+                PlayerSettings.companyName,
+                Application.version,
+                $"Imported assemblies from game {packageName}");
+
+            var fullPackagePath = Path.GetFullPath(settings.PackageFilePath);
+            var files = Directory.EnumerateFiles(fullPackagePath);
+            foreach(var file in files)
+            {
+                File.SetLastWriteTime(file, DateTime.Now);
+            }
+
+            AssetDatabase.ImportAsset(fullPackagePath, ImportAssetOptions.ImportRecursive | ImportAssetOptions.ForceUpdate);
         }
     }
 }

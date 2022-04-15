@@ -13,5 +13,26 @@ namespace ThunderKit.Core.Config
     public abstract class OptionalExecutor : Executor
     {
         public bool enabled;
+
+        public sealed override VisualElement CreateUI()
+        {
+            var element = new VisualElement { name = "extension-item" };
+
+            var header = new VisualElement { name = "extension-item-header" };
+            header.AddToClassList("thunderkit-field");
+            var label = new Label { name = "extension-label", text = Name };
+            header.Add(label);
+            var toggle = new Toggle { name = "extension-enabled-toggle", bindingPath = nameof(OptionalExecutor.enabled) };
+            header.Add(toggle);
+
+            element.Add(header);
+            var properties = CreateProperties();
+            if (properties != null)
+                element.Add(properties);
+
+            return element;
+        }
+
+        protected virtual VisualElement CreateProperties() => null;
     }
 }

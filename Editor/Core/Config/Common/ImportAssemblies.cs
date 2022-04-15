@@ -10,11 +10,13 @@ using ThunderKit.Core.Data;
 using ThunderKit.Core.UIElements;
 using ThunderKit.Core.Utilities;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
+using System.Collections;
 #if UNITY_2019
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 #elif UNITY_2018
+using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
@@ -35,12 +37,12 @@ namespace ThunderKit.Core.Config
         [InitializeOnLoadMethod]
         static void InitializeConfigurators()
         {
-            var builder = new StringBuilder("Loaded GameConfigurators:");
+            var builder = new StringBuilder("Loaded Assembly Import Extensions");
             builder.AppendLine();
             var configurationAssemblies = AppDomain.CurrentDomain
                             .GetAssemblies()
                             .Where(asm => asm != null)
-                            .Where(asm => asm.GetCustomAttribute<GameConfiguratorAssemblyAttribute>() != null);
+                            .Where(asm => asm.GetCustomAttribute<ImportExtensionsAttribute>() != null);
             var loadedTypes = configurationAssemblies
                .SelectMany(asm =>
                {
@@ -86,7 +88,7 @@ namespace ThunderKit.Core.Config
         public GuidMode OldGuidGenerationMode = GuidMode.Original;
         public GuidMode GuidGenerationMode = GuidMode.Original;
 
-        public override Task Execute()
+        public override void Execute()
         {
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
@@ -134,7 +136,6 @@ namespace ThunderKit.Core.Config
                 EditorApplication.UnlockReloadAssemblies();
                 AssetDatabase.StopAssetEditing();
             }
-            return Task.CompletedTask;
         }
 
         private static void AssertDestinations(string packageName)

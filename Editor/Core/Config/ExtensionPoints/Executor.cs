@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
 using ThunderKit.Core.Config;
+using Unity.EditorCoroutines.Editor;
 using UnityEngine;
 #if UNITY_2019
 using UnityEngine.UIElements;
@@ -14,7 +16,7 @@ namespace ThunderKit.Core.Config
         /// <summary>
         /// Executed after the last files and data have been imported into the project, but before 
         /// </summary>
-        public abstract Task Execute();
+        public abstract void Execute();
 
         public virtual VisualElement CreateUI() => null;
     }
