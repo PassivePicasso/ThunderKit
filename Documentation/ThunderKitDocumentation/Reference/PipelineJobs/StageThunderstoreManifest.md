@@ -12,7 +12,7 @@
 
 ## Required ManifestDatums
 
-* [ThunderstoreData](assetlink://GUID/e0a82fec78ebc734d9ad1346cd40b5f9)
+* [ThunderstoreData](documentation://GUID/41a367ca4a0088f46b4327f0813dafdc)
 
 ## Remarks
 

@@ -22,7 +22,7 @@ The [ThunderstoreData](assetlink://GUID/e0a82fec78ebc734d9ad1346cd40b5f9) Manife
 
 ## PipelineJobs
 
-* [StageThunderstoreManifest](assetlink://GUID/dc52389347ae9634bbb7e74eba886518)
+* [StageThunderstoreManifest](documentation://GUID/74a0394c4eaea384e89e7a3688053c2b)
   - Generates a manifest.json file compatible with Thunderstore and outputs it to **StagingPaths** defined in this ManifestDatum.
 
 ## Remarks

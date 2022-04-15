@@ -22,7 +22,7 @@ The [Files](assetlink://GUID/4b243ff405b33b94dbf5b6775dd9aa33) ManifestDatum sto
 
 ## PipelineJobs
 
-* [StageManifestFiles](assetlink://GUID/3570c76eb7a5c3c45942d9295a150917) 
+* [StageManifestFiles](documentation://GUID/0e4c94f5c80d49545b1a92238b82f66a) 
   - Copies each asset referenced in each Files ManifestDatum to the output paths defined in its Staging Paths.
 
 ## Remarks

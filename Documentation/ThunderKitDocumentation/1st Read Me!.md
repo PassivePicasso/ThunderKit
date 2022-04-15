@@ -25,6 +25,8 @@ your inspector. Open the [Project window](menulink://Window/General/Project) and
 
 - [Internet Hyperlinks](http://) are links to websites such as the [Unity Manual](https://docs.unity3d.com/Manual/index.html) or [ThunderKit Git Repository](https://github.com/PassivePicasso/ThunderKit) and will launch in your default Web Browser.
 
+- [Documentation Links](documentation://) use the `documentation://` scheme and are shortcuts to Documentation pages. These can be used to quickly browse between relevant topics, such as a manifest datum and it's respective pipeline job.
+
 This page will be updated as more types of links are added.
 
 MarkdownElement's links do not track visitation, so the color of links will not change from usage.

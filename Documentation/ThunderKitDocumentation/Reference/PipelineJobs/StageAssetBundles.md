@@ -27,7 +27,7 @@
 
 ## Required ManifestDatums
 
-* [AssetBundleDefinitions](assetlink://GUID/17d1008b78cb6e846889b7778282fbef)
+* [AssetBundleDefinitions](documentation://GUID/b3d3f798ec15f8240ad5105c46ce59f5)
 
 ## Remarks
 

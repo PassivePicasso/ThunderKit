@@ -12,7 +12,7 @@
 
 ## Required ManifestDatums
 
-* [UnityPackages](assetlink://GUID/dda4ac7962f04724eacfeb26af5e2b75)
+* [UnityPackages](documentation://GUID/e3fa281f0f933e64480e9eecdf057350)
 
 ## Remarks
 

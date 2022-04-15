@@ -24,7 +24,7 @@
 
 ## PipelineJobs
 
-* [StageAssetBundles](assetlink://GUID/924ee63e6c016f14d8a1560b288f15a3) 
+* [StageAssetBundles](documentation://GUID/346cbbd3f6c582441908249cf4067307) 
   - Builds and deploys AssetBundles defined by AssetBundleDefinitions
 
 ## Remarks

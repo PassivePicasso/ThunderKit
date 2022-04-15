@@ -17,7 +17,7 @@
 
 ## Required ManifestDatums
 
-* [ManifestIdentity](assetlink://GUID/f22bb7fd1d3b56a48bc52f8e407901d6)
+* [ManifestIdentity](documentation://GUID/a94fe0e2c9006104bb1735bd177af5d7)
 
 ## Remarks
 

@@ -12,7 +12,7 @@
 
 ## Required ManifestDatums
 
-* [Files](assetlink://GUID/4b243ff405b33b94dbf5b6775dd9aa33)
+* [Files](documentation://GUID/be4e3f3da1c322a4982f44c2e5ac454d)
 
 ## Remarks
 

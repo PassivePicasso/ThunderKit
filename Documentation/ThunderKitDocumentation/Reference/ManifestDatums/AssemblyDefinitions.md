@@ -22,7 +22,7 @@ The [AssemblyDefinitions](assetlink://GUID/2b7e13dda513544419a89926bd12ad8a) Man
 
 ## PipelineJobs
 
-* [StageAssemblies](assetlink://GUID/b5b20fac9c71fd64183cb7a8f359d73a) 
+* [StageAssemblies](documentation://GUID/c18be5deeb5af6d48b59ed26056ba2fc) 
   - Copies each assembly referenced in each AssemblyDefinition ManifestDatum to the output paths defined in its Staging Paths.
 
 ## Remarks
