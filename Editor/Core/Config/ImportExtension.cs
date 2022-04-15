@@ -10,6 +10,7 @@ namespace ThunderKit.Core.Config
     [Serializable]
     public abstract class ImportExtension : ScriptableObject
     {
+        [HideInInspector]
         public string extensionName;
 
         public virtual string Name => string.IsNullOrEmpty(extensionName) ? extensionName = ObjectNames.NicifyVariableName(GetType().Name) : extensionName;
