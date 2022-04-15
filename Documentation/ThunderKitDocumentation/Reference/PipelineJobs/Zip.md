@@ -32,6 +32,3 @@
 ## Remarks
 
 PathReferences are resources which can define dynamic paths, you can use them in fields that support PathReferences by invoking them with arrow brackets.
-
-
-The [BepInEx Package Pipeline](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/BepInEx/Pipelines/Package.asset) uses Zip as a final publishing step.

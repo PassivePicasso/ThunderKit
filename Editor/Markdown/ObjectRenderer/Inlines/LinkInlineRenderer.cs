@@ -50,6 +50,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
                 string path = schemelessUri.StartsWith("GUID/") ?
                 AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length))
                 : schemelessUri;
+                label.tooltip = $"assetlink://{path}";
 
                 var container = new VisualElement();
 

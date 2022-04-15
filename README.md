@@ -150,7 +150,7 @@ The Simulate field will execute an analysis of the AssetBundles and report in th
 
 ## Redistributable  Libraries
 
-If you need to create asset libraries that other developers need to depend on, use [UnityPackages](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Data/UnityPackage.cs) to simplify that process.
+If you need to create asset libraries that other developers need to depend on, use [UnityPackages](assetlink://GUID/aa12c443303b4d54e9a56ac3acc7bd25) to simplify that process.
 UnityPackages is ThunderKit tooling for [Unity Manual - Asset Packages](https://docs.unity3d.com/2018.4/Documentation/Manual/AssetPackages.html)
 
 ### Using UnityPackages 
