@@ -24,84 +24,72 @@ Label {
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
-    margin-bottom: 12px;
-    margin-top: 12px;
+    margin-bottom: 16px;
+    margin-top: 16px;
+    padding-bottom: 10px;
     flex-direction: row;
+    -unity-font-style: bold;
 }
 
 .header-2 {
     border-bottom-width: 1px;
     border-bottom-color: rgb(0, 0, 0);
     border-color: rgb(0, 0, 0);
-    margin-bottom: 12px;
-    margin-top: 12px;
+    margin-bottom: 16px;
+    margin-top: 16px;
+    padding-bottom: 7.2px;
     flex-direction: row;
+    -unity-font-style: bold;
 }
 
 .header-3 {
-    margin-bottom: 12px;
-    margin-top: 12px;
+    margin-bottom: 16px;
+    margin-top: 16px;
     flex-direction: row;
+    -unity-font-style: bold;
 }
 
 .header-4 {
-    margin-bottom: 12px;
-    margin-top: 12px;
+    margin-bottom: 16px;
+    margin-top: 16px;
     flex-direction: row;
+    -unity-font-style: bold;
 }
 
 .header-5 {
-    margin-bottom: 12px;
-    margin-top: 12px;
+    margin-bottom: 16px;
+    margin-top: 16px;
     flex-direction: row;
+    -unity-font-style: bold;
 }
 
 .header-1 * {
-    font-size: 26px;
-    padding-left: 4px;
-    padding-right: 6px;
+    font-size: 30px;
     flex-direction: row;
 }
 
 .header-2 * {
-    font-size: 24px;
-    padding-left: 3px;
-    padding-right: 5px;
+    font-size: 22px;
     flex-direction: row;
 }
 
 .header-3 * {
-    font-size: 22px;
-    border-bottom-width: 1px;
-    border-bottom-color: rgb(0, 0, 0);
-    border-color: rgb(0, 0, 0);
-    padding-left: 2px;
-    padding-right: 4px;
+    font-size: 17px;
     flex-direction: row;
 }
 
 .header-4 * {
-    font-size: 20px;
-    border-bottom-width: 1px;
-    border-bottom-color: rgb(0, 0, 0);
-    border-color: rgb(0, 0, 0);
-    padding-left: 1px;
-    padding-right: 3px;
+    font-size: 15px;
     flex-direction: row;
 }
 
 .header-5 * {
-    font-size: 18px;
-    border-bottom-width: 1px;
-    border-bottom-color: rgb(0, 0, 0);
-    border-color: rgb(0, 0, 0);
-    padding-left: 1px;
-    padding-right: 2px;
+    font-size: 13px;
     flex-direction: row;
 }
 .paragraph {
-    margin-top: 4px;
-    margin-bottom: 4px;
+    margin-top: 0px;
+    margin-bottom: 16px;
     flex-wrap: wrap;
     flex-direction: row;
 }
