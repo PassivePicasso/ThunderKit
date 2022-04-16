@@ -8,7 +8,7 @@
 
 ---
 
-[ExecutePipeline](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/ExecutePipeline.cs) will invoke an assigned Pipeline
+[ExecutePipeline](assetlink://GUID/50df4f9027e15e04b931a8d460fb22c5) will invoke an assigned Pipeline
 
 ## Fields
 * **Execute Pipeline**

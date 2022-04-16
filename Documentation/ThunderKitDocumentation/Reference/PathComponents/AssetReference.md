@@ -8,7 +8,7 @@
 
 ---
 
-[AssetReference](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/AssetReference.cs) allows you to use the path of an asset.
+[AssetReference](assetlink://GUID/afeb2a60b1f31d44eaf0361730fb3f93) allows you to use the path of an asset.
 
 ## Fields
 * **Asset**

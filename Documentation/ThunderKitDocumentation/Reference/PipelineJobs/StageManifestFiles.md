@@ -8,11 +8,11 @@
 
 ---
 
-[StageManifestFiles](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageManifestFiles.cs) will copy Assets to StagingPaths defined in the Files ManifestDatum
+[StageManifestFiles](assetlink://GUID/3570c76eb7a5c3c45942d9295a150917) will copy Assets to StagingPaths defined in the Files ManifestDatum
 
 ## Required ManifestDatums
 
-* [Files](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/Files.cs)
+* [Files](documentation://GUID/be4e3f3da1c322a4982f44c2e5ac454d)
 
 ## Remarks
 

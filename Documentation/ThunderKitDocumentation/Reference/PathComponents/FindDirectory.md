@@ -8,7 +8,7 @@
 
 ---
 
-[Find Directory](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/FindDirectory.cs) will find and return the name of a Directory
+[Find Directory](assetlink://GUID/d4fa9e4f9ff58a344b7da26cb499b387) will find and return the name of a Directory
 
 ## Fields
 

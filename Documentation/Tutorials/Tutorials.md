@@ -8,3 +8,5 @@
 }
 
 ---
+
+This section contains miscelaneous documents related to extending the editor's functionality using Thunderkit's systems. Including the creation of custom ManifestDatums, PathComponents, Pipelines and More.

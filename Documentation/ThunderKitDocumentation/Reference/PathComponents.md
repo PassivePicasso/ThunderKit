@@ -22,9 +22,9 @@ ThunderKit comes with a number of already defined PathReferences for the BepInEx
 
 Please note that some adjustments may be needed for different games.
 
-  * [Common PathReference Assets](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/PathReferences)
+  * [Common PathReference Assets](assetlink://GUID/8c6243a7bb8ce734ab8ae4ccf164bfb7)
 
-  * [BepInEx PathReference Assets](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/BepInEx/PathReferences)
+  * [BepInEx PathReference Assets](assetlink://GUID/6733c4a0a9bdc9c44b9c486058325099)
 
 PathReferences can be used in a number of places in ThunderKit. ManifestDatum.StagingPaths, StageAssetBundles.BundleArtifactPath and all the Copy PipelineJobs allow you to use PathReferences by calling them in a tag.
 

@@ -8,7 +8,7 @@
 
 ---
 
-[Delete](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Delete.cs) a file or directory
+[Delete](assetlink://GUID/87d65cc226c348d45aa1c6dddf3600a6) a file or directory
 
 ## Fields
 * **Recursive**
