@@ -33,13 +33,13 @@ can be submitted on discord or through a pull request on github.
 
 ### Community Contributions
 
-#### Edit Source / Select Source
+##### Edit Source / Select Source
 
 [Documentation](menulink://Tools/ThunderKit/Documentation) pages now have a 
 context menu allowing the users to select the source markdown files or edit 
 them in their preferred editor, configurable from [ThunderKit Settings](menulink://Tools/ThunderKit/Settings)
 
-#### Guid Stabilized links for Markdown
+##### Guid Stabilized links for Markdown
 
 AssetLink and Documentation schemes for ThunderKit Markdown have been enhanced 
 to allow referencing assets using their GUID. This feature enables documentation
@@ -52,7 +52,7 @@ reducing maintenance cost in the future.
 
 Thanks to nebby1999 for these features
 
-#### FlowPipeline Whitelist / Blacklist
+##### FlowPipeline Whitelist / Blacklist
 
 FlowPipelines have been updated with Whitelist / Blacklist system with automatic 
 updating for old asset files. This affects the Copy, Zip, and Delete PipelineJobs
