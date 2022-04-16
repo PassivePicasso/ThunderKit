@@ -174,6 +174,14 @@ make changes that are not backwards compatible to your pipeline assets.
 * Fix an issue with the ComposableObjectEditor which caused it to be more 
   computationally intensive than necessary
 * Add doc comments to code base (plenty more work to be done here)
+* Create UXML and USS folders in ThunderKit root and move all UXML and USS too them
+  Some template specific USS remains in the UXML folders next to their related UXML 
+  files
+* Add setting to enable the PipelineLog window to show automatically when
+  a pipeline is executed.
+* Automatically update PipelineLog window when visible and a pipeline is
+  executed
+
 
 
 ## 4.1.1
