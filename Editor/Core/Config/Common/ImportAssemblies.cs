@@ -37,8 +37,6 @@ namespace ThunderKit.Core.Config
         [InitializeOnLoadMethod]
         static void InitializeConfigurators()
         {
-            var builder = new StringBuilder("Loaded Assembly Import Extensions");
-            builder.AppendLine();
             var configurationAssemblies = AppDomain.CurrentDomain
                             .GetAssemblies()
                             .Where(asm => asm != null)
@@ -56,27 +54,16 @@ namespace ThunderKit.Core.Config
                    }
                }).ToArray();
 
-            BlacklistProcessors = CreateImporters<BlacklistProcessor>(builder, loadedTypes);
-            WhitelistProcessors = CreateImporters<WhitelistProcessor>(builder, loadedTypes);
-            AssemblyProcessors = CreateImporters<AssemblyProcessor>(builder, loadedTypes);
-
-            Debug.Log(builder.ToString());
+            BlacklistProcessors = CreateImporters<BlacklistProcessor>(loadedTypes);
+            WhitelistProcessors = CreateImporters<WhitelistProcessor>(loadedTypes);
+            AssemblyProcessors = CreateImporters<AssemblyProcessor>(loadedTypes);
         }
 
-        private static List<T> CreateImporters<T>(StringBuilder builder, Type[] loadedTypes) where T : ImportExtension
+        private static List<T> CreateImporters<T>(Type[] loadedTypes) where T : ImportExtension
         {
             var importers = loadedTypes.Where(t => typeof(T).IsAssignableFrom(t))
                 .Where(t => !t.IsAbstract && !t.IsInterface)
-                .Select(t =>
-                {
-                    var configurator = CreateInstance(t) as T;
-                    if (configurator)
-                    {
-                        builder.AppendLine(configurator.GetType().AssemblyQualifiedName);
-                    }
-
-                    return configurator;
-                })
+                .Select(t => CreateInstance(t) as T)
                 .Where(t => t != null)
                 .ToList();
             importers.Sort();
