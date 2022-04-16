@@ -158,14 +158,22 @@ make changes that are not backwards compatible to your pipeline assets.
 
 ### Fixes and improvements
 
-* Fixed import process sometimes not completing requiring the user to change focus
-away from and back to the editor to complete.
-* Improved the ComposableElement Edit Script context menu item to be more reliable
+* Fixed import process sometimes not completing requiring the user to change 
+  focus away from and back to the editor to complete.
+* Improved the ComposableElement Edit Script context menu item to be more 
+  reliable
 * Updated ThirdPartyNotices.md
 * Updated PipelineLog window to show a button for entries with Log Context
-* Enance ComposableObjectEditor to allow it to render elements with Missing Scripts to inform the user
+* Enance ComposableObjectEditor to allow it to render elements with Missing 
+  Scripts to inform the user
   * This currently doesn't allow elements with missing scripts to be deleted
 * Make minor improvements for enhancing cross platform compatibility
+* Stop persisting PackageGroups and PackageVersions to disk to avoid runaway 
+  disk usage
+* Fix a number of small memory leaks
+* Fix an issue with the ComposableObjectEditor which caused it to be more 
+  computationally intensive than necessary
+* Add doc comments to code base (plenty more work to be done here)
 
 
 ## 4.1.1
