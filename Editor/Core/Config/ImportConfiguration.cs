@@ -171,7 +171,8 @@ namespace ThunderKit.Core.Config
                 }
             }
 
-            settings.ImportGame();
+            if (!EditorApplication.isCompiling && !EditorApplication.isUpdating)
+                settings.ImportGame();
         }
 
         public void ImportGame()
@@ -199,9 +200,7 @@ namespace ThunderKit.Core.Config
                 return;
             }
             ConfigurationIndex++;
-
-            if (ConfigurationIndex >= ConfigurationExecutors.Length)
-                ImportAsset(thunderKitSettings.PackageFilePath);
+            AssetDatabase.Refresh();
         }
 
         public static void LocateGame(ThunderKitSettings tkSettings)
@@ -275,5 +274,6 @@ namespace ThunderKit.Core.Config
             return versionMatch;
         }
 
+        
     }
 }
