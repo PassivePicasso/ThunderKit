@@ -28,6 +28,42 @@ header. This will allow you to click the appropriate selector in the toolbar
 and run it using the Execute button, or view the most recent log using the Log
 button.
 
+### Addressable Support 
+
+##### Importing
+
+Support Addressables has been added to ThunderKit. With the new 
+ImportAddressableCatalog ImportExtension you can import the catalog from a game
+using addressables, enabling you to load addressaable assets in the editor.
+
+##### Scripting, Edit and Runtime usage 
+
+This allows developers to setup simple tools to apply materials or instantiate prefabs
+in the editor for viewing. Scripts created to do this can be setup to work both
+in the editor or at runtime. See the [Simply Address](https://github.com/PassivePicasso/SimplyAddress)
+repository for an implementation of such features.
+
+##### Addressable Browser
+
+The [Addressable Browser](menulink://Tools/ThunderKit/Addressable Browser) 
+provides an interface to search and explore a games Addressable Catalog.
+Using this browser you can locate the assets and their addresses so that you
+can use a games assets in the editor and at runtime.
+
+The Addressable Browser allows you to search for assets based upon their address,
+name, and type.  Additional filters may come in the future.
+
+##### Limitations
+
+Editing Addressable Assets is limited to a code based approach and tooling
+to resolve this is outside of the scope of ThunderKit. Look projects like
+[Simply Address](https://github.com/PassivePicasso/SimplyAddress) that provide
+generic tools for working with addressables in a modding context.
+
+Addressable assets can't be referenced like traditional Unity assets. This
+limits using addressable assets to a code based approach. However, generic tools
+like SimplyAddress are being and can be developed to improve the ease of use.
+
 ### Documentation 
 
 [Documentation](menulink://Tools/ThunderKit/Documentation) has been re-organized
