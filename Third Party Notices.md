@@ -50,7 +50,7 @@ This package contains third-party software components governed by the license(s)
 * `Copyright © 2000-2018 SharpZipLib Contributors`
 * [https://github.com/icsharpcode/SharpZipLib](https://github.com/icsharpcode/SharpZipLib)
 * License:  [The MIT License](https://github.com/icsharpcode/SharpZipLib/blob/master/LICENSE.txt)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/SharpZipLib/LICENSE.md)
+* [Local License](assetlink://GUID/a0e10da440cac6b40885fcc09250261d)
 
 ## BsDiff
 
@@ -58,5 +58,5 @@ This package contains third-party software components governed by the license(s)
 * `Copyright 2010 Logos Bible Software`
 * [https://github.com/LogosBible/bsdiff.net](https://github.com/LogosBible/bsdiff.net)
 * License:  [The MIT License](https://raw.githubusercontent.com/LogosBible/bsdiff.net/master/ReadMe.txt)
-* [Local License](assetlink://Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/BsDiff/LICENSE.md)
+* [Local License](assetlink://GUID/a497c35352fe7154dbee71f93bc5e633)
 * BsTool is a replacement for the original project's 2 programs, BsDiff and BsPatch, providing an API instead of programs
