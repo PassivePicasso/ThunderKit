@@ -83,7 +83,7 @@ reducing maintenance cost in the future.
 Documentation has been updated with links between documentation pages to improve 
 ease of use.
 
-Thanks to nebby1999 for these features
+ * Thanks to nebby1999 for these features
 
 ##### FlowPipeline Whitelist / Blacklist
 
@@ -95,7 +95,7 @@ whitelist can be provided which causes the job to only run on manifests in that 
 Users should not need to update their pipelines, but upgrading to ThunderKit 5 will
 make changes that are not backwards compatible to your pipeline assets.
 
-Thanks to KingEnderbrine for this feature
+* Thanks to KingEnderbrine for this feature
 
 ### Fixes and improvements
 
