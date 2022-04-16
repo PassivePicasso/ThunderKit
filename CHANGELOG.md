@@ -116,7 +116,7 @@ MarkdownElement now supports the following features:
 * JsonFrontMatter (Limited) - the JsonFrontMatterRenderer can be used to collect a 
   limited set of values from a Markdown file. See the [FrontMatter Struct](assetlink://GUID/70db1552b66c4e34d88f6b33d3e0ead7)
   for details.
-
+* Generic Attributes - Apply USS/CSS Classes to Blocks of text in markdown
 
 ### Community Contributions
 
