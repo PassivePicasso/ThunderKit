@@ -16,11 +16,8 @@ to the new ImportConfiguration ThunderKitSetting.
 Using these features customized import steps can be developed for games,
 minimizing the time starting development on new projects.
 
-### Markdown
 ### Pipeline Quick Access Toolbar
 
-Markdown performance has received additional performance and layout 
-improvements as well as new features.
 A Pipeline Toolbar has been added to the Unity Main toolbar allowing you to
 quickly select a pipeline and manifest to execute without having to search
 your Project.
@@ -40,6 +37,11 @@ Tutorials is a new and growing collection of documents that will walk you
 through getting started with usaging and extending ThunderKit. Submission 
 of markdown files to grow this collection of tutorials is very welcome and 
 can be submitted on discord or through a pull request on github.
+
+### Markdown
+
+Markdown performance has received additional performance and layout 
+improvements as well as new features.
 
 ### Community Contributions
 
