@@ -8,7 +8,7 @@
 
 ---
 
-Path References are one of the 3 main systems you will be using in ThunderKit.  It sits between Manifests and Pipelines, providing the ability for Pipelines to be able to deploy your custom content. Due to this we should first understand how PathReferences work and how can be used.
+PathReferences are one of the 3 main systems you will be using in ThunderKit.  It sits between Manifests and Pipelines, providing the ability for Pipelines to be able to deploy your custom content. Due to this we should first understand how PathReferences work and how can be used.
 
 PathReferences provide the ability for you to create a custom rule set for how paths are identified.  You setup these rules by adding Path Components.  A PathReference will execute each of its components in order and will have access to 2 sets of information depending on when they are executed.
 
