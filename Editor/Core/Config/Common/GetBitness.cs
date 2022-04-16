@@ -34,7 +34,6 @@ namespace ThunderKit.Core.Config.Common
                 }
             }
             settings.Is64Bit = false;
-            return;
         }
     }
 }
