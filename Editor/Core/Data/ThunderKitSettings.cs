@@ -12,6 +12,10 @@ using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Utilities;
 using System.Collections.Generic;
+using System.Reflection;
+using System;
+using System.Text;
+using ThunderKit.Core.Config.Common;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -23,108 +27,21 @@ using UnityEngine.Experimental.UIElements;
 namespace ThunderKit.Core.Data
 {
     using static ThunderKit.Common.PathExtensions;
+    [ExecuteAlways]
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ThunderKitSetting
     {
-        public enum GuidMode { Original, Stabilized, AssetRipperCompatibility }
+        private const BindingFlags publicInstanceBinding = BindingFlags.Public | BindingFlags.Instance;
+
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
             EditorApplication.quitting -= EditorApplicationQuitting;
             EditorApplication.quitting += EditorApplicationQuitting;
-
-            CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
-            CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
-
-            GetOrCreateSettings<ThunderKitSettings>();
-        }
-
-        public override string DisplayName => "ThunderKit Settings";
-        private static void EditorApplicationQuitting()
-        {
-            CopyAssemblyCSharp(null, null);
-        }
-
-        static void CopyAssemblyCSharp(string somevalue, CompilerMessage[] message)
-        {
-            foreach (var file in Directory.GetFiles("Packages", "Assembly-CSharp.dll", SearchOption.AllDirectories))
-            {
-                var fileName = Path.GetFileName(file);
-                var outputPath = Combine("Library", "ScriptAssemblies", fileName);
-
-                FileUtil.ReplaceFile(file, outputPath);
-            }
-        }
-        private SerializedObject thunderKitSettingsSO;
-
-        [SerializeField]
-        private bool FirstLoad = true;
-
-        public bool ShowOnStartup = true;
-
-        public string GameExecutable;
-
-        public string GamePath;
-
-        public string GameDataPath => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameExecutable)}_Data");
-
-        public string ManagedAssembliesPath => Path.Combine(GameDataPath, $"Managed");
-
-        public string StreamingAssetsPath => Path.Combine(GameDataPath, "StreamingAssets");
-
-        public string AddressableAssetsPath => Path.Combine(StreamingAssetsPath, "aa");
-
-        public string AddressableAssetsCatalog => Path.Combine(AddressableAssetsPath, "catalog.json");
-
-        public string AddressableAssetsSettings => Path.Combine(AddressableAssetsPath, "settings.json");
-
-        public static string EditTimePath
-        {
-            get
-            {
-                var settings = GetOrCreateSettings<ThunderKitSettings>();
-                return settings.AddressableAssetsPath;
-            }
-        }
-
-        public string PackageName
-        {
-            get
-            {
-                var gameName = Path.GetFileNameWithoutExtension(GameExecutable);
-                return gameName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
-            }
-        }
-        public string PackagePath => $"Packages/{PackageName}";
-        public string PackageFilePath => $"Packages/{Path.GetFileNameWithoutExtension(GameExecutable)}";
-        public string PackagePluginsPath => $"{PackagePath}/plugins";
-
-        public int IncludedSettings;
-
-        public bool Is64Bit;
-
-        public string DateTimeFormat = "HH:mm:ss:fff";
-
-        public string CreatedDateFormat = "MMM/dd HH:mm:ss";
-
-        public bool ShowLogWindow = true;
-
-        public bool AttemptAddressableImport = true;
-
-        public Pipeline SelectedPipeline;
-        public Manifest SelectedManifest;
-        public Pipeline[] QuickAccessPipelines;
-        public Manifest[] QuickAccessManifests;
-
-        public GuidMode OldGuidGenerationMode = GuidMode.Original;
-        public GuidMode GuidGenerationMode = GuidMode.Original;
-        private MarkdownElement markdown;
-
-        [InitializeOnLoadMethod]
-        static void SettingsWindowSetup()
-        {
             EditorApplication.wantsToQuit -= EditorApplication_wantsToQuit;
             EditorApplication.wantsToQuit += EditorApplication_wantsToQuit;
+            CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
+            CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
 
             var settings = GetOrCreateSettings<ThunderKitSettings>();
             if (settings.FirstLoad && settings.ShowOnStartup)
@@ -141,7 +58,25 @@ namespace ThunderKit.Core.Data
                 .Where(manifest => manifest.QuickAccess)
                 .ToArray();
         }
+        private static void EditorApplicationQuitting() => CopyAssemblyCSharp(null, null);
+        private static bool EditorApplication_wantsToQuit()
+        {
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
+            settings.FirstLoad = true;
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+            return true;
+        }
+        private static void CopyAssemblyCSharp(string somevalue, CompilerMessage[] message)
+        {
+            foreach (var file in Directory.GetFiles("Packages", "Assembly-CSharp.dll", SearchOption.AllDirectories))
+            {
+                var fileName = Path.GetFileName(file);
+                var outputPath = Combine("Library", "ScriptAssemblies", fileName);
 
+                FileUtil.ReplaceFile(file, outputPath);
+            }
+        }
         private static void ShowSettings()
         {
             EditorApplication.update -= ShowSettings;
@@ -151,16 +86,60 @@ namespace ThunderKit.Core.Data
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
         }
-
-        private static bool EditorApplication_wantsToQuit()
+        #region Properties
+        public override string DisplayName => "ThunderKit Settings";
+        public string GameDataPath => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameExecutable)}_Data");
+        public string ManagedAssembliesPath => Path.Combine(GameDataPath, $"Managed");
+        public string StreamingAssetsPath => Path.Combine(GameDataPath, "StreamingAssets");
+        public string AddressableAssetsPath => Path.Combine(StreamingAssetsPath, "aa");
+        public string AddressableAssetsCatalog => Path.Combine(AddressableAssetsPath, "catalog.json");
+        public string AddressableAssetsSettings => Path.Combine(AddressableAssetsPath, "settings.json");
+        public static string EditTimePath
         {
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            settings.FirstLoad = true;
-            EditorUtility.SetDirty(settings);
-            AssetDatabase.SaveAssets();
-            return true;
+            get
+            {
+                var settings = GetOrCreateSettings<ThunderKitSettings>();
+                return settings.AddressableAssetsPath;
+            }
         }
-        public override void Initialize() => GamePath = "";
+        public string PackageName
+        {
+            get
+            {
+                var gameName = Path.GetFileNameWithoutExtension(GameExecutable);
+                return gameName.ToLower().Split(' ').Aggregate((a, b) => $"{a}{b}");
+            }
+        }
+        public string PackagePath => $"Packages/{PackageName}";
+        public string PackageFilePath => $"Packages/{Path.GetFileNameWithoutExtension(GameExecutable)}";
+        public string PackagePluginsPath => $"{PackagePath}/plugins";
+        #endregion
+        #region Fields
+        [SerializeField]
+        private bool FirstLoad = true;
+        public bool ShowOnStartup = true;
+        public string GameExecutable;
+        public string GamePath;
+        public bool Is64Bit;
+        public string DateTimeFormat = "HH:mm:ss:fff";
+        public string CreatedDateFormat = "MMM/dd HH:mm:ss";
+        public bool ShowLogWindow = true;
+
+        public Pipeline SelectedPipeline;
+        public Manifest SelectedManifest;
+        public Pipeline[] QuickAccessPipelines;
+        public Manifest[] QuickAccessManifests;
+        private MarkdownElement markdown;
+        private SerializedObject thunderKitSettingsSO;
+        public ImportConfiguration ImportConfiguration;
+
+        #endregion
+
+        public override void Initialize()
+        {
+            GamePath = "";
+        }
+
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
@@ -182,14 +161,6 @@ namespace ThunderKit.Core.Data
 
             rootElement.Add(settingsElement);
 
-            var guidGenerationModeField = settingsElement.Q<EnumField>("guid-mode-field");
-#if UNITY_2019_1_OR_NEWER
-            guidGenerationModeField.RegisterValueChangedCallback(OnGuidChanged);
-#elif UNITY_2018_1_OR_NEWER
-            guidGenerationModeField.OnValueChanged(OnGuidChanged);
-#endif
-            guidGenerationModeField.value = GuidGenerationMode;
-
             var browseButton = settingsElement.Q<Button>("browse-button");
             browseButton.clickable.clicked -= BrowserForGame;
             browseButton.clickable.clicked += BrowserForGame;
@@ -198,75 +169,28 @@ namespace ThunderKit.Core.Data
             loadButton.clickable.clicked -= LoadGame;
             loadButton.clickable.clicked += LoadGame;
 
-            var updateButton = settingsElement.Q<Button>("update-button");
-            updateButton.clickable.clicked -= UpdateGuids;
-            updateButton.clickable.clicked += UpdateGuids;
-
             if (thunderKitSettingsSO == null)
                 thunderKitSettingsSO = new SerializedObject(this);
 
             rootElement.Bind(thunderKitSettingsSO);
         }
 
-        void OnGuidChanged(ChangeEvent<System.Enum> evt)
-        {
-            var guidMode = (GuidMode)evt.newValue;
-            GuidGenerationMode = guidMode;
-        }
-
         private void LoadGame()
         {
-            ConfigureGame.LoadGame(this);
-            OldGuidGenerationMode = GuidGenerationMode;
-        }
+            if (!ImportConfiguration)
+                ImportConfiguration = GetOrCreateSettings<ImportConfiguration>();
 
+            ImportConfiguration.ConfigurationIndex = 0;
+            ImportConfiguration.ImportGame();
+        }
         private void BrowserForGame()
         {
-            ConfigureGame.LocateGame(this);
+            ImportConfiguration.LocateGame(this);
             if (!string.IsNullOrEmpty(GameExecutable) && !string.IsNullOrEmpty(GamePath))
             {
                 if (markdown != null)
                     markdown.RemoveFromHierarchy();
             }
-        }
-
-        private void UpdateGuids()
-        {
-            string nativeAssemblyExtension = string.Empty;
-
-            switch (Application.platform)
-            {
-                case RuntimePlatform.OSXEditor:
-                    nativeAssemblyExtension = "dylib";
-                    break;
-                case RuntimePlatform.WindowsEditor:
-                    nativeAssemblyExtension = "dll";
-                    break;
-                case RuntimePlatform.LinuxEditor:
-                    nativeAssemblyExtension = "so";
-                    break;
-            }
-            Dictionary<string, string> guidMaps = new Dictionary<string, string>();
-
-            foreach (var installedAssembly in Directory.EnumerateFiles(PackagePath, $"*.dll", SearchOption.TopDirectoryOnly))
-            {
-                var asmPath = installedAssembly.Replace("\\", "/");
-                string assemblyFileName = Path.GetFileName(asmPath);
-                var destinationMetaData = Combine(PackagePath, $"{assemblyFileName}.meta");
-                guidMaps[PackageHelper.GetFileNameHash(assemblyFileName, OldGuidGenerationMode)] = PackageHelper.GetFileNameHash(assemblyFileName, GuidGenerationMode);
-                PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
-            }
-            foreach (var installedAssembly in Directory.EnumerateFiles(PackagePluginsPath, $"*.{nativeAssemblyExtension}", SearchOption.TopDirectoryOnly))
-            {
-                var asmPath = installedAssembly.Replace("\\", "/");
-                string assemblyFileName = Path.GetFileName(asmPath);
-                var destinationMetaData = Combine(PackagePluginsPath, $"{assemblyFileName}.meta");
-                guidMaps[PackageHelper.GetFileNameHash(assemblyFileName, OldGuidGenerationMode)] = PackageHelper.GetFileNameHash(assemblyFileName, GuidGenerationMode);
-                PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
-            }
-            OldGuidGenerationMode = GuidGenerationMode;
-            new SerializedObject(this).ApplyModifiedProperties();
-            AssetDatabase.Refresh();
         }
 
         public void SetQuickAccess(Pipeline pipeline, bool quickAccess)

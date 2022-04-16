@@ -12,20 +12,14 @@
 
 .updatebutton {
 	position: absolute;
-	top: -3px;
+	top: -1px;
 	left: 5px;
 	width: 60px;
-	height: 21px;
+	height: 19px;
 }
 
 .field-section {
     flex-grow: 1;
-}
-
-.section {
-}
-
-#game-configuration-section{
 }
 
 #log-configuration-section {
@@ -41,14 +35,16 @@
 	justify-content: flex-end;
 	margin-right: 5px;
 }
-
+.thunderkit-field {
+	border-left-width: 1px;
+}
 .thunderkit-field-input, .thunderkit-field-input .unity-base-field__input {
 	padding-top: 1px;
-	padding-bottom: 2px;
+	padding-bottom: 3px;
 	height: 19px;
-	margin-top: -1px;
-	margin-bottom: -1px;
-    margin-left: 1px;
+	margin-top: 1px;
+	margin-bottom: 0px;
+    margin-left: 2px;
     margin-right: 0px;
     border-left-width: 0px;
     border-top-width: 0px;

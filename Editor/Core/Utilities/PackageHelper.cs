@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Common.Package;
+using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEngine;
@@ -21,7 +23,16 @@ namespace ThunderKit.Core.Utilities
             {
                 name = authorAlias,
             };
-            var ver = versionRegex.Match(version).Groups[1].Value;
+            string ver;
+            var match = versionRegex.Match(version);
+            if (match.Success)
+                ver = match.Groups[1].Value;
+            else
+            {
+                ver = "0.0.1";
+                description = (description ?? string.Empty) + "\r\n\r\n(Version number may be inaccurate)";
+            }
+
             var packageManifest = new PackageManagerManifest(author, packageName, ObjectNames.NicifyVariableName(displayName), ver, unityVersion, description);
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
             ScriptingSymbolManager.AddScriptingDefine(packageName);
@@ -29,6 +40,7 @@ namespace ThunderKit.Core.Utilities
             string fullOutputPath = Path.Combine(outputDir, "package.json");
             if (File.Exists(fullOutputPath)) File.Delete(fullOutputPath);
             File.WriteAllText(fullOutputPath, packageManifestJson);
+            File.SetLastWriteTime(fullOutputPath, DateTime.Now);
         }
 
         public static PackageManagerManifest GetPackageManagerManifest(string directory)
@@ -50,6 +62,7 @@ namespace ThunderKit.Core.Utilities
             string metaData = DefaultAssemblyMetaData(guid);
             if (File.Exists(metadataPath)) File.Delete(metadataPath);
             File.WriteAllText(metadataPath, metaData);
+            File.SetLastWriteTime(metadataPath, DateTime.Now);
         }
 
         /// <summary>
@@ -65,43 +78,25 @@ namespace ThunderKit.Core.Utilities
             var metadataPath = $"{assetPath}.meta";
             if (File.Exists(metadataPath)) File.Delete(metadataPath);
             File.WriteAllText(metadataPath, metaData);
-        }
-
-        public static string GetFileNameHash(string assemblyPath, ThunderKitSettings.GuidMode mode)
-        {
-            string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-            string result;
-            switch (mode)
-            {
-                case ThunderKitSettings.GuidMode.AssetRipperCompatibility:
-                    result = GetAssetRipperStringHash(shortName);
-                    break;
-                case ThunderKitSettings.GuidMode.Stabilized:
-                    result = GetStringHashUTF8(shortName);
-                    break;
-                case ThunderKitSettings.GuidMode.Original:
-                default:
-                    result = GetStringHash(shortName);
-                    break;
-            }
-            return result;
+            File.SetLastWriteTime(metadataPath, DateTime.Now);
         }
 
 
         public static string GetFileNameHash(string assemblyPath)
         {
             string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+            var settings = ThunderKitSetting.GetOrCreateSettings<ImportConfiguration>();
+            var importAssemblies = settings.ConfigurationExecutors.OfType<ImportAssemblies>().First();
             string result;
-            switch (settings.GuidGenerationMode)
+            switch (importAssemblies.GuidGenerationMode)
             {
-                case ThunderKitSettings.GuidMode.AssetRipperCompatibility:
+                case GuidMode.AssetRipperCompatibility:
                     result = GetAssetRipperStringHash(shortName);
                     break;
-                case ThunderKitSettings.GuidMode.Stabilized:
+                case GuidMode.Stabilized:
                     result = GetStringHashUTF8(shortName);
                     break;
-                case ThunderKitSettings.GuidMode.Original:
+                case GuidMode.Original:
                 default:
                     result = GetStringHash(shortName);
                     break;

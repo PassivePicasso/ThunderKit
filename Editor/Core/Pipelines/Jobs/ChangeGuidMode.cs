@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ThunderKit.Common;
+using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Utilities;
 using UnityEditor;
@@ -11,9 +11,7 @@ using UnityEngine;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
-    using static ThunderKit.Core.Data.ThunderKitSettings;
     using static PathExtensions;
-    using Object = UnityEngine.Object;
 
     [PipelineSupport(typeof(Pipeline))]
     public class ChangeGuidMode : PipelineJob
@@ -45,14 +43,14 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 var asmPath = installedAssembly.Replace("\\", "/");
                 string assemblyFileName = Path.GetFileName(asmPath);
                 var destinationMetaData = Combine(settings.PackagePath, $"{assemblyFileName}.meta");
-                guidMaps[PackageHelper.GetFileNameHash(assemblyFileName, oldGuidMode)] = PackageHelper.GetFileNameHash(assemblyFileName, newGuidMode);
+                guidMaps[ImportAssemblies.GetFileNameHash(assemblyFileName, oldGuidMode)] = ImportAssemblies.GetFileNameHash(assemblyFileName, newGuidMode);
             }
             foreach (var installedAssembly in Directory.EnumerateFiles(settings.PackagePluginsPath, $"*.{nativeAssemblyExtension}", SearchOption.TopDirectoryOnly))
             {
                 var asmPath = installedAssembly.Replace("\\", "/");
                 string assemblyFileName = Path.GetFileName(asmPath);
                 var destinationMetaData = Combine(settings.PackagePluginsPath, $"{assemblyFileName}.meta");
-                guidMaps[PackageHelper.GetFileNameHash(assemblyFileName, oldGuidMode)] = PackageHelper.GetFileNameHash(assemblyFileName, newGuidMode);
+                guidMaps[ImportAssemblies.GetFileNameHash(assemblyFileName, oldGuidMode)] = ImportAssemblies.GetFileNameHash(assemblyFileName, newGuidMode);
             }
 
             var unityObjects = UnityObjects;
