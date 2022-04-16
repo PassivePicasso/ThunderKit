@@ -158,29 +158,36 @@ make changes that are not backwards compatible to your pipeline assets.
 
 ### Fixes and improvements
 
-* Fixed import process sometimes not completing requiring the user to change 
-  focus away from and back to the editor to complete.
-* Improved the ComposableElement Edit Script context menu item to be more 
-  reliable
-* Updated ThirdPartyNotices.md
-* Updated PipelineLog window to show a button for entries with Log Context
-* Enance ComposableObjectEditor to allow it to render elements with Missing 
-  Scripts to inform the user
-  * This currently doesn't allow elements with missing scripts to be deleted
-* Make minor improvements for enhancing cross platform compatibility
+##### General
+* Make minor improvements for enhancing cross platform editor compatibility
 * Stop persisting PackageGroups and PackageVersions to disk to avoid runaway 
   disk usage
 * Fix a number of small memory leaks
-* Fix an issue with the ComposableObjectEditor which caused it to be more 
-  computationally intensive than necessary
 * Add doc comments to code base (plenty more work to be done here)
 * Create UXML and USS folders in ThunderKit root and move all UXML and USS too them
   Some template specific USS remains in the UXML folders next to their related UXML 
   files
+* Updated ThirdPartyNotices.md
+
+##### PipelineLogs
 * Add setting to enable the PipelineLog window to show automatically when
   a pipeline is executed.
 * Automatically update PipelineLog window when visible and a pipeline is
   executed
+* Updated PipelineLog window to show a button for entries with Log Context
+
+##### ComposableObjects
+* Fix an issue with the ComposableObjectEditor which caused it to be more 
+  computationally intensive than necessary
+* Enance ComposableObjectEditor to allow it to render elements with Missing 
+  Scripts to inform the user
+  * This currently doesn't allow elements with missing scripts to be deleted
+* Improved the ComposableElement Edit Script context menu item to be more 
+  reliable
+
+##### Import 
+* Fixed import process sometimes not completing requiring the user to change 
+  focus away from and back to the editor to complete.
 
 
 
