@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿#if TK_ADDRESSABLE
+using System.Linq;
 
-namespace ThunderKit.RemoteAddressables
+namespace ThunderKit.Addressable.Tools
 {
     public class GraphicsSettingsPreProcessor : UnityEditor.AssetModificationProcessor
     {
@@ -15,3 +16,4 @@ namespace ThunderKit.RemoteAddressables
         }
     }
 }
+#endif

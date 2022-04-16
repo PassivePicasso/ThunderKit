@@ -238,7 +238,7 @@ PageEntry.selected>.header>Label:hover {
     justify-content: space-between;
 }
 
-.thunderkit-field Label {
+.thunderkit-field>Label {
     max-width: 400px;
     margin-left: 4px;
     margin-top: 0px;
