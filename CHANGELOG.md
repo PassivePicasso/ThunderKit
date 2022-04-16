@@ -50,6 +50,11 @@ All Documenation has been updated to use the new GUID format for referencing
 project assets, this will help ensure that documentation links remain stable
 reducing maintenance cost in the future.
 
+##### Cross Documentation Page Links
+
+Documentation has been updated with links between documentation pages to improve 
+ease of use.
+
 Thanks to nebby1999 for these features
 
 ##### FlowPipeline Whitelist / Blacklist
