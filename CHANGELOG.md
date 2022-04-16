@@ -126,7 +126,7 @@ can be submitted on discord or through a pull request on github.
 
 ### Binary Patcher BsDiff
 
-The Binary Patch BsDiff has been added to ThunderKit to enable import workflows
+The Binary Patcher BsDiff has been added to ThunderKit to enable import workflows
 that require modifications to game binaries for scenarios that need them such
 as editor compatibility.
 
