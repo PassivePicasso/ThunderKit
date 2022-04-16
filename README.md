@@ -24,8 +24,11 @@ These initial steps are the universal basic setup for any ThunderKit project.
     - In Windows you can check the file and product version of the executable by navigating to it in Windows Explorer, right clicking on the executable and selecting properties. The file and product version information is on the Details tab.
     - Download specific versions of Unity from the [Unity Download Archive](https://unity3d.com/get-unity/download/archive)
     - Unity Hub cannot install all versions of Unity directly, however it can install them from links on the Unity Download Archive page.
-2. (Unity 2018 only)  [Install Git for Windows](https://git-scm.com/download/win)
-    - Unity 2018 does not full integration for Git and operates on an installed version
+2.  Install [Git Client](https://git-scm.com/download/win)
+    - [UPM Git Requirements documentation](https://docs.unity3d.com/2019.4/Documentation/Manual/upm-git.html#req)
+    - After installing the Git Client, you will need to exit Unity and the Unity Hub. 
+    - Note that Unity Hub does not close when you close the window and needs to be exited
+      from the Windows Notification Area
 3. Create a new Unity Project with the installed version of Unity
 4. Install ThunderKit
     - there are two ways of installing thunderkit.
