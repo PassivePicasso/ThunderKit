@@ -38,6 +38,22 @@ through getting started with usaging and extending ThunderKit. Submission
 of markdown files to grow this collection of tutorials is very welcome and 
 can be submitted on discord or through a pull request on github.
 
+### Binary Patcher BsDiff
+
+The Binary Patch BsDiff has been added to ThunderKit to enable import workflows
+that require modifications to game binaries for scenarios that need them such
+as editor compatibility.
+
+The ApplyPatch and CreatePatch PipelineJobs have been created to enable Pipeline
+workflows that can utilize binary patching.
+
+### AssetsTools.NET
+
+A modified version of AssetsTools.NET has been included to enable importing
+of project settings from games.  This is provided via the ImportProjectSettings
+ImportExtension. Configure it on the Import Configuration 
+[ThunderKit Settings](menulink://Tools/ThunderKit/Settings) page.
+
 ### Markdown
 
 Markdown performance has received additional performance and layout 
