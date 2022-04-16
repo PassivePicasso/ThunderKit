@@ -37,7 +37,7 @@ namespace ThunderKit.Markdown
             }
         }
         public float ContentHeight { get; private set; }
-        private string Markdown { get; set; }
+        public string Markdown { get; private set; }
         private string NormalizedMarkdown { get; set; }
         public MarkdownDataType MarkdownDataType { get; set; }
         public bool SpaceAfterQuoteBlock { get; set; }
@@ -52,6 +52,7 @@ namespace ThunderKit.Markdown
             mpb = new MarkdownPipelineBuilder();
             mpb.Extensions.AddIfNotAlready<GenericAttributesExtension>();
             mpb.Extensions.AddIfNotAlready<JsonFrontMatterExtension>();
+            mpb.UsePreciseSourceLocation();
             //mpb.DisableHtml();
             pipeline = mpb.Build();
             pipeline.Setup(renderer);
