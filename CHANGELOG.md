@@ -17,9 +17,19 @@ Using these features customized import steps can be developed for games,
 minimizing the time starting development on new projects.
 
 ### Markdown
+### Pipeline Quick Access Toolbar
 
 Markdown performance has received additional performance and layout 
 improvements as well as new features.
+A Pipeline Toolbar has been added to the Unity Main toolbar allowing you to
+quickly select a pipeline and manifest to execute without having to search
+your Project.
+
+To add Pipelines and Manifests to your toolbar as options, select the Pipeline
+or Manifest in your project and check the "Quick Access" checkbox in the 
+header. This will allow you to click the appropriate selector in the toolbar
+and run it using the Execute button, or view the most recent log using the Log
+button.
 
 ### Documentation 
 
