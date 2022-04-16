@@ -1,5 +1,23 @@
 ## 5.0.0 - The Next Generation
 
+### A Note about Installing ThunderKit
+
+ThunderKit installation directions have generally had users install ThunderKit
+using it's master branch, which is provided with the url 
+`https://github.com/PassivePicasso/ThunderKit.git`
+
+This was a poor precendent to set and can lead to unexpected upgrades for users.
+Going forward it is recommended to install ThunderKit using a Tagged release.
+
+For Example installing ThunderKit 5.0.0 can be done using the following url:
+`https://github.com/PassivePicasso/ThunderKit.git#5.0.0`
+
+When a project needs to be migrated to a different version of ThunderKit the 
+ProjectRoot/Packages/manifest.json can be edited to change the value of the url
+used to install ThunderKit.  After returning to Unity the Unity Package Manager
+will detect the change and update the ThunderKit installation to the correct 
+version.
+
 ### Import Rework and ImportExtensions
 
 The process for importing games has been completely reworked into a modular
