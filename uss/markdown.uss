@@ -104,8 +104,8 @@ Label {
     flex-wrap: nowrap;
     flex-direction: row;
 }
+
 .list-item .list-item-children {
-    margin-top: -4px;
     flex-wrap: nowrap;
     flex-direction: column;
 }
@@ -206,6 +206,7 @@ Label {
 }
 
 .bullet {
+    padding-top: 3px;
 }
 
 .asset-icon {
