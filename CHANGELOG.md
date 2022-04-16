@@ -169,6 +169,10 @@ make changes that are not backwards compatible to your pipeline assets.
   files
 * Updated ThirdPartyNotices.md
 
+##### Import
+* Fixed import process sometimes not completing requiring the user to change 
+  focus away from and back to the editor to complete.
+
 ##### PipelineLogs
 * Add setting to enable the PipelineLog window to show automatically when
   a pipeline is executed.
@@ -184,11 +188,6 @@ make changes that are not backwards compatible to your pipeline assets.
   * This currently doesn't allow elements with missing scripts to be deleted
 * Improved the ComposableElement Edit Script context menu item to be more 
   reliable
-
-##### Import 
-* Fixed import process sometimes not completing requiring the user to change 
-  focus away from and back to the editor to complete.
-
 
 
 ## 4.1.1

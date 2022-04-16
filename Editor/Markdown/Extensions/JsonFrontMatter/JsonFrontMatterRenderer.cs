@@ -13,17 +13,39 @@ namespace ThunderKit.Markdown.Extensions.Json
     using static Helpers.VisualElementFactory;
     public class JsonFrontMatterRenderer : UIElementObjectRenderer<JsonFrontMatterBlock>
     {
+        /// <summary>
+        /// Pre-Defined FontMatter for ThunderKit Documentation files
+        /// </summary>
         public struct FrontMatter
         {
+            /// <summary>
+            /// Stylesheet to load into root MarkdownElement
+            /// </summary>
             public string pageStylePath;
 
+            /// <summary>
+            /// Classes to apply to JsonFrontMatter rendered Header container
+            /// </summary>
             public string[] headerClasses;
 
+            /// <summary>
+            /// Title to display in Header's Label
+            /// setting title enables the display of the Page Header
+            /// </summary>
             public string title;
+            /// <summary>
+            /// Classes to apply to the Title label in the header
+            /// </summary>
             public string[] titleClasses;
 
+            /// <summary>
+            /// Classes to apply to the Icon VisualElement in the page Header
+            /// </summary>
             public string[] iconClasses;
 
+            /// <summary>
+            /// Url of content to be rendered at the end of the current MarkdownElement
+            /// </summary>
             public string contentUrl;
         }
         protected override void Write(UIElementRenderer renderer, JsonFrontMatterBlock frontMatterBlock)
