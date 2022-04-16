@@ -30,8 +30,8 @@ button.
 
 ### Documentation 
 
-[Documentation](menulink://Tools/ThunderKit/Documentation) has been slightly
-re-organized and new sections have been added.
+[Documentation](menulink://Tools/ThunderKit/Documentation) has been re-organized
+and new sections have been added.
 
 Tutorials is a new and growing collection of documents that will walk you 
 through getting started with usaging and extending ThunderKit. Submission 
