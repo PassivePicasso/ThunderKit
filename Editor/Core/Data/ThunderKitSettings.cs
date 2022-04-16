@@ -161,9 +161,9 @@ namespace ThunderKit.Core.Data
 
             var editorModeField = settingsElement.Q<EnumField>("editor-mode-field");
 #if UNITY_2019_1_OR_NEWER
-            editorModeField.RegisterValueChangedCallback(OnGuidChanged);
+            editorModeField.RegisterValueChangedCallback(OnEditorModeChanged);
 #elif UNITY_2018_1_OR_NEWER
-            guidGenerationModeField.OnValueChanged(OnGuidChanged);
+            editorModeField.OnValueChanged(OnEditorModeChanged);
 #endif
             editorModeField.value = MarkdownOpenMode;
 
@@ -182,7 +182,7 @@ namespace ThunderKit.Core.Data
             rootElement.Bind(thunderKitSettingsSO);
         }
 
-        void OnGuidChanged(ChangeEvent<Enum> evt)
+        void OnEditorModeChanged(ChangeEvent<Enum> evt)
         {
             var openMode = (MarkdownOpenMode)evt.newValue;
             MarkdownOpenMode = openMode;
