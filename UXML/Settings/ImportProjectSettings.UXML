@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.Experimental.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements" editor-extension-mode="True">
 
         <ui:VisualElement class="thunderkit-field">
-            <ui:Label text="Included Project Settings" class="thunderkit-field-label"
+            <ui:Label text="Included Settings" class="thunderkit-field-label"
                       tooltip="Project Settings to import if available in the game files"
             />
             <uie:MaskField name="included-settings-field" binding-path="IncludedSettings" choices="AudioManager, ClusterInputManager, DynamicsManager, EditorBuildSettings, EditorSettings, GraphicsSettings, InputManager, NavMeshAreas, NetworkManager, Physics2DSettings, PresetManager, ProjectSettings, QualitySettings, TagManager, TimeManager, UnityConnectSettings, VFXManager, XRSettings " class="thunderkit-field-input"

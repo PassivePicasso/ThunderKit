@@ -25,7 +25,7 @@ namespace ThunderKit.Core.Config
     public enum GuidMode { Original, Stabilized, AssetRipperCompatibility }
 
     [Serializable]
-    public class ImportAssemblies : Executor
+    public class ImportAssemblies : OptionalExecutor
     {
         private const string TemplatePath = Constants.SettingsTemplatesPath + "/ImportAssemblies.uxml";
         private static readonly HashSet<string> EmptySet = new HashSet<string>();
@@ -255,7 +255,7 @@ namespace ThunderKit.Core.Config
             }
         }
 
-        public override VisualElement CreateUI()
+        protected override VisualElement CreateProperties()
         {
             var importAssemblies = TemplateHelpers.LoadTemplateInstance(TemplatePath);
             importAssemblies.AddEnvironmentAwareSheets(Constants.ThunderKitSettingsTemplatePath);

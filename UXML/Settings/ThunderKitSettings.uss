@@ -22,22 +22,6 @@
     flex-grow: 1;
 }
 
-#extension-item-header {
-	flex-direction: row;
-	background-color: rgba(0, 0, 0, 0.1);
-	margin-left: 4px;
-	margin-right: 8px;
-}
-#extension-item-header>Label{
-	margin-left: -1px;
-}
-#extension-item{
-	flex-direction: column;
-}
-.import-extensions-field ListView {
-    max-width: 600px;
-
-}
 #log-configuration-section {
 	margin-top: 4px;
 }

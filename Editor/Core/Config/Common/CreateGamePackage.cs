@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ThunderKit.Core.Config
 {
-    public class CreateGamePackage : Executor
+    public class CreateGamePackage : OptionalExecutor
     {
         public override int Priority => Constants.ConfigPriority.CreateGamePackage;
 
