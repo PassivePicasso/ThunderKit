@@ -34,7 +34,7 @@ to the new ImportConfiguration ThunderKitSetting.
 Using these features customized import steps can be developed for games,
 minimizing the time starting development on new projects.
 
-### Assembly Import improvements and changes
+### Assembly Import Changes
 
 The Assembly Import process has been improved with the ability to use multiple
 different identity algorithms when producing assembly meta files for unity.
