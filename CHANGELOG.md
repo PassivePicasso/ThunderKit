@@ -16,6 +16,23 @@ to the new ImportConfiguration ThunderKitSetting.
 Using these features customized import steps can be developed for games,
 minimizing the time starting development on new projects.
 
+### Assembly Import improvements and changes
+
+The Assembly Import process has been improved with the ability to use multiple
+different identity algorithms when producing assembly meta files for unity.
+These identities are how Unity identifies the assembly to load MonoBehavior
+and ScriptableObject Types from.
+
+There are currently three algorithms available for producings the identities:
+1. Original - This is the algorithm ThunderKit has used to since it was released.
+2. Stabilized - This is the same as Original, except it ensures that UTF8 
+   encoding is used to generate and write the GUID.
+3. AssetRipper Compatible = This is the algorithm used by AssetRippers new
+   Assembly Export mode and provides the ability to interoperate with 
+   AssetRipper rips and ThunderKit projects. This would allow you to copy
+   a prefab from a rip into a mod project for example and have all the
+   scripts be correctly loaded.
+
 ### Pipeline Quick Access Toolbar
 
 A Pipeline Toolbar has been added to the Unity Main toolbar allowing you to
