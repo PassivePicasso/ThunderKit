@@ -43,6 +43,11 @@ These initial steps are the universal basic setup for any ThunderKit project.
         - Select "Add Package from Git URL..."
         - Paste the following on the text field
         `https://github.com/PassivePicasso/ThunderKit.git` 
+          - If you want to install a specific branch or tag of ThunderKit append #branchname 
+          - ThunderKit tags each versioned released and specific versions can be installed in the same way using tags
+          - Version specific install: `https://github.com/PassivePicasso/ThunderKit.git#5.0.0` 
+          - Branch specific install:  `https://github.com/PassivePicasso/ThunderKit.git#RC_5_0_0`
+          - Commit specific install:  `https://github.com/PassivePicasso/ThunderKit.git#99d7bc7b6d7cf196da41604e11525be9fb452b85`
         - Click add and close the package manager
 5. Verify that the [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) window opened automatically.
     - If the ThunderKit Settings window did not open after the installation completes, check the Console for errors
