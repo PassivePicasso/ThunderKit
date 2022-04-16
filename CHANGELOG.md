@@ -101,7 +101,9 @@ make changes that are not backwards compatible to your pipeline assets.
 
 * Fixed import process sometimes not completing requiring the user to change focus
 away from and back to the editor to complete.
-* FlowPipelines 
+* Improved the ComposableElement Edit Script context menu item to be more reliable
+* Updated ThirdPartyNotices.md
+
 
 
 ## 4.1.1
