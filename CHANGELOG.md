@@ -1,6 +1,76 @@
 ## 5.0.0
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc in felis ac enim facilisis laoreet. Donec viverra augue at ipsum ultrices, non viverra eros vestibulum. Nam scelerisque, est ac pretium pretium, nunc elit blandit neque, et tincidunt dolor neque sed neque. Suspendisse condimentum augue nisl, non placerat purus aliquet sed. Cras tristique posuere ullamcorper. Morbi elementum orci quam, eu ullamcorper lectus sagittis sit amet. Aliquam at lorem sit amet mi gravida dignissim. Etiam vitae dui in elit ornare auctor. Sed nisl erat, semper eget luctus quis, ullamcorper ac diam. Nam finibus quam tellus, a mollis nisl cursus ut. Nunc hendrerit malesuada euismod. Aliquam eu libero efficitur, volutpat tortor quis, vehicula tortor.
+### Import Rework and ImportExtensions
+
+The process for importing games has been completely reworked into a modular
+extensible system.
+
+Now every default import step can be enabled or disabled allowing for the
+implementation of custom import processes and importers designed for different
+environments.
+
+ThunderKit now loads and creates concrete types derived from ImportExtension
+out of assemblies decorated with the ImportExtensionsAttribute and adds them
+to the new ImportConfiguration ThunderKitSetting.
+
+Using these features customized import steps can be developed for games,
+minimizing the time starting development on new projects.
+
+### Markdown
+
+Markdown performance has received additional performance and layout 
+improvements as well as new features.
+
+### Documentation 
+
+[Documentation](menulink://Tools/ThunderKit/Documentation) has been slightly
+re-organized and new sections have been added.
+
+Tutorials is a new and growing collection of documents that will walk you 
+through getting started with usaging and extending ThunderKit. Submission 
+of markdown files to grow this collection of tutorials is very welcome and 
+can be submitted on discord or through a pull request on github.
+
+### Community Contributions
+
+#### Edit Source / Select Source
+
+[Documentation](menulink://Tools/ThunderKit/Documentation) pages now have a 
+context menu allowing the users to select the source markdown files or edit 
+them in their preferred editor, configurable from [ThunderKit Settings](menulink://Tools/ThunderKit/Settings)
+
+#### Guid Stabilized links for Markdown
+
+AssetLink and Documentation schemes for ThunderKit Markdown have been enhanced 
+to allow referencing assets using their GUID. This feature enables documentation
+to remain stable even when moving files around inside the unity environment, or
+externally when the user takes care to move their associated meta file with them.
+
+All Documenation has been updated to use the new GUID format for referencing
+project assets, this will help ensure that documentation links remain stable
+reducing maintenance cost in the future.
+
+Thanks to nebby1999 for these features
+
+#### FlowPipeline Whitelist / Blacklist
+
+FlowPipelines have been updated with Whitelist / Blacklist system with automatic 
+updating for old asset files. This affects the Copy, Zip, and Delete PipelineJobs
+which have the ability to exclude Manifests from their run. Now alternatively a 
+whitelist can be provided which causes the job to only run on manifests in that list.
+
+Users should not need to update their pipelines, but upgrading to ThunderKit 5 will
+make changes that are not backwards compatible to your pipeline assets.
+
+Thanks to KingEnderbrine for this feature
+
+### Fixes and improvements
+
+* Fixed import process sometimes not completing requiring the user to change focus
+away from and back to the editor to complete.
+* FlowPipelines 
+
 
 ## 4.1.1
 
