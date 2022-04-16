@@ -8,7 +8,7 @@
 
 ---
 
-[RegistryLookup](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/RegistryLookup.cs) will return the value at the specified value from the specified key
+[RegistryLookup](assetlink://GUID/67c19b2c06aa8614d99f5956929e3dab) will return the value at the specified value from the specified key
 
 ## Fields
 

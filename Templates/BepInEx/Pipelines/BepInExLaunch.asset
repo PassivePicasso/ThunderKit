@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114525731783530820}
+  QuickAccess: 0
   manifest: {fileID: 0}
-  runLog: []
 --- !u!114 &114525731783530820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -28,9 +28,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77f65d4371163fb4695da79ab8df0e84, type: 3}
   m_Name: ExecuteProcess
   m_EditorClassIdentifier: 
-  Errored: 0
-  ErrorMessage: 
-  ErrorStacktrace: 
   Active: 1
   workingDirectory: <BepInExPackDestination>
   executable: <GameExecutable>

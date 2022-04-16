@@ -8,7 +8,7 @@
 
 ---
 
-[StageAssetBundles](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssetBundles.cs) is an AssetBundle build system
+[StageAssetBundles](assetlink://GUID/924ee63e6c016f14d8a1560b288f15a3) is an AssetBundle build system
 
 ## Fields
 
@@ -27,7 +27,7 @@
 
 ## Required ManifestDatums
 
-* [AssetBundleDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssetBundleDefinitions.cs)
+* [AssetBundleDefinitions](documentation://GUID/b3d3f798ec15f8240ad5105c46ce59f5)
 
 ## Remarks
 

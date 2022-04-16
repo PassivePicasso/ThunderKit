@@ -8,7 +8,7 @@
 
 ---
 
-[Zip](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/Zip.cs) provides the ability to zip a directory
+[Zip](assetlink://GUID/8808e815b3ce9c94e9552cb1dee9e305) provides the ability to zip a directory
 
 ## Fields
 
@@ -32,6 +32,3 @@
 ## Remarks
 
 PathReferences are resources which can define dynamic paths, you can use them in fields that support PathReferences by invoking them with arrow brackets.
-
-
-The [BepInEx Package Pipeline](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Templates/BepInEx/Pipelines/Package.asset) uses Zip as a final publishing step.

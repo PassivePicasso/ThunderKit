@@ -8,7 +8,7 @@
 
 ---
 
-[ThunderKitRoot](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/ThunderKitRoot.cs) returns "ThunderKit"
+[ThunderKitRoot](assetlink://GUID/49ea6c70a35243a4c83cfceb6d9f2ce7) returns "ThunderKit"
 
 ## Remarks
 

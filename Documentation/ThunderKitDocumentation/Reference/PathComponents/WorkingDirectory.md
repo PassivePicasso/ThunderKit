@@ -8,7 +8,7 @@
 
 ---
 
-[WorkingDirectory](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Paths/Components/WorkingDirectory.cs) will return the current Process Working Directory
+[WorkingDirectory](assetlink://GUID/82f9860b00305774b85c0ef6b5e4b0d1) will return the current Process Working Directory
 
 ## Remarks
 

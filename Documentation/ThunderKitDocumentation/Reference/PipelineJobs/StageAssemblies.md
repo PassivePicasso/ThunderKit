@@ -8,7 +8,7 @@
 
 ---
 
-[StageAssemblies](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Pipelines/Jobs/StageAssemblies.cs) copies Assemblies built by unity out to StagingPaths
+[StageAssemblies](assetlink://GUID/b5b20fac9c71fd64183cb7a8f359d73a) copies Assemblies built by unity out to StagingPaths
 
 ## Fields
 * **Stage Debug Database**
@@ -21,7 +21,7 @@
 
 ## Required ManifestDatums
 
-* [AssemblyDefinitions](assetlink://Packages/com.passivepicasso.thunderkit/Editor/Core/Manifests/Datum/AssemblyDefinitions.cs)
+* [AssemblyDefinitions](documentation://GUID/cef5acb6a795c5d4d9031261ea82e891)
 
 ## Remarks
 
