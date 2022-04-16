@@ -44,7 +44,7 @@ namespace ThunderKit.Markdown.Extensions.Json
             public string[] iconClasses;
 
             /// <summary>
-            /// Url of content to be rendered at the end of the current MarkdownElement
+            /// When specified, a MarkdownElement is added to the end of the current MarkdownElement with its Source set to the provided value
             /// </summary>
             public string contentUrl;
         }
