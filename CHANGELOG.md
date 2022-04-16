@@ -45,7 +45,7 @@ repository for an implementation of such features.
 
 ##### Addressable Browser
 
-The [Addressable Browser](menulink://Tools/ThunderKit/Addressable Browser) 
+The [Addressable Browser](menulink://Tools/ThunderKit/AddressableBrowser) 
 provides an interface to search and explore a games Addressable Catalog.
 Using this browser you can locate the assets and their addresses so that you
 can use a games assets in the editor and at runtime.
