@@ -147,7 +147,10 @@ make changes that are not backwards compatible to your pipeline assets.
 away from and back to the editor to complete.
 * Improved the ComposableElement Edit Script context menu item to be more reliable
 * Updated ThirdPartyNotices.md
-
+* Updated PipelineLog window to show a button for entries with Log Context
+* Enance ComposableObjectEditor to allow it to render elements with Missing Scripts to inform the user
+  * This currently doesn't allow elements with missing scripts to be deleted
+* Make minor improvements for enhancing cross platform compatibility
 
 
 ## 4.1.1
