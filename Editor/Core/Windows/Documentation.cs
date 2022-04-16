@@ -1,5 +1,4 @@
 ﻿using ThunderKit.Common;
-using ThunderKit.Core.UIElements;
 using UnityEditor;
 using System.IO;
 using System.Linq;
@@ -9,6 +8,9 @@ using ThunderKit.Markdown;
 using ThunderKit.Core.Data;
 using System;
 using UnityEngine;
+using UnityEditorInternal;
+using ThunderKit.Markdown.Extensions.Json;
+using ThunderKit.Core.Documentation;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -17,6 +19,7 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.Windows
 {
+    public enum MarkdownOpenMode { OperatingSystemDefault, UnityExternalEditor }
     public class Documentation : TemplatedWindow
     {
         private const string PageClass = "pagelistview__page";
@@ -26,6 +29,8 @@ namespace ThunderKit.Core.Windows
         private const string HiddenClass = "hidden";
         private const string HideArrowClass = "hide-arrow";
         private const string MinimizeClass = "minimize";
+        private const string RootDocumentationElementName = "documentation-markdown";
+
         public static bool IsOpen { get; private set; }
 
         private string currentPage;
@@ -141,7 +146,9 @@ namespace ThunderKit.Core.Windows
                     .ToArray();
 
             indexScroller = rootVisualElement.Q<ScrollView>("index-scroller");
-            markdownElement = rootVisualElement.Q<MarkdownElement>("documentation-markdown");
+            rootVisualElement.AddManipulator(new MarkdownContextualMenuManipulator());
+
+            markdownElement = rootVisualElement.Q<MarkdownElement>(RootDocumentationElementName);
 
             pageList = rootVisualElement.Q("page-list");
             pageList.RegisterCallback<KeyDownEvent>(OnNavigate);
@@ -190,6 +197,7 @@ namespace ThunderKit.Core.Windows
             }
             LoadSelection(Constants.ThunderKitRoot + "/Documentation/ThunderKitDocumentation/About.md");
         }
+
 
         string GetPageName(string path)
         {

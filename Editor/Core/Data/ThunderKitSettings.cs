@@ -10,12 +10,8 @@ using ThunderKit.Core.Config;
 using ThunderKit.Markdown;
 using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Manifests;
-using ThunderKit.Core.Utilities;
-using System.Collections.Generic;
 using System.Reflection;
 using System;
-using System.Text;
-using ThunderKit.Core.Config.Common;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -27,6 +23,7 @@ using UnityEngine.Experimental.UIElements;
 namespace ThunderKit.Core.Data
 {
     using static ThunderKit.Common.PathExtensions;
+
     [ExecuteAlways]
     // Create a new type of Settings Asset.
     public class ThunderKitSettings : ThunderKitSetting
@@ -124,6 +121,7 @@ namespace ThunderKit.Core.Data
         public string DateTimeFormat = "HH:mm:ss:fff";
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
         public bool ShowLogWindow = true;
+        public MarkdownOpenMode MarkdownOpenMode;
 
         public Pipeline SelectedPipeline;
         public Manifest SelectedManifest;
@@ -161,6 +159,15 @@ namespace ThunderKit.Core.Data
 
             rootElement.Add(settingsElement);
 
+            var editorModeField = settingsElement.Q<EnumField>("editor-mode-field");
+#if UNITY_2019_1_OR_NEWER
+            editorModeField.RegisterValueChangedCallback(OnGuidChanged);
+#elif UNITY_2018_1_OR_NEWER
+            guidGenerationModeField.OnValueChanged(OnGuidChanged);
+#endif
+            editorModeField.value = MarkdownOpenMode;
+
+
             var browseButton = settingsElement.Q<Button>("browse-button");
             browseButton.clickable.clicked -= BrowserForGame;
             browseButton.clickable.clicked += BrowserForGame;
@@ -173,6 +180,12 @@ namespace ThunderKit.Core.Data
                 thunderKitSettingsSO = new SerializedObject(this);
 
             rootElement.Bind(thunderKitSettingsSO);
+        }
+
+        void OnGuidChanged(ChangeEvent<Enum> evt)
+        {
+            var openMode = (MarkdownOpenMode)evt.newValue;
+            MarkdownOpenMode = openMode;
         }
 
         private void LoadGame()

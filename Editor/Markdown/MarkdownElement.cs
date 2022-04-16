@@ -30,7 +30,7 @@ namespace ThunderKit.Markdown
         private string data;
         public string Data
         {
-            get => data; 
+            get => data;
             set
             {
                 data = value;
@@ -70,44 +70,6 @@ namespace ThunderKit.Markdown
 #elif UNITY_2018_1_OR_NEWER
             AddSheet(MarkdownStylePath, "2018");
 #endif
-            this.AddManipulator(new ContextualMenuManipulator((evt) =>
-            {
-                if (MarkdownDataType == MarkdownDataType.Implicit || MarkdownDataType == MarkdownDataType.Source)
-                {
-                    evt.menu.AppendAction("Edit Markdown", OpenMarkdown);
-                    evt.menu.AppendAction("Select Markdown Source", (dma) =>
-                    {
-                        var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(data);
-                        if (asset != null)
-                        {
-                            EditorGUIUtility.PingObject(asset);
-                            Selection.activeObject = asset;
-                        }
-                    });
-                }
-            }));
-        }
-
-        private void OpenMarkdown(DropdownMenuAction obj)
-        {
-            try
-            {
-                string path = Path.GetFullPath(Data);
-                if(File.Exists(path))
-                {
-                    if(string.Compare(Path.GetExtension(path), ".md", true) != 0)
-                    {
-                        throw new InvalidOperationException($"The file {path} is not a file with a markdown extension (.md)");
-                    }
-                    System.Diagnostics.Process.Start(path);
-                    return;
-                }
-                throw new NullReferenceException($"No file exists in {path}");
-            }
-            catch (Exception ex)
-            {
-                Debug.Log(ex);
-            }
         }
 
         private void MarkdownFileWatcher_DocumentUpdated(object sender, (string path, MarkdownFileWatcher.ChangeType change) e)
