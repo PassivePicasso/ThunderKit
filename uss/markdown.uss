@@ -99,8 +99,6 @@ Label {
 }
 
 .list-item {
-    margin-top: 4px;
-    margin-bottom: 4px;
     margin-left: 14px;
     margin-right: 14px;
     flex-wrap: nowrap;
@@ -208,7 +206,6 @@ Label {
 }
 
 .bullet {
-    padding-top: 3px;
 }
 
 .asset-icon {
