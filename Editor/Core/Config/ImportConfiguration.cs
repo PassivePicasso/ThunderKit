@@ -29,7 +29,7 @@ namespace ThunderKit.Core.Config
 
     public class ImportConfiguration : ThunderKitSetting
     {
-        public Executor[] ConfigurationExecutors;
+        public OptionalExecutor[] ConfigurationExecutors;
         public int ConfigurationIndex = -1;
 
         [InitializeOnLoadMethod]
@@ -130,18 +130,18 @@ namespace ThunderKit.Core.Config
 
                 var settingsPath = GetAssetPath(settings);
                 var objects = LoadAllAssetRepresentationsAtPath(settingsPath);
-                var existingExecutors = new HashSet<Executor>(objects.OfType<Executor>());
+                var existingExecutors = new HashSet<OptionalExecutor>(objects.OfType<OptionalExecutor>());
 
                 int currentExecutorCount = existingExecutors.Count;
 
-                var executors = loadedTypes.Where(t => typeof(Executor).IsAssignableFrom(t))
+                var executors = loadedTypes.Where(t => typeof(OptionalExecutor).IsAssignableFrom(t))
                     .Where(t => !existingExecutors.Any(executor => executor.GetType() == t))
                     .Select(t =>
                     {
                         if (existingExecutors.Any(gc => gc.GetType() == t))
                             return null;
 
-                        var configurator = CreateInstance(t) as Executor;
+                        var configurator = CreateInstance(t) as OptionalExecutor;
                         if (configurator)
                         {
                             configurator.name = configurator.Name;
@@ -190,16 +190,7 @@ namespace ThunderKit.Core.Config
             var executor = ConfigurationExecutors[ConfigurationIndex];
             try
             {
-                switch (executor)
-                {
-                    case OptionalExecutor optional:
-                        if (optional.enabled)
-                            optional.Execute();
-                        break;
-                    default:
-                        executor.Execute();
-                        break;
-                }
+                if (executor.enabled) executor.Execute();
             }
             catch (Exception e)
             {

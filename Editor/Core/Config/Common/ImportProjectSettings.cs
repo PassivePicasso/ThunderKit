@@ -21,7 +21,7 @@ using UnityEditor.Experimental.UIElements;
 namespace ThunderKit.Core.Config.Common
 {
     [Serializable]
-    public class ImportProjectSettings : Executor
+    public class ImportProjectSettings : OptionalExecutor
     {
         private const string TemplatePath = Constants.SettingsTemplatesPath + "/ImportProjectSettings.uxml";
         public override int Priority => Constants.ConfigPriority.ProjectSettingsImport;
@@ -69,7 +69,7 @@ namespace ThunderKit.Core.Config.Common
             }
         }
 
-        public override VisualElement CreateUI()
+        protected override VisualElement CreateProperties()
         {
             var importProjectSettingsUI = TemplateHelpers.LoadTemplateInstance(TemplatePath);
             importProjectSettingsUI.AddEnvironmentAwareSheets(Constants.ThunderKitSettingsTemplatePath);

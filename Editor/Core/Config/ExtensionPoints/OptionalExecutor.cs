@@ -10,11 +10,16 @@ using UnityEngine.Experimental.UIElements;
 namespace ThunderKit.Core.Config
 {
     [Serializable]
-    public abstract class OptionalExecutor : Executor
+    public abstract class OptionalExecutor : ImportExtension
     {
+        /// <summary>
+        /// Executed after the last files and data have been imported into the project, but before 
+        /// </summary>
+        public abstract void Execute();
+
         public bool enabled;
 
-        public sealed override VisualElement CreateUI()
+        public VisualElement CreateUI()
         {
             var element = new VisualElement { name = "extension-item" };
 
