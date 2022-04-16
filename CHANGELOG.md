@@ -90,6 +90,8 @@ of project settings from games.  This is provided via the ImportProjectSettings
 ImportExtension. Configure it on the Import Configuration 
 [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) page.
 
+Additionally, game version checking has also been enhanced using AssetsTools.NET
+
 ### Markdown
 
 Markdown performance has received additional performance and layout 
