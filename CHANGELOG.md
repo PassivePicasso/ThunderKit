@@ -66,8 +66,23 @@ like SimplyAddress are being and can be developed to improve the ease of use.
 
 ### Documentation 
 
-[Documentation](menulink://Tools/ThunderKit/Documentation) has been re-organized
-and new sections have been added.
+[Documentation](menulink://Tools/ThunderKit/Documentation) has been updated
+to be extensible via the DocumentationRoot ScriptableObject. Creating a 
+DocumentationRoot can be done via the Project Window Context menu under the
+ThunderKit sub menu. A DocumentationRoot establishes a root documentation
+section in the ThunderKit documentation window with the same name. 
+
+Additionally, DocumentationRoot contains the Main Page member, which can 
+be set to any Markdown file regardless of its location as the page displayed
+when the DocumentationRoot is selected.
+
+Documentation is now easier to write and extend, no longer requiring the 
+creation of UXML and USS files to setup simple documentation collections.
+See the [ThunderKitDocumentation](assetlink://GUID/33d96cac9b15cba468162cf9d18ec0f3)
+for an example of a working documentation collection.
+
+Documentation has been added and the layout of the existing documentation 
+has been re-organized.
 
 Tutorials is a new and growing collection of documents that will walk you 
 through getting started with usaging and extending ThunderKit. Submission 
