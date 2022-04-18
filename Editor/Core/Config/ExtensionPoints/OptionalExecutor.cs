@@ -19,12 +19,15 @@ namespace ThunderKit.Core.Config
 
         public bool enabled;
 
+        public virtual string Description { get; }
+
         public VisualElement CreateUI()
         {
             var element = new VisualElement { name = "extension-item" };
 
             var header = new VisualElement { name = "extension-item-header" };
             header.AddToClassList("thunderkit-field");
+            header.tooltip = string.IsNullOrEmpty(Description) ? $"(Import Extension Priority: {Priority})" : $"{Description}\n\n(Import Extension Priority: {Priority}";
             var label = new Label { name = "extension-label", text = Name };
             header.Add(label);
             var toggle = new Toggle { name = "extension-enabled-toggle", bindingPath = nameof(OptionalExecutor.enabled) };
