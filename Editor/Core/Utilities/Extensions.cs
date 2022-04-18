@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using ThunderKit.Core.Data;
 using UnityEditor;
@@ -29,6 +30,5 @@ namespace ThunderKit.Core.Utilities
         {
             return (input & flag) == flag;
         }
-
     }
 }
