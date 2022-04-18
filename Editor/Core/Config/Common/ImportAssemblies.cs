@@ -65,6 +65,7 @@ namespace ThunderKit.Core.Config
                 .Where(t => !t.IsAbstract && !t.IsInterface)
                 .Select(t => CreateInstance(t) as T)
                 .Where(t => t != null)
+                .OrderByDescending(t => t.Priority)
                 .ToList();
             importers.Sort();
             return importers;
