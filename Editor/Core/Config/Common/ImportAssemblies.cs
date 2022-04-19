@@ -59,17 +59,12 @@ namespace ThunderKit.Core.Config
             AssemblyProcessors = CreateImporters<AssemblyProcessor>(loadedTypes);
         }
 
-        private static List<T> CreateImporters<T>(Type[] loadedTypes) where T : ImportExtension
-        {
-            var importers = loadedTypes.Where(t => typeof(T).IsAssignableFrom(t))
+        private static List<T> CreateImporters<T>(Type[] loadedTypes) where T : ImportExtension => loadedTypes.Where(t => typeof(T).IsAssignableFrom(t))
                 .Where(t => !t.IsAbstract && !t.IsInterface)
                 .Select(t => CreateInstance(t) as T)
                 .Where(t => t != null)
                 .OrderByDescending(t => t.Priority)
                 .ToList();
-            importers.Sort();
-            return importers;
-        }
 
         public override int Priority => Constants.ConfigPriority.AssemblyImport;
 
