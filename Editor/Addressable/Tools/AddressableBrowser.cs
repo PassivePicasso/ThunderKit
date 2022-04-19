@@ -45,6 +45,7 @@ namespace ThunderKit.Addressable.Tools
         private ListView directoryContent;
         private Texture sceneIcon;
         private TextField searchBox;
+        private Button buildIndexButton;
 
         public bool caseSensitive;
         public string searchInput;
@@ -57,6 +58,9 @@ namespace ThunderKit.Addressable.Tools
             searchBox = rootVisualElement.Q<TextField>("search-input");
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
+            buildIndexButton = rootVisualElement.Q<Button>("build-addressable-index-button");
+
+            buildIndexButton.clickable = new BuildIndexClickable();
 
             directory.makeItem = DirectoryLabel;
             directoryContent.makeItem = AssetLabel;
@@ -101,42 +105,6 @@ namespace ThunderKit.Addressable.Tools
                 directory.itemsSource = matches.Select(kvp => kvp.Key).ToList();
             }
         }
-
-        struct KeyData
-        {
-            public string name;
-            public string type;
-            public string address;
-
-            public System.Type Type => System.Type.GetType(type);
-        }
-        HashSet<KeyData> DataCache = new HashSet<KeyData>();
-        void BuildDataCache()
-        {
-            foreach (var item in Addressables.ResourceLocators)
-            {
-                foreach (var key in item.Keys)
-                {
-                    try
-                    {
-                        var assetOp = Addressables.LoadAssetAsync<Object>(key);
-                        assetOp.Completed += obj =>
-                        {
-                            var result = obj.Result;
-                            DataCache.Add(new KeyData
-                            {
-                                name = result.name,
-                                type = result.GetType().AssemblyQualifiedName,
-                                address = key.ToString()
-                            });
-                            Addressables.Release(assetOp);
-                        };
-                    }
-                    catch { }
-                }
-            }
-        }
-
 
         async void BindAsset(VisualElement element, int i)
         {
