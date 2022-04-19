@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,12 +10,17 @@ using ThunderKit.Common.Package;
 using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace ThunderKit.Core.Utilities
 {
     public static class PackageHelper
     {
+        private static readonly MethodInfo ClientResolve = typeof(Client).GetMethod("Resolve", BindingFlags.NonPublic | BindingFlags.Static);
+        public static void ResolvePackages() => ClientResolve.Invoke(null, null);
+
+
         static readonly Regex versionRegex = new Regex("(\\d+\\.\\d+\\.\\d+)(\\..*?)?");
         public static void GeneratePackageManifest(string packageName, string outputDir, string displayName, string authorAlias, string version, string description = null)
         {
@@ -50,6 +56,7 @@ namespace ThunderKit.Core.Utilities
             var pmm = JsonUtility.FromJson<PackageManagerManifest>(json);
             return pmm;
         }
+
 
         /// <summary>
         /// Generate a unity meta file for an assembly with ThunderKit managed Guid

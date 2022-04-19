@@ -39,8 +39,7 @@ namespace ThunderKit.Core.Config
             File.SetCreationTime(fullPackagePath, DateTime.Now);
             File.SetLastAccessTime(fullPackagePath, DateTime.Now);
 
-            var resolve = typeof(Client).GetMethod("Resolve", BindingFlags.NonPublic | BindingFlags.Static);
-            resolve.Invoke(null, null);
+            PackageHelper.ResolvePackages();
         }
     }
 }
