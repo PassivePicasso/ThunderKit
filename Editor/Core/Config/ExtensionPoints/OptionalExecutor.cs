@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
-using UnityEngine;
+using ThunderKit.Common;
+using ThunderKit.Core.UIElements;
 #if UNITY_2019
 using UnityEngine.UIElements;
 #elif UNITY_2018
@@ -20,6 +20,7 @@ namespace ThunderKit.Core.Config
         public bool enabled;
 
         public virtual string Description { get; }
+        protected virtual string UITemplatePath => Constants.SettingsTemplatesPath + $"/{GetType().Name}.uxml";
 
         public VisualElement CreateUI()
         {
@@ -34,13 +35,23 @@ namespace ThunderKit.Core.Config
             header.Add(toggle);
 
             element.Add(header);
-            var properties = CreateProperties();
-            if (properties != null)
-                element.Add(properties);
+            try
+            {
+                var properties = CreateProperties();
+                if (properties != null)
+                    element.Add(properties);
+            }
+            catch { }
 
             return element;
         }
 
-        protected virtual VisualElement CreateProperties() => null;
+        protected virtual VisualElement CreateProperties()
+        {
+            var uiTemplate = TemplateHelpers.LoadTemplateInstance(UITemplatePath);
+            uiTemplate.AddEnvironmentAwareSheets(Constants.ThunderKitSettingsTemplatePath);
+
+            return uiTemplate;
+        }
     }
 }
