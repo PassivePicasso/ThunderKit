@@ -16,13 +16,13 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
-using ThunderKit.Core.Data;
 using ThunderKit.Core.UIElements;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using ThunderKit.Core.Config;
 
-namespace ThunderKit.Core.Config
+namespace ThunderKit.Core.Data
 {
     using static AssetDatabase;
     using static ThunderKit.Common.PathExtensions;
@@ -35,7 +35,14 @@ namespace ThunderKit.Core.Config
         [InitializeOnLoadMethod]
         static void Init()
         {
-            EditorApplication.update += SetupConfigurators;
+            EditorApplication.projectChanged += SetupConfigurators;
+            EditorApplication.update += StepImporters;
+        }
+
+        private static void StepImporters()
+        {
+            if (!EditorApplication.isCompiling && !EditorApplication.isUpdating)
+                GetOrCreateSettings<ImportConfiguration>().ImportGame();
         }
 
         public override void CreateSettingsUI(VisualElement rootElement)
@@ -87,10 +94,9 @@ namespace ThunderKit.Core.Config
 
         private static void SetupConfigurators()
         {
-            if (EditorApplication.isUpdating) return;
             var settings = GetOrCreateSettings<ImportConfiguration>();
 
-            var builder = new StringBuilder("Loaded GameConfigurators:");
+            var builder = new StringBuilder("Loaded Import Extensions");
             builder.AppendLine();
             Type[] loadedTypes = null;
             if (configurationAssemblies == null)
@@ -99,8 +105,8 @@ namespace ThunderKit.Core.Config
                                 .GetAssemblies()
                                 .Where(asm => asm != null)
                                 .Where(asm => asm.GetCustomAttribute<ImportExtensionsAttribute>() != null);
-
-                loadedTypes = configurationAssemblies
+            }
+            loadedTypes = configurationAssemblies
 #if NET_4_6
                 .Where(asm => !asm.IsDynamic)
 #else
@@ -123,62 +129,66 @@ namespace ThunderKit.Core.Config
                        return e.Types;
                    }
                })
-                   .Where(t => t != null)
-                   .Where(t => !t.IsAbstract && !t.IsInterface)
-                   .ToArray();
+               .Where(t => t != null)
+               .Where(t => !t.IsAbstract && !t.IsInterface)
+               .ToArray();
 
 
-                var settingsPath = GetAssetPath(settings);
-                var objects = LoadAllAssetRepresentationsAtPath(settingsPath);
-                var existingExecutors = new HashSet<OptionalExecutor>(objects.OfType<OptionalExecutor>());
+            var settingsPath = GetAssetPath(settings);
+            var objects = LoadAllAssetRepresentationsAtPath(settingsPath);
+            var existingExecutors = new HashSet<OptionalExecutor>(objects.OfType<OptionalExecutor>());
 
-                int currentExecutorCount = existingExecutors.Count;
+            int currentExecutorCount = existingExecutors.Count;
 
-                var executors = loadedTypes.Where(t => typeof(OptionalExecutor).IsAssignableFrom(t))
-                    .Where(t => !existingExecutors.Any(executor => executor.GetType() == t))
-                    .Select(t =>
+            var executorTypes = loadedTypes.Where(t => typeof(OptionalExecutor).IsAssignableFrom(t)).ToArray();
+
+            var executors = executorTypes
+                .Where(t => !existingExecutors.Any(executor => executor.GetType() == t))
+                .Select(t =>
+                {
+                    if (existingExecutors.Any(gc => gc.GetType() == t))
+                        return null;
+
+                    var configurator = CreateInstance(t) as OptionalExecutor;
+                    if (configurator)
                     {
-                        if (existingExecutors.Any(gc => gc.GetType() == t))
-                            return null;
+                        configurator.name = configurator.Name;
+                        builder.AppendLine(configurator.GetType().FullName);
+                    }
+                    return configurator;
+                })
+                .Where(configurator => configurator != null)
+                .Union(existingExecutors)
+                .Distinct()
+                .OrderByDescending(configurator => configurator.Priority)
+                .ToList();
 
-                        var configurator = CreateInstance(t) as OptionalExecutor;
-                        if (configurator)
-                        {
-                            configurator.name = configurator.Name;
-                            builder.AppendLine(configurator.GetType().AssemblyQualifiedName);
-                        }
-                        return configurator;
-                    })
-                    .Where(configurator => configurator != null)
-                    .Union(existingExecutors)
-                    .Distinct()
-                    .OrderByDescending(configurator => configurator.Priority)
-                    .ToList();
-
-                for (int i = 0; i < executors.Count; i++)
+            bool updated = false;
+            for (int i = 0; i < executors.Count; i++)
+            {
+                var executor = executors[i];
+                if (GetAssetPath(executor) != settingsPath)
                 {
-                    var executor = executors[i];
-                    if (GetAssetPath(executor) != settingsPath)
-                        AddObjectToAsset(executor, settingsPath);
-                }
-
-                var updatedExectors = executors.ToArray();
-                settings.ConfigurationExecutors = updatedExectors;
-                if (currentExecutorCount != updatedExectors.Length)
-                {
-                    ImportAsset(settingsPath);
-                    Debug.Log(builder.ToString());
+                    AddObjectToAsset(executor, settingsPath);
+                    updated = true;
                 }
             }
 
-            if (!EditorApplication.isCompiling && !EditorApplication.isUpdating)
-                settings.ImportGame();
+            if (updated)
+            {
+                var updatedExectors = executors.ToArray();
+                settings.ConfigurationExecutors = updatedExectors;
+                ImportAsset(settingsPath);
+                Debug.Log(builder.ToString());
+            }
+
         }
+
 
         public void ImportGame()
         {
             var thunderKitSettings = GetOrCreateSettings<ThunderKitSettings>();
-            if (ConfigurationIndex >= ConfigurationExecutors.Length || ConfigurationIndex < 0) return;
+            if (ConfigurationIndex >= (ConfigurationExecutors?.Length ?? 0) || ConfigurationIndex < 0) return;
 
             if (string.IsNullOrEmpty(thunderKitSettings.GamePath) || string.IsNullOrEmpty(thunderKitSettings.GameExecutable))
             {
@@ -274,6 +284,6 @@ namespace ThunderKit.Core.Config
             return versionMatch;
         }
 
-        
+
     }
 }
