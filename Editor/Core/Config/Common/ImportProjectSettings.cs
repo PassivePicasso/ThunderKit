@@ -2,30 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.UIElements;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
-#if UNITY_2019
-using UnityEngine.UIElements;
-using UnityEditor.UIElements;
-#elif UNITY_2018
-using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
-#endif
-
 
 namespace ThunderKit.Core.Config.Common
 {
     [Serializable]
     public class ImportProjectSettings : OptionalExecutor
     {
-        private const string TemplatePath = Constants.SettingsTemplatesPath + "/ImportProjectSettings.uxml";
         public override int Priority => Constants.ConfigPriority.ProjectSettingsImport;
-
+        public override string Description => "Import ProjectSettings from games with globalgamemanagers";
         public int IncludedSettings;
 
         public override void Execute()
@@ -67,14 +55,6 @@ namespace ThunderKit.Core.Config.Common
             {
                 var x = escape;
             }
-        }
-
-        protected override VisualElement CreateProperties()
-        {
-            var importProjectSettingsUI = TemplateHelpers.LoadTemplateInstance(TemplatePath);
-            importProjectSettingsUI.AddEnvironmentAwareSheets(Constants.ThunderKitSettingsTemplatePath);
-
-            return importProjectSettingsUI;
         }
     }
 }
