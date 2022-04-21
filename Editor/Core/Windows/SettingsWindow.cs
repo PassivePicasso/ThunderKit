@@ -35,20 +35,17 @@ namespace ThunderKit.Core.Windows
         public override void OnEnable()
         {
             base.OnEnable();
-
             
             rootVisualElement.AddEnvironmentAwareSheets($"{Constants.ThunderKitRoot}/USS/thunderkit.uss");
 
             settingsList = rootVisualElement.Q("settings-list") as ListView;
             settingsArea = rootVisualElement.Q("settings-area");
-            var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", Constants.FindAllFolders)
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(AssetDatabase.LoadAssetAtPath<ThunderKitSetting>)
-                .ToArray();
 
             settingsList.makeItem = OnMakeItem;
             settingsList.bindItem = OnBindItem;
-            settingsList.itemsSource = settings;
+            UpdateSettingsSource();
+            EditorApplication.projectChanged += UpdateSettingsSource;
+
             settingsList.selectionType = SelectionType.Multiple;
 
 #if UNITY_2020_2_OR_NEWER
@@ -56,6 +53,20 @@ namespace ThunderKit.Core.Windows
 #else
             settingsList.onSelectionChanged += OnSettingsSelected;
 #endif
+        }
+
+        private void UpdateSettingsSource()
+        {
+            var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", Constants.FindAllFolders)
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<ThunderKitSetting>)
+                .ToArray();
+            settingsList.itemsSource = settings;
+        }
+
+        private void OnDisable()
+        {
+            EditorApplication.projectChanged -= UpdateSettingsSource;
         }
 
         private void OnBindItem(VisualElement ve, int index)
