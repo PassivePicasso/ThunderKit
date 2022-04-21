@@ -1,5 +1,5 @@
-﻿using LiteDB;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 namespace ThunderKit.Addressable.Tools
 {
     [Serializable]
-    public class KeyData
+    public class AssetData
     {
         public string Address { get; set; }
         public string Name { get; set; }
@@ -27,6 +27,7 @@ namespace ThunderKit.Addressable.Tools
     public class BuildIndexClickable : Clickable
     {
         private static string DatabasePath => Path.Combine("Library", "TK_Addressables.db");
+        private static HashSet<AssetData> AssetDataCache = new HashSet<AssetData>();
 
         static void Empty() { }
 
@@ -34,19 +35,12 @@ namespace ThunderKit.Addressable.Tools
         private Button buildButton;
         private string[] keyStrings;
         private AsyncOperationHandle<Object> activeLoadOperation;
-
         public BuildIndexClickable() : base(Empty)
         {
             this.clicked += BuildIndex;
             buildButton = target as Button;
 
         }
-
-        [InitializeOnLoadMethod]
-        static void Initialize()
-        {
-        }
-
 
         public void BuildIndex()
         {
@@ -80,7 +74,7 @@ namespace ThunderKit.Addressable.Tools
 
                     var resultType = result.GetType();
 
-                    var data = new KeyData
+                    var data = new AssetData
                     {
                         Address = firstKey.ToString(),
                         Name = result.name,
@@ -89,19 +83,8 @@ namespace ThunderKit.Addressable.Tools
                         TypeNamespace = resultType.Namespace,
                         AssemblyName = resultType.Assembly.FullName
                     };
-
-                    using (var AddressableDatabase = new LiteDatabase(DatabasePath))
-                    {
-                        var collection = AddressableDatabase.GetCollection<KeyData>("AddressData");
-                        collection.Insert(data);
-                    }
-                    //AddressableDatabase.EnsureIndex(kd => kd.address);
-                    //AddressableDatabase.EnsureIndex(kd => kd.name);
-                    //AddressableDatabase.EnsureIndex(kd => kd.typeName);
-                    //AddressableDatabase.EnsureIndex(kd => kd.typeNamespace);
-                    //AddressableDatabase.EnsureIndex(kd => kd.assemblyName);
+                    AssetDataCache.Add(data);
                  }
-                //Addressables.Release(assetOp);
             }
             catch (Exception e)
             {
