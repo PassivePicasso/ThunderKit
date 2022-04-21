@@ -142,14 +142,6 @@ ImportExtension. Configure it on the Import Configuration
 
 Additionally, game version checking has also been enhanced using AssetsTools.NET
 
-### Markdown
-
-MarkdownElement now supports the following features:
-* JsonFrontMatter (Limited) - the JsonFrontMatterRenderer can be used to collect a 
-  limited set of values from a Markdown file. See the [FrontMatter Struct](assetlink://GUID/70db1552b66c4e34d88f6b33d3e0ead7)
-  for details.
-* Generic Attributes - Apply USS/CSS Classes to Blocks of text in markdown
-
 ### Community Contributions
 
 ##### Edit Source / Select Source
@@ -191,6 +183,8 @@ make changes that are not backwards compatible to your pipeline assets.
 ### Fixes and improvements
 
 ##### General
+* Fix error in FileUtil which produced incorrect FileIds for Script references to 
+  Assemblies
 * Make minor improvements for enhancing cross platform editor compatibility
 * Stop persisting PackageGroups and PackageVersions to disk to avoid runaway 
   disk usage
@@ -200,6 +194,16 @@ make changes that are not backwards compatible to your pipeline assets.
   Some template specific USS remains in the UXML folders next to their related UXML 
   files
 * Updated ThirdPartyNotices.md
+
+##### Markdown
+
+* Added JsonFrontMatter for Page Headers 
+  - Json FrontMatter can be used to collect a limited set of values from a
+    Markdown file. See the [FrontMatter Struct](assetlink://GUID/70db1552b66c4e34d88f6b33d3e0ead7)
+    for details.
+* Generic Attributes - Apply USS/CSS Classes to Blocks of text in markdown
+* Improvements to the markdown style have been made to bring it more in line with common markdown styling
+* MarkdownElement now detects changes to source files and updates automatically
 
 ##### Import
 * Fixed import process sometimes not completing requiring the user to change 
