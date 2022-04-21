@@ -17,6 +17,7 @@ MonoBehaviour:
   - {fileID: 114643622350610336}
   - {fileID: 114537630434205182}
   - {fileID: 114366308522735304}
+  QuickAccess: 0
   manifest: {fileID: 0}
 --- !u!114 &114366308522735304
 MonoBehaviour:

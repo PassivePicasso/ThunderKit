@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   PerManifest: 1
-  ExcludedManifests: []
+  ListType: 0
+  Manifests: []
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1
@@ -70,7 +71,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   PerManifest: 0
-  ExcludedManifests: []
+  ListType: 0
+  Manifests: []
   Recursive: 0
   SourceRequired: 0
   EstablishDestination: 1
@@ -90,7 +92,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   PerManifest: 0
-  ExcludedManifests: []
+  ListType: 0
+  Manifests: []
   Recursive: 0
   SourceRequired: 0
   EstablishDestination: 1
@@ -110,7 +113,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   PerManifest: 1
-  ExcludedManifests: []
+  ListType: 0
+  Manifests: []
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1
@@ -130,7 +134,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   PerManifest: 0
-  ExcludedManifests: []
+  ListType: 0
+  Manifests: []
   Recursive: 1
   SourceRequired: 1
   EstablishDestination: 1
@@ -150,7 +155,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   PerManifest: 1
-  ExcludedManifests: []
+  ListType: 0
+  Manifests: []
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1
