@@ -17,7 +17,7 @@ namespace ThunderKit.Core.Config
         /// </summary>
         public abstract void Execute();
 
-        public bool enabled;
+        public bool enabled = true;
 
         public virtual string Description { get; }
         protected virtual string UITemplatePath => Constants.SettingsTemplatesPath + $"/{GetType().Name}.uxml";
