@@ -1,4 +1,4 @@
-## 5.0.0 - The Next Generation
+## 5.0.0
 
 ### A Note about Installing ThunderKit
 
@@ -65,20 +65,20 @@ button.
 
 ### Addressable Support 
 
-##### Importing
+#### Importing
 
 Support Addressables has been added to ThunderKit. With the new 
 ImportAddressableCatalog ImportExtension you can import the catalog from a game
 using addressables, enabling you to load addressaable assets in the editor.
 
-##### Scripting, Edit and Runtime usage 
+#### Edit and Runtime usage 
 
 This allows developers to setup simple tools to apply materials or instantiate prefabs
 in the editor for viewing. Scripts created to do this can be setup to work both
 in the editor or at runtime. See the [Simply Address](https://github.com/PassivePicasso/SimplyAddress)
 repository for an implementation of such features.
 
-##### Addressable Browser
+#### Addressable Browser
 
 The [Addressable Browser](menulink://Tools/ThunderKit/AddressableBrowser) 
 provides an interface to search and explore a games Addressable Catalog.
@@ -88,7 +88,7 @@ can use a games assets in the editor and at runtime.
 The Addressable Browser allows you to search for assets based upon their address,
 name, and type.  Additional filters may come in the future.
 
-##### Limitations
+#### Limitations
 
 Editing Addressable Assets is limited to a code based approach and tooling
 to resolve this is outside of the scope of ThunderKit. Look projects like
@@ -144,13 +144,13 @@ Additionally, game version checking has also been enhanced using AssetsTools.NET
 
 ### Community Contributions
 
-##### Edit Source / Select Source
+#### Edit Source / Select Source
 
 [Documentation](menulink://Tools/ThunderKit/Documentation) pages now have a 
 context menu allowing the users to select the source markdown files or edit 
 them in their preferred editor, configurable from [ThunderKit Settings](menulink://Tools/ThunderKit/Settings)
 
-##### Guid Stabilized links for Markdown
+#### Guid Stabilized links for Markdown
 
 AssetLink and Documentation schemes for ThunderKit Markdown have been enhanced 
 to allow referencing assets using their GUID. This feature enables documentation
@@ -161,14 +161,14 @@ All Documenation has been updated to use the new GUID format for referencing
 project assets, this will help ensure that documentation links remain stable
 reducing maintenance cost in the future.
 
-##### Cross Documentation Page Links
+#### Cross Documentation Page Links
 
 Documentation has been updated with links between documentation pages to improve 
 ease of use.
 
  * Thanks to nebby1999 for these features
 
-##### FlowPipeline Whitelist / Blacklist
+#### FlowPipeline Whitelist / Blacklist
 
 FlowPipelines have been updated with Whitelist / Blacklist system with automatic 
 updating for old asset files. This affects the Copy, Zip, and Delete PipelineJobs
@@ -182,7 +182,7 @@ make changes that are not backwards compatible to your pipeline assets.
 
 ### Fixes and improvements
 
-##### General
+#### General
 * Fix error in FileUtil which produced incorrect FileIds for Script references to 
   Assemblies
 * Make minor improvements for enhancing cross platform editor compatibility
@@ -195,7 +195,7 @@ make changes that are not backwards compatible to your pipeline assets.
   files
 * Updated ThirdPartyNotices.md
 
-##### Markdown
+#### Markdown
 
 * Added JsonFrontMatter for Page Headers 
   - Json FrontMatter can be used to collect a limited set of values from a
@@ -205,18 +205,18 @@ make changes that are not backwards compatible to your pipeline assets.
 * Improvements to the markdown style have been made to bring it more in line with common markdown styling
 * MarkdownElement now detects changes to source files and updates automatically
 
-##### Import
+#### Import
 * Fixed import process sometimes not completing requiring the user to change 
   focus away from and back to the editor to complete.
 
-##### PipelineLogs
+#### PipelineLogs
 * Add setting to enable the PipelineLog window to show automatically when
   a pipeline is executed.
 * Automatically update PipelineLog window when visible and a pipeline is
   executed
 * Updated PipelineLog window to show a button for entries with Log Context
 
-##### ComposableObjects
+#### ComposableObjects
 * Fix an issue with the ComposableObjectEditor which caused it to be more 
   computationally intensive than necessary
 * Enance ComposableObjectEditor to allow it to render elements with Missing 
@@ -394,14 +394,14 @@ press Ctrl+R
 
 ## 3.4.1
 
-## Fixes
+### Fixes
 
 * Fix an issue where scanning some assemblies would result in a 
   ReflectionTypeLoadException preventing the settings window from loading.
 
 ## 3.4.0
 
-## PackageSource Management
+### PackageSource Management
 
 PackageSources have been updated with central management and the ability to 
 setup multiple sources of the same types.
@@ -411,7 +411,7 @@ You can now manage your Package Sources in the
 In the ThunderKit Settings window you will be able to Add, Remove, Configure,
 Rename and Refresh your PackageSources.
 
-## ThunderKit Extensions Thunderstore
+### ThunderKit Extensions Thunderstore
 
 With the ability to add multiple PackageSources to your project, you can now 
 add the ThunderKit Extensions Thunderstore as a source. Like all Thunderstores,
@@ -425,7 +425,7 @@ Add a new ThunderstoreSource to your PackageSources and set the url to
 
 ## 3.3.0
 
-## Steam Launch support
+### Steam Launch support
 
 Some Unity games require that Steam launches them in order to successfully start 
 up, to support this requirement the previous update added the RegistryLookup 
@@ -443,7 +443,7 @@ you used it with the SteamBepInExLaunch pipeline.
 
 References to the Launch Pipeline will be automatically updated to BepInExLaunch.
 
-## Templates
+### Templates
 
 Two new Templates have been added to ThunderKit under ThunderKit/Editor/Templates
 DirectLaunch is a new pre-configured Launch pipeline which directly executes
@@ -451,7 +451,7 @@ the game's Executable in its working directory. SteamLaunch is a new pre-configu
 Launch pipeline which executes the game's Executable in its working directory
 using Steam and the applaunch command line argument.
 
-## GameAppId and Steam Launching
+### GameAppId and Steam Launching
 
 In order to use any of the pre-configured Steam launching pipelines you will 
 need to provide ThunderKit with the games Steam App Id.
@@ -465,7 +465,7 @@ Follow these Steps to setup Steam Launching
 
 After Completing these steups you're seting to use Steam Launching.
 
-## Fixes and Improvements
+### Fixes and Improvements
 
 * Recently a ManifestIdentity data loss issue was re-discovered, this has not
   yet been resolved but some pieces of code have been updated in response while
@@ -497,7 +497,7 @@ games require steam to execute them, and you may need to do so using the Steam
 executable. The installed Steam executable can easily be located by looking up 
 the value in the registry, and this provides a path to that.
 
-#### Performance Improvements
+### Performance Improvements
 
 * ThunderstoreAPI has been updated to utilize gzip compression in order to 
   greatly increase the speed of acquiring package listings.
@@ -505,7 +505,7 @@ the value in the registry, and this provides a path to that.
 * Fix an issue with SettingsWindowData and ThunderstoreSettings that would cause
   the settings window to have poor responsiveness
 
-#### Bugs
+### Bugs
 
 * Fix a pageEntry.depth to be pageEntry.Depth in Documentation.cs for Unity 2019+
 * Fix a NullReferenceException that could show up on the Settings window sometimes
@@ -514,13 +514,13 @@ the value in the registry, and this provides a path to that.
 
 ## 3.1.7
 
-## Fixes and Improvements
+### Fixes and Improvements
 
 * Improve the Package Manager search responsiveness
 
 ## 3.1.6
 
-## Fixes and Improvements
+### Fixes and Improvements
 
 * Improve package import process with better ProgressBar status messages
 * Install packages as final step of import process
@@ -528,8 +528,6 @@ the value in the registry, and this provides a path to that.
 ## 3.1.1
 
 This update implements support for .NET 3.5 and includes a number of general improvements and fixes
-
-## New Features
 
 ### Optimization
 
@@ -587,11 +585,11 @@ To get started on a new mod project you only need to copy the Rebuild and Launch
 
 ## 3.0.0 
 
-#### Initial Setup
+### Initial Setup
 A Welcome window has been added to ThunderKit to help users set up their project.
 This window can be disabled by a toggle it provides.
 
-#### ThunderKit Installer - Removed
+### ThunderKit Installer - Removed
 The ThunderKit installer has been removed.  The installer caused many development issues and lost
 work during the development of ThunderKit. While this issue may not have affected end users, the 
 risk associated with the cost of lost work makes this feature dangerous to continue to maintain.
@@ -600,12 +598,12 @@ Unity 2018.1-2019.2 users will need to add the Thunderkit dependency to their pr
 
 For Unity 2019.3+ users can add ThunderKit using the Git url and use the [Install from Git](https://docs.unity3d.com/2019.3/Documentation/Manual/upm-ui-giturl.html) option in the Unity Package Manager.
 
-#### ThunderKit Settings
+### ThunderKit Settings
 
 ThunderKit Settings now get a dedicated window from ThunderKit and can be accessed from the main menu under [Tools/ThunderKit/Settings](menulink://Tools/ThunderKit/Settings).
 These settings will no longer show up in the Project Settings window.
 
-#### Debugging Features
+### Debugging Features
 
 ComposableObjects now support some debugging features to provide an easy access interface to implementations of Composable Object to report errors in the UI.
 
@@ -621,7 +619,7 @@ The PipelineJobs and Pipeline itself are setup to log exceptions to the Unity co
 
 ThunderKit Manifests do not utilize these debugging features as they are only Data Containers, however if worth while usage for debugging issues can be identified then support will be added.
 
-#### Dependencies
+### Dependencies
 
 Dependency Management in the 3.0.0 update has changed significantly.  Instead of Manifests installing and managing dependencies in its entirety, Manifests will now only 
 be responsible for containing dependency references.  
@@ -629,7 +627,7 @@ be responsible for containing dependency references.
 Instead a user will now install packages via the [Package Manager](menulink://Tools/ThunderKit/Packages), and then 
 add the Manifest from the Packages folder to the Manifest that requires the dependency
 
-#### Package Manager
+### Package Manager
 
 ThunderKit now includes a complete Package Manager, available from the main menu under [Tools/ThunderKit/Packages](menulink://Tools/ThunderKit/Packages)
 
@@ -643,7 +641,7 @@ Zip files in Local Thunderstore Sources must conform to Thunderstore's file nami
 
 This scheme is: `Author-ModName-Version.zip`
 
-#### Documentation
+### Documentation
 Documentation is a major issue for new users and as such ThunderKit now comes with integrated documentation to help onboard new users.
 The documentation available from the main menu under Tools/ThunderKit/Documentation
 
