@@ -37,6 +37,7 @@ namespace ThunderKit.Core.Data
         {
             EditorApplication.projectChanged += SetupConfigurators;
             EditorApplication.update += StepImporters;
+            SetupConfigurators();
         }
 
         private static void StepImporters()
