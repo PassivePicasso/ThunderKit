@@ -30,7 +30,7 @@ This package contains third-party software components governed by the license(s)
 * License:  [The MIT License](https://github.com/mxstbr/markdown-test-file/blob/master/LICENSE)
 * [Local License](assetlink://GUID/d2e46d9c9f4288b4e85e7ba448d018d6)
 
-## Unity Toolbar Extender
+## Unity Toolbar Extender (v1.4.1)
 
 * `Copyright (c) 2018 Marijn Zwemmer`
 * [https://github.com/marijnz/unity-toolbar-extender](https://github.com/marijnz/unity-toolbar-extender)
@@ -45,7 +45,7 @@ This package contains third-party software components governed by the license(s)
 * [Local License](assetlink://GUID/8b84cdaefe6cec6489553433fa4cfcf6)
 * This library was modified to remove it's Mono.Cecil dependency for compatibility reasons
 
-## SharpZipLib
+## SharpZipLib (v0.86.0.518)
 
 * `Copyright © 2000-2018 SharpZipLib Contributors`
 * [https://github.com/icsharpcode/SharpZipLib](https://github.com/icsharpcode/SharpZipLib)
