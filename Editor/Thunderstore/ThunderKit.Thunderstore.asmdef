@@ -4,7 +4,6 @@
         "ThunderKit.Core",
         "ThunderKit.Common"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -15,7 +14,7 @@
         "SharpCompress.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": [
-        "thunderkit"
-    ]
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
