@@ -1,6 +1,6 @@
 MarkdownElement{
-    padding-right: 4px;
-    padding-left: 4px;
+    padding-right: 24px;
+    padding-left: 24px;
 }
 
 Label {
@@ -231,4 +231,7 @@ Label {
     border-top-width: 0px;
     border-right-width: 0px;
     border-bottom-width: 1px;
+}
+
+.anchor {
 }

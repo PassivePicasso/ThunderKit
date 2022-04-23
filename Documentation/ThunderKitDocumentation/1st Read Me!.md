@@ -8,6 +8,8 @@
 
 ---
 
+[4.0.0](documentation://GUID/8b9210b3c2d073d4287ae927447044bf#4.0.0)
+
 ## Integrated Links
 
 The ThunderKit Documentation is enhanced by multiple types of links that add Unity integration features.

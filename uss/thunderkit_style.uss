@@ -73,79 +73,11 @@
 .bm4 { 
     margin-bottom: 4px;
 }
-#page-list {
-    margin-left: -10px;
-}
-.page-header-container {
-    flex-direction: row; 
-    flex-basis: 64px;
-    justify-content: flex-start;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.39);
-}
-
-.page-header-container>.glyph {
-    width: 64px;
-    height: 64px;
-    min-width: 64px;
-    min-height: 64px;
-}
-
-.page-header-container>Label {
-    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
-    font-size: 32px;
-    -unity-font-style: normal;
-    color: rgba(255, 255, 255, 0.53);
-    justify-content: center;
-    margin-left: 10px;
-}
 .header-icon {
     width: 64px;
     height: 64px;
     min-width: 64px;
     min-height: 64px;
-}
-PageEntry {
-    background-color: rgba(0,0,0,0);
-    padding-left: 10px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-PageEntry>#page-entry-children
-{
-    flex-direction: column;
-}
-PageEntry>.header {
-    padding-left: 14px;
-    flex-direction: row;
-}
-PageEntry>.header>.in-foldout {
-    position: absolute;
-    align-self: center;
-    width: 16px;
-    height: 15px;
-	background-image: resource("Builtin Skins/LightSkin/Images/IN foldout.png");
-    -unity-slice-top: 15;
-    -unity-slice-left: 16;
-}
-PageEntry>.header>.in-foldout-on {
-    position: absolute;
-    align-self: center;
-    width: 14px;
-    height: 12px;
-	background-image: resource("Builtin Skins/LightSkin/Images/IN foldout on.png");
-}
-PageEntry>.header>Label:hover {
-    background-color: rgba(0,0,0,0.25);
-}
-PageEntry.selected>.header>Label {
-    background-color: rgba(128, 0, 0, 0.5);
-}
-PageEntry.selected>.header>Label:hover {
-    background-color: rgba(128, 0, 0, 0.5);
 }
 .thunderkit-field Toggle{
     padding-left: 0;

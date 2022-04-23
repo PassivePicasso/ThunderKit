@@ -1,6 +1,6 @@
 ---
 {
-	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/documentation_style.uss",
+	"pageStylePath" : "Packages/com.passivepicasso.thunderkit/uss/documentation.uss",
 	"headerClasses" : [ ],
 	"titleClasses" : [ ],
 	"iconClasses" : [ ]
