@@ -42,7 +42,18 @@ namespace ThunderKit.Core.Data
         private static void StepImporters()
         {
             if (!EditorApplication.isCompiling && !EditorApplication.isUpdating)
-                GetOrCreateSettings<ImportConfiguration>().ImportGame();
+            {
+                var settings = GetOrCreateSettings<ImportConfiguration>();
+                var settingsPath = GetAssetPath(settings);
+                var executors = LoadAllAssetRepresentationsAtPath(settingsPath)
+                    .OfType<OptionalExecutor>()
+                    .OrderByDescending(oe => oe.Priority)
+                    .ToArray();
+                if (settings.ConfigurationExecutors == null || !executors.SequenceEqual(settings.ConfigurationExecutors))
+                    settings.ConfigurationExecutors = executors;
+
+                settings.ImportGame();
+            }
         }
 
         public override void CreateSettingsUI(VisualElement rootElement)
@@ -55,6 +66,7 @@ namespace ThunderKit.Core.Data
             var executorView = settingsElement.Q<VisualElement>("executor-element");
             foreach (var executor in ConfigurationExecutors)
             {
+                if (!executor) continue;
                 VisualElement element = null;
                 try
                 {
@@ -95,9 +107,6 @@ namespace ThunderKit.Core.Data
         private static void SetupConfigurators()
         {
             var settings = GetOrCreateSettings<ImportConfiguration>();
-
-            var builder = new StringBuilder("Loaded Import Extensions");
-            builder.AppendLine();
             Type[] loadedTypes = null;
             if (configurationAssemblies == null)
             {
@@ -134,37 +143,33 @@ namespace ThunderKit.Core.Data
                .ToArray();
 
 
+            var builder = new StringBuilder("Loaded Import Extensions");
+            builder.AppendLine();
             var settingsPath = GetAssetPath(settings);
             var objects = LoadAllAssetRepresentationsAtPath(settingsPath);
-            var existingExecutors = new HashSet<OptionalExecutor>(objects.OfType<OptionalExecutor>());
-
-            int currentExecutorCount = existingExecutors.Count;
-
+            var existingExecutorTypes = objects.OfType<OptionalExecutor>().Select(executor => executor.GetType()).Distinct();
+            var existingExecutorsTypesSet = new HashSet<Type>(existingExecutorTypes);
             var executorTypes = loadedTypes.Where(t => typeof(OptionalExecutor).IsAssignableFrom(t)).ToArray();
-
-            var executors = executorTypes
-                .Where(t => !existingExecutors.Any(executor => executor.GetType() == t))
-                .Select(t =>
-                {
-                    if (existingExecutors.Any(gc => gc.GetType() == t))
-                        return null;
-
-                    var configurator = CreateInstance(t) as OptionalExecutor;
-                    if (configurator)
-                    {
-                        configurator.name = configurator.Name;
-                        builder.AppendLine(configurator.GetType().FullName);
-                    }
-                    return configurator;
-                })
-                .Where(configurator => configurator != null)
-                .Union(existingExecutors)
+            var newExecutors = executorTypes.Where(t => !existingExecutorsTypesSet.Contains(t));
+            var newExecutorInstances = newExecutors
+                            .Select(t =>
+                            {
+                                var executor = CreateInstance(t) as OptionalExecutor;
+                                if (executor)
+                                {
+                                    executor.name = executor.Name;
+                                    builder.AppendLine(executor.GetType().FullName);
+                                }
+                                return executor;
+                            });
+            var validExectorInstances = newExecutorInstances.Where(executor => executor != null);
+            var executors = validExectorInstances
                 .Distinct()
                 .OrderByDescending(configurator => configurator.Priority)
-                .ToList();
+                .ToArray();
 
             bool updated = false;
-            for (int i = 0; i < executors.Count; i++)
+            for (int i = 0; i < executors.Length; i++)
             {
                 var executor = executors[i];
                 if (GetAssetPath(executor) != settingsPath)
@@ -176,14 +181,19 @@ namespace ThunderKit.Core.Data
 
             if (updated)
             {
-                var updatedExectors = executors.ToArray();
-                settings.ConfigurationExecutors = updatedExectors;
-                ImportAsset(settingsPath);
+                Refresh();
+                EditorApplication.update += DoImport;
                 Debug.Log(builder.ToString());
             }
-
         }
 
+        private static void DoImport()
+        {
+            var settings = GetOrCreateSettings<ImportConfiguration>();
+            var settingsPath = GetAssetPath(settings);
+            ImportAsset(settingsPath, ImportAssetOptions.ForceUpdate);
+            EditorApplication.update -= DoImport;
+        }
 
         public void ImportGame()
         {
@@ -244,6 +254,7 @@ namespace ThunderKit.Core.Data
             }
             EditorUtility.SetDirty(tkSettings);
         }
+
 
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
