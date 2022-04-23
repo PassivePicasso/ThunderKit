@@ -57,7 +57,7 @@ namespace ThunderKit.Core.Windows
 
         private void UpdateSettingsSource()
         {
-            var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", Constants.FindAllFolders)
+            var settings = AssetDatabase.FindAssets($"t:{nameof(ThunderKitSetting)}", Constants.FindAssetsFolders)
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<ThunderKitSetting>)
                 .ToArray();
