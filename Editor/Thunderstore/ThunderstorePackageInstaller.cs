@@ -18,6 +18,17 @@ namespace ThunderKit.Integrations.Thunderstore
             {
                 EditorApplication.LockReloadAssemblies();
                 var packageSource = AssetDatabase.LoadAssetAtPath<ThunderstoreSource>(SourcePath);
+                if (packageSource == null)
+                {
+                    Debug.LogWarning($"Could not find PackageSource at {SourcePath}");
+                    return;
+                }
+                if (packageSource.Packages == null)
+                {
+                    Debug.LogWarning($"PackageSource at {SourcePath} has no packages");
+                    return;
+                }
+
                 var package = packageSource.Packages.FirstOrDefault(pkg => pkg.DependencyId == DependencyId);
                 if (package == null)
                 {
