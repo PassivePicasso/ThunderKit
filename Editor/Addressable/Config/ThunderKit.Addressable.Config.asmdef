@@ -4,7 +4,9 @@
         "ThunderKit.Core",
         "ThunderKit.Common"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
