@@ -33,8 +33,16 @@ namespace ThunderKit.Core.Documentation
             if (markdownElement == null) return;
             if (markdownElement.MarkdownDataType == MarkdownDataType.Implicit || markdownElement.MarkdownDataType == MarkdownDataType.Source)
             {
-                evt.menu.AppendAction("Edit Source", dma => EditorSource(markdownElement));
-                evt.menu.AppendAction("Select Source", (dma) => SelectSource(markdownElement));
+                Action<DropdownMenu.MenuAction> editAction = dma => EditorSource(markdownElement);
+                Action<DropdownMenu.MenuAction> selectAction = dma => SelectSource(markdownElement);
+#if UNITY_2019_1_OR_NEWER
+                evt.menu.AppendAction("Edit Source", editAction);
+                evt.menu.AppendAction("Select Source", selectAction);
+#else
+                Func<DropdownMenu.MenuAction, DropdownMenu.MenuAction.StatusFlags> normalStatus = status => DropdownMenu.MenuAction.StatusFlags.Normal;
+                evt.menu.AppendAction("Edit Source", editAction, normalStatus);
+                evt.menu.AppendAction("Select Source", selectAction, normalStatus);
+#endif
             }
         }
 
