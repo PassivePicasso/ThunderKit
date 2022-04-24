@@ -39,6 +39,16 @@ namespace ThunderKit.Core.Config
                             .Where(asm => asm != null)
                             .Where(asm => asm.GetCustomAttribute<ImportExtensionsAttribute>() != null);
             var loadedTypes = configurationAssemblies
+#if NET_4_6
+                .Where(asm => !asm.IsDynamic)
+#else
+                .Where(asm =>
+                {
+                    if (asm.ManifestModule is System.Reflection.Emit.ModuleBuilder mb)
+                        return !mb.IsTransient();
+                    return true;
+                })
+#endif
                .SelectMany(asm =>
                {
                    try
