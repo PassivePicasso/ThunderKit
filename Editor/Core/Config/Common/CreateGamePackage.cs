@@ -12,7 +12,7 @@ namespace ThunderKit.Core.Config
 {
     public class CreateGamePackage : OptionalExecutor
     {
-        public override int Priority => Constants.ConfigPriority.CreateGamePackage;
+        public override int Priority => Constants.Priority.CreateGamePackage;
 
         public override void Execute()
         {

@@ -66,7 +66,7 @@ namespace ThunderKit.Core.Config
                 .OrderByDescending(t => t.Priority)
                 .ToList();
 
-        public override int Priority => Constants.ConfigPriority.AssemblyImport;
+        public override int Priority => Constants.Priority.AssemblyImport;
         public override string Description => "Import's Assemblies from Game identified in ThunderKit Settings";
 
         public GuidMode OldGuidGenerationMode = GuidMode.Original;
