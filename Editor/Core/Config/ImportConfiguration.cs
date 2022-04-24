@@ -158,6 +158,7 @@ namespace ThunderKit.Core.Data
         private void DoImport()
         {
             var settingsPath = GetAssetPath(this);
+            if (string.IsNullOrEmpty(settingsPath)) return;
             ImportAsset(settingsPath, ImportAssetOptions.ForceUpdate);
             EditorApplication.update -= DoImport;
         }
