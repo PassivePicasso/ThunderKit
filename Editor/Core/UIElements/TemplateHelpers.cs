@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ThunderKit.Common;
 using UnityEditor;
+using UnityEngine;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -25,6 +26,11 @@ namespace ThunderKit.Core.UIElements
         {
             var packageTemplate = LoadTemplate(template, isTemplatePath);
             var templatePath = AssetDatabase.GetAssetPath(packageTemplate);
+            if(packageTemplate == null)
+            {
+                Debug.LogError($"Could not find Template: {template}");
+                return new Label("Could not find Template: {template}");
+            }
             VisualElement instance = target;
 
 #if UNITY_2020_1_OR_NEWER
