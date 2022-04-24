@@ -8,7 +8,7 @@ namespace ThunderKit.Core.Config.Common
 {
     public class GetBitness : OptionalExecutor
     {
-        public override int Priority => Constants.ConfigPriority.GetBitness;
+        public override int Priority => Constants.Priority.GetBitness;
 
         public override void Execute()
         {

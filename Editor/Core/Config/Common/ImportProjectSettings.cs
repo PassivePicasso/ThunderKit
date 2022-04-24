@@ -12,7 +12,7 @@ namespace ThunderKit.Core.Config.Common
     [Serializable]
     public class ImportProjectSettings : OptionalExecutor
     {
-        public override int Priority => Constants.ConfigPriority.ProjectSettingsImport;
+        public override int Priority => Constants.Priority.ProjectSettingsImport;
         public override string Description => "Import ProjectSettings from games with globalgamemanagers";
         public int IncludedSettings;
 
