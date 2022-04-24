@@ -53,7 +53,11 @@ namespace ThunderKit.Core.Windows
                 window.nameLabel.text = pipelineLog.name;
                 window.createdDateLabel.text = pipelineLog.CreatedDate.ToString(window.settings.CreatedDateFormat);
                 window.logEntryListView.itemsSource = (IList)pipelineLog.Entries;
+#if UNITY_2021_1_OR_NEWER
+                window.logEntryListView.Rebuild();
+#else
                 window.logEntryListView.Refresh();
+#endif
                 if (settings.ShowLogWindow)
                 {
                     window.Repaint();
