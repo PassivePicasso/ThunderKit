@@ -1,7 +1,7 @@
 ﻿using System;
 using ThunderKit.Common;
 using ThunderKit.Core.UIElements;
-#if UNITY_2019
+#if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #elif UNITY_2018
 using UnityEngine.Experimental.UIElements;

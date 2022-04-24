@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.UIElements;
 using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
-#if UNITY_2019
+#if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 #elif UNITY_2018
