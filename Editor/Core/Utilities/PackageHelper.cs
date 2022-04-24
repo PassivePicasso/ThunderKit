@@ -19,9 +19,11 @@ namespace ThunderKit.Core.Utilities
     {
 #if UNITY_2021_1_OR_NEWER
         public static void ResolvePackages() => Client.Resolve();
-#else
+#elif UNITY_2019_1_OR_NEWER
         private static readonly MethodInfo ClientResolve = typeof(Client).GetMethod("Resolve", BindingFlags.NonPublic | BindingFlags.Static);
         public static void ResolvePackages() => ClientResolve.Invoke(null, null);
+#else
+        public static void ResolvePackages() => AssetDatabase.Refresh();
 #endif
 
         static readonly Regex versionRegex = new Regex("(\\d+\\.\\d+\\.\\d+)(\\..*?)?");
