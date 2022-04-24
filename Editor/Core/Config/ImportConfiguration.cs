@@ -35,10 +35,12 @@ namespace ThunderKit.Core.Data
         [InitializeOnLoadMethod]
         static void Init()
         {
-            EditorApplication.projectChanged += SetupConfigurators;
             EditorApplication.update += StepImporters;
-            SetupConfigurators();
+
+            var settings = GetOrCreateSettings<ImportConfiguration>();
+            settings.Initialize();
         }
+
 
         private static void StepImporters()
         {
@@ -47,9 +49,10 @@ namespace ThunderKit.Core.Data
                 var settings = GetOrCreateSettings<ImportConfiguration>();
                 var settingsPath = GetAssetPath(settings);
                 var executors = LoadAllAssetRepresentationsAtPath(settingsPath)
-                    .OfType<OptionalExecutor>()
-                    .OrderByDescending(oe => oe.Priority)
-                    .ToArray();
+                                .OfType<OptionalExecutor>()
+                                .OrderByDescending(executor => executor.Priority)
+                                .ToArray();
+
                 if (settings.ConfigurationExecutors == null || !executors.SequenceEqual(settings.ConfigurationExecutors))
                     settings.ConfigurationExecutors = executors;
 
@@ -103,31 +106,14 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        private static IEnumerable<Assembly> configurationAssemblies;
-
-        private static void SetupConfigurators()
+        public override void Initialize()
         {
-            var settings = GetOrCreateSettings<ImportConfiguration>();
             Type[] loadedTypes = null;
-            if (configurationAssemblies == null)
-            {
-                configurationAssemblies = AppDomain.CurrentDomain
-                                .GetAssemblies()
-                                .Where(asm => asm != null)
-                                .Where(asm => asm.GetCustomAttribute<ImportExtensionsAttribute>() != null);
-            }
+            var configurationAssemblies = AppDomain.CurrentDomain
+                            .GetAssemblies()
+                            .Where(asm => asm != null)
+                            .Where(asm => asm.GetCustomAttribute<ImportExtensionsAttribute>() != null);
             loadedTypes = configurationAssemblies
-#if NET_4_6
-                .Where(asm => !asm.IsDynamic)
-#else
-                .Where(asm =>
-                {
-                    if (asm.ManifestModule is System.Reflection.Emit.ModuleBuilder mb)
-                        return !mb.IsTransient();
-
-                    return true;
-                })
-#endif
                .SelectMany(asm =>
                {
                    try
@@ -143,55 +129,35 @@ namespace ThunderKit.Core.Data
                .Where(t => !t.IsAbstract && !t.IsInterface)
                .ToArray();
 
-
             var builder = new StringBuilder("Loaded Import Extensions");
             builder.AppendLine();
-            var settingsPath = GetAssetPath(settings);
-            var objects = LoadAllAssetRepresentationsAtPath(settingsPath);
-            var existingExecutorTypes = objects.OfType<OptionalExecutor>().Select(executor => executor.GetType()).Distinct();
-            var existingExecutorsTypesSet = new HashSet<Type>(existingExecutorTypes);
-            var executorTypes = loadedTypes.Where(t => typeof(OptionalExecutor).IsAssignableFrom(t)).ToArray();
-            var newExecutors = executorTypes.Where(t => !existingExecutorsTypesSet.Contains(t));
-            var newExecutorInstances = newExecutors
-                            .Select(t =>
-                            {
-                                var executor = CreateInstance(t) as OptionalExecutor;
-                                if (executor)
-                                {
-                                    executor.name = executor.Name;
-                                    builder.AppendLine(executor.GetType().FullName);
-                                }
-                                return executor;
-                            });
-            var validExectorInstances = newExecutorInstances.Where(executor => executor != null);
-            var executors = validExectorInstances
-                .Distinct()
-                .OrderByDescending(configurator => configurator.Priority)
-                .ToArray();
+            var settingsPath = GetAssetPath(this);
 
-            bool updated = false;
-            for (int i = 0; i < executors.Length; i++)
+            var executorTypes = loadedTypes.Where(t => typeof(OptionalExecutor).IsAssignableFrom(t)).ToArray();
+            var objs = LoadAllAssetRepresentationsAtPath(settingsPath).Where(obj => obj).ToArray();
+            var distinctObjcs = objs.Distinct().ToArray();
+            var objectTypes = distinctObjcs.Select(obj => obj.GetType()).ToArray();
+            var existingAssetTypes = new HashSet<Type>(objectTypes);
+            foreach (var t in executorTypes)
             {
-                var executor = executors[i];
-                if (GetAssetPath(executor) != settingsPath)
+                if (existingAssetTypes.Contains(t))
+                    continue;
+
+                var executor = CreateInstance(t) as OptionalExecutor;
+                if (executor)
                 {
-                    AddObjectToAsset(executor, settingsPath);
-                    updated = true;
+                    AddObjectToAsset(executor, this);
+                    executor.name = executor.Name;
+                    builder.AppendLine(executor.GetType().FullName);
                 }
             }
-
-            if (updated)
-            {
-                Refresh();
-                EditorApplication.update += DoImport;
-                Debug.Log(builder.ToString());
-            }
+            EditorApplication.update += DoImport;
         }
 
-        private static void DoImport()
+
+        private void DoImport()
         {
-            var settings = GetOrCreateSettings<ImportConfiguration>();
-            var settingsPath = GetAssetPath(settings);
+            var settingsPath = GetAssetPath(this);
             ImportAsset(settingsPath, ImportAssetOptions.ForceUpdate);
             EditorApplication.update -= DoImport;
         }
