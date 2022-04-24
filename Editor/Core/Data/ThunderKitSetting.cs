@@ -65,7 +65,8 @@ namespace ThunderKit.Core.Data
             Directory.CreateDirectory(Path.GetDirectoryName(assetPath));
             return ScriptableHelper.EnsureAsset<T>(assetPath, settings => settings.Initialize());
         }
-        static object GetOrCreateSettings(Type t)
+
+        public  static object GetOrCreateSettings(Type t)
         {
             if (!typeof(ThunderKitSetting).IsAssignableFrom(t)) throw new ArgumentException($"parameter t is typeof({t.Name}), t must be assignable to typeof({typeof(ThunderKitSetting).Name}");
             string assetPath = $"Assets/ThunderKitSettings/{t.Name}.asset";
