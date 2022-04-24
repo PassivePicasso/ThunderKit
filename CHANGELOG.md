@@ -6,7 +6,7 @@ ThunderKit installation directions have generally had users install ThunderKit
 using it's master branch, which is provided with the url 
 `https://github.com/PassivePicasso/ThunderKit.git`
 
-This was a poor precendent to set and can lead to unexpected upgrades for users.
+This was a poor precedent to set and can lead to unexpected upgrades for users.
 Going forward it is recommended to install ThunderKit using a Tagged release.
 
 For Example installing ThunderKit 5.0.0 can be done using the following url:
