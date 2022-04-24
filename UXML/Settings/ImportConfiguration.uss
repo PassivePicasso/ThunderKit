@@ -1,0 +1,19 @@
+﻿#extension-item-header {
+	flex-direction: row;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+#extension-item-header>Label {
+	margin-left: -1px;
+}
+#extension-item {
+	flex-direction: column;
+	background-color: rgba(0,0,0,0.1);
+	margin-top: 4px;
+	margin-left: 4px;
+	margin-right: 4px;
+	margin-bottom: 4px;
+}
+.import-extensions-field ListView {
+    max-width: 600px;
+
+}

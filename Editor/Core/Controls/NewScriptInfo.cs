@@ -6,6 +6,7 @@ namespace ThunderKit.Core.Controls
     [Serializable]
     class NewScriptInfo : ScriptableObject
     {
+        private static NewScriptInfo instance;
         public string scriptPath;
         public bool addAsset;
 
@@ -13,12 +14,11 @@ namespace ThunderKit.Core.Controls
         {
             get
             {
-                var objs = Resources.FindObjectsOfTypeAll<NewScriptInfo>();
-                if (objs.Length == 0 || objs[0] == null)
+                if (!instance)
                 {
-                    return ScriptableObject.CreateInstance<NewScriptInfo>();
+                    instance = ScriptableObject.CreateInstance<NewScriptInfo>();
                 }
-                return objs[0];
+                return instance;
             }
         }
 

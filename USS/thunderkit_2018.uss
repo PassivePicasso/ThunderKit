@@ -1,0 +1,11 @@
+TextField.thunderkit-field-input {
+    background-image: none;
+    background-color: rgba(255,255,255,0.5);
+    padding-top: 3px;
+    height: 19px;
+}
+
+.thunderkit-field Toggle #Checkmark,
+.thunderkit-field Toggle #unity-checkmark {
+    margin-left: 0px;
+}

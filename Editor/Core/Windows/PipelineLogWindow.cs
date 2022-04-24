@@ -24,7 +24,7 @@ namespace ThunderKit.Core.Windows
         private static PipelineLogWindow window;
         public static bool IsOpen { get; private set; }
 
-        private PipelineLogSettings settings;
+        private ThunderKitSettings settings;
         private ListView logEntryListView;
         private bool locked = false;
         private PipelineLog pipelineLog;
@@ -36,11 +36,33 @@ namespace ThunderKit.Core.Windows
             if (window == null || !IsOpen)
             {
                 var consoleType = typeof(EditorWindow).Assembly.GetTypes().First(t => "ConsoleWindow".Equals(t.Name));
-                window = GetWindow<PipelineLogWindow>($"{pipelineLog.pipeline.name}", consoleType);
+                window = GetWindow<PipelineLogWindow>($"{pipelineLog.pipeline?.name ?? pipelineLog.name}", consoleType);
             }
-            window.settings = ThunderKitSetting.GetOrCreateSettings<PipelineLogSettings>();
+            window.settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             window.pipelineLog = pipelineLog;
             window.Initialize();
+        }
+
+        public static void Update(PipelineLog pipelineLog)
+        {
+            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+            if (((window == null || !IsOpen)) && settings?.ShowLogWindow == true)
+                ShowLog(pipelineLog);
+            else if (settings.ShowLogWindow == true)
+            {
+                window.nameLabel.text = pipelineLog.name;
+                window.createdDateLabel.text = pipelineLog.CreatedDate.ToString(window.settings.CreatedDateFormat);
+                window.logEntryListView.itemsSource = (IList)pipelineLog.Entries;
+#if UNITY_2021_1_OR_NEWER
+                window.logEntryListView.Rebuild();
+#else
+                window.logEntryListView.Refresh();
+#endif
+                if (settings.ShowLogWindow)
+                {
+                    window.Repaint();
+                }
+            }
         }
 
 
@@ -63,13 +85,6 @@ namespace ThunderKit.Core.Windows
             if (Selection.activeObject is PipelineLog pipelineLog)
             {
                 ShowLog(pipelineLog);
-            }
-            else 
-            {
-                if (logEntryListView != null)
-                    logEntryListView.itemsSource = Array.Empty<LogEntry>();
-                LogContextWindow.instance?.Clear();
-                this.pipelineLog = null;
             }
         }
 
@@ -103,7 +118,7 @@ namespace ThunderKit.Core.Windows
             }
             nameLabel = rootVisualElement.Q<Label>("name-label");
             createdDateLabel = rootVisualElement.Q<Label>("created-date-label");
-            
+
             nameLabel.text = pipelineLog.name;
             createdDateLabel.text = pipelineLog.CreatedDate.ToString(settings.CreatedDateFormat);
             logEntryListView.itemsSource = (IList)pipelineLog.Entries;
@@ -115,7 +130,12 @@ namespace ThunderKit.Core.Windows
 #if UNITY_2020_1_OR_NEWER
         private void UpdateContextWindow(IEnumerable<object> obj) => LogContextWindow.ShowContext(obj.OfType<LogEntry>().First());
 #else
-        private void UpdateContextWindow(object obj) => LogContextWindow.ShowContext((LogEntry)obj);
+        private void UpdateContextWindow(object obj)
+        {
+            LogEntry entry = (LogEntry)obj;
+            if (entry.context != null && entry.context.Length > 0)
+                LogContextWindow.ShowContext(entry);
+        }
 #endif
         private void UpdateContextWindowSelect(
 #if UNITY_2020_1_OR_NEWER
@@ -139,7 +159,8 @@ namespace ThunderKit.Core.Windows
         {
             var entry = (LogEntry)logEntryListView.itemsSource[entryIndex];
             var timeStamp = element.Q<Label>("time-stamp");
-
+            var shotContextButton = element.Q<Button>("show-context-button");
+            
             var icon = element.Q<VisualElement>("icon-log-level");
             var messageElement = element.Q<MarkdownElement>("message-label");
 
@@ -158,6 +179,21 @@ namespace ThunderKit.Core.Windows
             messageElement.RefreshContent();
             timeStamp.text = entry.time.ToString(settings.DateTimeFormat);
             element.userData = entry.context;
+            if (entry.context != null && entry.context.Length > 0)
+            {
+                shotContextButton.RemoveFromClassList("hidden");
+#if UNITY_2020_1_OR_NEWER
+                shotContextButton.clickable = new Clickable(() => UpdateContextWindow(new object[] { entry }));
+#else
+                shotContextButton.clickable = new Clickable(() => UpdateContextWindow(entry));
+#endif
+            }
+            else
+            {
+                shotContextButton.AddToClassList("hidden");
+                shotContextButton.clickable = new Clickable(() => { });
+
+            }
         }
         string LevelClass(LogLevel value) => $"{value}".ToLower();
 

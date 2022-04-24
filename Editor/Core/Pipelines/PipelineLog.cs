@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ThunderKit.Core.Utilities;
+using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;
 using static ThunderKit.Core.Pipelines.LogEntry;
@@ -9,6 +11,8 @@ namespace ThunderKit.Core.Pipelines
 {
     public class PipelineLog : ScriptableObject
     {
+        public static List<PipelineLog> PipelineLogs { get; } = new List<PipelineLog>();
+
         public Pipeline pipeline;
 
         [SerializeField, HideInInspector]
@@ -19,10 +23,18 @@ namespace ThunderKit.Core.Pipelines
         private List<LogEntry> entries = new List<LogEntry>();
         public IReadOnlyList<LogEntry> Entries => entries?.AsReadOnly();
 
+        private void Awake()
+        {
+            PipelineLogs.Add(this);
+        }
+
+
         public void Log(LogEntry entry)
         {
             entries.Insert(0, entry);
             EditorUtility.SetDirty(this);
+
+            PipelineLogWindow.Update(this);
         }
 
         public static PipelineLog CreateLog(Pipeline pipeline)

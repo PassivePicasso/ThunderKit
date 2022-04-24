@@ -26,7 +26,9 @@ namespace ThunderKit.Core.Config
     {
         private const string playerConnectionDebug1 = "player-connection-debug=1";
 
+#if UNITY_EDITOR_WIN
         [MenuItem(Constants.ThunderKitMenuRoot + "Setup Debug Build", priority = Constants.ThunderKitMenuPriority - 1)]
+#endif
         public static void Execute()
         {
             var settings = ThunderKitSettings.GetOrCreateSettings<ThunderKitSettings>();
@@ -34,7 +36,7 @@ namespace ThunderKit.Core.Config
             var gamePath = settings.GamePath;
             var gameName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
             var gameMonoPath = Path.Combine(gamePath, $"MonoBleedingEdge");
-            var gameDataPath = Path.Combine(gamePath, $"{gameName}_Data");
+            var gameDataPath = settings.GameDataPath;
             var gameManagedPath = Path.Combine(gameDataPath, "Managed");
             var gameBootConfigFile = Path.Combine(gameDataPath, "boot.config");
 

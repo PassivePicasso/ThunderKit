@@ -1,0 +1,8 @@
+.thunderkit-field-input TextInput {
+    background-color: rgba(128,128,128,0.25);
+    border-color: rgba(255,255,255,0);
+    margin-left: 1px;
+    padding-left: 3px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}

@@ -1,5 +1,6 @@
 using System;
 using UnityEditor;
+using UnityEngine;
 
 namespace ThunderKit.Common.Logging
 {
@@ -13,17 +14,19 @@ namespace ThunderKit.Common.Logging
 
         public string Title { get; private set; }
         public string Message { get; private set; }
+        public float Progress { get; private set; }
 
         public void Dispose()
         {
             EditorUtility.ClearProgressBar();
         }
 
-        public void Update(string message = null, string title = null, float progress = 0)
+        public void Update(string message = null, string title = null, float progress = -1)
         {
             Title = title ?? Title;
             Message = message ?? Message;
-            EditorUtility.DisplayProgressBar(Title, Message, progress);
+            Progress = progress > -1 ? Mathf.Clamp(progress, 0, 1) : Progress;
+            EditorUtility.DisplayProgressBar(Title, Message, Progress);
         }
     }
 }

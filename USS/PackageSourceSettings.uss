@@ -1,0 +1,89 @@
+﻿.thunderstore-source {
+    background-color: rgba(0, 0, 0, 0.15);
+    height: 28px;
+    margin-bottom: 2px;
+    position: relative;
+}
+.source-header {
+    margin-top: 4px;
+    flex-direction: row;
+}
+#source-name-item {
+    font-size: 12px;
+    width: 200px;
+    padding-top: 5px;
+    padding-left: 5px;
+}
+#source-name-item.unity-list-view__item--selected {
+    color: #fff;
+    background-color: rgba(0,0,0,.5);
+}
+
+#button-tray{
+    flex-direction: row;
+}
+#button-tray Button {
+    height: 20px;
+    flex-grow: 1;
+    background-color: #888;
+    background-image: none;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 1px;
+    margin-bottom: 0px;
+    color: #000;
+    border-color: #888;
+    border-radius: 0px;
+}
+#button-tray Button:hover {
+    color: #ddd;
+    background-color: #666;
+}
+#button-tray Button:active {
+    color: #000;
+}
+
+#package-source-settings {
+    flex-direction: row;
+    margin-top: -1px;
+}
+
+#add-source-button {
+    flex-shrink: 1;
+}
+#sources-list {
+    width: 200px;
+    min-height: 122px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-color: #888;
+}
+.unity-property-field-label {
+    flex-grow: 0.25;
+}
+
+#selected-source-settings {
+    flex-grow: 1;
+    border-top-width: 1px;
+    margin-left: -1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-color: #888;
+}
+#package-source {
+    flex-grow: 1;
+    margin-bottom: 1px;
+    border-bottom-width: 1px;
+    border-color: #888;
+}
+
+#list-section{
+    flex-direction: column;
+}

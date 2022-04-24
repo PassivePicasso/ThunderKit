@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using ThunderKit.Common;
 using UnityEditor;
 using UnityEngine;
@@ -12,7 +10,6 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 #else
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
 
 namespace ThunderKit.Core.UIElements
@@ -20,8 +17,6 @@ namespace ThunderKit.Core.UIElements
     public static class TemplateHelpers
     {
         private static bool IsTemplatePath(string path) => path.Contains("Packages/com.passivepicasso.thunderkit");
-
-        private readonly static string[] SearchFolders = new string[] { "Assets", "Packages" };
 
         private static readonly Dictionary<string, VisualTreeAsset> templateCache = new Dictionary<string, VisualTreeAsset>(StringComparer.Ordinal);
 
@@ -31,6 +26,11 @@ namespace ThunderKit.Core.UIElements
         {
             var packageTemplate = LoadTemplate(template, isTemplatePath);
             var templatePath = AssetDatabase.GetAssetPath(packageTemplate);
+            if(packageTemplate == null)
+            {
+                Debug.LogError($"Could not find Template: {template}");
+                return new Label("Could not find Template: {template}");
+            }
             VisualElement instance = target;
 
 #if UNITY_2020_1_OR_NEWER
@@ -49,13 +49,8 @@ namespace ThunderKit.Core.UIElements
 
             instance.AddToClassList("grow");
 
-            AddSheet(instance, templatePath);
-            AddSheet(instance, templatePath, "_style");
+            instance.AddEnvironmentAwareSheets(templatePath);
 
-            if (EditorGUIUtility.isProSkin)
-                AddSheet(instance, templatePath, "_Dark");
-            else
-                AddSheet(instance, templatePath, "_Light");
             return instance;
         }
 
@@ -69,17 +64,37 @@ namespace ThunderKit.Core.UIElements
 #elif UNITY_2018_1_OR_NEWER
             "2018";
 #endif
-        public static void AddSheet(VisualElement element, string templatePath, string modifier = "")
+        /// <summary>
+        /// Selectively adds a set of predetermined style sheets based upon the environment
+        /// Variations:
+        /// templatePath
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="templatePath">Path to UXML template file</param>
+        public static void AddEnvironmentAwareSheets(this VisualElement instance, string templatePath)
         {
-            string path = templatePath.Replace(".uxml", $"{modifier}_{editorVersion}.uss");
-            if (!File.Exists(path))
-            {
-                path = templatePath.Replace(".uxml", $"{modifier}.uss");
-                if (!File.Exists(path))
-                    return;
-            }
-            MultiVersionLoadStyleSheet(element, path);
+            instance.AddSheet(templatePath);
+            instance.AddSheet(templatePath, "_style");
+            instance.AddSheet(templatePath, $"_{editorVersion}");
 
+            if (EditorGUIUtility.isProSkin)
+                instance.AddSheet(templatePath, "_Dark");
+            else
+                instance.AddSheet(templatePath, "_Light");
+        }
+
+        public static void AddSheet(this VisualElement element, string templatePath, string modifier = "")
+        {
+            string path = string.Empty;
+            
+            if (templatePath.EndsWith(".uxml"))
+                path = templatePath.Replace(".uxml", $"{modifier}.uss");
+            else if (templatePath.EndsWith(".uss"))
+                path = templatePath.Replace(".uss", $"{modifier}.uss");
+
+            if (!File.Exists(path))
+                return;
+            MultiVersionLoadStyleSheet(element, path);
         }
 
         public static void MultiVersionLoadStyleSheet(VisualElement element, string sheetPath)
@@ -104,7 +119,7 @@ namespace ThunderKit.Core.UIElements
 
         static VisualTreeAsset CreateTemplate(string name, Func<string, bool> isTemplatePath)
         {
-            var searchResults = AssetDatabase.FindAssets(name, SearchFolders);
+            var searchResults = AssetDatabase.FindAssets(name, Constants.FindAllFolders);
             var assetPaths = searchResults.Select(AssetDatabase.GUIDToAssetPath).Select(path => path.Replace("\\", "/"));
             var templatePath = assetPaths
                 .Where(path => Path.GetFileNameWithoutExtension(path).Equals(name))

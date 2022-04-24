@@ -1,37 +1,45 @@
+
 .TK_ComposableObject_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ComposableObject_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_ComposableObject_2X_Icon.png');
 }
 
 .TK_Manifest_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Manifest_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_Manifest_2X_Icon.png');
 }
 
 .TK_PackageSource_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PackageSource_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_PackageSource_2X_Icon.png');
 }
 
 .TK_PathReference_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_PathReference_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_PathReference_2X_Icon.png');
 }
 
 .TK_Pipeline_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Pipeline_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_Pipeline_2X_Icon.png');
 }
 
 .TK_Server_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Server_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_Server_Icon.png');
 }
 
 .TK_ThunderKitSetting_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_ThunderKitSetting_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_ThunderKitSetting_2X_Icon.png');
 }
 
 .TK_UnityPackage_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_UnityPackage_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_UnityPackage_2X_Icon.png');
 }
 
 .TK_Documentation_2X_Icon {
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Documentation/graphics/TK_Documentation_2X_Icon.png');
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_Documentation_2X_Icon.png');
+}
+
+.horizontal {
+    flex-direction: row;
+}
+.vertical {
+    flex-direction: column;
 }
 
 .hidden {
@@ -62,68 +70,79 @@
     margin-bottom: 4px;
 }
 
-.bm4 {
+.bm4 { 
     margin-bottom: 4px;
 }
-
-.page-header {
-    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
-    font-size: 32px;
-    -unity-font-style: normal;
-    color: rgba(255, 255, 255, 0.53);
-}
-
-.settings-header {
-    font-size: 12px;
-    -unity-font-style: normal;
-    background-color: rgba(0, 0, 0, 0.25);
-    padding-left: 3px;
-    padding-right: 3px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    margin-bottom: 2px;
-    flex-direction: row;
-}
-
-.settings-background {
-    background-color: rgba(191, 191, 191, 0.25);
-    border-left-color: rgba(0, 0, 0, 0.75);
-    border-right-color: rgba(0, 0, 0, 0.75);
-    border-top-color: rgba(0, 0, 0, 0.75);
-    border-bottom-color: rgba(0, 0, 0, 0.75);
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-}
-
 .header-icon {
     width: 64px;
     height: 64px;
     min-width: 64px;
     min-height: 64px;
 }
+.thunderkit-field Toggle{
+    padding-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+}
+.thunderkit-field Toggle {
+    margin-right: 9px;
+    flex-grow: 0;
+}
+.thunderkit-field Toggle #Checkmark,
+.thunderkit-field Toggle #unity-checkmark {
+    margin-top: 1px;
+    margin-left: 7px;
+    width: 71px;
+    height: 18px;
+    -unity-slice-top: 0;
+    -unity-slice-left: 0;
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleOff.png");
+}
+.thunderkit-field Toggle:checked #Checkmark,
+.thunderkit-field Toggle:checked #unity-checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleOn.png");
+}
 
-.selected {
-    background-color: rgba(128, 0, 0, 0.5);
+.thunderkit-field Toggle:focus #Checkmark,
+.thunderkit-field Toggle:focus #unity-checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleOffFocus.png");
+}
+.thunderkit-field Toggle:focus:checked #Checkmark,
+.thunderkit-field Toggle:focus:checked #unity-checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleOnFocus.png");
+}
+.thunderkit-field Toggle:hover:focus:checked #Checkmark,
+.thunderkit-field Toggle:hover:focus:checked #unity-checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleOnFocus.png");
+}
+
+.thunderkit-field Toggle:active #Checkmark,
+.thunderkit-field Toggle:active #unity-checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleActive.png");
+}
+.thunderkit-field Toggle:hover:active #Checkmark,
+.thunderkit-field Toggle:hover:active #unity-checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleActiveFocus.png");
+}
+.thunderkit-field Toggle:hover:active:checked #Checkmark,
+.thunderkit-field Toggle:hover:active:checked #unity-checkmark {
+	background-image: resource("Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Toggle/ToggleActiveFocus.png");
 }
 
 .pagelistview__page {
-    font-size: 12px;
     flex-grow: 1;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
-
 .pagelistview__page--header {
-    border-top-width: 0;
-    border-bottom-width: 1px;
-    border-top-color: rgba(0, 0, 0, 0.25);
-    border-bottom-color: rgba(0, 0, 0, 0.25);
-    flex-direction: row;
     flex-grow: 1;
 }
-
+.hide-arrow #Checkmark {
+    visibility: hidden;
+}
 .index-toggle {
-    width: 13px;
+    flex-grow: 1;
     margin-left: 0;
     margin-top: 0;
     margin-right: 0;
@@ -138,79 +157,68 @@
     border-bottom-width: 0;
 }
 
-.unity-toggle__checkmark {
-    margin-left: 1px;
-    margin-top: 1px;
-    margin-right: -1px;
-    margin-bottom: -1px;
-}
-
-.unity-toggle-checkmark {
-    margin-left: 1px;
-    margin-top: 1px;
-    margin-right: -1px;
-    margin-bottom: -1px;
-}
-
-.unity-foldout__toggle {
-    margin-left: 0;
-    margin-top: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.unity-foldout-toggle {
-    margin-left: 0px;
-    margin-top: 4px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-}
-
 .shrink {
     flex-shrink: 1;
 }
 
-.setting-header-icon {
-    width: 20px;
-    height: 20px;
-    background-image: url('/Packages/com.passivepicasso.thunderkit/Editor/Graphics/TK_Setting_Icon.png');
-}
-
-.setting-background {
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
 .thunderkit-field {
+    margin-top: 0px;
+    margin-bottom: 2px;
     flex-direction: row;
     flex-grow: 1;
     align-self: stretch;
+    justify-content: space-between;
 }
 
-.thunderkit-field-label {
-    width: 150px;
+.thunderkit-field>Label {
+    max-width: 400px;
+    margin-left: 4px;
+    margin-top: 0px;
+    margin-right: 4px;
+    margin-bottom: 0px;
+    padding-left: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    -unity-text-align: middle-left;
 }
 
 .thunderkit-field-input {
     flex-grow: 1;
+    max-width: 400px;
+    padding-left: 8px;
+    padding-top: 1px;
+    padding-right: 8px;
+    padding-bottom: 1px;
+    margin-left: 0px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
 }
-
+.thunderkit-field-input TextInput {
+    background-image: none;
+    background-color: rgba(128,128,128,0.25);
+    border-color: rgba(255,255,255,0);
+    margin-left: 0px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
 .thunderkit-header {
     -unity-font-style: bold;
-    font-size: 11px;
-    background-color: rgb(204, 204, 204);
-    color: rgb(0, 0, 0);
-    margin-left: 0;
-    margin-top: 0;
-    margin-right: 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-left: 4px;
+    margin-top: 4px;
+    margin-right: 4px;
+    margin-bottom: 4px;
 }
 
 .thunderkit-error {
@@ -227,23 +235,77 @@
     margin-bottom: 1px;
 }
 
-.thunderkit-setting {
-    opacity: 0.25;
-    background-color: rgb(170, 170, 170);
-    border-color: rgb(0, 0, 0);
-    border-left-width: 1px;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    margin-left: 2px;
-    margin-top: 2px;
-    margin-right: 2px;
-    margin-bottom: 1px;
-}
-
-.configure-game-button {
-}
-
 .standard-spacer {
     height: 50px;
+}
+
+.setting-section {
+    background-color: rgba(0, 0, 0, 0.1);
+    margin-bottom: 4px;
+}
+
+.settings-header {
+    background-color: rgba(0, 0, 0, 0.25);
+    flex-direction: row;
+    max-height: 22px;
+}
+.settings-header>Label {
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    font-size: 14px;
+    -unity-font-style: normal;
+    margin-top: -1px;
+    margin-left: 0px;
+    color: rgba(255, 255, 255, 0.75);
+}
+.settings-header>#icon {
+    margin-top: 1px;
+    width: 20px;
+    height: 20px;
+    background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_Setting_Icon.png');
+}
+
+#settings-list {
+    flex-grow: 1;
+    border-top-width: 1px; 
+    border-left-width: 1px; 
+    border-bottom-width: 1px; 
+    border-right-width: 1px; 
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+#settings-list ScrollView {
+    margin-top: 0px;
+}
+
+#settings-list Label {
+    margin-left: 0px;
+    margin-right: 0px;
+    border-top-width: 1px; 
+    border-left-width: 1px; 
+    border-bottom-width: 1px; 
+    border-right-width: 1px; 
+    border-color: rgba(0, 0, 0, 0);
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    font-size: 12px;
+    -unity-font-style: normal;
+    color: rgba(255, 255, 255, 0.75);
+}
+#settings-list Label:selected {
+    background-color: rgba(128, 0, 0, 0.5);
+}
+#settings-list Label:hover:selected {
+    background-color: rgba(128, 0, 0, 0.5);
+    border-color: rgba(128, 0, 0, 1);
+}
+#settings-list Label:hover {
+    background-color: rgba(128, 0, 0, 0.25);
+    border-color: rgba(128, 0, 0, 0.5);
+}
+
+.warning Label {
+    color: rgba(200, 128, 0, 1);
+}
+
+.error Label {
+    color: rgba(255, 70, 0, 1);
 }

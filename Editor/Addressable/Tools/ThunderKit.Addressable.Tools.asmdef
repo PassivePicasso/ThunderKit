@@ -1,0 +1,25 @@
+{
+    "name": "ThunderKit.Addressable.Tools",
+    "references": [
+        "ThunderKit.Common",
+        "ThunderKit.Core",
+        "Unity.ResourceManager",
+        "Unity.Addressables"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Unity.ResourceManager.dll",
+        "Unity.Addressables.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "TK_ADDRESSABLE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

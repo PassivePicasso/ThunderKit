@@ -1,17 +1,19 @@
 using Markdig;
-using Markdig.Extensions.GenericAttributes;
+using Markdig.Renderers.Normalize;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor;
-using UnityEngine;
-using Markdig.Renderers.Normalize;
 using System.Linq;
+using ThunderKit.Markdown.Extensions.GenericAttributes;
+using ThunderKit.Markdown.Extensions.Json;
+
+using UnityEditor;
+using UnityEditorInternal;
+using UnityEngine;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
-using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
 
 namespace ThunderKit.Markdown
@@ -21,23 +23,22 @@ namespace ThunderKit.Markdown
     public enum MarkdownDataType { Implicit, Source, Text }
     public class MarkdownElement : VisualElement
     {
-        const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/Documentation/uss/markdown.uss";
-        private static readonly UIElementRenderer renderer;
+        const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/USS/markdown.uss";
+        private readonly UIElementRenderer renderer;
+        private readonly MarkdownPipelineBuilder mpb;
+        private readonly MarkdownPipeline pipeline;
         private string data;
-
-        static MarkdownElement()
+        public string Data
         {
-            renderer = new UIElementRenderer();
-            var mpb = new MarkdownPipelineBuilder();
-            mpb.Extensions.AddIfNotAlready<GenericAttributesExtension>();
-            mpb.DisableHtml();
-            var pipeline = mpb.Build();
-            pipeline.Setup(renderer);
+            get => data;
+            set
+            {
+                data = value;
+            }
         }
-        public string Data { get => data; set => data = value; }
-        private string Markdown { get; set; }
+        public float ContentHeight { get; private set; }
+        public string Markdown { get; private set; }
         private string NormalizedMarkdown { get; set; }
-        private string Source { get; set; }
         public MarkdownDataType MarkdownDataType { get; set; }
         public bool SpaceAfterQuoteBlock { get; set; }
         public bool EmptyLineAfterCodeBlock { get; set; }
@@ -47,12 +48,20 @@ namespace ThunderKit.Markdown
         public bool ExpandAutoLinks { get; set; }
         public MarkdownElement()
         {
-            EditorApplication.projectChanged -= RefreshContent;
-            EditorApplication.projectChanged += RefreshContent;
+            renderer = new UIElementRenderer();
+            mpb = new MarkdownPipelineBuilder();
+            mpb.Extensions.AddIfNotAlready<GenericAttributesExtension>();
+            mpb.Extensions.AddIfNotAlready<JsonFrontMatterExtension>();
+            mpb.UsePreciseSourceLocation();
+            //mpb.DisableHtml();
+            pipeline = mpb.Build();
+            pipeline.Setup(renderer);
+
             AddSheet(MarkdownStylePath);
             if (EditorGUIUtility.isProSkin)
                 AddSheet(MarkdownStylePath, "Dark");
 
+            MarkdownFileWatcher.DocumentUpdated += MarkdownFileWatcher_DocumentUpdated;
 #if UNITY_2021_1_OR_NEWER
             AddSheet(MarkdownStylePath, "2021");
 #elif UNITY_2020_1_OR_NEWER
@@ -62,6 +71,14 @@ namespace ThunderKit.Markdown
 #elif UNITY_2018_1_OR_NEWER
             AddSheet(MarkdownStylePath, "2018");
 #endif
+        }
+
+        private void MarkdownFileWatcher_DocumentUpdated(object sender, (string path, MarkdownFileWatcher.ChangeType change) e)
+        {
+            if (e.path == Data && e.change == MarkdownFileWatcher.ChangeType.Imported)
+            {
+                RefreshContent();
+            }
         }
 
         public void AddSheet(string templatePath, string modifier = null)
@@ -97,14 +114,14 @@ namespace ThunderKit.Markdown
 
         string GetMarkdown()
         {
-            string markdown = Data;
+            string markdown = string.Empty;
             switch (MarkdownDataType)
             {
                 case MarkdownDataType.Implicit:
                 case MarkdownDataType.Source:
-                    if (!".md".Equals(Path.GetExtension(Source))) break;
+                    if (!".md".Equals(Path.GetExtension(Data))) break;
 
-                    var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Source);
+                    var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Data);
                     if (asset)
                         markdown = asset.text;
                     else
@@ -137,10 +154,9 @@ namespace ThunderKit.Markdown
                 SpaceAfterQuoteBlock = SpaceAfterQuoteBlock
             };
 
-
             NormalizedMarkdown = Markdig.Markdown.Normalize(Markdown, normalizeOptions);
 
-            var document = Markdig.Markdown.Parse(NormalizedMarkdown);
+            var document = Markdig.Markdown.Parse(NormalizedMarkdown, pipeline);
             renderer.LoadDocument(this);
             renderer.Render(document);
         }
@@ -148,7 +164,7 @@ namespace ThunderKit.Markdown
         public new class UxmlFactory : UxmlFactory<MarkdownElement, UxmlTraits> { }
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            static string NormalizeName(string text) => ObjectNames.NicifyVariableName(text).ToLower();
+            static string NormalizeName(string text) => ObjectNames.NicifyVariableName(text).ToLower().Replace(" ", "-");
 
             private readonly UxmlStringAttributeDescription m_text = new UxmlStringAttributeDescription { name = "data" };
             private readonly UxmlEnumAttributeDescription<MarkdownDataType> m_dataType = new UxmlEnumAttributeDescription<MarkdownDataType> { name = "markdown-data-type" };
@@ -174,11 +190,7 @@ namespace ThunderKit.Markdown
                 bool configured = false;
                 if (mdElement.MarkdownDataType != MarkdownDataType.Text)
                 {
-                    if (IsAssetDirectory(mdElement.Data))
-                    {
-                        mdElement.Source = mdElement.Data;
-                        configured = true;
-                    }
+                    if (IsAssetDirectory(mdElement.Data)) configured = true;
                     else if (cc.visualTreeAsset != null)
                     {
                         var treeAssetPath = AssetDatabase.GetAssetPath(cc.visualTreeAsset);
@@ -188,7 +200,7 @@ namespace ThunderKit.Markdown
                             var source = string.IsNullOrEmpty(mdElement.Data) ? $"{Path.GetFileNameWithoutExtension(treeAssetPath)}.md"
                                                                               : mdElement.Data;
                             var sourcePath = Path.Combine(treeAssetDirectory, source);
-                            mdElement.Source = sourcePath;
+                            mdElement.Data = sourcePath;
                             configured = true;
                         }
                     }

@@ -63,7 +63,7 @@ namespace ThunderKit.Core.Windows
                     tabButton.value = false;
                     tabButton.text = firstLine;
                     tabButton.AddToClassList("tab-button");
-                    tabButton.name = $"tab-{firstLine.ToLowerInvariant()}";
+                    tabButton.name = $"tab-context";
 
                     tabSection.Add(tabButton);
 

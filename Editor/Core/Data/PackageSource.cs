@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Common.Logging;
-using ThunderKit.Common.Package;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -48,7 +48,7 @@ namespace ThunderKit.Core.Data
                 if (sourceGroups == null)
                 {
                     sourceGroups = new Dictionary<string, List<PackageSource>>();
-                    var packageSources = AssetDatabase.FindAssets("t:PackageSource", new string[] { "Assets", "Packages" })
+                    var packageSources = AssetDatabase.FindAssets("t:PackageSource", Constants.FindAllFolders)
                         .Select(AssetDatabase.GUIDToAssetPath)
                         .Select(AssetDatabase.LoadAssetAtPath<PackageSource>);
                     foreach (var packageSource in packageSources)
@@ -105,7 +105,6 @@ namespace ThunderKit.Core.Data
             groupMap[dependencyId] = group;
 
             group.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
-            AssetDatabase.AddObjectToAsset(group, this);
 
             var versionData = versions.ToArray();
             group.Versions = new PackageVersion[versionData.Length];
@@ -120,7 +119,6 @@ namespace ThunderKit.Core.Data
                 packageVersion.group = group;
                 packageVersion.version = version;
                 packageVersion.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
-                AssetDatabase.AddObjectToAsset(packageVersion, group);
                 group.Versions[i] = packageVersion;
 
                 if (!dependencyMap.TryGetValue(packageVersion.dependencyId, out var packageDeps))
@@ -148,13 +146,9 @@ namespace ThunderKit.Core.Data
         internal void Clear()
         {
             foreach (var package in Packages)
-            {
                 if (package)
-                {
-                    AssetDatabase.RemoveObjectFromAsset(package);
                     DestroyImmediate(package);
-                }
-            }
+
             Packages.Clear();
         }
 
