@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Utilities;
 using UnityEditor;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace ThunderKit.Core.Config
@@ -13,6 +11,8 @@ namespace ThunderKit.Core.Config
     public class CreateGamePackage : OptionalExecutor
     {
         public override int Priority => Constants.Priority.CreateGamePackage;
+
+        public override string Description => "Creates the package.json file for the imported game so it can be recognized and loaded by the Unity PackageManager.";
 
         public override void Execute()
         {
