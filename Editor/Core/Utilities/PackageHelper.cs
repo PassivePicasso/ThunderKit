@@ -17,9 +17,12 @@ namespace ThunderKit.Core.Utilities
 {
     public static class PackageHelper
     {
+#if UNITY_2021_1_OR_NEWER
+        public static void ResolvePackages() => Client.Resolve();
+#else
         private static readonly MethodInfo ClientResolve = typeof(Client).GetMethod("Resolve", BindingFlags.NonPublic | BindingFlags.Static);
         public static void ResolvePackages() => ClientResolve.Invoke(null, null);
-
+#endif
 
         static readonly Regex versionRegex = new Regex("(\\d+\\.\\d+\\.\\d+)(\\..*?)?");
         public static void GeneratePackageManifest(string packageName, string outputDir, string displayName, string authorAlias, string version, string description = null)
