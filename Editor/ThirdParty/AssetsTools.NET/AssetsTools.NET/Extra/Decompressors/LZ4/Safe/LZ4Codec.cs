@@ -37,11 +37,11 @@ NOTE:
 
 // ReSharper disable InconsistentNaming
 
-#if UNSAFE
-namespace LZ4pn
-#else
+// #if UNSAFE
+// namespace LZ4pn
+// #else
 namespace LZ4ps
-#endif
+// #endif
 {
 	public static partial class LZ4Codec
 	{
