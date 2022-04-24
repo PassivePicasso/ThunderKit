@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.Experimental.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements" editor-extension-mode="True">
+
+    <ui:VisualElement name="extension-item">
+        <ThunderKit.Markdown.MarkdownElement name="documentation-markdown" data="Note: Importers are listed in order of execution based upon their Priority value" markdown-data-type="Text"/>
+    </ui:VisualElement>
+
+    <ui:VisualElement name="game-configuration-section" class="section">
+        <ui:VisualElement name="executor-element"/>
+    </ui:VisualElement>
+
+</ui:UXML>
+

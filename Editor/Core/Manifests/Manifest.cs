@@ -7,13 +7,14 @@ using ThunderKit.Core.Manifests.Datum;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using static ThunderKit.Core.ScriptableHelper;
+using static ThunderKit.Core.Utilities.ScriptableHelper;
 
 namespace ThunderKit.Core.Manifests
 {
     public class Manifest : ComposableObject
     {
         [SerializeField, HideInInspector] private ManifestIdentity identity;
+        public bool QuickAccess;
 
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Manifest), priority = Constants.ThunderKitMenuPriority)]
         public static void Create()
@@ -28,11 +29,11 @@ namespace ThunderKit.Core.Manifests
 
         public IEnumerable<Manifest> EnumerateManifests()
         {
-            if(!Identity)
+            if (!Identity)
                 throw new ArgumentException($"[{name}.Identity](assetlink://{UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this))}) is missing its identity.");
-            if(Identity.Dependencies == null) 
+            if (Identity.Dependencies == null)
                 throw new ArgumentException($"[{name}.Identity.Dependencies](assetlink://{UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this))}) is null");
-            if(Identity.Dependencies.Any(dep => !dep)) 
+            if (Identity.Dependencies.Any(dep => !dep))
                 throw new ArgumentException($"[{name}.Identity.Dependencies](assetlink://{UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this))}) has an unassigned entry");
 
             var returned = new HashSet<Manifest>(this.Identity.Dependencies.SelectMany(x => x.EnumerateManifests()));
@@ -98,7 +99,7 @@ MonoBehaviour:
   Name: {name}
   Description: {description}
   Version: {version}
-  Dependencies: {dependencyGuids.Aggregate((dependencyGuids.Length == 0 ? "[]" : string.Empty), (a, b)=> $"{a}\r\n{b}")}
+  Dependencies: {dependencyGuids.Aggregate((dependencyGuids.Length == 0 ? "[]" : string.Empty), (a, b) => $"{a}\r\n{b}")}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

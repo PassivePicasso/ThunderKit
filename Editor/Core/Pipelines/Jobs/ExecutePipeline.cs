@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using UnityEditor;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
@@ -24,7 +23,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 {
                     targetpipeline.manifest = pipeline.manifest;
                     await targetpipeline.Execute();
-                    targetpipeline.manifest = manifest;
                 }
                 else
                     await targetpipeline.Execute();
@@ -33,7 +31,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 targetpipeline.manifest = manifest;
                 targetpipeline.Logger = priorLogger;
-                EditorUtility.SetDirty(targetpipeline);
             }
         }
     }

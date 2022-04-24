@@ -1,52 +1,313 @@
+## 5.0.0
+
+### A Note about Installing ThunderKit
+
+ThunderKit installation directions have generally had users install ThunderKit
+using it's master branch, which is provided with the url 
+`https://github.com/PassivePicasso/ThunderKit.git`
+
+This was a poor precedent to set and can lead to unexpected upgrades for users.
+Going forward it is recommended to install ThunderKit using a Tagged release.
+
+For Example installing ThunderKit 5.0.0 can be done using the following url:
+`https://github.com/PassivePicasso/ThunderKit.git#5.0.0`
+
+When a project needs to be migrated to a different version of ThunderKit the 
+ProjectRoot/Packages/manifest.json can be edited to change the value of the url
+used to install ThunderKit.  After returning to Unity the Unity Package Manager
+will detect the change and update the ThunderKit installation to the correct 
+version.
+
+### Import Rework and ImportExtensions
+
+The process for importing games has been completely reworked into a modular
+extensible system.
+
+Now every default import step can be enabled or disabled allowing for the
+implementation of custom import processes and importers designed for different
+environments.
+
+ThunderKit now loads and creates concrete types derived from ImportExtension
+out of assemblies decorated with the ImportExtensionsAttribute and adds them
+to the new ImportConfiguration ThunderKitSetting.
+
+Using these features customized import steps can be developed for games,
+minimizing the time starting development on new projects.
+
+### Assembly Import Changes
+
+The Assembly Import process has been improved with the ability to use multiple
+different identity algorithms when producing assembly meta files for unity.
+These identities are how Unity identifies the assembly to load MonoBehavior
+and ScriptableObject Types from.
+
+There are currently three algorithms available for producings the identities:
+1. Original - This is the algorithm ThunderKit has used to since it was released.
+2. Stabilized - This is the same as Original, except it ensures that UTF8 
+   encoding is used to generate and write the GUID.
+3. AssetRipper Compatible = This is the algorithm used by AssetRippers new
+   Assembly Export mode and provides the ability to interoperate with 
+   AssetRipper rips and ThunderKit projects. This would allow you to copy
+   a prefab from a rip into a mod project for example and have all the
+   scripts be correctly loaded.
+
+### Pipeline Quick Access Toolbar
+
+A Pipeline Toolbar has been added to the Unity Main toolbar allowing you to
+quickly select a pipeline and manifest to execute without having to search
+your Project.
+
+To add Pipelines and Manifests to your toolbar as options, select the Pipeline
+or Manifest in your project and check the "Quick Access" checkbox in the 
+header. This will allow you to click the appropriate selector in the toolbar
+and run it using the Execute button, or view the most recent log using the Log
+button.
+
+### Addressable Support 
+
+#### Importing
+
+Support Addressables has been added to ThunderKit. With the new 
+ImportAddressableCatalog ImportExtension you can import the catalog from a game
+using addressables, enabling you to load addressaable assets in the editor.
+
+#### Edit and Runtime usage 
+
+This allows developers to setup simple tools to apply materials or instantiate prefabs
+in the editor for viewing. Scripts created to do this can be setup to work both
+in the editor or at runtime. See the [Simply Address](https://github.com/PassivePicasso/SimplyAddress)
+repository for an implementation of such features.
+
+#### Addressable Browser
+
+The [Addressable Browser](menulink://Tools/ThunderKit/AddressableBrowser) 
+provides an interface to search and explore a games Addressable Catalog.
+Using this browser you can locate the assets and their addresses so that you
+can use a games assets in the editor and at runtime.
+
+The Addressable Browser allows you to search for assets based upon their address,
+name, and type.  Additional filters may come in the future.
+
+#### Limitations
+
+Editing Addressable Assets is limited to a code based approach and tooling
+to resolve this is outside of the scope of ThunderKit. Look projects like
+[Simply Address](https://github.com/PassivePicasso/SimplyAddress) that provide
+generic tools for working with addressables in a modding context.
+
+Addressable assets can't be referenced like traditional Unity assets. This
+limits using addressable assets to a code based approach. However, generic tools
+like SimplyAddress are being and can be developed to improve the ease of use.
+
+### Documentation 
+
+[Documentation](menulink://Tools/ThunderKit/Documentation) has been updated
+to be extensible via the DocumentationRoot ScriptableObject. Creating a 
+DocumentationRoot can be done via the Project Window Context menu under the
+ThunderKit sub menu. A DocumentationRoot establishes a root documentation
+section in the ThunderKit documentation window with the same name. 
+
+Additionally, DocumentationRoot contains the Main Page member, which can 
+be set to any Markdown file regardless of its location as the page displayed
+when the DocumentationRoot is selected.
+
+Documentation is now easier to write and extend, no longer requiring the 
+creation of UXML and USS files to setup simple documentation collections.
+See the [ThunderKitDocumentation](assetlink://GUID/33d96cac9b15cba468162cf9d18ec0f3)
+for an example of a working documentation collection.
+
+Documentation has been added and the layout of the existing documentation 
+has been re-organized.
+
+Tutorials is a new and growing collection of documents that will walk you 
+through getting started with usaging and extending ThunderKit. Submission 
+of markdown files to grow this collection of tutorials is very welcome and 
+can be submitted on discord or through a pull request on github.
+
+### Binary Patcher BsDiff
+
+The Binary Patcher BsDiff has been added to ThunderKit to enable import workflows
+that require modifications to game binaries for scenarios that need them such
+as editor compatibility.
+
+The ApplyPatch and CreatePatch PipelineJobs have been created to enable Pipeline
+workflows that can utilize binary patching.
+
+### AssetsTools.NET
+
+A modified version of AssetsTools.NET has been included to enable importing
+of project settings from games.  This is provided via the ImportProjectSettings
+ImportExtension. Configure it on the Import Configuration 
+[ThunderKit Settings](menulink://Tools/ThunderKit/Settings) page.
+
+Additionally, game version checking has also been enhanced using AssetsTools.NET
+
+### Community Contributions
+
+#### Edit Source / Select Source
+
+[Documentation](menulink://Tools/ThunderKit/Documentation) pages now have a 
+context menu allowing the users to select the source markdown files or edit 
+them in their preferred editor, configurable from [ThunderKit Settings](menulink://Tools/ThunderKit/Settings)
+
+#### Guid Stabilized links for Markdown
+
+AssetLink and Documentation schemes for ThunderKit Markdown have been enhanced 
+to allow referencing assets using their GUID. This feature enables documentation
+to remain stable even when moving files around inside the unity environment, or
+externally when the user takes care to move their associated meta file with them.
+
+All Documenation has been updated to use the new GUID format for referencing
+project assets, this will help ensure that documentation links remain stable
+reducing maintenance cost in the future.
+
+#### Cross Documentation Page Links
+
+Documentation has been updated with links between documentation pages to improve 
+ease of use.
+
+ * Thanks to nebby1999 for these features
+
+#### FlowPipeline Whitelist / Blacklist
+
+FlowPipelines have been updated with Whitelist / Blacklist system with automatic 
+updating for old asset files. This affects the Copy, Zip, and Delete PipelineJobs
+which have the ability to exclude Manifests from their run. Now alternatively a 
+whitelist can be provided which causes the job to only run on manifests in that list.
+
+Users should not need to update their pipelines, but upgrading to ThunderKit 5 will
+make changes that are not backwards compatible to your pipeline assets.
+
+* Thanks to KingEnderbrine for this feature
+
+### Fixes and improvements
+
+#### General
+* Fix error in FileUtil which produced incorrect FileIds for Script references to 
+  Assemblies
+* Make minor improvements for enhancing cross platform editor compatibility
+* Stop persisting PackageGroups and PackageVersions to disk to avoid runaway 
+  disk usage
+* Fix a number of small memory leaks
+* Add doc comments to code base (plenty more work to be done here)
+* Create UXML and USS folders in ThunderKit root and move all UXML and USS too them
+  Some template specific USS remains in the UXML folders next to their related UXML 
+  files
+* Updated ThirdPartyNotices.md
+
+#### Markdown
+
+* Added JsonFrontMatter for Page Headers 
+  - Json FrontMatter can be used to collect a limited set of values from a
+    Markdown file. See the [FrontMatter Struct](assetlink://GUID/70db1552b66c4e34d88f6b33d3e0ead7)
+    for details.
+* Generic Attributes - Apply USS/CSS Classes to Blocks of text in markdown
+* Improvements to the markdown style have been made to bring it more in line with common markdown styling
+* MarkdownElement now detects changes to source files and updates automatically
+
+#### Import
+* Fixed import process sometimes not completing requiring the user to change 
+  focus away from and back to the editor to complete.
+
+#### PipelineLogs
+* Add setting to enable the PipelineLog window to show automatically when
+  a pipeline is executed.
+* Automatically update PipelineLog window when visible and a pipeline is
+  executed
+* Updated PipelineLog window to show a button for entries with Log Context
+
+#### ComposableObjects
+* Fix an issue with the ComposableObjectEditor which caused it to be more 
+  computationally intensive than necessary
+* Enance ComposableObjectEditor to allow it to render elements with Missing 
+  Scripts to inform the user
+  * This currently doesn't allow elements with missing scripts to be deleted
+* Improved the ComposableElement Edit Script context menu item to be more 
+  reliable
+
+
 ## 4.1.1
 
 ### Pipelines and Logging
 
-This update introduces a system to maintain logs of Pipeline runs. These logs saved under the Assets/ThunderKitAssets/Logs folder and grouped by Pipeline.  Pipeline Logs are rich data sets which provides listings of runtime function and reporting of build artifacts. Logs will show you what was done during a pipeline run, what files were copied, deleted, and created during that run.
+This update introduces a system to maintain logs of Pipeline runs. These logs
+saved under the Assets/ThunderKitAssets/Logs folder and grouped by Pipeline.
+Pipeline Logs are rich data sets which provides listings of runtime function
+and reporting of build artifacts. Logs will show you what was done during a
+pipeline run, what files were copied, deleted, and created during that run.
 
-The pipeline logs will additionally show any errors, and provide any potentially relevant data from the errors that could lead to resolution. These errors are enhanced by ThunderKit's markdown system, allowing you to click on source code lines to open up your code editor to the source of errors for further debugging.  This should help developers who extend ThunderKit with custom PipelineJobs and PathComponents.
+The pipeline logs will additionally show any errors, and provide any potentially 
+relevant data from the errors that could lead to resolution. These errors are 
+enhanced by ThunderKit's markdown system, allowing you to click on source code 
+lines to open up your code editor to the source of errors for further debugging. 
+This should help developers who extend ThunderKit with custom PipelineJobs and 
+PathComponents.
 
-The most recent log for a pipeline can be launched by inspecting the Pipeline then clicking on the Show Log button.
+The most recent log for a pipeline can be launched by inspecting the Pipeline then
+clicking on the Show Log button.
 
-The execute button for pipelines have been moved from under the "Add Pipeline Button" to the top left of the Pipeline Inspector. This should reduce incidents of accidentally firing off the Pipeline.
+The execute button for pipelines have been moved from under the 
+"Add Pipeline Button" to the top left of the Pipeline Inspector. This should reduce
+incidents of accidentally firing off the Pipeline.
 
 ### Markdown Level Up
 
-Text alignment and kerning has been improved significantly.  I'm sorry for any mental anguish users have suffered.
+Text alignment and kerning has been improved significantly.  I'm sorry for any mental
+anguish users have suffered.
 
-The Markdown implementation performance and output quality has been significantly improved. Previously the UIElementsRenderer would break all string literals on whitespace separation and then render each word as an individual VisualElement of type Label. This provided an easy way to achieve flow document layouting, however resulted in large documents taking an exceptionally long time to render.
+The Markdown implementation performance and output quality has been significantly 
+improved. Previously the UIElementsRenderer would break all string literals on 
+whitespace separation and then render each word as an individual VisualElement of
+type Label. This provided an easy way to achieve flow document layouting, however 
+resulted in large documents taking an exceptionally long time to render.
 
-In this update the UIElementsRenderer will now scan each ParagraphBlock returned by MarkDig and if the Paragraph contains only simple string literals will opt to render the entire paragraph in a single Label.  This reduces the number of elements generated in large documents by thousands. This results in significantly improved render times in large documents as well as faster layouting.
+In this update the UIElementsRenderer will now scan each ParagraphBlock returned by
+MarkDig and if the Paragraph contains only simple string literals will opt to render
+the entire paragraph in a single Label.  This reduces the number of elements generated
+in large documents by thousands. This results in significantly improved render times in
+large documents as well as faster layouting.
 
-Additionally, the Markdown system now supports adding custom Schemes for Markdown links from external libraries which has enabled new features in ThunderKit.
+Additionally, the Markdown system now supports adding custom Schemes for Markdown links
+from external libraries which has enabled new features in ThunderKit.
 
-Finally the code design of the MarkdownElement and its utilization has been improved to prevent cases where Markdown doesn't have the necessary visual styles to render correctly.
+Finally the code design of the MarkdownElement and its utilization has been improved to
+prevent cases where Markdown doesn't have the necessary visual styles to render correctly.
 
 ### Documentation Improvements
 
-The Markdown improvements has allowed the introduction of Documentation page links to be created. Now MarkdownElements can link to specific documentation pages.  This hasn't been applied to all documentation to create a highly connected document graph yet, but additional enhancements to documentation will be done over time.
+The Markdown improvements has allowed the introduction of Documentation page links to
+be created. Now MarkdownElements can link to specific documentation pages.  This hasn't
+been applied to all documentation to create a highly connected document graph yet, but 
+additional enhancements to documentation will be done over time.
 
 Some documents have been reformatted to improve their layout flexibility
 
 ### Fixes and Improvements
 
-* Automatically generate a PackageSource for the ThunderKit Extensiosn Thunderstore
+* Automatically generate a PackageSource for the ThunderKit Extensions Thunderstore
 
-* Remove ThunderKit.Core.Editor namespace due to code clarity issues a namespace named Editor creates in Unity
+* Remove ThunderKit.Core.Editor namespace due to code clarity issues a namespace
+  named Editor creates in Unity
 
 * Fix bugs with Pipeline flow related to Asynchronous migration
 
 * Fix a number of cases where Exception context could be hidden
 
-* Add a new toggle to Copy jobs that indicates if the Job should try to create the target directory, default value is true
+* Add a new toggle to Copy jobs that indicates if the Job should try to create the
+  target directory, default value is true
 
-* Fixed some cases where Pipelines would run to the end instead of halting when encountering what should have been a fatal exception
+* Fixed some cases where Pipelines would run to the end instead of halting when
+  encountering what should have been a fatal exception
 
-* StageAssetBundles and StageAssemblies logging and code flow has been improved to clarify common cases where these jobs will fail to execute correct
+* StageAssetBundles and StageAssemblies logging and code flow has been improved 
+to clarify common cases where these jobs will fail to execute correct
 
-* Added and improved logging to Copy, Delete, ExecutePipepline, ExecuteProcess, StageAssemblies, StageAssetBundles, StageDependencies, StageManifestFiles, Zip and StageThunderstoreManifest
+* Added and improved logging to Copy, Delete, ExecutePipepline, ExecuteProcess, 
+  StageAssemblies, StageAssetBundles, StageDependencies, StageManifestFiles, 
+  Zip and StageThunderstoreManifest
 
-* Fix issue where SteamBepInExLaunch could fail to start due to formatting of command line args
+* Fix issue where SteamBepInExLaunch could fail to start due to formatting of
+  command line args
 
 * Fix issue in Zip that could cause the job to fail in a case it shouldn't
 
@@ -55,39 +316,70 @@ Some documents have been reformatted to improve their layout flexibility
 
 ### Important
 
-This update is breaking support for .NET 3.5 due to the difficulty in providing functional tools for certain aspects of Unity which are asynchronous.
-For people who need .NET 3.5 support, install ThunderKit using the net35compatibility branch which will receive fixes able to be ported upon request
+This update is breaking support for .NET 3.5 due to the difficulty in providing 
+functional tools for certain aspects of Unity which are asynchronous. For people who 
+need .NET 3.5 support, install ThunderKit using the net35compatibility branch which
+will receive fixes able to be ported upon request
 
 `"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git#net35compatibility",` 
 
-This update changes how Manifest assets in the Unity AssetDatabase are managed. You will be asked to run an upgrade process that will update all your Manifests to the new configuration automatically.
-Please make sure you back up your projects before updating in case of any problems.
+This update changes how Manifest assets in the Unity AssetDatabase are managed. You
+will be asked to run an upgrade process that will update all your Manifests to the 
+new configuration automatically. Please make sure you back up your projects before 
+updating in case of any problems.
 
-Some games do not have their Unity game version properly identified in their executable. Due to this, ThunderKit will now read the games globalgamemanager file to identify the correct Unity version for the game.  Some users may find they need to switch unity versions because of this change, but it is a necessary step to take to avoid unforseen issues.
+Some games do not have their Unity game version properly identified in their executable.
+Due to this, ThunderKit will now read the games globalgamemanager file to identify the
+correct Unity version for the game.  Some users may find they need to switch unity 
+versions because of this change, but it is a necessary step to take to avoid unforseen 
+issues.
 
 ### Known Issues
 
-* Unity 2021.2.0b7 does not detect package installation or uninstallation automatically requiring the user to manually refresh the Project
-This is an issue which appears to be a bug with Unity's AssetDatabase.Refresh call and a bug report will be generated for Unity Technologies to investigate.
-This bug may be resolved in newer versions of the Unity 2021.2 beta, however there are no games available to test against which wouldn't introduce factors that could muddle results.
-If Unity doesn't appear to import packages installed from Thunderstore, or doesn't appear to fully remove an uninstalled package, refresh your project using the context menu option in the Project window, or on windows press Ctrl+R
+* Unity 2021.2.0b7 does not detect package installation or uninstallation automatically
+requiring the user to manually refresh the Project. This is an issue which appears to be
+a bug with Unity's AssetDatabase.Refresh call and a bug report will be generated for 
+Unity Technologies to investigate. This bug may be resolved in newer versions of the 
+Unity 2021.2 beta, however there are no games available to test against which wouldn't
+introduce factors that could muddle results. If Unity doesn't appear to import packages 
+installed from Thunderstore, or doesn't appear to fully remove an uninstalled package,
+refresh your project using the context menu option in the Project window, or on windows 
+press Ctrl+R
 
 * Unity 2021.2.0b7 locks up when importing and loading assemblies from packages or games.
-  - Work-around: Kill the Unity process after it seems like the import process has stopped loading new assemblies and restart Unity
+  - Work-around: Kill the Unity process after it seems like the import process has stopped
+    loading new assemblies and restart Unity
 
 ### Improvements
 
-* Unity 2021.2 beta can now succesfully install packages, however the user must manually refresh the project (Ctrl+R) to complete the installation.
+* Unity 2021.2 beta can now succesfully install packages, however the user must manually
+  refresh the project (Ctrl+R) to complete the installation.
 
-* Pipelines and PipelineJobs now execute asynchronously to support operations which require that Unity take control of processing.
+* Pipelines and PipelineJobs now execute asynchronously to support operations which
+  require that Unity take control of processing.
 
-* StageAssemblies previously relied on simply copying assemblies from the project's Library/ScriptAssemblies folder. While fast and convenient this prevented users from taking control of build parameters which may be necessary for their projects.  StageAssemblies now allows you to specify Build Targets and Build Target Groups in addition to allowing you to stage debug databases. Due to this change StageAssemblies now builds player assemblies, allowing the utilization of available optimization steps the compilation engine provides.
+* StageAssemblies previously relied on simply copying assemblies from the 
+  project's Library/ScriptAssemblies folder. While fast and convenient this
+  prevented users from taking control of build parameters which may be 
+  necessary for their projects. StageAssemblies now allows you to specify Build
+  Targets and Build Target Groups in addition to allowing you to stage debug
+  databases. Due to this change StageAssemblies now builds player assemblies,
+  allowing the utilization of available optimization steps the compilation
+  engine provides.
 
-* Package Installation has been improved to no longer utilize the AssetDatabase to create and place files to avoid edge cases with some versions of Unity that prevent installation. Due to this change Manifest's now have Asset GUIDs assigned by ThunderKit.  This change ensures that Manifest's will easily and automatically reference their dependencies, and references to dependencies will continue to work after reinstallation them.  This change is not backwards compatible
+* Package Installation has been improved to no longer utilize the AssetDatabase 
+  to create and place files to avoid edge cases with some versions of Unity that 
+  prevent installation. Due to this change Manifest's now have Asset GUIDs 
+  assigned by ThunderKit. This change ensures that Manifest's will easily and 
+  automatically reference their dependencies, and references to dependencies 
+  will continue to work after reinstallation them. This change is not backwards 
+  compatible
 
 * Added compiler directives and code to support Unity 2021.2
 
-* Add a utility to assist in migrating Non-ThunderKit modding projects to ThunderKit by updating asset references from Dll references to Script file references. This is available under Tools/ThunderKit/Migration 
+* Add a utility to assist in migrating Non-ThunderKit modding projects to 
+  ThunderKit by updating asset references from Dll references to Script file
+  references. This is available under Tools/ThunderKit/Migration 
 
 * Added error messaging for PathReferences and Manifests
 
@@ -95,72 +387,103 @@ If Unity doesn't appear to import packages installed from Thunderstore, or doesn
 
 * Fix cases where Progress bars may not update or close as expected
 * Fix ManifestIdentities not always being saved during package installation
-* Fix issue where somtimes PackageSourceSettings will empty its reference array requiring manual repopulation
-* Fix PackageManager not removing Scripting Defines when removing a ThunderKit managed Package
+* Fix issue where somtimes PackageSourceSettings will empty its reference array
+  requiring manual repopulation
+* Fix PackageManager not removing Scripting Defines when removing a ThunderKit
+  managed Package
 
 ## 3.4.1
 
-## Fixes
+### Fixes
 
-* Fix an issue where scanning some assemblies would result in a ReflectionTypeLoadException preventing the settings window from loading.
+* Fix an issue where scanning some assemblies would result in a 
+  ReflectionTypeLoadException preventing the settings window from loading.
 
 ## 3.4.0
 
-## PackageSource Management
+### PackageSource Management
 
-PackageSources have been updated with central management and the ability to setup multiple sources of the same types.
+PackageSources have been updated with central management and the ability to 
+setup multiple sources of the same types.
 
-You can now manage your Package Sources in the [ThunderKit Settings Window](menulink://Tools/ThunderKit/Settings).
-In the ThunderKit Settings window you will be able to Add, Remove, Configure, Rename and Refresh your PackageSources.
+You can now manage your Package Sources in the 
+[ThunderKit Settings Window](menulink://Tools/ThunderKit/Settings).
+In the ThunderKit Settings window you will be able to Add, Remove, Configure,
+Rename and Refresh your PackageSources.
 
-## ThunderKit Extensions Thunderstore
+### ThunderKit Extensions Thunderstore
 
-With the ability to add multiple PackageSources to your project, you can now add the ThunderKit Extensions Thunderstore as a source. 
-Like all Thunderstores, this provides the ability for the community to add resources that help grow the platform in a modular way.
+With the ability to add multiple PackageSources to your project, you can now 
+add the ThunderKit Extensions Thunderstore as a source. Like all Thunderstores,
+this provides the ability for the community to add resources that help grow the
+platform in a modular way.
 
-If you would like to take advantage of the ThunderKit Extensions Thunderstore, Add a new ThunderstoreSource to your PackageSources and set the url to ``` https://thunderkit.thunderstore.io ```
+If you would like to take advantage of the ThunderKit Extensions Thunderstore,
+Add a new ThunderstoreSource to your PackageSources and set the url to
+``` https://thunderkit.thunderstore.io ```
 
 
 ## 3.3.0
 
-## Steam Launch support
+### Steam Launch support
 
-Some Unity games require that Steam launches them in order to successfully start up, to support this requirement the previous update added the RegistryLookup PathComponent.
-This update builds upon that by adding a Steam.exe PathReference asset which locates the Steam.exe using the Windows Registry via the RegistryLookup PathComponent.
+Some Unity games require that Steam launches them in order to successfully start 
+up, to support this requirement the previous update added the RegistryLookup 
+PathComponent. This update builds upon that by adding a Steam.exe PathReference 
+asset which locates the Steam.exe using the Windows Registry via the 
+RegistryLookup PathComponent.
 
-To improve the coverage and usability of the BepInEx Template, the template now includes a SteamBepInExLaunch Pipeline and the Launch Pipeline was renamed to BepInExLaunch
+To improve the coverage and usability of the BepInEx Template, the template now
+includes a SteamBepInExLaunch Pipeline and the Launch Pipeline was renamed to 
+BepInExLaunch
 
-In Order to use the SteamBepInExLaunch Pipeline, copy it over the BepInExLaunch pipeline in your Build and Launch Pipeline, or replace BepInExLaunch anywhere you used it with the SteamBepInExLaunch pipeline.
+In Order to use the SteamBepInExLaunch Pipeline, copy it over the BepInExLaunch 
+pipeline in your Build and Launch Pipeline, or replace BepInExLaunch anywhere 
+you used it with the SteamBepInExLaunch pipeline.
 
 References to the Launch Pipeline will be automatically updated to BepInExLaunch.
 
-## Templates
+### Templates
 
 Two new Templates have been added to ThunderKit under ThunderKit/Editor/Templates
-DirectLaunch is a new pre-configured Launch pipeline which directly executes the game's Executable in its working directory.
-SteamLaunch is a new pre-configured Launch pipeline which executes the game's Executable in its working directory using Steam and the applaunch command line argument.
+DirectLaunch is a new pre-configured Launch pipeline which directly executes
+the game's Executable in its working directory. SteamLaunch is a new pre-configured
+Launch pipeline which executes the game's Executable in its working directory
+using Steam and the applaunch command line argument.
 
-## GameAppId and Steam Launching
+### GameAppId and Steam Launching
 
-In order to use any of the pre-configured Steam launching pipelines you will need to provide ThunderKit with the games Steam App Id.
+In order to use any of the pre-configured Steam launching pipelines you will 
+need to provide ThunderKit with the games Steam App Id.
 
 Follow these Steps to setup Steam Launching
 1. Create a new PathReference under your Assets directory and name it GameAppId
 2. Add the Constant PathComponent to the newly created PathReference
 3. Find the Steam App Id for the game you're modding
-  * You can find the SteamAppId easily by copying it from the game's Steam Store page url
+  * You can find the SteamAppId easily by copying it from the game's Steam Store
+    page url
 
 After Completing these steups you're seting to use Steam Launching.
 
-## Fixes and Improvements
+### Fixes and Improvements
 
-* Recently a ManifestIdentity data loss issue was re-discovered, this has not yet been resolved but some pieces of code have been updated in response while a proper resolution is pending
-* Some PipelineJobs and PathComponents referenced a Manifests's ManifestIdentity by using LINQ to query for it in the Manifest's Data elements, these have been updated to use the Manifest's cached Identity reference.
-* StageThunderstoreManifest has been updated to provide a clearer error when a dependency is missing its ManifestIdentity
-* Some minor code cleanup was done against commented out code and unnecessary usings
-* Fixed LocalThunderstoreSource not updating its listing when it already has Packages listed
-* Fixed PackageSource.Clear Failing to clear Packages successfully under some conditions
-* Fixed PackageManager failing to render correctly when a Package has invalid dependency information
+* Recently a ManifestIdentity data loss issue was re-discovered, this has not
+  yet been resolved but some pieces of code have been updated in response while
+  a proper resolution is pending
+* Some PipelineJobs and PathComponents referenced a Manifests's 
+  ManifestIdentity by using LINQ to query for it in the Manifest's Data 
+  elements, these have been updated to use the Manifest's cached Identity
+  reference.
+* StageThunderstoreManifest has been updated to provide a clearer error 
+when a dependency is missing its ManifestIdentity
+* Some minor code cleanup was done against commented out code and unnecessary
+  usings
+* Fixed LocalThunderstoreSource not updating its listing when it already has 
+  Packages listed
+* Fixed PackageSource.Clear Failing to clear Packages successfully under some
+  conditions
+* Fixed PackageManager failing to render correctly when a Package has invalid 
+  dependency information
 
 
 
@@ -168,17 +491,21 @@ After Completing these steups you're seting to use Steam Launching.
 
 ### New Feature: PathComponent: Registry Lookup
 
-the Registry Lookup path component has been added to support cases where values from the registry are needed to complete Pipeline efforts.
-For example, some games require steam to execute them, and you may need to do so using the Steam executable.  
-The installed Steam executable can easily be located by looking up the value in the registry, and this provides a path to that.
+the Registry Lookup path component has been added to support cases where values
+from the registry are needed to complete Pipeline efforts. For example, some 
+games require steam to execute them, and you may need to do so using the Steam 
+executable. The installed Steam executable can easily be located by looking up 
+the value in the registry, and this provides a path to that.
 
-#### Performance Improvements
+### Performance Improvements
 
-* ThunderstoreAPI has been updated to utilize gzip compression in order to greatly increase the speed of acquiring package listings.
+* ThunderstoreAPI has been updated to utilize gzip compression in order to 
+  greatly increase the speed of acquiring package listings.
 * Fixed MarkdownRenderer's LinkInlineRenderer leaking handles and memory
-* Fix an issue with SettingsWindowData and ThunderstoreSettings that would cause the settings window to have poor responsiveness
+* Fix an issue with SettingsWindowData and ThunderstoreSettings that would cause
+  the settings window to have poor responsiveness
 
-#### Bugs
+### Bugs
 
 * Fix a pageEntry.depth to be pageEntry.Depth in Documentation.cs for Unity 2019+
 * Fix a NullReferenceException that could show up on the Settings window sometimes
@@ -187,13 +514,13 @@ The installed Steam executable can easily be located by looking up the value in 
 
 ## 3.1.7
 
-## Fixes and Improvements
+### Fixes and Improvements
 
 * Improve the Package Manager search responsiveness
 
 ## 3.1.6
 
-## Fixes and Improvements
+### Fixes and Improvements
 
 * Improve package import process with better ProgressBar status messages
 * Install packages as final step of import process
@@ -201,8 +528,6 @@ The installed Steam executable can easily be located by looking up the value in 
 ## 3.1.1
 
 This update implements support for .NET 3.5 and includes a number of general improvements and fixes
-
-## New Features
 
 ### Optimization
 
@@ -260,11 +585,11 @@ To get started on a new mod project you only need to copy the Rebuild and Launch
 
 ## 3.0.0 
 
-#### Initial Setup
+### Initial Setup
 A Welcome window has been added to ThunderKit to help users set up their project.
 This window can be disabled by a toggle it provides.
 
-#### ThunderKit Installer - Removed
+### ThunderKit Installer - Removed
 The ThunderKit installer has been removed.  The installer caused many development issues and lost
 work during the development of ThunderKit. While this issue may not have affected end users, the 
 risk associated with the cost of lost work makes this feature dangerous to continue to maintain.
@@ -273,12 +598,12 @@ Unity 2018.1-2019.2 users will need to add the Thunderkit dependency to their pr
 
 For Unity 2019.3+ users can add ThunderKit using the Git url and use the [Install from Git](https://docs.unity3d.com/2019.3/Documentation/Manual/upm-ui-giturl.html) option in the Unity Package Manager.
 
-#### ThunderKit Settings
+### ThunderKit Settings
 
 ThunderKit Settings now get a dedicated window from ThunderKit and can be accessed from the main menu under [Tools/ThunderKit/Settings](menulink://Tools/ThunderKit/Settings).
 These settings will no longer show up in the Project Settings window.
 
-#### Debugging Features
+### Debugging Features
 
 ComposableObjects now support some debugging features to provide an easy access interface to implementations of Composable Object to report errors in the UI.
 
@@ -294,7 +619,7 @@ The PipelineJobs and Pipeline itself are setup to log exceptions to the Unity co
 
 ThunderKit Manifests do not utilize these debugging features as they are only Data Containers, however if worth while usage for debugging issues can be identified then support will be added.
 
-#### Dependencies
+### Dependencies
 
 Dependency Management in the 3.0.0 update has changed significantly.  Instead of Manifests installing and managing dependencies in its entirety, Manifests will now only 
 be responsible for containing dependency references.  
@@ -302,7 +627,7 @@ be responsible for containing dependency references.
 Instead a user will now install packages via the [Package Manager](menulink://Tools/ThunderKit/Packages), and then 
 add the Manifest from the Packages folder to the Manifest that requires the dependency
 
-#### Package Manager
+### Package Manager
 
 ThunderKit now includes a complete Package Manager, available from the main menu under [Tools/ThunderKit/Packages](menulink://Tools/ThunderKit/Packages)
 
@@ -316,7 +641,7 @@ Zip files in Local Thunderstore Sources must conform to Thunderstore's file nami
 
 This scheme is: `Author-ModName-Version.zip`
 
-#### Documentation
+### Documentation
 Documentation is a major issue for new users and as such ThunderKit now comes with integrated documentation to help onboard new users.
 The documentation available from the main menu under Tools/ThunderKit/Documentation
 

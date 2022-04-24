@@ -1,43 +1,45 @@
-using System;
 using System.Collections.Generic;
 using Markdig.Helpers;
 using Markdig.Syntax;
 using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using ThunderKit.Markdown.ObjectRenderers;
-using System.Text.RegularExpressions;
 using System.Text;
 #if !NET40
-using System.Runtime.CompilerServices;
 #endif
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
-using UnityEngine.Experimental.UIElements.StyleSheets;
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
+
+
 namespace ThunderKit.Markdown
 {
+    using HtmlAttributesExtensions = Markdig.Renderers.Html.HtmlAttributesExtensions;
+    using HtmlAttributes = Markdig.Renderers.Html.HtmlAttributes;
     using static Helpers.VisualElementFactory;
     public class UIElementRenderer : RendererBase
     {
-        private static readonly Regex LiteralSplitter = new Regex(@"([\S]+\b)\S?", RegexOptions.Singleline | RegexOptions.Compiled);
         private readonly Stack<VisualElement> stack = new Stack<VisualElement>(128);
 
         public UIElementRenderer() { }
-        public virtual void LoadDocument(VisualElement document)
+        public void LoadDocument(MarkdownElement document)
         {
             Document = document;
+            stack.Clear();
             stack.Push(document);
             LoadRenderers();
         }
 
-        public VisualElement Document { get; protected set; }
+        public MarkdownElement Document { get; protected set; }
         /// <inheritdoc/>
         public override object Render(MarkdownObject markdownObject)
         {
             Write(markdownObject);
+            if (stack != null)
+                while (stack.Count > 1)
+                    Pop();
             return Document;
         }
 
@@ -50,29 +52,45 @@ namespace ThunderKit.Markdown
             var popped = stack.Pop();
             stack.Peek().Add(popped);
         }
-        public void WriteElement(VisualElement element)
+
+        internal VisualElement Peek()
+        {
+            return stack.Peek();
+        }
+
+        public void WriteElement(VisualElement element, MarkdownObject mdo = null)
         {
             stack.Peek().Add(element);
+            if (mdo != null)
+                WriteAttributes(HtmlAttributesExtensions.TryGetAttributes(mdo), element);
         }
         public void WriteSplitText(ref StringSlice slice)
         {
             if (slice.IsEmpty)
                 return;
-
-            var match = LiteralSplitter.Match(slice.Text, slice.Start, slice.Length);
-            while (match.Success)
+            
+            var text = slice.ToString();
+            for (int i = 0; i < text.Length;)
             {
-                string value = match.Value;
+                int nextI = text.IndexOf(' ', i + 1);
+                if (nextI == i) break;
+
+                string value;
+                if (nextI == -1)
+                    value = text.Substring(i);
+                else
+                    value = text.Substring(i, nextI - i);
+
+                value = value.Trim(' ', '\r', '\n');
+                i = nextI;
+
                 if (!string.IsNullOrEmpty(value))
-                {
-                    var element = GetTextElement<Label>(value, "inline");
+                    WriteElement(GetTextElement<Label>(value, "inline"));
 
-                    match = match.NextMatch();
-
-                    WriteElement(element);
-                }
+                if (i == -1) break;
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -115,7 +133,6 @@ namespace ThunderKit.Markdown
             }
             else
             {
-                stack.Peek().AddToClassList("split-literals");
                 var leafInline = block.Inline.FirstChild;
                 while (leafInline != null)
                 {
@@ -131,8 +148,35 @@ namespace ThunderKit.Markdown
                             Write(leafInline);
                             break;
                     }
-                    leafInline = leafInline.NextSibling;
+                    leafInline = leafInline?.NextSibling;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Writes the specified <see cref="HtmlAttributes"/>.
+        /// </summary>
+        /// <param name="attributes">The attributes to render.</param>
+        /// <param name="classFilter">A class filter used to transform a class into another class at writing time</param>
+        /// <returns>This instance</returns>
+        public void WriteAttributes(HtmlAttributes attributes, VisualElement element)
+        {
+            if (attributes == null) return;
+
+            if (attributes.Id != null)
+            {
+                element.name = attributes.Id;
+            }
+
+            if (attributes.Classes != null && attributes.Classes.Count > 0)
+            {
+                foreach (var cls in attributes.Classes)
+                    element.EnableInClassList(cls, true);
+            }
+
+            if (attributes.Properties != null && attributes.Properties.Count > 0)
+            {
+                element.userData = attributes.Properties;
             }
         }
 
@@ -162,9 +206,6 @@ namespace ThunderKit.Markdown
             ObjectRenderers.Add(new LineBreakInlineRenderer());
             ObjectRenderers.Add(new LinkInlineRenderer());
             ObjectRenderers.Add(new LiteralInlineRenderer());
-
-            // Extension renderers
-            ObjectRenderers.Add(new TaskListRenderer());
         }
     }
 }

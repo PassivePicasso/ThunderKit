@@ -14,7 +14,7 @@ using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-using static ThunderKit.Core.ScriptEditorHelper;
+using static ThunderKit.Core.Utilities.ScriptEditorHelper;
 
 namespace ThunderKit.Core.Windows
 {

@@ -27,7 +27,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             var exe = executable.Resolve(pipeline, this);
             var pwd = workingDirectory.Resolve(pipeline, this);
-            var rorPsi = new ProcessStartInfo(exe)
+            var startInfo = new ProcessStartInfo(exe)
             {
                 WorkingDirectory = pwd,
                 Arguments = args.ToString(),
@@ -38,7 +38,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             pipeline.Log(LogLevel.Information, $"Executing {exe} in working directory {pwd}");
 
-            Process.Start(rorPsi);
+            Process.Start(startInfo);
             return Task.CompletedTask;
         }
     }

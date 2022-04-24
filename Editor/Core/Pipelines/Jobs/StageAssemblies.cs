@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Text;
 using System.Reflection;
+using ThunderKit.Core.Utilities;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {

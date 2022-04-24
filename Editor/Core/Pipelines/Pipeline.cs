@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Common.Logging;
 using ThunderKit.Core.Attributes;
+using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests;
+using ThunderKit.Core.Utilities;
 using ThunderKit.Core.Windows;
 using ThunderKit.Markdown.ObjectRenderers;
 using UnityEditor;
@@ -22,6 +24,8 @@ namespace ThunderKit.Core.Pipelines
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
         public static void Create() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
+        public bool QuickAccess;
+
         public Manifest manifest;
 
         public Manifest[] Manifests { get; private set; }
@@ -32,7 +36,8 @@ namespace ThunderKit.Core.Pipelines
         public string OutputRoot => "ThunderKit";
 
         public override string ElementTemplate =>
-@"using ThunderKit.Core.Pipelines;
+@"using System.Threading.Tasks;
+using ThunderKit.Core.Pipelines;
 
 namespace {0}
 {{
@@ -41,6 +46,7 @@ namespace {0}
     {{
         public override Task Execute(Pipeline pipeline)
         {{
+            return Task.CompletedTask;
         }}
     }}
 }}
@@ -137,8 +143,6 @@ namespace {0}
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
                     {
                         progressBar.Update($"Clearing PipelineJob state: {Job().name}");
-                        Job().Errored = false;
-                        Job().ErrorMessage = string.Empty;
                     }
 
                     for (JobIndex = 0; JobIndex < currentJobs.Length; JobIndex++)
@@ -178,7 +182,9 @@ namespace {0}
                         stackTrace = $"Stacktrace\r\n{exception.Message}\r\n\r\n" + sourceEx.Replace(stackTrace, $"in [${{path}}:${{linenumber}}]({ExceptionScheme}://${{path}}#${{linenumber}})");
                         Log(Error, $"{exception.Message}", stackTrace);
                     }
-                    PipelineLogWindow.ShowLog(Logger);
+                    var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+                    if (settings.ShowLogWindow)
+                        PipelineLogWindow.ShowLog(Logger);
                 }
             }
             finally
@@ -194,16 +200,6 @@ namespace {0}
             var contextualMessage = $"{pipelineLink} {message}";
             LogEntry entry = new LogEntry(logLevel, DateTime.Now, contextualMessage, context);
             Logger.Log(entry);
-        }
-
-        public void ClearErrors()
-        {
-            foreach (var job in Jobs)
-            {
-                job.Errored = false;
-                job.ErrorMessage = string.Empty;
-                job.ErrorStacktrace = string.Empty;
-            }
         }
 
         PipelineJob Job() => currentJobs[JobIndex];

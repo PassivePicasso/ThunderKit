@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ThunderKit.Core;
 using UnityEditor;
 using UnityEngine;
 using System.IO;
 using ThunderKit.Core.Windows;
+using ThunderKit.Core.Utilities;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -20,6 +20,11 @@ namespace ThunderKit.Core.Data
     {
         static Type[] thunderKitSettingsTypes = null;
 
+        public virtual string DisplayName => ObjectNames.NicifyVariableName(name);
+
+        protected Action OnChanged;
+
+        private Editor editor;
         [InitializeOnLoadMethod]
         static void Ensure()
         {
@@ -60,7 +65,8 @@ namespace ThunderKit.Core.Data
             Directory.CreateDirectory(Path.GetDirectoryName(assetPath));
             return ScriptableHelper.EnsureAsset<T>(assetPath, settings => settings.Initialize());
         }
-        static object GetOrCreateSettings(Type t)
+
+        public  static object GetOrCreateSettings(Type t)
         {
             if (!typeof(ThunderKitSetting).IsAssignableFrom(t)) throw new ArgumentException($"parameter t is typeof({t.Name}), t must be assignable to typeof({typeof(ThunderKitSetting).Name}");
             string assetPath = $"Assets/ThunderKitSettings/{t.Name}.asset";
@@ -74,7 +80,38 @@ namespace ThunderKit.Core.Data
 
         public virtual void Initialize() { }
         public virtual IEnumerable<string> Keywords() => Enumerable.Empty<string>();
-        public virtual void CreateSettingsUI(VisualElement rootElement) { }
+        public virtual void CreateSettingsUI(VisualElement rootElement)
+        {
+            if (!editor)
+                editor = Editor.CreateEditor(this);
+            var serializedObject = new SerializedObject(this);
+            var imgui = new IMGUIContainer(() =>
+            {
+                EditorGUIUtility.labelWidth = 250;
+                EditorGUI.BeginChangeCheck();
+                DrawPropertiesExcluding(serializedObject, "m_Script");
+                if(EditorGUI.EndChangeCheck())
+                {
+                    serializedObject.ApplyModifiedProperties();
+                    OnChanged?.Invoke();
+                }
+            });
+            imgui.AddToClassList("m4");
+            rootElement.Add(imgui);
+        }
+        static void DrawPropertiesExcluding(SerializedObject obj, params string[] propertyToExclude)
+        {
+            SerializedProperty iterator = obj.GetIterator();
+            bool enterChildren = true;
+            while (iterator.NextVisible(enterChildren))
+            {
+                enterChildren = false;
+                if (!propertyToExclude.Contains(iterator.name))
+                {
+                    EditorGUILayout.PropertyField(iterator, true);
+                }
+            }
+        }
         protected static VisualElement CreateStandardField(string fieldPath)
         {
             var container = new VisualElement();

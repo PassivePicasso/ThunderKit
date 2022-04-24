@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement class="grow setting-section">
+        <ui:VisualElement class="settings-header">
+            <ui:VisualElement name="icon" />
+            <ui:Label text="ThunderKit Settings" display-tooltip-when-elided="true" name="title" />
+        </ui:VisualElement>
+        <ui:VisualElement name="properties" />
+    </ui:VisualElement>
+</ui:UXML>

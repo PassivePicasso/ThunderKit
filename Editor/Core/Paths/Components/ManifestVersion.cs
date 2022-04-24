@@ -20,16 +20,10 @@ namespace ThunderKit.Core.Paths.Components
 
                 if (pipeline.Manifest == null)
                 {
-                    Errored = true;
-                    ErrorMessage = $"Manifest not found";
-                    ErrorStacktrace = nre.StackTrace;
                     throw new NullReferenceException($"Error Invoking PathComponent: {pathReferenceLink}, Manifest not found", nre);
                 }
                 else if (pipeline.Manifest.Identity == null)
                 {
-                    Errored = true;
-                    ErrorMessage = $"ManifestIdentity not found";
-                    ErrorStacktrace = nre.StackTrace;
                     throw new NullReferenceException($"Error Invoking PathComponent: {pathReferenceLink}, ManifestIdentity not found", nre);
                 }
                 throw;

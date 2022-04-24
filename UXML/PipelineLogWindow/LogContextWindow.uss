@@ -1,0 +1,113 @@
+﻿MarkdownElement {
+	flex-grow: 1;
+	border-color: rgba(0,0,0,0.25);
+	background-color: rgba(0,0,0,.25);
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	padding-left: 4px;
+	padding-right: 14px;
+	margin-left: 6px;
+	margin-right: 6px;
+	margin-top: 4px;
+}
+#log-inspector {
+	flex-grow: 1;
+	flex-direction: row;
+}
+#content-section {
+	flex-grow: 1;
+}
+#stacktrace-scroll-view{
+	flex-grow: 1;
+}
+.tab-button {
+	background-image: none;
+	background-color: rgba(128,128,128,1);
+	border-color: rgba(0,0,0,0.5);
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 10px;
+	margin-left: 0px;
+	margin-top: -7px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	padding-top: 7px;
+	height: 24px;
+	flex-grow: 1;
+	width: 230px;
+}
+.tab-button:disabled {
+	opacity: 1;
+}
+.tab-button>#Checkmark{
+	visibility: hidden;
+	width: 0px;
+	height: 0px;
+}
+.tab-button:hover {
+	background-color: rgba(96,96,96,1);
+}
+.tab-button:hover Label {
+	color: rgba(192,192,192,1);
+}
+.tab-button:hover Label:disabled {
+	color: rgba(192,192,192,1);
+}
+.tab-button:checked {
+	background-color: rgba(64,64,192,1);
+	background-image: none;
+}
+.tab-button:checked Label:disabled {
+	color: rgba(192,192,192,1);
+	opacity: 1;
+}
+
+#tab-section {
+	flex-direction: column-reverse;
+	flex-grow: 1;
+	white-space: nowrap;
+	background-color: rgba(255,255,255,0.05);
+	border-bottom-width: 0px;
+	border-color: rgba(0,0,0,0.5);
+	font-size: 12px;
+	width: 234px;
+}
+#tab-section .content-view {
+	flex-direction: column-reverse;
+	flex-grow: 1;
+}
+#tab-section #unity-content-container {
+	flex-direction: column-reverse;
+}
+
+#tab-context Label
+{
+	color: black;
+}
+
+.grow {
+	flex-grow: 1;
+}
+#log-entry:selected.error {
+	background-color: rgba(255,0,0,0.05);
+}
+#log-entry:selected.warning {
+	background-color: rgba(255,255,0,0.05);
+}
+#log-entry:selected.information {
+	background-color: rgba(255,255,255,0.25);
+}
+
+.active {
+	background-color: rgba(0,0,0,0.25);
+}
+.active:hover {
+	background-color: rgba(0,0,0,0.25);
+}

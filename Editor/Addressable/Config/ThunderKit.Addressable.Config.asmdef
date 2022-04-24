@@ -1,0 +1,18 @@
+{
+    "name": "ThunderKit.Addressable.Config",
+    "references": [
+        "ThunderKit.Core",
+        "ThunderKit.Common"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
