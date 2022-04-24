@@ -31,13 +31,17 @@ namespace ThunderKit.Core.Config
             var files = Directory.EnumerateFiles(fullPackagePath);
             foreach (var file in files)
             {
-                File.SetLastWriteTime(file, DateTime.Now);
-                File.SetCreationTime(file, DateTime.Now);
-                File.SetLastAccessTime(file, DateTime.Now);
+                try
+                {
+                    File.SetLastWriteTime(file, DateTime.Now);
+                    File.SetCreationTime(file, DateTime.Now);
+                    File.SetLastAccessTime(file, DateTime.Now);
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError(e);
+                }
             }
-            File.SetLastWriteTime(fullPackagePath, DateTime.Now);
-            File.SetCreationTime(fullPackagePath, DateTime.Now);
-            File.SetLastAccessTime(fullPackagePath, DateTime.Now);
 
             PackageHelper.ResolvePackages();
         }
