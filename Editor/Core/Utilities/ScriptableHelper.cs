@@ -112,8 +112,8 @@ namespace ThunderKit.Core.Utilities
             if (settings == null)
             {
                 settings = ScriptableObject.CreateInstance<T>();
-                initializer?.Invoke(settings);
                 AssetDatabase.CreateAsset(settings, assetPath);
+                initializer?.Invoke(settings);
                 AssetDatabase.SaveAssets();
             }
             return settings;
@@ -134,8 +134,8 @@ namespace ThunderKit.Core.Utilities
             if (settings == null)
             {
                 settings = ScriptableObject.CreateInstance(t);
-                initializer?.Invoke(settings);
                 AssetDatabase.CreateAsset(settings, assetPath);
+                initializer?.Invoke(settings);
                 AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(settings), ImportAssetOptions.ForceUpdate);
             }
             return settings;
