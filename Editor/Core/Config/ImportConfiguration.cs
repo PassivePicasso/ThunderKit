@@ -165,6 +165,8 @@ namespace ThunderKit.Core.Data
 
         public void ImportGame()
         {
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+
             var thunderKitSettings = GetOrCreateSettings<ThunderKitSettings>();
             if (ConfigurationIndex >= (ConfigurationExecutors?.Length ?? 0) || ConfigurationIndex < 0) return;
 
@@ -179,7 +181,7 @@ namespace ThunderKit.Core.Data
             var executor = ConfigurationExecutors[ConfigurationIndex];
             try
             {
-                if (executor.enabled) executor.Execute();
+                if (executor && executor.enabled) executor.Execute();
             }
             catch (Exception e)
             {

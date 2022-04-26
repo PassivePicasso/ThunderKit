@@ -66,12 +66,16 @@ namespace ThunderKit.Core.Data
             return ScriptableHelper.EnsureAsset<T>(assetPath, settings => settings.Initialize());
         }
 
-        public  static object GetOrCreateSettings(Type t)
+        public  static object GetOrCreateSettings(Type settingType)
         {
-            if (!typeof(ThunderKitSetting).IsAssignableFrom(t)) throw new ArgumentException($"parameter t is typeof({t.Name}), t must be assignable to typeof({typeof(ThunderKitSetting).Name}");
-            string assetPath = $"Assets/ThunderKitSettings/{t.Name}.asset";
+            var tksType = typeof(ThunderKitSetting);
+            if (!tksType.IsAssignableFrom(settingType)) 
+                throw new ArgumentException($"parameter t is typeof({settingType.Name}), t must be assignable to typeof({tksType.Name}");
+
+            string assetPath = $"Assets/ThunderKitSettings/{settingType.Name}.asset";
+
             Directory.CreateDirectory(Path.GetDirectoryName(assetPath));
-            return ScriptableHelper.EnsureAsset(assetPath, t, obj =>
+            return ScriptableHelper.EnsureAsset(assetPath, settingType, obj =>
             {
                 var setting = obj as ThunderKitSetting;
                 setting.Initialize();
