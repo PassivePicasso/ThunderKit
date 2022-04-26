@@ -1,3 +1,16 @@
+## 5.0.3
+Fix missing semi-colon in MarkdownContextualMenuManipulator for Unity 2018
+
+## 5.0.2
+
+Fix AddressableGraphicsImport failing to load the AddressableGraphicsSettings due to a timing issue with compilation.
+
+Solution ensures that compilation and updating is finished before executing the next step in the import process.
+Additionally setting the TK_ADDRESSABLE scripting define is not conducted synchronously
+
+## 5.0.1
+* Fix compatibility issue with Unity 2019+
+
 ## 5.0.0
 
 ### A Note about Installing ThunderKit
