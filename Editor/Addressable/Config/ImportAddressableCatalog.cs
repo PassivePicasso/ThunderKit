@@ -4,7 +4,6 @@ using ThunderKit.Common;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
-using UnityEditor;
 using UnityEngine;
 
 namespace ThunderKit.Addressable.Config
@@ -18,15 +17,8 @@ namespace ThunderKit.Addressable.Config
         {
             if (ImportAddressableData(ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>()))
             {
-                EditorApplication.update += UpdateDefines;
+                ScriptingSymbolManager.AddScriptingDefine("TK_ADDRESSABLE");
             }
-        }
-
-        private static void UpdateDefines()
-        {
-            if (EditorApplication.isUpdating) return;
-            EditorApplication.update -= UpdateDefines;
-            ScriptingSymbolManager.AddScriptingDefine("TK_ADDRESSABLE");
         }
 
         private static bool ImportAddressableData(ThunderKitSettings settings)
@@ -43,10 +35,6 @@ namespace ThunderKit.Addressable.Config
                 var destinationSettings = Combine(destinationFolder, "settings.json");
                 if (File.Exists(destinationCatalog)) File.Delete(destinationCatalog);
                 if (File.Exists(destinationSettings)) File.Delete(destinationSettings);
-
-                //var catalog = File.ReadAllText(settings.AddressableAssetsCatalog);
-                //catalog = catalog.Replace(AddressableRuntimePath, ThunderKitRuntimePath);
-                //File.WriteAllText(destinationCatalog, catalog);
 
                 File.Copy(settings.AddressableAssetsCatalog, destinationCatalog);
                 File.Copy(settings.AddressableAssetsSettings, destinationSettings);

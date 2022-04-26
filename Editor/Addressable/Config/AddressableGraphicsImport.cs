@@ -17,6 +17,9 @@ namespace ThunderKit.Addressable.Tools
         public sealed override void Execute()
         {
             var settingsType = Type.GetType("ThunderKit.Addressable.Tools.AddressableGraphicsSettings, ThunderKit.Addressable.Tools, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            if (settingsType == null)
+                throw new ArgumentException("ThunderKit.Addressable.Tools.AddressableGraphicsSettings not found");
+
             var settings = ThunderKitSetting.GetOrCreateSettings(settingsType) as ThunderKitSetting;
             var settingsSo = new SerializedObject(settings);
 
