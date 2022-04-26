@@ -40,7 +40,7 @@ namespace ThunderKit.Core.Documentation
                 evt.menu.AppendAction("Select Source", selectAction);
 #else
                 Action<DropdownMenu.MenuAction> editAction = dma => EditorSource(markdownElement);
-                Action<DropdownMenu.MenuAction> selectAction = dma => SelectSource(markdownElement)
+                Action<DropdownMenu.MenuAction> selectAction = dma => SelectSource(markdownElement);
                 Func<DropdownMenu.MenuAction, DropdownMenu.MenuAction.StatusFlags> normalStatus = status => DropdownMenu.MenuAction.StatusFlags.Normal;
                 evt.menu.AppendAction("Edit Source", editAction, normalStatus);
                 evt.menu.AppendAction("Select Source", selectAction, normalStatus);
