@@ -212,6 +212,8 @@ namespace ThunderKit.Core.Windows
                 .Select(kvp => kvp.Key.Substring(kvp.Key.LastIndexOf('/') + 1))
                 .ToArray();
 
+            packages = packages.Where(pkg => pkg).ToList();
+
             var hasTags = enabledTags.Any() ? packages.Where(pkg => enabledTags.All(tag => ArrayUtility.Contains(pkg.Tags, tag))) : packages;
             if (!hasTags.Any())
                 return hasTags.ToList();
