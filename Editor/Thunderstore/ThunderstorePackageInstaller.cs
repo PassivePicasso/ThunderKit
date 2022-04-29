@@ -39,7 +39,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 if (package.Installed)
                 {
                     Debug.LogWarning($"Not installing package with DependencyId of {DependencyId} because it's already installed");
-                    return false;
+                    return true;
                 }
 
                 Debug.Log($"Installing latest version of package {DependencyId});");
