@@ -14,7 +14,7 @@ namespace ThunderKit.Core.Config
 
         public override string Description => "Creates the package.json file for the imported game so it can be recognized and loaded by the Unity PackageManager.";
 
-        public override void Execute()
+        public override bool Execute()
         {
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
@@ -44,6 +44,7 @@ namespace ThunderKit.Core.Config
             }
 
             PackageHelper.ResolvePackages();
+            return true;
         }
     }
 }

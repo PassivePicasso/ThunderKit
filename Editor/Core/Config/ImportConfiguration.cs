@@ -181,15 +181,23 @@ namespace ThunderKit.Core.Data
             var executor = ConfigurationExecutors[ConfigurationIndex];
             try
             {
-                if (executor && executor.enabled) executor.Execute();
+                if (executor && executor.enabled)
+                {
+                    Debug.Log($"Executing: {executor.name}");
+                    if (executor.Execute())
+                    {
+                        ConfigurationIndex++;
+                    }
+                }
+                else
+                    ConfigurationIndex++;
             }
             catch (Exception e)
             {
                 ConfigurationIndex = ConfigurationExecutors.Length + 1;
-                Debug.LogError(e);
+                Debug.LogError($"Error during Import: {e}");
                 return;
             }
-            ConfigurationIndex++;
             AssetDatabase.Refresh();
         }
 

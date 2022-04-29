@@ -3,6 +3,7 @@ using ThunderKit.Common;
 using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
 using UnityEditor;
+using UnityEngine;
 
 namespace ThunderKit.Addressable.Tools
 {
@@ -14,11 +15,14 @@ namespace ThunderKit.Addressable.Tools
         public virtual string CustomDeferredScreenspaceShadows => null;
         public virtual string CustomDeferredShading => null;
 
-        public sealed override void Execute()
+        public sealed override bool Execute()
         {
             var settingsType = Type.GetType("ThunderKit.Addressable.Tools.AddressableGraphicsSettings, ThunderKit.Addressable.Tools, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             if (settingsType == null)
-                throw new ArgumentException("ThunderKit.Addressable.Tools.AddressableGraphicsSettings not found");
+            {
+                Debug.Log("AddressableGraphicsSettings not loaded, skipping");
+                return true;
+            }
 
             var settings = ThunderKitSetting.GetOrCreateSettings(settingsType) as ThunderKitSetting;
             var settingsSo = new SerializedObject(settings);
@@ -32,6 +36,7 @@ namespace ThunderKit.Addressable.Tools
             customDeferredShading.stringValue = CustomDeferredShading;
 
             settingsSo.ApplyModifiedPropertiesWithoutUndo();
+            return true;
         }
     }
 }

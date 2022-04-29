@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if TK_ADDRESSABLE
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -104,3 +105,4 @@ namespace ThunderKit.Addressable.Tools
 
     }
 }
+#endif
