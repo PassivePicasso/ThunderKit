@@ -13,12 +13,13 @@ namespace ThunderKit.Addressable.Config
     {
         public override int Priority => Constants.Priority.AddressableCatalog;
 
-        public override void Execute()
+        public override bool Execute()
         {
             if (ImportAddressableData(ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>()))
             {
                 ScriptingSymbolManager.AddScriptingDefine("TK_ADDRESSABLE");
             }
+            return true;
         }
 
         private static bool ImportAddressableData(ThunderKitSettings settings)

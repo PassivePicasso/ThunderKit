@@ -9,7 +9,7 @@ namespace ThunderKit.Core.Config.Common
     {
         public abstract string PackageIdentifier { get; }
 
-        public sealed override void Execute()
+        public sealed override bool Execute()
         {
             Request result = Client.Add(PackageIdentifier);
             var escape = false;
@@ -20,6 +20,7 @@ namespace ThunderKit.Core.Config.Common
             Debug.Log($"Installed {PackageIdentifier}");
 
             PackageHelper.ResolvePackages();
+            return true;
         }
     }
 }

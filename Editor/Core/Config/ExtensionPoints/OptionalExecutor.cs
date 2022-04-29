@@ -15,7 +15,7 @@ namespace ThunderKit.Core.Config
         /// <summary>
         /// Executed after the last files and data have been imported into the project, but before 
         /// </summary>
-        public abstract void Execute();
+        public abstract bool Execute();
 
         public bool enabled = true;
 

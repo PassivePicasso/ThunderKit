@@ -79,7 +79,7 @@ namespace ThunderKit.Core.Config
         public GuidMode OldGuidGenerationMode = GuidMode.Original;
         public GuidMode GuidGenerationMode = GuidMode.Original;
 
-        public override void Execute()
+        public override bool Execute()
         {
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
@@ -127,6 +127,7 @@ namespace ThunderKit.Core.Config
                 EditorApplication.UnlockReloadAssemblies();
                 AssetDatabase.StopAssetEditing();
             }
+            return true;
         }
 
         private static void AssertDestinations(string packageName)

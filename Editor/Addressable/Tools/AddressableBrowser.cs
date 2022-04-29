@@ -41,6 +41,8 @@ namespace ThunderKit.Addressable.Tools
         private const string LoadSceneButton = "addressable-load-scene-button";
         List<string> CatalogDirectories;
         Dictionary<string, List<string>> DirectoryContents;
+        HashSet<string> extensions;
+        Dictionary<string, List<string>> KeysByExtension;
         private ListView directory;
         private ListView directoryContent;
         private Texture sceneIcon;
@@ -58,9 +60,10 @@ namespace ThunderKit.Addressable.Tools
             searchBox = rootVisualElement.Q<TextField>("search-input");
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
-            buildIndexButton = rootVisualElement.Q<Button>("build-addressable-index-button");
 
-            buildIndexButton.clickable = new BuildIndexClickable();
+            //buildIndexButton = rootVisualElement.Q<Button>("build-addressable-index-button");
+
+            //buildIndexButton.clickable = new BuildIndexClickable();
 
             directory.makeItem = DirectoryLabel;
             directoryContent.makeItem = AssetLabel;

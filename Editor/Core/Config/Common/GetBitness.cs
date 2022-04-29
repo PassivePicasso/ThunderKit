@@ -10,7 +10,7 @@ namespace ThunderKit.Core.Config.Common
     {
         public override int Priority => Constants.Priority.GetBitness;
 
-        public override void Execute()
+        public override bool Execute()
         {
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             if (Application.platform != RuntimePlatform.WindowsEditor)
@@ -29,11 +29,12 @@ namespace ThunderKit.Core.Config.Common
                     if (cpuType == 0x8664)
                     {
                         settings.Is64Bit = true;
-                        return;
+                        return true;
                     }
                 }
             }
             settings.Is64Bit = false;
+            return true;
         }
     }
 }

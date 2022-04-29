@@ -16,9 +16,9 @@ namespace ThunderKit.Core.Config.Common
         public override string Description => "Import ProjectSettings from games with globalgamemanagers";
         public int IncludedSettings;
 
-        public override void Execute()
+        public override bool Execute()
         {
-            if (IncludedSettings == 0) return;
+            if (IncludedSettings == 0) return true;
 
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var classDataPath = Path.GetFullPath(Path.Combine(Constants.ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
@@ -55,6 +55,7 @@ namespace ThunderKit.Core.Config.Common
             {
                 var x = escape;
             }
+            return true;
         }
     }
 }

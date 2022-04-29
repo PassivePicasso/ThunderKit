@@ -17,9 +17,7 @@
         "Unity.Addressables.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": [
-        "TK_ADDRESSABLE"
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

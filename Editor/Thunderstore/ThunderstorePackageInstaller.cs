@@ -12,7 +12,7 @@ namespace ThunderKit.Integrations.Thunderstore
         public abstract string DependencyId { get; }
         public abstract string SourcePath { get; }
 
-        public sealed override void Execute()
+        public sealed override bool Execute()
         {
             try
             {
@@ -21,25 +21,25 @@ namespace ThunderKit.Integrations.Thunderstore
                 if (packageSource == null)
                 {
                     Debug.LogWarning($"Could not find PackageSource at {SourcePath}");
-                    return;
+                    return false;
                 }
                 if (packageSource.Packages == null)
                 {
                     Debug.LogWarning($"PackageSource at {SourcePath} has no packages");
-                    return;
+                    return false;
                 }
 
                 var package = packageSource.Packages.FirstOrDefault(pkg => pkg.DependencyId == DependencyId);
                 if (package == null)
                 {
                     Debug.LogWarning($"Could not find package with DependencyId of {DependencyId}");
-                    return;
+                    return false;
                 }
 
                 if (package.Installed)
                 {
                     Debug.LogWarning($"Not installing package with DependencyId of {DependencyId} because it's already installed");
-                    return;
+                    return false;
                 }
 
                 Debug.Log($"Installing latest version of package {DependencyId});");
@@ -52,12 +52,14 @@ namespace ThunderKit.Integrations.Thunderstore
             catch (Exception ex)
             {
                 Debug.LogError(ex);
+                return false;
             }
             finally
             {
                 EditorApplication.UnlockReloadAssemblies();
                 PackageHelper.ResolvePackages();
             }
+            return true;
         }
     }
 }
