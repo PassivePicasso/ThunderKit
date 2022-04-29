@@ -1,3 +1,7 @@
+## 5.0.5
+
+Fix ThunderstorePackageInstaller getting stuck in a loop when its target package is already installed
+
 ## 5.0.4
 
 Note: this is technically a breaking change, but I'm not going to update the project to version 6.0.0, because I'm evil.
