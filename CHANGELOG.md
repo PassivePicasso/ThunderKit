@@ -1,4 +1,12 @@
+## 5.0.4
+
+Note: this is technically a breaking change, but I'm not going to update the project to version 6.0.0, because I'm evil.
+
+Update OptionalExectors.Execute to return a bool indicating whether or not the executor has completed.
+This was necessary to ensure stable imports so Executors can spread their actions out over multiple frames as well as stall until the environment state is ready.
+
 ## 5.0.3
+
 Fix missing semi-colon in MarkdownContextualMenuManipulator for Unity 2018
 
 ## 5.0.2
