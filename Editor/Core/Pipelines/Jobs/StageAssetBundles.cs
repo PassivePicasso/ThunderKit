@@ -156,6 +156,7 @@ namespace ThunderKit.Pipelines.Jobs
                     }
                 }
                 pipeline.ManifestIndex = -1;
+                CompilationPipeline.RequestScriptCompilation();
             }
 
             return Task.CompletedTask;
