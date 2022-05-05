@@ -1,6 +1,4 @@
-## _**ThunderKit Crash Course**_
-
-If you like ThunderKit consider donating through
+## _**ThunderKit Crash Course**_If you like ThunderKit consider donating through
 [GitHub Sponsors](https://github.com/sponsors/PassivePicasso)
 
 Join the [ThunderKit Discord Server](https://discord.gg/Xzf9qFj6WA) 
