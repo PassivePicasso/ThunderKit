@@ -50,7 +50,6 @@ xsi:schemaLocation="
           <engine:VisualElement name="tkpm-package-tags" class="horizontal-stack" />
         </engine:VisualElement>
 
-            <ui:Label text="Supporting the right for women to have bodily autonomy"/>
         
       </engine:VisualElement>
       
