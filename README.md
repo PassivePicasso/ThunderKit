@@ -1,5 +1,7 @@
 ## _**ThunderKit Crash Course**_
 
+ThunderKit supports the right for women to have bodily automany.
+
 If you like ThunderKit consider donating through
 [GitHub Sponsors](https://github.com/sponsors/PassivePicasso)
 
