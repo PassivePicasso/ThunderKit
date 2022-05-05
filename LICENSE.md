@@ -31,4 +31,4 @@ A "contributor" is any person that distributes its contribution under this licen
 
 (E) The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.
    
-
+(F) Modifications cannot be made to ThunderKit or any derivative work that would remove, hide, or otherwise obscure political statements expressed through the operation or display of ThunderKit by James LaPenn. 
