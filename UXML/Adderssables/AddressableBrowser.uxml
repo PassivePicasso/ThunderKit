@@ -14,7 +14,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 binding-path="searchInput" 
                 class="thunderkit-field-input"/>
             </ui:VisualElement>
-            <ui:Button name="build-addressable-index-button" text="Build Search Index"/>
+            <ui:Label text="Supporting the right for women to have bodily autonomy"/>
+            <!--<ui:Button name="build-addressable-index-button" text="Build Search Index"/>-->
         </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
             <ui:VisualElement style="background-color: rgba(0, 0, 0, 0.25); margin-right: 4px; flex-grow: 0.5;">

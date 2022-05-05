@@ -20,6 +20,8 @@ xsi:schemaLocation="
                 <ui:Label text="Created:" />
                 <ui:Label name="created-date-label" />
             </ui:VisualElement>
+            <ui:Label text="Supporting the right for women to have bodily autonomy"/>
+
         </ui:VisualElement>
         <ui:ListView focusable="true" name="logentry-list-view" item-height="40" style="flex-grow: 1;" />
     </ui:VisualElement>
