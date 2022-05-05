@@ -87,7 +87,7 @@ namespace ThunderKit.Core.Windows
 
                 var title = settingSection.Q<Label>("title");
                 if (title != null)
-                    title.text = setting.DisplayName;
+                    title.text = $"{setting.DisplayName}";
                 var properties = settingSection.Q<VisualElement>("properties");
                 try
                 {
@@ -103,6 +103,5 @@ namespace ThunderKit.Core.Windows
                 settingsArea.Add(settingSection);
             }
         }
-
     }
 }
