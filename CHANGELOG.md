@@ -1,3 +1,8 @@
+## 5.1.1
+
+* Fix/Update change log
+* Fix package version number
+
 ## 5.1.0
 
 * Add Regular Expressions support to Addressable Browser
