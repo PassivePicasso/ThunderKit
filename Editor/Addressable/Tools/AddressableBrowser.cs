@@ -50,7 +50,9 @@ namespace ThunderKit.Addressable.Tools
         private Texture sceneIcon;
         private TextField searchBox;
         private EnumFlagsField regexOptionsField;
+        private Toggle useRegexToggle;
 
+        public bool useRegex;
         public bool caseSensitive;
         public string searchInput;
         public RegexOptions regexOptions;
@@ -66,7 +68,7 @@ namespace ThunderKit.Addressable.Tools
             regexOptionsField = rootVisualElement.Q<EnumFlagsField>("regex-options");
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
-
+            useRegexToggle = rootVisualElement.Q<Toggle>("use-regex-toggle");
             //buildIndexButton = rootVisualElement.Q<Button>("build-addressable-index-button");
 
             //buildIndexButton.clickable = new BuildIndexClickable();
@@ -99,26 +101,27 @@ namespace ThunderKit.Addressable.Tools
 #if UNITY_2019_1_OR_NEWER
             searchBox.RegisterValueChangedCallback(OnSearchChanged);
             regexOptionsField.RegisterValueChangedCallback(OnRegexOptionsChanged);
+            useRegexToggle.RegisterValueChangedCallback(OnUseRegexChanged);
 #else
             searchBox.OnValueChanged(OnSearchChanged);
             regexOptionsField.OnValueChanged(OnRegexOptionsChanged);
 #endif
+            RefreshSearch();
         }
 
-        private void OnRegexOptionsChanged(ChangeEvent<System.Enum> evt)
+        private void OnUseRegexChanged(ChangeEvent<bool> evt) => RefreshSearch();
+        private void OnRegexOptionsChanged(ChangeEvent<System.Enum> evt) => RefreshSearch();
+        private void OnSearchChanged(ChangeEvent<string> evt) => RefreshSearch();
+        private void RefreshSearch()
         {
-            regex = new Regex(searchInput, regexOptions);
-            EditorApplication.update += Refresh;
-        }
-
-        private void OnSearchChanged(ChangeEvent<string> evt)
-        {
-            bool noFilter = string.IsNullOrEmpty(evt.newValue);
+            bool noFilter = string.IsNullOrEmpty(searchInput);
             if (noFilter)
                 directory.itemsSource = CatalogDirectories;
             else
             {
-                regex = new Regex(searchInput, regexOptions);
+                var searchValue = searchInput;
+                if (!useRegex) searchValue = Regex.Escape(searchValue);
+                regex = new Regex(searchValue, regexOptions);
                 EditorApplication.update += Refresh;
             }
         }
