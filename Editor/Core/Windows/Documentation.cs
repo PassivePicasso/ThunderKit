@@ -272,7 +272,11 @@ namespace ThunderKit.Core.Windows
                 {
                     var newSelectedPage = pageIndex[newSelectedIndex];
                     UpdateSelectedPage(selectedPage, newSelectedPage);
+#if UNITY_2021_1_OR_NEWER
+                    if(indexScroller.verticalScrollerVisibility != ScrollerVisibility.Hidden)
+#else
                     if (indexScroller.showVertical)
+#endif
                     {
                         var dist = (float)(newSelectedIndex + modifier) / pageIndex.Count;
                         float highValue = indexScroller.verticalScroller.highValue * 1.25f;
