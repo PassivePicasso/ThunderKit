@@ -10,9 +10,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
             <ui:VisualElement class="search-toolbar">
                 <ui:Label text="Search" class="thunderkit-header" />
-                <ui:TextField name="search-input"  
-                binding-path="searchInput" 
-                class="thunderkit-field-input"/>
+                <ui:TextField name="search-input" binding-path="searchInput" class="thunderkit-field-input"/> 
+                <uie:EnumFlagsField binding-path="regexOptions" name="regex-options" class="thunderkit-field-input regexFlags"
+                                    type="System.Text.RegularExpressions.RegexOptions, mscorlib, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"/>
             </ui:VisualElement>
             <!--<ui:Button name="build-addressable-index-button" text="Build Search Index"/>-->
         </ui:VisualElement>
