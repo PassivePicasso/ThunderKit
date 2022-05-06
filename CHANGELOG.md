@@ -1,3 +1,13 @@
+## 5.1.0
+
+* Add Regular Expressions support to Addressable Browser
+* Fix some styling issues
+
+## 5.0.6 - 5.0.8
+
+* Fix StageAssetBundles causing addressables to become unloaded
+* Add condition to license
+
 ## 5.0.5
 
 Fix ThunderstorePackageInstaller getting stuck in a loop when its target package is already installed
