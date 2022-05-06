@@ -2,6 +2,8 @@
 
 * Add Regular Expressions support to Addressable Browser
 * Improve some styling
+* Add documentation for Import Extensions
+* Add tutorial for using the Addressable Browser
 
 ## 5.0.6 - 5.0.8
 
