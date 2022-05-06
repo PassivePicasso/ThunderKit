@@ -1,7 +1,7 @@
 ## 5.1.0
 
 * Add Regular Expressions support to Addressable Browser
-* Fix some styling issues
+* Improve some styling
 
 ## 5.0.6 - 5.0.8
 
