@@ -13,8 +13,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 <ui:TextField name="search-input" binding-path="searchInput" class="thunderkit-field-input"/> 
                 <uie:EnumFlagsField binding-path="regexOptions" name="regex-options" class="thunderkit-field-input regexFlags"
                                     type="System.Text.RegularExpressions.RegexOptions, mscorlib, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+                <ui:Label text="Supporting the right for women to have bodily autonomy" class="morality"/>
             </ui:VisualElement>
-            <ui:Label text="Supporting the right for women to have bodily autonomy"/>
             <!--<ui:Button name="build-addressable-index-button" text="Build Search Index"/>-->
         </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; flex-grow: 1;">

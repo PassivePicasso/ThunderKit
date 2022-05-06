@@ -87,7 +87,7 @@ namespace ThunderKit.Core.Windows
 
                 var title = settingSection.Q<Label>("title");
                 if (title != null)
-                    title.text = $"{setting.DisplayName} - Supporting the right for women to have bodily autonomy";
+                    title.text = $"{setting.DisplayName}";
                 var properties = settingSection.Q<VisualElement>("properties");
                 try
                 {

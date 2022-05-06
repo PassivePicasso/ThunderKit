@@ -309,3 +309,13 @@
 .error Label {
     color: rgba(255, 70, 0, 1);
 }
+
+Label.morality,
+.morality
+{
+    position: absolute;
+    font-size: 10px;
+    right: 2;
+    top: 2;
+    color: rgba(128, 128, 128, 0.5);
+}

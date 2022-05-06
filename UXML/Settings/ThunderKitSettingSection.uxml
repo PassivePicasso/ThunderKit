@@ -3,6 +3,7 @@
         <ui:VisualElement class="settings-header">
             <ui:VisualElement name="icon" />
             <ui:Label text="ThunderKit Settings" display-tooltip-when-elided="true" name="title" />
+            <ui:Label text="Supporting the right for women to have bodily autonomy" class="morality"/>
         </ui:VisualElement>
         <ui:VisualElement name="properties" />
     </ui:VisualElement>
