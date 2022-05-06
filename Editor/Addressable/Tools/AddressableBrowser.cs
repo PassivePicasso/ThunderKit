@@ -8,8 +8,10 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ThunderKit.Core.Windows;
+using System.Text.RegularExpressions;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 #else
 using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
@@ -47,17 +49,21 @@ namespace ThunderKit.Addressable.Tools
         private ListView directoryContent;
         private Texture sceneIcon;
         private TextField searchBox;
-        private Button buildIndexButton;
+        private EnumFlagsField regexOptionsField;
 
         public bool caseSensitive;
         public string searchInput;
+        public RegexOptions regexOptions;
+        private Regex regex;
 
         public override void OnEnable()
         {
             base.OnEnable();
+            var r = new Regex("()");
             sceneIcon = EditorGUIUtility.IconContent("d_UnityLogo").image;
 
             searchBox = rootVisualElement.Q<TextField>("search-input");
+            regexOptionsField = rootVisualElement.Q<EnumFlagsField>("regex-options");
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
 
@@ -78,7 +84,7 @@ namespace ThunderKit.Addressable.Tools
 
             var allKeys = Addressables.ResourceLocators.SelectMany(locator => locator.Keys).Select(key => key.ToString());
 
-            var allGroups = allKeys.GroupBy(key => Path.GetDirectoryName(key));
+            var allGroups = allKeys.GroupBy(key => Path.GetDirectoryName(key).Replace("\\", "/"));
             DirectoryContents = allGroups.ToDictionary(g => g.Key, g => g.OrderBy(k => k).ToList());
             CatalogDirectories = DirectoryContents.Keys.OrderBy(k => k).ToList();
             var scenes = allKeys.Where(key => key.EndsWith(".unity")).ToList();
@@ -92,9 +98,17 @@ namespace ThunderKit.Addressable.Tools
             directoryContent.onSelectionChanged += DirectoryContent_onSelectionChanged;
 #if UNITY_2019_1_OR_NEWER
             searchBox.RegisterValueChangedCallback(OnSearchChanged);
-#else 
+            regexOptionsField.RegisterValueChangedCallback(OnRegexOptionsChanged);
+#else
             searchBox.OnValueChanged(OnSearchChanged);
+            regexOptionsField.OnValueChanged(OnRegexOptionsChanged);
 #endif
+        }
+
+        private void OnRegexOptionsChanged(ChangeEvent<System.Enum> evt)
+        {
+            regex = new Regex(searchInput, regexOptions);
+            EditorApplication.update += Refresh;
         }
 
         private void OnSearchChanged(ChangeEvent<string> evt)
@@ -104,9 +118,16 @@ namespace ThunderKit.Addressable.Tools
                 directory.itemsSource = CatalogDirectories;
             else
             {
-                var matches = DirectoryContents.Where(kvp => kvp.Value.Any(v => CompareSearch(evt.newValue, v))).ToArray();
-                directory.itemsSource = matches.Select(kvp => kvp.Key).ToList();
+                regex = new Regex(searchInput, regexOptions);
+                EditorApplication.update += Refresh;
             }
+        }
+
+        private void Refresh()
+        {
+            EditorApplication.update -= Refresh;
+            var matches = DirectoryContents.Where(kvp => kvp.Value.Any(regex.IsMatch)).ToArray();
+            directory.itemsSource = matches.Select(kvp => kvp.Key).ToList();
         }
 
         async void BindAsset(VisualElement element, int i)
@@ -148,7 +169,6 @@ namespace ThunderKit.Addressable.Tools
             else
                 loadSceneBtn.AddToClassList("hidden");
         }
-
         private async Task<Texture2D> RenderIcon(string address)
         {
             string previewCachePath = Path.Combine(PreviewRoot, $"{address}.png");
@@ -177,47 +197,23 @@ namespace ThunderKit.Addressable.Tools
             if (result)
                 while (AssetPreview.IsLoadingAssetPreviews())
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(100);
                     preview = UpdatePreview(result);
-                    if (preview)
+                    if (preview && preview.isReadable)
                     {
-                        var clone = DuplicateTexture(preview);
-                        if (clone)
-                        {
-                            var png = clone.EncodeToPNG();
-                            var fileName = $"{Path.GetFileName(address)}.png";
-                            string addressFolder = Path.GetDirectoryName(address);
-                            var finalFolder = Path.Combine(PreviewRoot, addressFolder);
-                            Directory.CreateDirectory(finalFolder);
-                            var filePath = Path.Combine(finalFolder, fileName);
-                            File.WriteAllBytes(filePath, png);
-                        }
+                        var png = preview.EncodeToPNG();
+                        var fileName = $"{Path.GetFileName(address)}.png";
+                        string addressFolder = Path.GetDirectoryName(address);
+                        var finalFolder = Path.Combine(PreviewRoot, addressFolder);
+                        Directory.CreateDirectory(finalFolder);
+                        var filePath = Path.Combine(finalFolder, fileName);
+                        File.WriteAllBytes(filePath, png);
                     }
                 }
 
             return preview;
         }
 
-
-        Texture2D DuplicateTexture(Texture2D source)
-        {
-            RenderTexture renderTex = RenderTexture.GetTemporary(
-                        source.width,
-                        source.height,
-                        0,
-                        RenderTextureFormat.Default,
-                        RenderTextureReadWrite.Linear);
-
-            Graphics.Blit(source, renderTex);
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = renderTex;
-            Texture2D readableText = new Texture2D(source.width, source.height);
-            readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
-            readableText.Apply();
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(renderTex);
-            return readableText;
-        }
         private static Texture2D UpdatePreview(Object result)
         {
             Texture2D preview;
@@ -237,7 +233,6 @@ namespace ThunderKit.Addressable.Tools
 
             return preview;
         }
-
         private async void DirectoryContent_onSelectionChanged(List<object> obj)
         {
             try
@@ -251,7 +246,6 @@ namespace ThunderKit.Addressable.Tools
             }
             catch { }
         }
-
         VisualElement DirectoryLabel() => new Label { name = NameLabel };
         VisualElement AssetLabel()
         {
@@ -270,28 +264,19 @@ namespace ThunderKit.Addressable.Tools
 
             return element;
         }
-
         private void Directory_onSelectionChanged(List<object> obj)
         {
             var selected = obj.First().ToString();
             var addresses = DirectoryContents[selected];
-            var matches = addresses.Where(address => CompareSearch(searchInput, address)).ToArray();
+
+            string[] matches = null;
+
+            if (regex != null)
+                matches = addresses.Where(address => regex.IsMatch(address)).ToArray();
+            else
+                matches = addresses.ToArray();
+
             directoryContent.itemsSource = matches;
-        }
-
-        bool CompareSearch(string search, string value)
-        {
-            var filter = search;
-            var input = value;
-
-            if (!caseSensitive)
-            {
-                if (!string.IsNullOrEmpty(filter))
-                    filter = filter.ToLowerInvariant();
-                input = input.ToLowerInvariant();
-            }
-
-            return string.IsNullOrEmpty(filter) ? true : input.Contains(filter);
         }
     }
 }

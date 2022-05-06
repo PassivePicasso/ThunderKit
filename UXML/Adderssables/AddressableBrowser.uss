@@ -33,7 +33,7 @@
 .search-toolbar {
 	flex-direction: row;
 	background-color: rgba(0,0,0,0.1);
-	width: 400px;
+	flex-grow: 1;
 	padding-left: 0px;
 	padding-top: 2px;
 	padding-right: 0px;
@@ -42,5 +42,12 @@
 
 .search-toolbar>.thunderkit-field-input
 {
+	padding-right: 4px;
+}
+.search-toolbar>.regexFlags{
+	flex-grow: 0;
+}
+.search-toolbar>.regexFlags .unity-text-element {
+	padding-left: 4px;
 	padding-right: 4px;
 }
