@@ -1,5 +1,6 @@
 ﻿#if TK_ADDRESSABLE
 using System.IO;
+using System.Linq;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -23,11 +24,11 @@ namespace ThunderKit.Addressable.Tools
         {
             Addressables.InternalIdTransformFunc = RedirectInternalIdsToGameDirectory;
             SetAllShaders();
-            CompilationPipeline.compilationStarted -= ClearSlectionIfUnsavable;
-            CompilationPipeline.compilationStarted += ClearSlectionIfUnsavable;
+            CompilationPipeline.compilationStarted -= ClearSelectionIfUnsavable;
+            CompilationPipeline.compilationStarted += ClearSelectionIfUnsavable;
         }
 
-        private static void ClearSlectionIfUnsavable(object obj)
+        private static void ClearSelectionIfUnsavable(object obj)
         {
             if (!Selection.activeObject) return;
             if (Selection.activeObject.hideFlags.HasFlag(HideFlags.DontSave))
@@ -36,8 +37,8 @@ namespace ThunderKit.Addressable.Tools
 
         public static void SetAllShaders()
         {
-            AssetBundle.UnloadAllAssetBundles(true);
-            Addressables.InitializeAsync().WaitForCompletion();
+            if (!Addressables.ResourceLocators.Any())
+                Addressables.InitializeAsync().WaitForCompletion();
 
             var settings = GetOrCreateSettings<AddressableGraphicsSettings>();
             SetShader(settings.CustomDeferredShading, BuiltinShaderType.DeferredShading);
