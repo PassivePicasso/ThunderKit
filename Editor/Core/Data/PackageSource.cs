@@ -145,10 +145,6 @@ namespace ThunderKit.Core.Data
 
         internal void Clear()
         {
-            foreach (var package in Packages)
-                if (package)
-                    DestroyImmediate(package);
-
             Packages.Clear();
         }
 
@@ -224,16 +220,7 @@ namespace ThunderKit.Core.Data
             {
                 EditorApplication.UnlockReloadAssemblies();
                 EditorUtility.ClearProgressBar();
-
-                var refreshStartTime = DateTime.Now + TimeSpan.FromSeconds(1);
-                void OneRefresh()
-                {
-                    if (DateTime.Now < refreshStartTime) return;
-
-                    EditorApplication.update -= OneRefresh;
-                    AssetDatabase.Refresh();
-                }
-                EditorApplication.update += OneRefresh;
+                PackageHelper.ResolvePackages();
             }
         }
 
