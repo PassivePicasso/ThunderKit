@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace ThunderKit.Core.Data
 {
-    public abstract class PackageSource : ScriptableObject, IEquatable<PackageSource>
+    public abstract class PackageSource : ScriptableObject, IEquatable<PackageSource>, ISerializationCallbackReceiver
     {
         public static event EventHandler SourcesInitialized;
         public static event EventHandler InitializeSources;
@@ -48,10 +48,8 @@ namespace ThunderKit.Core.Data
                 if (sourceGroups == null)
                 {
                     sourceGroups = new Dictionary<string, List<PackageSource>>();
-                    var packageSources = AssetDatabase.FindAssets("t:PackageSource", Constants.FindAllFolders)
-                        .Select(AssetDatabase.GUIDToAssetPath)
-                        .Select(AssetDatabase.LoadAssetAtPath<PackageSource>);
-                    foreach (var packageSource in packageSources)
+                    var packageSourceSettings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
+                    foreach (var packageSource in packageSourceSettings.PackageSources)
                     {
                         if (!sourceGroups.TryGetValue(packageSource.SourceGroup, out var sourceGroup))
                             sourceGroups[packageSource.SourceGroup] = sourceGroup = new List<PackageSource> { packageSource };
@@ -65,7 +63,6 @@ namespace ThunderKit.Core.Data
         }
 
 
-
         public DateTime lastUpdateTime;
         public abstract string Name { get; }
         public abstract string SourceGroup { get; }
@@ -74,6 +71,15 @@ namespace ThunderKit.Core.Data
 
         private Dictionary<string, HashSet<string>> dependencyMap;
         private Dictionary<string, PackageGroup> groupMap;
+
+        public void OnBeforeSerialize() { }
+        public void OnAfterDeserialize() => EditorApplication.update += RegisterSource;
+        private void RegisterSource()
+        {
+            var packageSourceSettings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
+            if (!packageSourceSettings.PackageSources.Contains(this))
+                packageSourceSettings.PackageSources.Add(this);
+        }
 
         void Awake()
         {
