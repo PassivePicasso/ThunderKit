@@ -176,7 +176,11 @@ namespace ThunderKit.Core.Data
                 return;
             }
 
-            if (!CheckUnityVersion(thunderKitSettings)) return;
+            if (!CheckUnityVersion(thunderKitSettings))
+            {
+                ConfigurationIndex = -1;
+                return;
+            }
 
             var executor = ConfigurationExecutors[ConfigurationIndex];
             try
