@@ -1,6 +1,6 @@
 ﻿#if TK_ADDRESSABLE
+using System;
 using System.IO;
-using System.Linq;
 using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -19,13 +19,37 @@ namespace ThunderKit.Addressable.Tools
         public string CustomDeferredShading;
         public string CustomDeferredScreenspaceShadows;
 
+        internal static event EventHandler AddressablesInitialized;
+
         [InitializeOnLoadMethod]
         public static void OnLoad()
         {
             Addressables.InternalIdTransformFunc = RedirectInternalIdsToGameDirectory;
-            SetAllShaders();
             CompilationPipeline.compilationStarted -= ClearSelectionIfUnsavable;
             CompilationPipeline.compilationStarted += ClearSelectionIfUnsavable;
+            InitializeAddressables();
+        }
+
+        static string RedirectInternalIdsToGameDirectory(IResourceLocation location)
+        {
+            switch (location.ResourceType)
+            {
+                case var t when t == typeof(IAssetBundleResource):
+                    var iid = location.InternalId;
+                    var path = iid.Substring(iid.IndexOf("/aa") + 4);
+                    path = Path.Combine(ThunderKitSettings.EditTimePath, path);
+                    return path;
+                default:
+                    var result = location.InternalId;
+                    return result;
+            }
+        }
+
+        static void InitializeAddressables()
+        {
+            var aop = Addressables.InitializeAsync();
+            aop.WaitForCompletion();
+            AssignShaders();
         }
 
         private static void ClearSelectionIfUnsavable(object obj)
@@ -35,15 +59,13 @@ namespace ThunderKit.Addressable.Tools
                 Selection.activeObject = null;
         }
 
-        public static void SetAllShaders()
+        private static void AssignShaders()
         {
-            if (!Addressables.ResourceLocators.Any())
-                Addressables.InitializeAsync().WaitForCompletion();
-
             var settings = GetOrCreateSettings<AddressableGraphicsSettings>();
             SetShader(settings.CustomDeferredShading, BuiltinShaderType.DeferredShading);
             SetShader(settings.CustomDeferredReflection, BuiltinShaderType.DeferredReflections);
             SetShader(settings.CustomDeferredScreenspaceShadows, BuiltinShaderType.ScreenSpaceShadows);
+            AddressablesInitialized?.Invoke(null, EventArgs.Empty);
         }
 
         public static void UnsetAllShaders()
@@ -53,35 +75,23 @@ namespace ThunderKit.Addressable.Tools
             UnsetShader(settings.CustomDeferredReflection, BuiltinShaderType.DeferredReflections);
             UnsetShader(settings.CustomDeferredScreenspaceShadows, BuiltinShaderType.ScreenSpaceShadows);
         }
-
-        static string RedirectInternalIdsToGameDirectory(IResourceLocation location)
-        {
-            var path = location.InternalId.Replace("\\", "/");
-
-            var standardPwd = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "StreamingAssets", "aa").Replace("\\", "/");
-            if (location.ResourceType == typeof(IAssetBundleResource) && path.StartsWith(standardPwd))
-                path = path.Replace(standardPwd, ThunderKitSettings.EditTimePath);
-
-            return path;
-        }
-
         public static void SetShader(string address, BuiltinShaderType shaderType)
         {
             if (!string.IsNullOrEmpty(address))
             {
-                var cdr = Addressables.LoadAssetAsync<Shader>(address).WaitForCompletion();
-                if (cdr)
+                var aop = Addressables.LoadAssetAsync<Shader>(address);
+                aop.WaitForCompletion();
+                if (aop.Result is Shader shader && shader)
                 {
-                    cdr.hideFlags = HideFlags.HideAndDontSave;
-                    GraphicsSettings.SetCustomShader(shaderType, cdr);
+                    shader.hideFlags = HideFlags.HideAndDontSave;
+                    GraphicsSettings.SetCustomShader(shaderType, shader);
                     GraphicsSettings.SetShaderMode(shaderType, BuiltinShaderMode.UseCustom);
-                    return;
                 }
                 else
-                    Debug.LogError($"Custom {shaderType} shader at address \"{address}\" is destroyed and can't be assigned");
+                    Debug.LogError($"Custom {shaderType} shader at address \"{address}\" can't be assigned");
             }
-
-            GraphicsSettings.SetShaderMode(shaderType, BuiltinShaderMode.UseBuiltin);
+            else
+                GraphicsSettings.SetShaderMode(shaderType, BuiltinShaderMode.UseBuiltin);
         }
 
         public static void UnsetShader(string address, BuiltinShaderType shaderType)
@@ -96,7 +106,7 @@ namespace ThunderKit.Addressable.Tools
         public override void CreateSettingsUI(VisualElement rootElement)
         {
             base.CreateSettingsUI(rootElement);
-            rootElement.Add(new Button(() => SetAllShaders()) { text = "Reload" });
+            rootElement.Add(new Button(InitializeAddressables) { text = "Reload" });
         }
     }
 }
