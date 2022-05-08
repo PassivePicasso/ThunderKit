@@ -58,10 +58,14 @@ namespace ThunderKit.Core.Utilities
         /// <param name="tex">icon to assign to Object</param>
         public static void AssignIcon(UnityEngine.Object g, Texture2D tex)
         {
+#if UNITY_2021_2
+            EditorGUIUtility.SetIconForObject(g, tex);
+#else
             Type editorGUIUtilityType = typeof(EditorGUIUtility);
             System.Reflection.BindingFlags bindingFlags = System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
             object[] args = new object[] { g, tex };
             editorGUIUtilityType.InvokeMember("SetIconForObject", bindingFlags, null, null, args);
+#endif
         }
 
         /// <summary>
