@@ -96,13 +96,13 @@ namespace ThunderKit.Core.Windows
             PackageSource.LoadAllSources();
         }
 
-        private void ConstructPackageSourceList(PackageSource[] packageSources)
+        private void ConstructPackageSourceList(List<PackageSource> packageSources)
         {
             var packageSourceList = rootVisualElement.Q(name = "tkpm-package-source-list");
 
             packageSourceList.Clear();
 
-            for (int sourceIndex = 0; sourceIndex < packageSources.Length; sourceIndex++)
+            for (int sourceIndex = 0; sourceIndex < packageSources.Count; sourceIndex++)
             {
                 var source = packageSources[sourceIndex];
                 var packageSource = GetTemplateInstance("PackageSource");
@@ -175,7 +175,7 @@ namespace ThunderKit.Core.Windows
         string NormalizeName(string name) => name.Replace(" ", "-").ToLower();
         void UpdatePackageList()
         {
-            for (int sourceIndex = 0; sourceIndex < settings.PackageSources.Length; sourceIndex++)
+            for (int sourceIndex = 0; sourceIndex < settings.PackageSources.Count; sourceIndex++)
             {
                 var source = settings.PackageSources[sourceIndex];
                 var packageSource = rootVisualElement.Q($"tkpm-package-source-{NormalizeName(source.name)}");

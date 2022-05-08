@@ -21,9 +21,8 @@ namespace ThunderKit.Integrations.Thunderstore
         [InitializeOnLoadMethod]
         static void CreateThunderKitExtensionSource()
         {
-            var sources = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
-                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-                .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
+            var packageSourceSettings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
+            var sources = packageSourceSettings.PackageSources
                 .OfType<ThunderstoreSource>()
                 .ToArray();
 

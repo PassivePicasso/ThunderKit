@@ -19,12 +19,7 @@ namespace ThunderKit.Core.Data
     // Create a new type of Settings Asset.
     public class PackageSourceSettings : ThunderKitSetting
     {
-
-        public PackageSource[] PackageSources => AssetDatabase.FindAssets($"t:{nameof(PackageSource)}")
-                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-                .Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path))
-                .ToArray();
-
+        public List<PackageSource> PackageSources = new List<PackageSource>();
         private ListView sourceList;
         private Button addSourceButton;
         private Button removeSourceButton;
@@ -120,7 +115,7 @@ namespace ThunderKit.Core.Data
             if (source == null) return;
             var updatedPackageSources = PackageSources.Where(s => !source.Contains(s)).ToArray();
             bool refresh = false;
-            for (int i = 0; i < PackageSources.Length; i++)
+            for (int i = 0; i < PackageSources.Count; i++)
                 if (source.Contains(PackageSources[i]))
                 {
                     refresh = true;
