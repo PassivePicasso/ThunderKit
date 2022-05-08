@@ -196,7 +196,11 @@ namespace ThunderKit.Core.Windows
                     BindPackageView(packageList.selectedItem as PackageGroup);
                 }
 
-                var tags = source.Packages?.SelectMany(pkg => pkg.Tags)?.Distinct()?.Select(tag => $"{source.Name}/{tag}") ?? Enumerable.Empty<string>();
+                var pkgs = source.Packages.Where(pkg => pkg);
+                var allTags = pkgs?.SelectMany(pkg => pkg.Tags);
+                var distinctTags = allTags?.Distinct();
+                var pathedTags = distinctTags?.Select(tag => $"{source.Name}/{tag}");
+                var tags = (pathedTags ?? Enumerable.Empty<string>());
                 foreach (var tag in tags)
                     if (tagEnabled.ContainsKey(tag)) tagEnabled[tag] = tagEnabled[tag];
                     else
