@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ThunderKit.Core.Windows;
 using System.Text.RegularExpressions;
+using UnityEngine.ResourceManagement;
+using UnityEngine.AddressableAssets.ResourceLocators;
+using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -43,8 +46,8 @@ namespace ThunderKit.Addressable.Tools
         private const string LoadSceneButton = "addressable-load-scene-button";
         List<string> CatalogDirectories;
         Dictionary<string, List<string>> DirectoryContents;
-        HashSet<string> extensions;
-        Dictionary<string, List<string>> KeysByExtension;
+        static Dictionary<string, Type> LocationType;
+
         private ListView directory;
         private ListView directoryContent;
         private Texture sceneIcon;
@@ -57,11 +60,39 @@ namespace ThunderKit.Addressable.Tools
         public string searchInput;
         public RegexOptions regexOptions;
         private Regex regex;
+        private string typeFilter;
 
+        private static void LoadIndex()
+        {
+            if (!Addressables.ResourceLocators.Any()) return;
+
+            LocationType = new Dictionary<string, Type>();
+            foreach (var locator in Addressables.ResourceLocators)
+            {
+                switch (locator)
+                {
+                    case ResourceLocationMap rlm:
+                        foreach (var location in rlm.Locations.SelectMany(loc => loc.Value))
+                            LocationType[location.PrimaryKey] = location.ResourceType;
+                        break;
+                }
+            }
+        }
+        public void OnDisable()
+        {
+            AddressableGraphicsSettings.AddressablesInitialized -= InitializeBrowser;
+        }
         public override void OnEnable()
         {
+            AddressableGraphicsSettings.AddressablesInitialized -= InitializeBrowser;
+            AddressableGraphicsSettings.AddressablesInitialized += InitializeBrowser;
+            InitializeBrowser();
+        }
+
+
+        private void InitializeBrowser(object sender = null, EventArgs e = null)
+        {
             base.OnEnable();
-            var r = new Regex("()");
             sceneIcon = EditorGUIUtility.IconContent("d_UnityLogo").image;
 
             searchBox = rootVisualElement.Q<TextField>("search-input");
@@ -69,9 +100,6 @@ namespace ThunderKit.Addressable.Tools
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
             useRegexToggle = rootVisualElement.Q<Toggle>("use-regex-toggle");
-            //buildIndexButton = rootVisualElement.Q<Button>("build-addressable-index-button");
-
-            //buildIndexButton.clickable = new BuildIndexClickable();
 
             directory.makeItem = DirectoryLabel;
             directoryContent.makeItem = AssetLabel;
@@ -84,6 +112,7 @@ namespace ThunderKit.Addressable.Tools
             };
             directoryContent.bindItem = BindAsset;
 
+            LoadIndex();
             var allKeys = Addressables.ResourceLocators.SelectMany(locator => locator.Keys).Select(key => key.ToString());
 
             var allGroups = allKeys.GroupBy(key => Path.GetDirectoryName(key).Replace("\\", "/"));
@@ -115,23 +144,83 @@ namespace ThunderKit.Addressable.Tools
         private void RefreshSearch()
         {
             bool noFilter = string.IsNullOrEmpty(searchInput);
+            var searchValue = searchInput ?? string.Empty;
+            var typeIndex = searchValue.IndexOf("t:");
+            if (typeIndex > -1 && (typeIndex - 1 == -1 || searchValue[typeIndex - 1] == ' '))
+            {
+                typeFilter = searchValue.Substring(typeIndex);
+                int spaceIndex = typeFilter.IndexOf(" ");
+                if (spaceIndex == -1)
+                {
+                    searchValue = searchValue.Replace(typeFilter, string.Empty);
+                    if (searchValue.EndsWith(" "))
+                        searchValue = searchValue.Substring(0, searchValue.Length - 1);
+                    typeFilter = typeFilter.Substring(2);
+                }
+                else
+                {
+                    searchValue = searchValue.Replace(typeFilter.Substring(0, spaceIndex + 1), string.Empty);
+                    typeFilter = typeFilter.Substring(2, spaceIndex - 2);
+                }
+            }
+            else typeFilter = string.Empty;
+
+            if (!useRegex) searchValue = Regex.Escape(searchValue);
+
+            if (string.IsNullOrEmpty(searchValue))
+                regex = null;
+            else
+                regex = new Regex(searchValue, regexOptions);
+
             if (noFilter)
                 directory.itemsSource = CatalogDirectories;
             else
-            {
-                var searchValue = searchInput;
-                if (!useRegex) searchValue = Regex.Escape(searchValue);
-                regex = new Regex(searchValue, regexOptions);
                 EditorApplication.update += Refresh;
-            }
         }
 
         private void Refresh()
         {
             EditorApplication.update -= Refresh;
-            var matches = DirectoryContents.Where(kvp => kvp.Value.Any(regex.IsMatch)).ToArray();
-            directory.itemsSource = matches.Select(kvp => kvp.Key).ToList();
+            if (regex != null || !string.IsNullOrEmpty(typeFilter))
+            {
+                var list = new List<string>();
+
+                foreach (var kvp in DirectoryContents)
+                    Filter(list, kvp.Value, true, location => Path.GetDirectoryName(location).Replace("\\", "/"));
+
+                directory.itemsSource = list;
+            }
+            else directory.itemsSource = DirectoryContents.Keys.ToList();
         }
+
+        private void Directory_onSelectionChanged(List<object> obj)
+        {
+            var selected = obj.First().ToString();
+            var addresses = DirectoryContents[selected];
+
+            if (regex != null || !string.IsNullOrEmpty(typeFilter))
+            {
+                var list = new List<string>();
+                Filter(list, addresses, false, location => location);
+                directoryContent.itemsSource = list;
+            }
+            else
+                directoryContent.itemsSource = addresses;
+        }
+        private void Filter(List<string> list, List<string> values, bool earlyReturn, Func<string, string> processValue)
+        {
+            foreach (var location in values)
+            {
+                if (regex != null && !regex.IsMatch(location)) continue;
+                if (!string.IsNullOrEmpty(typeFilter))
+                    if (!LocationType.ContainsKey(location)) continue;
+                    else if (!LocationType[location].FullName.Contains(typeFilter)) continue;
+                list.Add(processValue(location));
+                if (earlyReturn)
+                    break;
+            }
+        }
+
 
         async void BindAsset(VisualElement element, int i)
         {
@@ -266,20 +355,6 @@ namespace ThunderKit.Addressable.Tools
             element.Add(buttonPanel);
 
             return element;
-        }
-        private void Directory_onSelectionChanged(List<object> obj)
-        {
-            var selected = obj.First().ToString();
-            var addresses = DirectoryContents[selected];
-
-            string[] matches = null;
-
-            if (regex != null)
-                matches = addresses.Where(address => regex.IsMatch(address)).ToArray();
-            else
-                matches = addresses.ToArray();
-
-            directoryContent.itemsSource = matches;
         }
     }
 }
