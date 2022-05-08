@@ -58,7 +58,7 @@ namespace ThunderKit.Core.Utilities
         /// <param name="tex">icon to assign to Object</param>
         public static void AssignIcon(UnityEngine.Object g, Texture2D tex)
         {
-#if UNITY_2021_2
+#if UNITY_2021_2_OR_NEWER
             EditorGUIUtility.SetIconForObject(g, tex);
 #else
             Type editorGUIUtilityType = typeof(EditorGUIUtility);
