@@ -1,3 +1,42 @@
+## 5.2.0
+
+### Addressable Browser Type Filtering
+
+Implemented Type filtering in Addressable Browser search with a similar 
+implementation to the Project Window.
+
+Users can now enter t:TypeName to filter the addressable list by type. This 
+check does a case sensistive contains check on the type full name.  This allows
+users to filter not only by type but partial type names and namespaces.
+
+For example, you can filter for all Prefabs by using the filter `t:GameObject`
+Another example is that you could filter for all native Unity types by using
+`t:UnityEngine`
+
+The type filtering can be used in addition to the normal text match filtering.
+
+The text filtering can now also use Regular Expressions for more complex 
+filtering cases.
+
+### Fixes
+
+* Fix Null Reference Exception caused by Package source refreshing
+* Fix Unity crash caused by heavy repeated calls to AssetDatabase.FindAssets
+* Fix initialization error in Addressable Browser due to an incorrect type 
+  lookup
+* Fix some cases where addressables becomes unloaded and does not reload.
+  Some cases for this issue still exist and some cases are game specific and
+  may require custom import extensions to resolve.
+* Fix an issue where the Import process would loop indefinitely when the 
+  version of the game's Unity engine and the current Unity Editor version do
+  not match.
+
+### Community Contributions
+
+* Fix icon assignment for ThunderKit assets created using the ScriptableHelper
+  not assigning the assets icon correctly.
+  - Thanks to pikokr for this contribution.
+
 ## 5.1.1
 
 * Fix/Update change log
