@@ -19,9 +19,14 @@ namespace ThunderKit.Integrations.Thunderstore
 
         const string SettingsPath = "Assets/ThunderKitSettings";
         [InitializeOnLoadMethod]
-        static void CreateThunderKitExtensionSource()
+        static void CreateThunderKitExtensionSource() => EditorApplication.update += EnsureThunderKitExtensions;
+
+        private static void EnsureThunderKitExtensions()
         {
             var packageSourceSettings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
+            if (packageSourceSettings.PackageSources.All(pkg => !pkg)) return;
+            EditorApplication.update -= EnsureThunderKitExtensions;
+
             var sources = packageSourceSettings.PackageSources
                 .OfType<ThunderstoreSource>()
                 .ToArray();
