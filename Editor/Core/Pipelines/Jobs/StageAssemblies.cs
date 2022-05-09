@@ -183,11 +183,11 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     File.Delete(assemblyOutputPath);
                 BuildStatus.Add(builder);
                 builder.Build();
-            }
 
-            while (EditorApplication.isCompiling)
-            {
-                await Task.Delay(100);
+                while (builder.status != AssemblyBuilderStatus.Finished)
+                {
+                    await Task.Delay(100);
+                }
             }
         }
 
