@@ -1,3 +1,11 @@
+## 5.2.1
+
+* fix issue where the ThunderKit Extensions PackageSource would be re-created 
+  multiple times
+  
+Users may need to delete their existin PackageSources and 
+PackageSourceSetttings to fix data issues caused by this bug
+
 ## 5.2.0
 
 ### Addressable Browser Type Filtering
