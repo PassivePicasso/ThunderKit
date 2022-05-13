@@ -19,7 +19,7 @@ namespace ThunderKit.Addressable.Tools
         public string CustomDeferredShading;
         public string CustomDeferredScreenspaceShadows;
 
-        internal static event EventHandler AddressablesInitialized;
+        public static event EventHandler AddressablesInitialized;
 
         [InitializeOnLoadMethod]
         public static void OnLoad()
