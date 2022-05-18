@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace ThunderKit.Core.Data
 {
-    public abstract class PackageSource : ScriptableObject, IEquatable<PackageSource>, ISerializationCallbackReceiver
+    public abstract class PackageSource : ScriptableObject, IEquatable<PackageSource>
     {
         public static event EventHandler SourcesInitialized;
         public static event EventHandler InitializeSources;
@@ -48,8 +48,7 @@ namespace ThunderKit.Core.Data
                 if (sourceGroups == null)
                 {
                     sourceGroups = new Dictionary<string, List<PackageSource>>();
-                    var packageSourceSettings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
-                    foreach (var packageSource in packageSourceSettings.PackageSources)
+                    foreach (var packageSource in PackageSourceSettings.PackageSources)
                     {
                         if (!sourceGroups.TryGetValue(packageSource.SourceGroup, out var sourceGroup))
                             sourceGroups[packageSource.SourceGroup] = sourceGroup = new List<PackageSource> { packageSource };
@@ -67,18 +66,16 @@ namespace ThunderKit.Core.Data
         public abstract string Name { get; }
         public abstract string SourceGroup { get; }
 
+        [NonSerialized]
         public List<PackageGroup> Packages;
 
         private Dictionary<string, HashSet<string>> dependencyMap;
         private Dictionary<string, PackageGroup> groupMap;
 
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize() => EditorApplication.update += RegisterSource;
-        private void RegisterSource()
+
+        public PackageSource()
         {
-            var packageSourceSettings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
-            if (!packageSourceSettings.PackageSources.Contains(this))
-                packageSourceSettings.PackageSources.Add(this);
+            PackageSourceSettings.RegisterSource(this);
         }
 
         void Awake()
