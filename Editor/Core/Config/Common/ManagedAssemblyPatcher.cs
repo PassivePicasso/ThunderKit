@@ -15,7 +15,7 @@ namespace ThunderKit.Core.Config
         {
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var originalAssembly = Path.GetFullPath(Path.Combine(settings.ManagedAssembliesPath, AssemblyFileName));
-            var destinationAssembly = Path.GetFullPath(Path.Combine(settings.PackagePath, AssemblyFileName));
+            var destinationAssembly = Path.GetFullPath(Path.Combine(settings.PackageFilePath, AssemblyFileName));
             var diffPath = Path.GetFullPath(BsDiffPatchPath);
             var packagePath = Path.GetDirectoryName(destinationAssembly);
 
