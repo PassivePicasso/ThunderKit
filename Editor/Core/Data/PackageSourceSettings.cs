@@ -210,7 +210,7 @@ namespace ThunderKit.Core.Data
             EditorApplication.update -= RefreshList;
             if (sourceList != null)
             {
-                sourceList.itemsSource = PackageSources;
+                sourceList.itemsSource = PackageSources.Where(pkg => pkg).ToList();
 #if UNITY_2021_2_OR_NEWER
                 sourceList.Rebuild();
 #else
