@@ -35,7 +35,6 @@ namespace ThunderKit.Core.Windows
         [SerializeField] private string SearchString;
 
         public bool InProject;
-        private PackageSourceSettings settings;
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Packages")]
         public static void ShowExample() => GetWindow<PackageManager>();
@@ -64,7 +63,6 @@ namespace ThunderKit.Core.Windows
                 PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
                 return;
             }
-            settings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
 
 
             titleContent = new GUIContent("Packages", ThunderKitIcon, "");
@@ -88,7 +86,7 @@ namespace ThunderKit.Core.Windows
             refreshButton.clickable.clicked += RefreshClicked;
 
             GetTemplateInstance("PackageView", packageView);
-            ConstructPackageSourceList(settings.PackageSources);
+            ConstructPackageSourceList(PackageSourceSettings.PackageSources);
         }
 
         private void RefreshClicked()
@@ -175,9 +173,9 @@ namespace ThunderKit.Core.Windows
         string NormalizeName(string name) => name.Replace(" ", "-").ToLower();
         void UpdatePackageList()
         {
-            for (int sourceIndex = 0; sourceIndex < settings.PackageSources.Count; sourceIndex++)
+            for (int sourceIndex = 0; sourceIndex < PackageSourceSettings.PackageSources.Count; sourceIndex++)
             {
-                var source = settings.PackageSources[sourceIndex];
+                var source = PackageSourceSettings.PackageSources[sourceIndex];
                 var packageSource = rootVisualElement.Q($"tkpm-package-source-{NormalizeName(source.name)}");
                 var headerLabel = packageSource.Q<Label>("tkpm-package-source-label");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");

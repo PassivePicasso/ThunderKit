@@ -23,11 +23,9 @@ namespace ThunderKit.Integrations.Thunderstore
 
         private static void EnsureThunderKitExtensions()
         {
-            var packageSourceSettings = ThunderKitSetting.GetOrCreateSettings<PackageSourceSettings>();
-            if (packageSourceSettings.PackageSources.All(pkg => !pkg)) return;
             EditorApplication.update -= EnsureThunderKitExtensions;
 
-            var sources = packageSourceSettings.PackageSources
+            var sources = PackageSourceSettings.PackageSources
                 .OfType<ThunderstoreSource>()
                 .ToArray();
 

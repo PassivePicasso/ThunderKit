@@ -19,12 +19,50 @@ namespace ThunderKit.Core.Data
     // Create a new type of Settings Asset.
     public class PackageSourceSettings : ThunderKitSetting
     {
-        public List<PackageSource> PackageSources = new List<PackageSource>();
+        public static List<PackageSource> PackageSources { get; private set; } = new List<PackageSource>();
+
         private ListView sourceList;
         private Button addSourceButton;
         private Button removeSourceButton;
         private Button refreshButton;
         private ScrollView selectedSourceSettings;
+
+        [InitializeOnLoadMethod]
+        public static void InitSources()
+        {
+            EditorApplication.update -= ProcessRegistrations;
+            EditorApplication.update += ProcessRegistrations;
+        }
+
+        private static void ProcessRegistrations()
+        {
+            for (int i = PackageSources.Count - 1; i > -1; i--)
+            {
+                if (!PackageSources[i])
+                {
+                    PackageSources.RemoveAt(i);
+                }
+            }
+        }
+
+        public static void RegisterSource(PackageSource source)
+        {
+            PackageSources.Add(source);
+            EditorApplication.update += DeferredRefresh;
+        }
+
+        public static void UnregisterSource(PackageSource source)
+        {
+            PackageSources.Remove(source);
+            EditorApplication.update += DeferredRefresh;
+        }
+
+        private static void DeferredRefresh()
+        {
+            ProcessRegistrations();
+            EditorApplication.update -= DeferredRefresh;
+            EditorApplication.update += GetOrCreateSettings<PackageSourceSettings>().RefreshList;
+        }
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
@@ -42,7 +80,7 @@ namespace ThunderKit.Core.Data
             refreshButton.clickable.clicked += Refresh;
 
             addSourceButton.clickable.clicked += OpenAddSourceMenu;
-            
+
             sourceList.selectionType = SelectionType.Multiple;
             sourceList.makeItem = () => new Label() { name = "source-name-item" };
             sourceList.bindItem = (ve, i) =>
@@ -54,12 +92,12 @@ namespace ThunderKit.Core.Data
                     //label.tooltip = $"Type: {PackageSources[i].Name}\r\nGroup: {PackageSources[i].SourceGroup}";
                 }
             };
-            sourceList.itemsSource = PackageSources;
 #if UNITY_2020_1_OR_NEWER
             sourceList.onSelectionChange += OnSelectionChanged;
 #else
             sourceList.onSelectionChanged += OnSelectionChanged;
 #endif
+            RefreshList();
             rootElement.Add(settingsElement);
         }
 
@@ -69,11 +107,8 @@ namespace ThunderKit.Core.Data
             var source = sourceName.userData as PackageSource;
             string path = AssetDatabase.GetAssetPath(source);
             var result = AssetDatabase.RenameAsset(path, sourceName.text);
-#if UNITY_2021_2_OR_NEWER
-            sourceList.Rebuild();
-#else
-            sourceList.Refresh();
-#endif
+            RefreshList();
+
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
@@ -157,7 +192,8 @@ namespace ThunderKit.Core.Data
                         const string SettingsPath = "Assets/ThunderKitSettings";
                         var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/{type.Name}.asset");
                         ScriptableHelper.EnsureAsset(assetPath, type);
-                        RefreshList();
+                        EditorApplication.update -= RefreshList;
+                        EditorApplication.update += RefreshList;
                     }
                 );
 
@@ -171,6 +207,7 @@ namespace ThunderKit.Core.Data
 
         private void RefreshList()
         {
+            EditorApplication.update -= RefreshList;
             if (sourceList != null)
             {
                 sourceList.itemsSource = PackageSources;
