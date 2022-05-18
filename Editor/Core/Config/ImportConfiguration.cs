@@ -166,8 +166,10 @@ namespace ThunderKit.Core.Data
         public void ImportGame()
         {
             if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+            if (ConfigurationExecutors == null) return;
 
             var thunderKitSettings = GetOrCreateSettings<ThunderKitSettings>();
+
             if (ConfigurationIndex >= (ConfigurationExecutors?.Length ?? 0) || ConfigurationIndex < 0) return;
 
             if (string.IsNullOrEmpty(thunderKitSettings.GamePath) || string.IsNullOrEmpty(thunderKitSettings.GameExecutable))
@@ -187,10 +189,11 @@ namespace ThunderKit.Core.Data
             {
                 if (executor && executor.enabled)
                 {
-                    Debug.Log($"Executing: {executor.name}");
                     if (executor.Execute())
                     {
+                        Debug.Log($"Executed: {executor.name}");
                         ConfigurationIndex++;
+                        AssetDatabase.Refresh();
                     }
                 }
                 else
@@ -202,7 +205,11 @@ namespace ThunderKit.Core.Data
                 Debug.LogError($"Error during Import: {e}");
                 return;
             }
-            AssetDatabase.Refresh();
+            if(ConfigurationIndex > ConfigurationExecutors.Length)
+            {
+                foreach (var ce in ConfigurationExecutors)
+                    ce.Cleanup();
+            }
         }
 
         public static void LocateGame(ThunderKitSettings tkSettings)

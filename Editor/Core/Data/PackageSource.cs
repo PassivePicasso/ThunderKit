@@ -83,11 +83,6 @@ namespace ThunderKit.Core.Data
         private Dictionary<string, PackageGroup> groupMap;
         private List<PackageGroup> packages;
 
-        public PackageSource()
-        {
-            PackageSourceSettings.RegisterSource(this);
-        }
-
         /// <summary>
         /// Generates a new PackageGroup for this PackageSource
         /// </summary>
