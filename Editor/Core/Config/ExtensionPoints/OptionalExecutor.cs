@@ -17,6 +17,8 @@ namespace ThunderKit.Core.Config
         /// </summary>
         public abstract bool Execute();
 
+        public virtual void Cleanup() { }
+
         public bool enabled = true;
 
         public virtual string Description { get; }

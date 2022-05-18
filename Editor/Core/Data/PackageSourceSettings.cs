@@ -20,6 +20,7 @@ namespace ThunderKit.Core.Data
     public class PackageSourceSettings : ThunderKitSetting
     {
         public static List<PackageSource> PackageSources { get; private set; } = new List<PackageSource>();
+        static Queue<(PackageSource source, bool add)> PendingPackageSourceChanges { get; set; } = new Queue<(PackageSource source, bool add)>();
 
         private ListView sourceList;
         private Button addSourceButton;
@@ -27,11 +28,24 @@ namespace ThunderKit.Core.Data
         private Button refreshButton;
         private ScrollView selectedSourceSettings;
 
+        private static string[] PackageSourceFolder = new string[] { "Assets/ThunderKitSettings" };
+
         [InitializeOnLoadMethod]
         public static void InitSources()
         {
-            EditorApplication.update -= ProcessRegistrations;
-            EditorApplication.update += ProcessRegistrations;
+            EditorApplication.projectChanged += RefreshSources;
+            RefreshSources();
+        }
+
+        private static void RefreshSources()
+        {
+            PackageSources?.Clear();
+            if (PackageSources == null)
+                PackageSources = new List<PackageSource>();
+            var assetGuids = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}", PackageSourceFolder);
+            var assetPaths = assetGuids.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
+            foreach (var asset in assetPaths.Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path)))
+                RegisterSource(asset);
         }
 
         private static void ProcessRegistrations()
@@ -47,18 +61,33 @@ namespace ThunderKit.Core.Data
 
         public static void RegisterSource(PackageSource source)
         {
-            PackageSources.Add(source);
+            PendingPackageSourceChanges.Enqueue((source, true));
             EditorApplication.update += DeferredRefresh;
         }
 
         public static void UnregisterSource(PackageSource source)
         {
-            PackageSources.Remove(source);
+            PendingPackageSourceChanges.Enqueue((source, false));
             EditorApplication.update += DeferredRefresh;
         }
 
         private static void DeferredRefresh()
         {
+            while (PendingPackageSourceChanges.Any())
+            {
+                var pendingChange = PendingPackageSourceChanges.Dequeue();
+                if (!pendingChange.source) continue;
+                if (EditorUtility.IsPersistent(pendingChange.source))
+                {
+                    if (pendingChange.add)
+                    {
+                        if (!PackageSources.Contains(pendingChange.source))
+                            PackageSources.Add(pendingChange.source);
+                    }
+                    else
+                        PackageSources.Remove(pendingChange.source);
+                }
+            }
             ProcessRegistrations();
             EditorApplication.update -= DeferredRefresh;
             EditorApplication.update += GetOrCreateSettings<PackageSourceSettings>().RefreshList;

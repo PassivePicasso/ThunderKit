@@ -20,24 +20,24 @@ namespace ThunderKit.Integrations.Thunderstore
         const string SettingsPath = "Assets/ThunderKitSettings";
         [InitializeOnLoadMethod]
         static void CreateThunderKitExtensionSource() => EditorApplication.update += EnsureThunderKitExtensions;
-
+        private static bool isLoadingPages = false;
         private static void EnsureThunderKitExtensions()
         {
             EditorApplication.update -= EnsureThunderKitExtensions;
 
-            var sources = PackageSourceSettings.PackageSources
-                .OfType<ThunderstoreSource>()
-                .ToArray();
-
-            if (!sources.Any(s => s.Url.ToLower().Contains("thunderkit.thunderstore.io")))
+            var basePath = $"{SettingsPath}/ThunderKit Extensions.asset";
+            var source = AssetDatabase.LoadAssetAtPath<ThunderstoreSource>(basePath);
+            if (!source)
             {
-                var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/ThunderKit Extensions.asset");
-                var extSource = ScriptableHelper.EnsureAsset(assetPath, typeof(ThunderstoreSource), asset =>
+                if (File.Exists(basePath))
+                    File.Delete(basePath);
+
+                source = ScriptableHelper.EnsureAsset(basePath, typeof(ThunderstoreSource), asset =>
                 {
-                    var source = asset as ThunderstoreSource;
-                    source.Url = "https://thunderkit.thunderstore.io";
-                }) as UnityEngine.Object;
-                EditorUtility.SetDirty(extSource);
+                    var src = asset as ThunderstoreSource;
+                    src.Url = "https://thunderkit.thunderstore.io";
+                    EditorUtility.SetDirty(src);
+                }) as ThunderstoreSource;
             }
         }
 
@@ -134,11 +134,13 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public void ReloadPages(bool force = false)
         {
+            if (isLoadingPages) return;
             using (var client = new GZipWebClient())
             {
                 client.DownloadStringCompleted += Client_DownloadStringCompleted;
                 var address = new Uri(PackageListApi);
                 client.DownloadStringAsync(address);
+                isLoadingPages = true;
             }
         }
 
@@ -148,6 +150,7 @@ namespace ThunderKit.Integrations.Thunderstore
             var response = JsonUtility.FromJson<PackagesResponse>(json);
             packageListings = response.results;
             LoadPackages();
+            isLoadingPages = false;
         }
 
         public IEnumerable<PackageListing> LookupPackage(string name)
