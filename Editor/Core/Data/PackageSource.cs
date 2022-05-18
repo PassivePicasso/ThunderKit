@@ -66,22 +66,19 @@ namespace ThunderKit.Core.Data
         public abstract string Name { get; }
         public abstract string SourceGroup { get; }
 
-        [NonSerialized]
-        public List<PackageGroup> Packages;
+        public List<PackageGroup> Packages
+        {
+            get => packages ??= new List<PackageGroup>();
+            private set => packages = value;
+        }
 
         private Dictionary<string, HashSet<string>> dependencyMap;
         private Dictionary<string, PackageGroup> groupMap;
-
+        private List<PackageGroup> packages;
 
         public PackageSource()
         {
             PackageSourceSettings.RegisterSource(this);
-        }
-
-        void Awake()
-        {
-            if (Packages != null) return;
-            Packages = new List<PackageGroup>();
         }
 
         /// <summary>
@@ -145,15 +142,8 @@ namespace ThunderKit.Core.Data
         /// <returns>Group DependencyId which dependencyId is mapped to</returns>
         protected abstract string VersionIdToGroupId(string dependencyId);
 
-
-        internal void Clear()
-        {
-            Packages.Clear();
-        }
-
         public void LoadPackages()
         {
-            Clear();
             OnLoadPackages();
             if (Packages.Any())
             {
