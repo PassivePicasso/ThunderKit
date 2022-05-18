@@ -68,7 +68,14 @@ namespace ThunderKit.Core.Data
 
         public List<PackageGroup> Packages
         {
-            get => packages ??= new List<PackageGroup>();
+            get
+            {
+                if (packages == null)
+                    packages = new List<PackageGroup>();
+
+                return packages;
+            }
+
             private set => packages = value;
         }
 
