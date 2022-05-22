@@ -1,3 +1,9 @@
+## 5.2.2
+
+* Make AddressableGraphicsSettings.AddressablesInitialized event public for consumption
+* Add ManagedAssemblyPatcher base class for building binary assembly patching importers
+* Fix issues with PackageSource initialization, cataloging and loading
+
 ## 5.2.1
 
 * fix issue where the ThunderKit Extensions PackageSource would be re-created 
