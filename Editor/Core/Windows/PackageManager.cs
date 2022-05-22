@@ -43,6 +43,12 @@ namespace ThunderKit.Core.Windows
         {
             PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
             PackageSource.SourcesInitialized += PackageSource_SourceInitialized;
+            EditorApplication.update += OnLoad;
+        }
+
+        private void OnLoad()
+        {
+            EditorApplication.update -= OnLoad;
             PackageSource.LoadAllSources();
         }
 
@@ -63,7 +69,6 @@ namespace ThunderKit.Core.Windows
                 PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
                 return;
             }
-
 
             titleContent = new GUIContent("Packages", ThunderKitIcon, "");
             rootVisualElement.Clear();
