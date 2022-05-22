@@ -146,6 +146,7 @@ namespace ThunderKit.Core.Data
 
         public void LoadPackages()
         {
+            Packages?.Clear();
             OnLoadPackages();
             if (Packages.Any())
             {
