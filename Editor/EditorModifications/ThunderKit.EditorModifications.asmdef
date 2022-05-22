@@ -1,0 +1,20 @@
+{
+    "name": "ThunderKit.EditorModifications",
+    "references": [
+        "GUID:b2d2f55a0c47c784eb53488717216dae"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "0Harmony.dll",
+        "MonoMod.RuntimeDetour.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
