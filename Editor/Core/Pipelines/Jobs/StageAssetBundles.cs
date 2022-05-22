@@ -156,7 +156,9 @@ namespace ThunderKit.Pipelines.Jobs
                     }
                 }
                 pipeline.ManifestIndex = -1;
+#if UNITY_2019_1_OR_NEWER
                 CompilationPipeline.RequestScriptCompilation();
+#endif
             }
 
             return Task.CompletedTask;
