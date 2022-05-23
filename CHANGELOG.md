@@ -1,3 +1,7 @@
+## 5.2.3
+
+* Fix ThunderstoreSource only loading for the first source community
+
 ## 5.2.2
 
 * Make AddressableGraphicsSettings.AddressablesInitialized event public for consumption
