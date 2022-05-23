@@ -20,7 +20,6 @@ namespace ThunderKit.Integrations.Thunderstore
         const string SettingsPath = "Assets/ThunderKitSettings";
         [InitializeOnLoadMethod]
         static void CreateThunderKitExtensionSource() => EditorApplication.update += EnsureThunderKitExtensions;
-        private static bool isLoadingPages = false;
         private static void EnsureThunderKitExtensions()
         {
             EditorApplication.update -= EnsureThunderKitExtensions;
@@ -65,6 +64,7 @@ namespace ThunderKit.Integrations.Thunderstore
         internal class ThunderstoreLoadBehaviour : MonoBehaviour { }
 
         private PackageListing[] packageListings;
+        private bool isLoadingPages = false;
 
         public string Url = "https://thunderstore.io";
 
