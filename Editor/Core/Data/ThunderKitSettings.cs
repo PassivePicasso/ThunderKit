@@ -206,19 +206,20 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        public void SetQuickAccess(Pipeline pipeline, bool quickAccess)
+        public void SetQuickAccess(Pipeline pipeline, bool quickAccess) => SetQuickAccess(pipeline, ref QuickAccessPipelines, quickAccess);
+        public void SetQuickAccess(Manifest manifest, bool quickAccess) => SetQuickAccess(manifest, ref QuickAccessManifests, quickAccess);
+
+        void SetQuickAccess<T>(T quickAccessObject, ref T[] quickAccessObjects, bool quickAccess) where T : ComposableObject
         {
+            var enumerableQAO = (quickAccessObjects ?? Enumerable.Empty<T>()).Where(a => a);
+
             if (quickAccess)
-                QuickAccessPipelines = (QuickAccessPipelines ?? System.Array.Empty<Pipeline>()).Where(a => a).Append(pipeline).OrderBy(m => m.name).ToArray();
+                enumerableQAO = enumerableQAO.Append(quickAccessObject).ToArray();
             else
-                QuickAccessPipelines = (QuickAccessPipelines ?? System.Array.Empty<Pipeline>()).Where(a => a).Where(m => m.name != pipeline.name).OrderBy(name => name).ToArray();
+                enumerableQAO = enumerableQAO.Where(qao => qao != quickAccessObject).ToArray();
+
+            quickAccessObjects = enumerableQAO.OrderBy(qao => qao.name).Distinct().ToArray();
         }
-        public void SetQuickAccess(Manifest manifest, bool quickAccess)
-        {
-            if (quickAccess)
-                QuickAccessManifests = (QuickAccessManifests ?? System.Array.Empty<Manifest>()).Where(a => a).Append(manifest).OrderBy(m => m.name).ToArray();
-            else
-                QuickAccessManifests = (QuickAccessManifests ?? System.Array.Empty<Manifest>()).Where(a => a).Where(m => m.name != manifest.name).OrderBy(name => name).ToArray();
-        }
+
     }
 }
