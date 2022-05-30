@@ -62,10 +62,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b4f4581088b47744a114c282abc085d, type: 3}
   m_Name: StageDependencies
   m_EditorClassIdentifier: 
-  Active: 0
+  Active: 1
   StagingPath: <StagingRoot>
-  ExcludedManifests:
-  - {fileID: 11400000, guid: bc5e6d3336544e5361d16e63ddfca327, type: 2}
+  ExcludedManifests: []
 --- !u!114 &114643622350610336
 MonoBehaviour:
   m_ObjectHideFlags: 1
