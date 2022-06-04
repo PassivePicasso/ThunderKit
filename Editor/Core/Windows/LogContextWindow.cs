@@ -2,6 +2,9 @@
 using UnityEditor;
 using ThunderKit.Markdown;
 using System.Linq;
+using ThunderKit.Core.UIElements;
+using System.Collections.Generic;
+using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -17,7 +20,7 @@ namespace ThunderKit.Core.Windows
         internal static LogContextWindow instance;
 
         public LogEntry logEntry;
-        private VisualElement tabSection;
+        private VisualElement popupSection;
         private VisualElement contentSection;
         public static bool IsOpen { get; private set; }
         public static LogContextWindow ShowContext(LogEntry logEntry)
@@ -38,71 +41,86 @@ namespace ThunderKit.Core.Windows
         public override void OnEnable()
         {
             base.OnEnable();
-            Initialize();
+            if (!instance) instance = this;
             IsOpen = true;
+            Initialize();
         }
-        private void OnDisable() => IsOpen = false;
-        private void OnDestroy() => IsOpen = false;
+
+        private void OnDestroy() => OnDisable();
+        private void OnDisable()
+        {
+            IsOpen = false;
+            instance = null;
+        }
 
         private void Initialize()
         {
-            if (tabSection == null) tabSection = rootVisualElement.Q<VisualElement>("tab-section");
+            if (popupSection == null) popupSection = rootVisualElement.Q<VisualElement>("popup-section");
             if (contentSection == null) contentSection = rootVisualElement.Q<VisualElement>("content-section");
+            if (logEntry.context == null || logEntry.context.Length == 0) return;
 
             contentSection.Clear();
-            tabSection.Clear();
-            int anonymousContext = 0;
-            if (logEntry.context != null)
-                foreach (var data in logEntry.context)
+            var dataGroups = new List<String>();
+            var elements = logEntry.context
+                .Select(entry =>
                 {
-                    var lineIndex = data.IndexOf("\r\n");
-                    var firstLine = lineIndex > 0 ? data.Substring(0, lineIndex) : $"Context {anonymousContext++}";
-                    var remainingData = lineIndex > 0 ? data.Substring(firstLine.Length) : data;
+                    var header = entry;
+                    var newLineIndex = entry.IndexOf("\r");
+                    if (newLineIndex < 0)
+                        newLineIndex = entry.IndexOf("\n");
+                    if (newLineIndex >= 0)
+                        header = entry.Substring(0, newLineIndex);
+                    return header;
+                }).ToArray();
 
-                    var tabButton = new Toggle();
-                    tabButton.value = false;
-                    tabButton.text = firstLine;
-                    tabButton.AddToClassList("tab-button");
-                    tabButton.name = $"tab-context";
-
-                    tabSection.Add(tabButton);
-
-                    var markdownContent = new MarkdownElement { Data = remainingData, MarkdownDataType = MarkdownDataType.Text };
-                    var stacktraceScrollView = new ScrollView();
-                    stacktraceScrollView.Add(markdownContent);
-                    stacktraceScrollView.name = $"content-{firstLine.ToLowerInvariant()}";
-                    stacktraceScrollView.StretchToParentSize();
-#if UNITY_2019_1_OR_NEWER
-#elif UNITY_2018_1_OR_NEWER
-                    stacktraceScrollView.stretchContentWidth = true;
-#endif
-                    contentSection.Add(stacktraceScrollView);
+            if (elements != null && elements.Any())
+                dataGroups.AddRange(elements);
+            PopupField<string> sectionSelector = null;
 
 #if UNITY_2019_1_OR_NEWER
-                    tabButton.RegisterValueChangedCallback(evt =>
+            if (dataGroups.Count == 0)
+                sectionSelector = new PopupField<string>("Context");
+            else
+                sectionSelector = new PopupField<string>("Context", dataGroups, 0);
 #elif UNITY_2018_1_OR_NEWER
-                    tabButton.OnValueChanged(evt =>
+            sectionSelector = new PopupField<string>(dataGroups, dataGroups.First());
 #endif
-                    {
-                        if (evt.newValue)
-                        {
-                            foreach (var child in contentSection.Children())
-                                child.visible = stacktraceScrollView == child;
 
-                            foreach (var child in tabSection.Children().OfType<Toggle>())
-                                if (child != tabButton)
-                                    child.SetValueWithoutNotify(false);
+            popupSection.Clear();
+            popupSection.Add(sectionSelector);
 
-                            if (stacktraceScrollView.visible && markdownContent.childCount == 0)
-                                markdownContent.RefreshContent();
-                        }
-                    });
-                }
+            var markdownContent = new MarkdownElement { MarkdownDataType = MarkdownDataType.Text };
+            void UpdateContext(string entry)
+            {
+                var data = entry;
+                var newLineIndex = entry.IndexOf("\r");
+                if (newLineIndex < 0)
+                    newLineIndex = entry.IndexOf("\n");
+                if (newLineIndex >= 0)
+                    data = entry.Substring(newLineIndex);
 
-            var firstDetail = tabSection.Children().OfType<Toggle>().FirstOrDefault();
-            if (firstDetail != null) firstDetail.value = true;
-            if (tabSection.childCount == 1)
-                firstDetail.SetEnabled(false);
+                markdownContent.Data = data;
+                markdownContent.RefreshContent();
+            }
+            if (logEntry.context != null && logEntry.context.Length > 0)
+            {
+                UpdateContext(logEntry.context[0]);
+            }
+            var stacktraceScrollView = new ScrollView();
+            stacktraceScrollView.Add(markdownContent);
+            stacktraceScrollView.StretchToParentSize();
+
+#if UNITY_2019_1_OR_NEWER
+            sectionSelector.RegisterValueChangedCallback(evt =>
+#elif UNITY_2018_1_OR_NEWER
+            sectionSelector.OnValueChanged(evt =>
+#endif
+            {
+                var index = dataGroups.IndexOf(evt.newValue);
+                UpdateContext(logEntry.context[index]);
+            });
+
+            contentSection.Add(stacktraceScrollView);
             rootVisualElement.Bind(new SerializedObject(this));
         }
 

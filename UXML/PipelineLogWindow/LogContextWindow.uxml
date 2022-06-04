@@ -11,9 +11,7 @@ xsi:schemaLocation="
                         UnityEditor.PackageManager.UI ../../../../../../UIElementsSchema/UnityEditor.PackageManager.UI.xsd
 ">
     <ui:VisualElement name="log-inspector">
-        <ui:VisualElement name="tab-element">
-            <ui:ScrollView name="tab-section" />
-        </ui:VisualElement>
+        <ui:VisualElement name="popup-section" />
         <ui:VisualElement name="content-section" >
             <ui:ScrollView name="stacktrace-scroll-view" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px;" />
         </ui:VisualElement>
