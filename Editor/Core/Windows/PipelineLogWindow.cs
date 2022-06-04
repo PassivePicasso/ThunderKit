@@ -145,13 +145,13 @@ namespace ThunderKit.Core.Windows
 #endif
             )
         {
-            if (LogContextWindow.IsOpen)
+            if (LogContextWindow.instance)
                 LogContextWindow.ShowContext(obj.OfType<LogEntry>().First());
         }
 
         protected virtual void ShowButton(Rect r)
         {
-            GUIStyle lockButton = "IN LockButton";
+            GUIStyle lockButton = new GUIStyle("IN LockButton");
             locked = GUI.Toggle(r, locked, new GUIContent(), lockButton);
         }
 
@@ -160,7 +160,10 @@ namespace ThunderKit.Core.Windows
             var entry = (LogEntry)logEntryListView.itemsSource[entryIndex];
             var timeStamp = element.Q<Label>("time-stamp");
             var shotContextButton = element.Q<Button>("show-context-button");
-            
+#if UNITY_2019_1_OR_NEWER
+#elif UNITY_2018_1_OR_NEWER
+#endif
+
             var icon = element.Q<VisualElement>("icon-log-level");
             var messageElement = element.Q<MarkdownElement>("message-label");
 
@@ -182,10 +185,19 @@ namespace ThunderKit.Core.Windows
             if (entry.context != null && entry.context.Length > 0)
             {
                 shotContextButton.RemoveFromClassList("hidden");
+
+                void Update()
+                {
 #if UNITY_2020_1_OR_NEWER
-                shotContextButton.clickable = new Clickable(() => UpdateContextWindow(new object[] { entry }));
+                    UpdateContextWindow(new object[] { entry });
 #else
-                shotContextButton.clickable = new Clickable(() => UpdateContextWindow(entry));
+                    UpdateContextWindow(entry);
+#endif
+                }
+#if UNITY_2019_1_OR_NEWER
+                shotContextButton.clickable = new Clickable(Update);
+#elif UNITY_2018_1_OR_NEWER
+                shotContextButton.clickable.clicked += Update;
 #endif
             }
             else

@@ -151,17 +151,19 @@
 }
 
 #log-entry #show-context-button {
-	width: 22px;
-	height: 22px;
+	width: 24px;
+	height: 24px;
 	position: absolute;
+	padding-left: 0px;
+	padding-top: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
 	right: 5px;
-	padding-left: 2px;
-	padding-top: 2px;
-	padding-right: 2px;
-	padding-bottom: 2px;
+	justify-content: center;
 }
 #show-context-button-icon {
+	background-image: resource("d_ViewToolZoom");
+	align-self: center;
 	width: 16px;
 	height: 16px;
-	background-image: resource("d_ViewToolZoom");
 }
