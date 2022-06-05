@@ -49,33 +49,28 @@ These initial steps are the universal basic setup for any ThunderKit project.
       to be exited from the Windows Notification Area
 3. Create a new Unity Project with the installed version of Unity
 4. Install ThunderKit
-    - there are two ways of installing thunderkit.
-    - Manual:
-        - Navigate to the Project folder with your file explorer and open the
-          Packages folder 
-        - Open the manifest.json file in this folder and add the following to
-          the top of dependencies
-        `"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git",` 
-        - Save and close the manifest.json file and focus Unity to complete the
-          process.
-    - Unity Package Manager
-        - Open the Unity Package Manager
-        - Click the Plus icon at the top left corner
-        - Select "Add Package from Git URL..."
-        - Paste the following on the text field
-        `https://github.com/PassivePicasso/ThunderKit.git#5.0.0` 
-          - If you want to install a specific branch or tag of ThunderKit 
-            append #branchname 
-          - ThunderKit tags each versioned released and specific versions can 
-            be installed in the same way using tags
-          - (Recommended) Version specific install: 
-            `https://github.com/PassivePicasso/ThunderKit.git#5.0.0` 
-            - Upgrading to a new version of ThunderKit currently requires that
-              the user edits the manifest.json and change the version number
-              after the #
-          - Branch specific install:  `https://github.com/PassivePicasso/ThunderKit.git#RC_5_0_0`
-          - Commit specific install:  `https://github.com/PassivePicasso/ThunderKit.git#99d7bc7b6d7cf196da41604e11525be9fb452b85`
-        - Click add and close the package manager
+    There are two ways of installing thunderkit, either manually editing the projects manifest.json or by using the Unity Package Manager
+    #### Manual:
+    - Open the manifest.json file in ProjectRoot/Packages
+    - Add the following to the top of dependencies
+      `"com.passivepicasso.thunderkit":"https://github.com/PassivePicasso/ThunderKit.git",` 
+    - Save and close the file
+    - Focus Unity to start the install
+        - If you encounter an error when you go back into Unity, make sure the syntax for the json is correct
+        - Examples of errors are extra or missing characters such as `,`, `{` and `}`
+    #### Unity Package Manager
+    - Add Package from Git URL by using the Unity Package Manager plus icon at the top left corner
+    - Enter a url from the following options;
+      ##### Version Specific (Recommended)
+	    The tags on the [Releases](https://github.com/PassivePicasso/ThunderKit/releases) page can be used to install a specific release
+	    Install a tagged release using this format `https://github.com/PassivePicasso/ThunderKit.git#Tag` 
+	    replacing `Tag` tag name for the release
+	    - For example, if you want to install Release 5.2.3 use `https://github.com/PassivePicasso/ThunderKit.git#5.2.3`
+	    - The tag can be found on both the release list page in the sidebar and on the specific release page
+	      on the header of the release section
+      ##### Master Build (Unstable) 
+	  * `https://github.com/PassivePicasso/ThunderKit.git`
+	  * Up to the moment, this can be unstable at times and isn't recommended for most users
 5. Verify that the [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) 
    window opened automatically.
     - If the ThunderKit Settings window did not open after the installation 
