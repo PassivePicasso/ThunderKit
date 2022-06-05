@@ -19,11 +19,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             <!--<ui:Button name="build-addressable-index-button" text="Build Search Index"/>-->
         </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
-            <ui:VisualElement style="background-color: rgba(0, 0, 0, 0.25); margin-right: 4px; flex-grow: 0.5;">
+            <ui:VisualElement name="directory-list">
                 <ui:Label text="Directories" class="thunderkit-header" />
                 <ui:ListView name="directory" item-height="20" class="grow" />
             </ui:VisualElement>
-            <ui:ListView name="directory-content" item-height="64" class="grow" />
+            <ui:ListView name="directory-content" item-height="68" class="grow" />
         </ui:VisualElement>
     </ui:VisualElement>
 

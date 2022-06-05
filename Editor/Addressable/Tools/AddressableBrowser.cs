@@ -40,10 +40,12 @@ namespace ThunderKit.Addressable.Tools
 
         private const string CopyButton = "addressable-copy-button";
         private const string NameLabel = "addressable-label";
+        private const string TypeLabel = "addressable-type-label";
         private const string PreviewIcon = "addressable-icon";
         private const string AddressableAssetName = "addressable-asset";
         private const string ButtonPanel = "addressable-button-panel";
         private const string LoadSceneButton = "addressable-load-scene-button";
+        private const string AddressableLabels = "addressable-labels";
         List<string> CatalogDirectories;
         Dictionary<string, List<string>> DirectoryContents;
         static Dictionary<string, Type> LocationType;
@@ -225,7 +227,8 @@ namespace ThunderKit.Addressable.Tools
         async void BindAsset(VisualElement element, int i)
         {
             var icon = element.Q<Image>(PreviewIcon);
-            var label = element.Q<Label>(NameLabel);
+            var nameLabel = element.Q<Label>(NameLabel);
+            var typeLabel = element.Q<Label>(TypeLabel);
             var copyBtn = element.Q<Button>(CopyButton);
             var loadSceneBtn = element.Q<Button>(LoadSceneButton);
             copyBtn.clickable = new Clickable(() =>
@@ -234,7 +237,8 @@ namespace ThunderKit.Addressable.Tools
                 EditorGUIUtility.systemCopyBuffer = text;
             });
             var address = (string)directoryContent.itemsSource[i];
-            label.text = address;
+            nameLabel.text = address;
+            typeLabel.text = LocationType[address].FullName;
 
             icon.image = null;
             if (!address.EndsWith(".unity"))
@@ -325,25 +329,32 @@ namespace ThunderKit.Addressable.Tools
 
             return preview;
         }
-        private async void DirectoryContent_onSelectionChanged(List<object> obj)
+        private void DirectoryContent_onSelectionChanged(List<object> obj)
         {
             try
             {
                 var first = obj.OfType<string>().First();
                 if (first.EndsWith(".unity")) return;
                 var firstOp = Addressables.LoadAssetAsync<Object>(first);
-                var firstObj = await firstOp.Task;
+                var firstObj = firstOp.WaitForCompletion();
                 firstObj.hideFlags |= HideFlags.NotEditable;
                 Selection.activeObject = firstObj;
             }
-            catch { }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
         }
+
         VisualElement DirectoryLabel() => new Label { name = NameLabel };
         VisualElement AssetLabel()
         {
             var element = new VisualElement { name = AddressableAssetName };
             element.Add(new Image { name = PreviewIcon });
-            element.Add(new Label { name = NameLabel });
+            var labelContainer = new VisualElement {name = AddressableLabels };
+            labelContainer.Add(new Label { name = NameLabel });
+            labelContainer.Add(new Label { name = TypeLabel });
+            element.Add(labelContainer);
 
             var buttonPanel = new VisualElement { name = ButtonPanel };
             buttonPanel.Add(new Button { name = CopyButton, text = "Copy Address" });
