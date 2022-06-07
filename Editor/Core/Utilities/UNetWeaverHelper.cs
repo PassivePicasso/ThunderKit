@@ -6,16 +6,16 @@ using UnityEngine;
 
 namespace ThunderKit.Core.Utilities
 {
-    public static class UNetWeaverHelper
+    public class UNetWeaverHelper : MarshalByRefObject
     {
         private const BindingFlags allFlags = (BindingFlags)(-1);
 
-        public static MethodInfo GetProcessMethod()
+        public MethodInfo GetProcessMethod()
         {
             return GetProcessMethodBeforeUnity2019() ?? GetProcessMethodAfterUnity2019();
         }
 
-        private static MethodInfo GetProcessMethodBeforeUnity2019()
+        private MethodInfo GetProcessMethodBeforeUnity2019()
         {
             var editorAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "UnityEditor");
             if (editorAssembly == null)
@@ -50,7 +50,7 @@ namespace ThunderKit.Core.Utilities
             return null;
         }
 
-        private static MethodInfo GetProcessMethodFromAssembly(Assembly uNetWeaverAssembly)
+        private MethodInfo GetProcessMethodFromAssembly(Assembly uNetWeaverAssembly)
         {
             var uNetWeaverProgramType = uNetWeaverAssembly.GetType("Unity.UNetWeaver.Program");
             if (uNetWeaverProgramType == null)
@@ -61,7 +61,7 @@ namespace ThunderKit.Core.Utilities
             return uNetWeaverProgramType.GetMethod("Process", allFlags);
         }
 
-        private static MethodInfo GetProcessMethodAfterUnity2019()
+        private MethodInfo GetProcessMethodAfterUnity2019()
         {
             Assembly weaverAssembly = null;
 
