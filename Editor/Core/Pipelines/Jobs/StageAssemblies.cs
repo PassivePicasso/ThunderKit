@@ -136,8 +136,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         async Task Build(Pipeline pipeline, string resolvedArtifactPath, (UnityEditor.Compilation.Assembly asm, AssemblyDefinitionAsset asmDefAsset, AsmDef asmDef, AssemblyDefinitions datum)[] definitions, int definitionIndex = 0)
         {
-            if (definitionIndex == definitions.Length - 1) return;
-
+            if (definitionIndex == definitions.Length) return;
             //Define all variables at start as many are captured by OnBuildFinished
             var manifestIndex = pipeline.ManifestIndex;
             var definition = definitions[definitionIndex];
@@ -232,7 +231,13 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         private static void TryUNetWeave(UnityEditor.Compilation.Assembly assembly, string assemblyName, string outputPath)
         {
-            MethodInfo uNetProcessMethod = UNetWeaverHelper.GetProcessMethod();
+            var domain = AppDomain.CreateDomain("UnetWeaver");
+            
+            domain.Load(typeof(UNetWeaverHelper).Assembly.GetName());
+
+            var weaverHelper = (UNetWeaverHelper)domain.CreateInstanceAndUnwrap(typeof(UNetWeaverHelper).Assembly.FullName, typeof(UNetWeaverHelper).FullName);
+            var uNetProcessMethod = weaverHelper.GetProcessMethod();
+
             if (uNetProcessMethod != null)
             {
                 var enginePath = InternalEditorUtility.GetEngineCoreModuleAssemblyPath();
@@ -273,6 +278,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     });
                 }
             }
+
+            AppDomain.Unload(domain);
         }
     }
 }
