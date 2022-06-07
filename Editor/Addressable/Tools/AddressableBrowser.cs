@@ -238,7 +238,10 @@ namespace ThunderKit.Addressable.Tools
             });
             var address = (string)directoryContent.itemsSource[i];
             nameLabel.text = address;
-            typeLabel.text = LocationType[address].FullName;
+            string typeText = string.Empty;
+            if (LocationType.ContainsKey(address))
+                typeText = LocationType[address].FullName;
+            typeLabel.text = typeText;
 
             icon.image = null;
             if (!address.EndsWith(".unity"))
@@ -351,7 +354,7 @@ namespace ThunderKit.Addressable.Tools
         {
             var element = new VisualElement { name = AddressableAssetName };
             element.Add(new Image { name = PreviewIcon });
-            var labelContainer = new VisualElement {name = AddressableLabels };
+            var labelContainer = new VisualElement { name = AddressableLabels };
             labelContainer.Add(new Label { name = NameLabel });
             labelContainer.Add(new Label { name = TypeLabel });
             element.Add(labelContainer);
