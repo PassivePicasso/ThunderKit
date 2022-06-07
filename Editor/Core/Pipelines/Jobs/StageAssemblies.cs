@@ -165,10 +165,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 while (builder.status == AssemblyBuilderStatus.IsCompiling)
                     await Task.Delay(100);
             }
-            if (File.Exists("Temp/com.unity.multiplayer-hlapi.Runtime.dll"))
-                File.Delete("Temp/com.unity.multiplayer-hlapi.Runtime.dll");
-            if (File.Exists("Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Runtime.dll"))
-                File.Delete("Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Runtime.dll");
 
             await Build(pipeline, resolvedArtifactPath, definitions, uNetProcessMethod, definitionIndex + 1);
 
