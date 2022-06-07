@@ -20,7 +20,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
     [PipelineSupport(typeof(Pipeline)), ManifestProcessor]
     public class StageAssemblies : PipelineJob
     {
-        public static readonly HashSet<AssemblyBuilder> BuildStatus = new HashSet<AssemblyBuilder>();
         static string Combine(params string[] component) => Path.Combine(component).Replace('\\', '/');
 #pragma warning disable CS0649 
 
@@ -124,73 +123,94 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             MethodInfo uNetProcessMethod = UNetWeaverHelper.GetProcessMethod();
 
-            foreach (var definition in definitions)
+            try
             {
-                var assemblyName = $"{definition.asm.name}.dll";
-                var targetName = Path.GetFileNameWithoutExtension(definition.asm.name);
-                var assemblyOutputPath = Combine(resolvedArtifactPath, assemblyName);
-                var builder = new AssemblyBuilder(assemblyOutputPath, definition.asm.sourceFiles)
-                {
-                    additionalReferences = definition.asm.allReferences,
-                };
-                builder.excludeReferences = builder.defaultReferences.Where(rf => rf.Contains(assemblyName)).ToArray();
-                builder.buildTargetGroup = buildTargetGroup;
-
-                var index = pipeline.ManifestIndex;
-                void OnBuildStarted(string path) => pipeline.Log(LogLevel.Information, $"Building : {path}");
-                void OnBuildFinished(string path, CompilerMessage[] messages)
-                {
-                    BuildStatus.Remove(builder);
-                    if (messages.Any())
-                        foreach (var message in messages.OrderBy(msg => msg.type))
-                        {
-                            var extraData = $"{message.file} ({message.line}:{message.column})";
-                            switch (message.type)
-                            {
-                                case CompilerMessageType.Error:
-                                    pipeline.Log(LogLevel.Error, message.message, extraData);
-                                    break;
-                                case CompilerMessageType.Warning:
-                                    pipeline.Log(LogLevel.Warning, message.message, extraData);
-                                    break;
-                            }
-                        }
-
-                    pipeline.Log(LogLevel.Information, $"Build Completed: ``` {path} ```");
-
-                    var prevIndex = pipeline.ManifestIndex;
-                    pipeline.ManifestIndex = index;
-                    var resolvedPaths = definition.datum.StagingPaths
-                        .Select(p => PathReference.ResolvePath(p, pipeline, this)).ToArray();
-
-                    foreach (var outputPath in resolvedPaths)
-                    {
-                        Directory.CreateDirectory(outputPath);
-                        if (stageDebugDatabases)
-                            CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
-                        else
-                            CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
-
-                        TryUNetWeave(uNetProcessMethod, definition, assemblyName, outputPath);
-                    }
-                    pipeline.ManifestIndex = prevIndex;
-                }
-                builder.buildTarget = buildTarget;
-                builder.buildFinished += OnBuildFinished;
-                builder.buildStarted += OnBuildStarted;
-
-                if (File.Exists(assemblyOutputPath))
-                    File.Delete(assemblyOutputPath);
-                BuildStatus.Add(builder);
-                builder.Build();
+                await Build(pipeline, resolvedArtifactPath, definitions, uNetProcessMethod);
+            }
+            finally
+            {
+                while (EditorApplication.isCompiling)
+                    await Task.Delay(1000);
             }
 
-            while (EditorApplication.isCompiling)
-            {
-                await Task.Delay(100);
-            }
         }
 
+        async Task Build(Pipeline pipeline, string resolvedArtifactPath, (UnityEditor.Compilation.Assembly asm, AssemblyDefinitionAsset asmDefAsset, AsmDef asmDef, AssemblyDefinitions datum)[] definitions, MethodInfo uNetProcessMethod, int definitionIndex = 0)
+        {
+            if (definitionIndex == definitions.Length - 1) return;
+
+            //Define all variables at start as many are captured by OnBuildFinished
+            var manifestIndex = pipeline.ManifestIndex;
+            var definition = definitions[definitionIndex];
+            var assemblyName = $"{definition.asm.name}.dll";
+            var targetName = Path.GetFileNameWithoutExtension(definition.asm.name);
+            var assemblyOutputPath = Combine(resolvedArtifactPath, assemblyName);
+
+            var builder = new AssemblyBuilder(assemblyOutputPath, definition.asm.sourceFiles)
+            {
+                additionalReferences = definition.asm.allReferences,
+            };
+            builder.excludeReferences = builder.defaultReferences.Where(rf => rf.Contains(assemblyName)).ToArray();
+            builder.buildTargetGroup = buildTargetGroup;
+            builder.buildTarget = buildTarget;
+            builder.buildFinished += OnBuildFinished;
+            builder.buildStarted += OnBuildStarted;
+
+            if (File.Exists(assemblyOutputPath))
+                File.Delete(assemblyOutputPath);
+
+            if (builder.Build())
+            {
+                await Task.Delay(100);
+                while (builder.status == AssemblyBuilderStatus.IsCompiling)
+                    await Task.Delay(100);
+            }
+            if (File.Exists("Temp/com.unity.multiplayer-hlapi.Runtime.dll"))
+                File.Delete("Temp/com.unity.multiplayer-hlapi.Runtime.dll");
+            if (File.Exists("Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Runtime.dll"))
+                File.Delete("Library/ScriptAssemblies/com.unity.multiplayer-hlapi.Runtime.dll");
+
+            await Build(pipeline, resolvedArtifactPath, definitions, uNetProcessMethod, definitionIndex + 1);
+
+
+            void OnBuildStarted(string path) => pipeline.Log(LogLevel.Information, $"Building : {path}");
+            void OnBuildFinished(string path, CompilerMessage[] messages)
+            {
+                if (messages.Any())
+                    foreach (var message in messages.OrderBy(msg => msg.type))
+                    {
+                        var extraData = $"{message.file} ({message.line}:{message.column})";
+                        switch (message.type)
+                        {
+                            case CompilerMessageType.Error:
+                                pipeline.Log(LogLevel.Error, message.message, extraData);
+                                break;
+                            case CompilerMessageType.Warning:
+                                pipeline.Log(LogLevel.Warning, message.message, extraData);
+                                break;
+                        }
+                    }
+
+                pipeline.Log(LogLevel.Information, $"Build Completed: ``` {path} ```");
+
+                var prevIndex = pipeline.ManifestIndex;
+                pipeline.ManifestIndex = manifestIndex;
+                var resolvedPaths = definition.datum.StagingPaths
+                    .Select(p => PathReference.ResolvePath(p, pipeline, this)).ToArray();
+
+                foreach (var outputPath in resolvedPaths)
+                {
+                    Directory.CreateDirectory(outputPath);
+                    if (stageDebugDatabases)
+                        CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
+                    else
+                        CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
+
+                    TryUNetWeave(uNetProcessMethod, definition, assemblyName, outputPath);
+                }
+                pipeline.ManifestIndex = prevIndex;
+            }
+        }
         void CopyFiles(Pipeline pipeline, string sourcePath, string outputPath, params string[] patterns)
         {
             var builder = new StringBuilder("Assembly Files");
