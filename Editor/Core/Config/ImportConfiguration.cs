@@ -279,7 +279,7 @@ namespace ThunderKit.Core.Data
             }
 
             if (!versionMatch)
-                Debug.Log($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}), aborting setup." +
+                Debug.LogError($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}), aborting setup." +
                       $"\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.");
             return versionMatch;
         }
