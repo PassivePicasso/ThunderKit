@@ -121,11 +121,10 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 ).Where(def => def.asm != null)
                 .ToArray();
 
-            MethodInfo uNetProcessMethod = UNetWeaverHelper.GetProcessMethod();
 
             try
             {
-                await Build(pipeline, resolvedArtifactPath, definitions, uNetProcessMethod);
+                await Build(pipeline, resolvedArtifactPath, definitions);
             }
             finally
             {
@@ -135,7 +134,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         }
 
-        async Task Build(Pipeline pipeline, string resolvedArtifactPath, (UnityEditor.Compilation.Assembly asm, AssemblyDefinitionAsset asmDefAsset, AsmDef asmDef, AssemblyDefinitions datum)[] definitions, MethodInfo uNetProcessMethod, int definitionIndex = 0)
+        async Task Build(Pipeline pipeline, string resolvedArtifactPath, (UnityEditor.Compilation.Assembly asm, AssemblyDefinitionAsset asmDefAsset, AsmDef asmDef, AssemblyDefinitions datum)[] definitions, int definitionIndex = 0)
         {
             if (definitionIndex == definitions.Length - 1) return;
 
@@ -166,8 +165,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     await Task.Delay(100);
             }
 
-            await Build(pipeline, resolvedArtifactPath, definitions, uNetProcessMethod, definitionIndex + 1);
-
+            await Build(pipeline, resolvedArtifactPath, definitions, definitionIndex + 1);
 
             void OnBuildStarted(string path) => pipeline.Log(LogLevel.Information, $"Building : {path}");
             void OnBuildFinished(string path, CompilerMessage[] messages)
@@ -194,6 +192,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 var resolvedPaths = definition.datum.StagingPaths
                     .Select(p => PathReference.ResolvePath(p, pipeline, this)).ToArray();
 
+
                 foreach (var outputPath in resolvedPaths)
                 {
                     Directory.CreateDirectory(outputPath);
@@ -202,11 +201,13 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     else
                         CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
 
-                    TryUNetWeave(uNetProcessMethod, definition, assemblyName, outputPath);
+                    TryUNetWeave(definition.asm, assemblyName, outputPath);
                 }
                 pipeline.ManifestIndex = prevIndex;
             }
         }
+
+
         void CopyFiles(Pipeline pipeline, string sourcePath, string outputPath, params string[] patterns)
         {
             var builder = new StringBuilder("Assembly Files");
@@ -229,10 +230,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
             pipeline.Log(LogLevel.Information, $"staging ``` {sourcePath} ``` in ``` {outputPath} ```\r\n", builder.ToString());
         }
 
-        private static void TryUNetWeave(MethodInfo uNetProcessMethod,
-            (UnityEditor.Compilation.Assembly asm, AssemblyDefinitionAsset asmDefAsset, AsmDef asmDef, AssemblyDefinitions datum) definition,
-            string assemblyName, string outputPath)
+        private static void TryUNetWeave(UnityEditor.Compilation.Assembly assembly, string assemblyName, string outputPath)
         {
+            MethodInfo uNetProcessMethod = UNetWeaverHelper.GetProcessMethod();
             if (uNetProcessMethod != null)
             {
                 var enginePath = InternalEditorUtility.GetEngineCoreModuleAssemblyPath();
@@ -251,7 +251,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                         networkingDllPath,
                         outputPath,
                         new[] { assemblyToWeavePath },
-                        definition.asm.allReferences,
+                        assembly.allReferences,
                         null,
                         (Action<string>)Debug.LogWarning,
                         (Action<string>)Debug.LogError
@@ -267,7 +267,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                         networkingDllPath,
                         outputPath,
                         new[] { assemblyToWeavePath },
-                        definition.asm.allReferences,
+                        assembly.allReferences,
                         (Action<string>)Debug.LogWarning,
                         (Action<string>)Debug.LogError
                     });
