@@ -10,6 +10,7 @@ using ThunderKit.Markdown.Extensions.Json;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Networking;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -121,12 +122,26 @@ namespace ThunderKit.Markdown
                 case MarkdownDataType.Source:
                     if (!".md".Equals(Path.GetExtension(Data))) break;
 
-                    var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Data);
-                    if (asset)
-                        markdown = asset.text;
+                    if (!Uri.TryCreate(Data, UriKind.RelativeOrAbsolute, out var uri)) break;
+                    if (uri.IsAbsoluteUri)
+                        switch (uri.Scheme)
+                        {
+                            case "https":
+                                var asyncOp = UnityWebRequest.Get(uri).SendWebRequest();
+                                while (!asyncOp.isDone) { }
+                                markdown = asyncOp.webRequest.downloadHandler.text;
+                                break;
+                            default:
+                                break;
+                        }
                     else
-                        markdown = string.Empty;
-
+                    {
+                        var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(Data);
+                        if (asset)
+                            markdown = asset.text;
+                        else
+                            markdown = string.Empty;
+                    }
                     break;
                 case MarkdownDataType.Text:
                     markdown = Data;

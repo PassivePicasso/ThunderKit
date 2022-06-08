@@ -46,9 +46,20 @@ namespace ThunderKit.Core.Windows
 
                     if (schemelessUri.Length == 0) return;
 
-                    string path = schemelessUri.StartsWith("GUID/") ?
-                    AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length))
-                    : schemelessUri;
+                    string path = schemelessUri;
+                    if (schemelessUri.StartsWith("GUID/"))
+                    {
+                        string pathAndQuery = schemelessUri.Substring("GUID/".Length);
+                        int hashIndex = pathAndQuery.IndexOf("#");
+                        if (hashIndex > -1)
+                        {
+                            var hashValue = pathAndQuery.Substring(hashIndex);
+                            pathAndQuery = pathAndQuery.Substring(0, hashIndex);
+                            path = $"{AssetDatabase.GUIDToAssetPath(pathAndQuery)}{hashValue}";
+                        }
+                        else
+                            path = AssetDatabase.GUIDToAssetPath(pathAndQuery);
+                    }
 
                     ShowThunderKitDocumentation(path);
                 },
@@ -58,9 +69,20 @@ namespace ThunderKit.Core.Windows
 
                     if (schemelessUri.Length != 0)
                     {
-                        string path = schemelessUri.StartsWith("GUID/") ?
-                        AssetDatabase.GUIDToAssetPath(schemelessUri.Substring("GUID/".Length))
-                        : schemelessUri;
+                        string path = schemelessUri;
+                        if (schemelessUri.StartsWith("GUID/"))
+                        {
+                            string pathAndQuery = schemelessUri.Substring("GUID/".Length);
+                            int hashIndex = pathAndQuery.IndexOf("#");
+                            if (hashIndex > -1)
+                            {
+                                var hashValue = pathAndQuery.Substring(hashIndex);
+                                pathAndQuery = pathAndQuery.Substring(0, hashIndex);
+                                path = $"{AssetDatabase.GUIDToAssetPath(pathAndQuery)}{hashValue}";
+                            }
+                            else
+                                path = AssetDatabase.GUIDToAssetPath(pathAndQuery);
+                        }
                         label.tooltip = $"documentation://{path}";
                     }
 
@@ -79,6 +101,7 @@ namespace ThunderKit.Core.Windows
 
         internal static Documentation instance;
         private ScrollView indexScroller;
+        private ScrollView contentScroller;
         private MarkdownElement markdownElement;
         private VisualElement pageList;
 
@@ -100,6 +123,7 @@ namespace ThunderKit.Core.Windows
 
         private void MarkdownFileWatcher_DocumentUpdated(object sender, (string path, MarkdownFileWatcher.ChangeType change) e)
         {
+            if (!this) return;
             Initialize();
             switch (e.change)
             {
@@ -146,6 +170,7 @@ namespace ThunderKit.Core.Windows
                     .ToArray();
 
             indexScroller = rootVisualElement.Q<ScrollView>("index-scroller");
+            contentScroller = rootVisualElement.Q<ScrollView>("content-scroller");
             rootVisualElement.AddManipulator(new MarkdownContextualMenuManipulator());
 
             markdownElement = rootVisualElement.Q<MarkdownElement>(RootDocumentationElementName);
@@ -204,7 +229,6 @@ namespace ThunderKit.Core.Windows
             var cleaned = path.Replace("\\", "-").Replace("/", "-").Replace(" ", "_").ToLower();
             cleaned = cleaned.Substring(cleaned.LastIndexOf("documentation-") + "documentation-".Length);
             return cleaned;
-
         }
 
         private void OnNavigate(KeyDownEvent evt)
@@ -312,13 +336,25 @@ namespace ThunderKit.Core.Windows
         public void LoadSelection(string pagePath)
         {
             var pageEntryQuery = rootVisualElement.Query<PageEntry>().ToList();
-            var entry = pageEntryQuery.FirstOrDefault(pe => pe.PagePath.Equals(pagePath, System.StringComparison.OrdinalIgnoreCase));
-            if (entry != null)
+            var length = pagePath.IndexOf("#");
+            if (length == -1)
+            {
+                var entry = pageEntryQuery.FirstOrDefault(pe => pe.PagePath.Equals(pagePath, StringComparison.OrdinalIgnoreCase));
                 LoadSelection(entry);
+            }
+            else
+            {
+                var pagePathWithoutAnchor = pagePath.Substring(0, length);
+                var anchor = pagePath.Substring(length + 1);
+                var entry = pageEntryQuery.FirstOrDefault(pe => pe.PagePath.Equals(pagePathWithoutAnchor, StringComparison.OrdinalIgnoreCase));
+
+                LoadSelection(entry.rootEntry, anchor);
+            }
         }
 
-        private void LoadSelection(PageEntry element)
+        private void LoadSelection(PageEntry element, string targetAnchor = null)
         {
+            if (element == null) return;
             var pageList = rootVisualElement.Q("page-list");
             var selectedElement = pageList.Q(className: SelectedClass);
             selectedElement?.RemoveFromClassList(SelectedClass);
@@ -334,23 +370,103 @@ namespace ThunderKit.Core.Windows
 
                 parent = parent.parentEntry;
             }
-
+            element = element.rootEntry;
             markdownElement.Data = element.PagePath;
             markdownElement.RefreshContent();
+            string localAnchor = targetAnchor;
 
+            EditorApplication.update += DoNext;
+            void DoNext()
+            {
+                EditorApplication.update -= DoNext;
+                var anchors = markdownElement.Query().Class("anchor").Build().ToList();
+
+                if (!string.IsNullOrEmpty(localAnchor))
+                {
+                    foreach (var anchor in anchors)
+                    {
+                        if (localAnchor == anchor.name)
+                        {
+                            var originalOffset = contentScroller.scrollOffset;
+                            contentScroller.ScrollTo(anchor);
+                            var offset = contentScroller.scrollOffset;
+                            if (originalOffset.y < offset.y)
+                                offset.y += (contentScroller.layout.height - anchor.layout.height);
+                            contentScroller.scrollOffset = offset;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    element.ClearChapters();
+                    PageEntry currentRoot = element;
+                    foreach (var anchor in anchors)
+                    {
+                        int level = 0;
+#if UNITY_2019_1_OR_NEWER
+                        var classes = anchor.GetClasses();
+                        if (classes.Contains("header-1")) level = 1;
+                        if (classes.Contains("header-2")) level = 2;
+                        if (classes.Contains("header-3")) level = 3;
+#else
+                        if (anchor.ClassListContains("header-1")) level = 1;
+                        if (anchor.ClassListContains("header-2")) level = 2;
+                        if (anchor.ClassListContains("header-3")) level = 3;
+#endif
+                        if (level == 0) continue;
+
+                        if (currentRoot.ChapterLevel >= level)
+                        {
+                            while (currentRoot.ChapterLevel >= level) 
+                                currentRoot = currentRoot.parentEntry;
+                        }
+
+                        string chapterName = anchor.Q<Label>().text;
+                        string chapterPath = $"{currentRoot.PagePath}#{anchor.name}";
+                        var anchorName = chapterPath.Substring(chapterPath.IndexOf("#") + 1).Replace("#", "-");
+                        anchor.name = anchorName;
+
+                        chapterPath = $"{chapterPath.Substring(0, chapterPath.IndexOf("#"))}#{anchorName}";
+
+                        var chapter = new PageEntry(chapterName, anchor.name, chapterPath, OnAnchor) { ChapterLevel = level };
+                        chapter.AddToClassList($"chapter-header-{level}");
+
+                        if (currentRoot.ChapterLevel >= level)
+                        {
+                            currentRoot.AddChapter(chapter);
+                            currentRoot = chapter;
+                        }
+                        else if (level > currentRoot.ChapterLevel)
+                        {
+                            currentRoot.AddChapter(chapter);
+                            currentRoot = chapter;
+                        }
+                    }
+                }
+            }
         }
 
+        private void OnAnchor(EventBase evt)
+        {
+            PageEntry entry = evt.currentTarget as PageEntry;
+            LoadSelection(entry.PagePath);
+        }
 
         public class PageEntry : VisualElement, INotifyValueChanged<bool>
         {
+            public int ChapterLevel { get; set; }
             public Label Label { get; private set; }
             internal VisualElement container;
             private VisualElement ArrowIcon;
 
+            public PageEntry rootEntry { get; private set; }
             public PageEntry parentEntry { get; private set; }
             public PageEntry[] childEntries => container.Children().OfType<PageEntry>().ToArray();
 
+            HashSet<PageEntry> chapters = new HashSet<PageEntry>();
             bool toggled = false;
+
             public bool value
             {
                 get => toggled; set
@@ -391,17 +507,37 @@ namespace ThunderKit.Core.Windows
                 container.AddToClassList(HiddenClass);
                 container.AddToClassList(MinimizeClass);
                 ArrowIcon.AddToClassList(HiddenClass);
+                rootEntry = this;
 
                 AddToClassList(PageHeaderClass);
                 AddToClassList(ElementClass);
-                Label.AddManipulator(new Clickable(onSelect));
+                this.AddManipulator(new Clickable(onSelect));
                 ArrowIcon.AddManipulator(new Clickable(() => Toggle(!value)));
                 SetValueWithoutNotify(false);
             }
-            public void AddChildPage(PageEntry child)
+
+            public void ClearChapters()
             {
-                child.parentEntry = this;
-                container.Add(child);
+                foreach (var chapter in chapters)
+                    chapter.RemoveFromHierarchy();
+
+                chapters.Clear();
+                if (container.childCount == 0)
+                    ArrowIcon.AddToClassList(HiddenClass);
+            }
+            public void AddChapter(PageEntry chapter)
+            {
+                chapters.Add(chapter);
+                container.Add(chapter);
+                chapter.parentEntry = this;
+                chapter.rootEntry = rootEntry;
+                ArrowIcon.RemoveFromClassList(HiddenClass);
+            }
+
+            public void AddChildPage(PageEntry document)
+            {
+                document.parentEntry = this;
+                container.Add(document);
                 ArrowIcon.RemoveFromClassList(HiddenClass);
             }
 
