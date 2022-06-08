@@ -11,11 +11,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             <ui:VisualElement class="search-toolbar">
                 <ui:Label text="Search" class="thunderkit-header" />
                 <ui:TextField name="search-input" binding-path="searchInput" class="thunderkit-field-input"/>
+                <ui:Button name="help-button" text="?"/>
                 <ui:Toggle name="use-regex-toggle" text="Use Regular Expressions" binding-path="useRegex" />
                 <uie:EnumFlagsField binding-path="regexOptions" name="regex-options" class="thunderkit-field-input regexFlags"
                                     type="System.Text.RegularExpressions.RegexOptions, System, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"/>
             </ui:VisualElement>
-            <!--<ui:Button name="build-addressable-index-button" text="Build Search Index"/>-->
         </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
             <ui:VisualElement name="directory-list">
