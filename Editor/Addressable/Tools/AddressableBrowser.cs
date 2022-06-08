@@ -56,7 +56,7 @@ namespace ThunderKit.Addressable.Tools
         private TextField searchBox;
         private EnumFlagsField regexOptionsField;
         private Toggle useRegexToggle;
-
+        private Button helpButton;
         public bool useRegex;
         public bool caseSensitive;
         public string searchInput;
@@ -102,6 +102,11 @@ namespace ThunderKit.Addressable.Tools
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
             useRegexToggle = rootVisualElement.Q<Toggle>("use-regex-toggle");
+            helpButton = rootVisualElement.Q<Button>("help-button");
+            helpButton.clickable = new Clickable(() =>
+            {
+                Documentation.ShowThunderKitDocumentation("Packages/com.passivepicasso.thunderkit/Documentation/ThunderKitDocumentation/Manual/AddressableBrowser.md");
+            });
 
             directory.makeItem = DirectoryLabel;
             directoryContent.makeItem = AssetLabel;
