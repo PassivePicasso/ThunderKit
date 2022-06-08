@@ -71,6 +71,18 @@ namespace AssetsTools.NET.Extra
                 AssetsFileInstance assetsInst = files[index];
                 assetsInst.file.Close();
                 files.Remove(assetsInst);
+                assetsInst.parentBundle.loadedAssetsFiles.Remove(assetsInst);
+                return true;
+            }
+            return false;
+        }
+
+        public bool UnloadAssetsFile(AssetsFileInstance assetsInst)
+        {
+            if(files.Contains(assetsInst))
+            {
+                assetsInst.file.Close();
+                files.Remove(assetsInst);
                 return true;
             }
             return false;

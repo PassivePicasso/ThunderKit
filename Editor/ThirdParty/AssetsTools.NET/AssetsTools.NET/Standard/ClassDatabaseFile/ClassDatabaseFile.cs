@@ -27,9 +27,11 @@ namespace AssetsTools.NET
             {
                 return valid = false;
             }
+            if (header.compressionType != 0)
+                unparsedData = reader.ReadBytes((int)header.compressedSize);
+            else
+                unparsedData = reader.ReadBytes((int)header.uncompressedSize);
 
-            unparsedData = reader.ReadBytes((int)header.compressedSize);
-            
             return valid = true;
         }
         public void ParseBody()
@@ -41,32 +43,28 @@ namespace AssetsTools.NET
             classes = new List<ClassDatabaseType>();
 
             MemoryStream stream;
-            if (header.compressionType == 0)
+            switch (header.compressionType)
             {
-                stream = new MemoryStream(unparsedData);
+                case 0:
+                    stream = new MemoryStream(unparsedData);
+                    break;
+                case 1: // lz4
+                    byte[] uncompressedBytes = new byte[header.uncompressedSize];
+                    using (MemoryStream tempMs = new MemoryStream(unparsedData))
+                    {
+                        var decoder = new Lz4DecoderStream(tempMs);
+                        decoder.Read(uncompressedBytes, 0, (int)header.uncompressedSize);
+                        decoder.Dispose();
+                    }
+                    stream = new MemoryStream(uncompressedBytes);
+                    break;
+                case 2: // lzma
+                    using (MemoryStream tempMs = new MemoryStream(unparsedData))
+                        stream = SevenZipHelper.StreamDecompress(tempMs, header.uncompressedSize);
+                    break;
+                default: throw new NotSupportedException();
             }
-            else if (header.compressionType == 1) //lz4
-            {
-                byte[] uncompressedBytes = new byte[header.uncompressedSize];
-                using (MemoryStream tempMs = new MemoryStream(unparsedData))
-                {
-                    var decoder = new Lz4DecoderStream(tempMs);
-                    decoder.Read(uncompressedBytes, 0, (int)header.uncompressedSize);
-                    decoder.Dispose();
-                }
-                stream = new MemoryStream(uncompressedBytes);
-            }
-            else if (header.compressionType == 2) //lzma
-            {
-                using (MemoryStream tempMs = new MemoryStream(unparsedData))
-                {
-                    stream = SevenZipHelper.StreamDecompress(tempMs, header.uncompressedSize);
-                }
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+
             using (var reader = new AssetsFileReader(stream))
             {
                 reader.bigEndian = false;
@@ -135,7 +133,7 @@ namespace AssetsTools.NET
                         throw new NotSupportedException("Only lzma (2) compression is supported, or no compression at all (0)");
                 }
             }
-            
+
             header.stringTablePos = (uint)stringTablePos;
             header.stringTableLen = (uint)(uncompressedSize - stringTablePos);
             header.uncompressedSize = (uint)uncompressedSize;
@@ -149,7 +147,7 @@ namespace AssetsTools.NET
         {
             return valid;
         }
-        
+
         public ClassDatabaseFile() { }
     }
 }
