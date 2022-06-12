@@ -66,10 +66,10 @@ namespace ThunderKit.Core.Data
             return ScriptableHelper.EnsureAsset<T>(assetPath, settings => settings.Initialize());
         }
 
-        public  static object GetOrCreateSettings(Type settingType)
+        public static object GetOrCreateSettings(Type settingType)
         {
             var tksType = typeof(ThunderKitSetting);
-            if (!tksType.IsAssignableFrom(settingType)) 
+            if (!tksType.IsAssignableFrom(settingType))
                 throw new ArgumentException($"parameter t is typeof({settingType.Name}), t must be assignable to typeof({tksType.Name}");
 
             string assetPath = $"Assets/ThunderKitSettings/{settingType.Name}.asset";
@@ -81,6 +81,19 @@ namespace ThunderKit.Core.Data
                 setting.Initialize();
             });
         }
+
+        public static bool TryGetSetting(out ThunderKitSetting setting, string typeName)
+        {
+            var settingsType = Type.GetType(typeName);
+            if (settingsType != null && settingsType.IsInstanceOfType(typeof(ThunderKitSetting)))
+            {
+                setting = GetOrCreateSettings(settingsType) as ThunderKitSetting;
+                return true;
+            }
+            setting = null;
+            return false;
+        }
+
 
         public virtual void Initialize() { }
         public virtual IEnumerable<string> Keywords() => Enumerable.Empty<string>();
@@ -94,7 +107,7 @@ namespace ThunderKit.Core.Data
                 EditorGUIUtility.labelWidth = 250;
                 EditorGUI.BeginChangeCheck();
                 DrawPropertiesExcluding(serializedObject, "m_Script");
-                if(EditorGUI.EndChangeCheck())
+                if (EditorGUI.EndChangeCheck())
                 {
                     serializedObject.ApplyModifiedProperties();
                     OnChanged?.Invoke();
