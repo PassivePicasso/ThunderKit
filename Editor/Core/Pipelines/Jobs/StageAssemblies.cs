@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Manifests.Datums;
+using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
 using UnityEditor;
 using System.Threading.Tasks;

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Manifests.Datums;
+using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
 using System.Threading.Tasks;
 using UnityEditor;

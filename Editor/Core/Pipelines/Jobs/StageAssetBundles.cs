@@ -5,7 +5,7 @@ using System.Text;
 using ThunderKit.Core.Attributes;
 using System.Threading.Tasks;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Manifests.Datums;
+using ThunderKit.Core.Manifests.Datum;
 using ThunderKit.Core.Paths;
 using ThunderKit.Core.Pipelines;
 using UnityEditor;
