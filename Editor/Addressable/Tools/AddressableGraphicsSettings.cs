@@ -27,6 +27,7 @@ namespace ThunderKit.Addressable.Tools
             Addressables.InternalIdTransformFunc = RedirectInternalIdsToGameDirectory;
             CompilationPipeline.compilationStarted -= ClearSelectionIfUnsavable;
             CompilationPipeline.compilationStarted += ClearSelectionIfUnsavable;
+            AssemblyReloadEvents.beforeAssemblyReload += () => AssetBundle.UnloadAllAssetBundles(true);
             InitializeAddressables();
         }
 
