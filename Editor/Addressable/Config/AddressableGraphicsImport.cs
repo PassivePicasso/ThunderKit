@@ -9,6 +9,8 @@ namespace ThunderKit.Addressable.Tools
 {
     public abstract class AddressableGraphicsImport : OptionalExecutor
     {
+        public const string AddressableSettingsTypeName = "ThunderKit.Addressable.Tools.AddressableGraphicsSettings, ThunderKit.Addressable.Tools, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null";
+
         public override int Priority => Constants.Priority.AddressableGraphicsImport;
 
         public virtual string CustomDeferredReflection => null;
@@ -17,26 +19,25 @@ namespace ThunderKit.Addressable.Tools
 
         public sealed override bool Execute()
         {
-            var settingsType = Type.GetType("ThunderKit.Addressable.Tools.AddressableGraphicsSettings, ThunderKit.Addressable.Tools, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            if (settingsType == null)
+            if (ThunderKitSetting.TryGetSetting(out var settings, AddressableSettingsTypeName))
             {
-                Debug.Log("AddressableGraphicsSettings not loaded, skipping");
-                return true;
+                var settingsSo = new SerializedObject(settings);
+                var customDeferredReflection = settingsSo.FindProperty("CustomDeferredReflection");
+                var customDeferredScreenspaceShadows = settingsSo.FindProperty("CustomDeferredScreenspaceShadows");
+                var customDeferredShading = settingsSo.FindProperty("CustomDeferredShading");
+
+                customDeferredReflection.stringValue = CustomDeferredReflection;
+                customDeferredScreenspaceShadows.stringValue = CustomDeferredScreenspaceShadows;
+                customDeferredShading.stringValue = CustomDeferredShading;
+
+                settingsSo.ApplyModifiedPropertiesWithoutUndo();
             }
+            else
+                Debug.Log("AddressableGraphicsSettings not loaded, skipping");
 
-            var settings = ThunderKitSetting.GetOrCreateSettings(settingsType) as ThunderKitSetting;
-            var settingsSo = new SerializedObject(settings);
-
-            var customDeferredReflection = settingsSo.FindProperty("CustomDeferredReflection");
-            var customDeferredScreenspaceShadows = settingsSo.FindProperty("CustomDeferredScreenspaceShadows");
-            var customDeferredShading = settingsSo.FindProperty("CustomDeferredShading");
-
-            customDeferredReflection.stringValue = CustomDeferredReflection;
-            customDeferredScreenspaceShadows.stringValue = CustomDeferredScreenspaceShadows;
-            customDeferredShading.stringValue = CustomDeferredShading;
-
-            settingsSo.ApplyModifiedPropertiesWithoutUndo();
-            return true;
+                return true;
         }
+
+
     }
 }
