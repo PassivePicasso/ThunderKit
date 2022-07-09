@@ -94,6 +94,7 @@ namespace ThunderKit.Core.Windows
 
                 instance = GetWindow<Documentation>("Documentation", consoleType.ToArray());
             }
+            instance.Focus();
 
             return instance;
         }
