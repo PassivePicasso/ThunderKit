@@ -12,17 +12,18 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 <ui:Label text="Search" class="thunderkit-header" />
                 <ui:TextField name="search-input" binding-path="searchInput" class="thunderkit-field-input"/>
                 <ui:Button name="help-button" text="?"/>
-                <ui:Toggle name="use-regex-toggle" text="Use Regular Expressions" binding-path="useRegex" />
-                <uie:EnumFlagsField binding-path="regexOptions" name="regex-options" class="thunderkit-field-input regexFlags"
-                                    type="System.Text.RegularExpressions.RegexOptions, System, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+
+                <uie:EnumFlagsField binding-path="browserOptions" name="display-options" class="thunderkit-field-input enumPicker"
+                                    type="ThunderKit.Addressable.Tools.BrowserOptions, ThunderKit.Addressable.Tools, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
             <ui:VisualElement name="directory-list">
-                <ui:Label text="Directories" class="thunderkit-header" />
+                <ui:Label text="Collections" class="thunderkit-header" />
                 <ui:ListView name="directory" item-height="20" class="grow" />
             </ui:VisualElement>
-            <ui:ListView name="directory-content" item-height="68" class="grow" />
+            <ui:ListView name="directory-content" item-height="66" class="grow" />
         </ui:VisualElement>
     </ui:VisualElement>
 
