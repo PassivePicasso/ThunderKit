@@ -1,3 +1,33 @@
+## 5.3.1
+
+### Improvements and Features
+#### General
+* Change the default mode for opening Markdown files to Unity External Editor
+
+#### Stage Assemblies
+* Improved StageAssemblies to execute its builds sequentially to ensure all assemblies build as expected
+* Improved UNet Weaver support for more versions and implementations
+
+#### Addressable Support
+Improve loading configuration to avoid cases where Addressables becomes unloaded
+
+#### Addressable Browser
+* Add Type element to Asset rows to show what the type of asset is
+* Add Provider element to Asset rows to show what provider is used to load the asset
+* Add documentation for Addressable Browser
+* Add Help button to Addressable Browser that displays the added documentation
+* Migrate from indexing Addressable Addresses as strings to using the IResourceLocations directly
+
+#### PipelineLog Window
+  * The PipelineLogWindow had inconsistent display and function of the details button and has been fixed.
+  * The LogContextWindow had a sidebar listing the contexts, this was replaced with a popup control to minimize whitespace
+
+### Fixes
+* Fix a problem with Quick Access Toolbar where elements couldn't be removed as expected
+* Fix Stage Dependencies being disabled by default
+* Remove testing code from StageAssemblies that shouldn't have been deployed
+* Fix an issue where removing an element from a ComposableObject (Pipeline, Manifest, PathReferences) would remove 2 instead
+
 ## 5.2.3
 
 * Fix ThunderstoreSource only loading for the first source community
