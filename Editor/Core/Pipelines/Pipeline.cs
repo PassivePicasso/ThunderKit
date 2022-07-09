@@ -21,6 +21,46 @@ namespace ThunderKit.Core.Pipelines
     using static LogLevel;
     public class Pipeline : ComposableObject
     {
+        public static void BatchModeExecutePipeline()
+        {
+            var args = Environment.GetCommandLineArgs();
+            var pipelinePath = string.Empty;
+            var manifestPath = string.Empty;
+            foreach(var arg in args)
+                switch (arg)
+                {
+                    case string pipelineArg when arg.StartsWith("--pipeline="):
+                        pipelinePath = pipelineArg.Substring("--pipeline=".Length);
+                        break;
+                    case string manifestArg when arg.StartsWith("--manifest="):
+                        manifestPath = manifestArg.Substring("--manifest=".Length);
+                        break;
+                }
+            var pipeline = AssetDatabase.LoadAssetAtPath<Pipeline>(pipelinePath);
+            var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath);
+            RunPipelineWithManifest(pipeline, manifest);
+        }
+        public static async void RunPipelineWithManifest(Pipeline pipeline, Manifest manifest)
+        {
+            // pipeline.manifest is the correct field to use, stop checking every time.
+            // pipeline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
+            var originalManifest = pipeline.manifest;
+            try
+            {
+                if (manifest)
+                {
+                    pipeline.manifest = manifest;
+                    await pipeline.Execute();
+                }
+                else
+                    await pipeline.Execute();
+            }
+            finally
+            {
+                pipeline.manifest = originalManifest;
+            }
+        }
+
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
         public static void Create() => ScriptableHelper.SelectNewAsset<Pipeline>();
 
