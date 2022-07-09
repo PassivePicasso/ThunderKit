@@ -12,7 +12,10 @@
 
 The Addressable Browser provides a way to view a Addressable catalog assets. 
 The Directories listing are groupings of assets by their address, treating 
-`/` as a directory separator.
+`/` and `\`,  as directory separators. Addresses which do not contain either
+of these directory separators will be placed in a group called `Assorted` and
+all Scenes will be added to a group called `Scenes` in addition to their 
+original group location.
 
 Selecting an entry under the Directories listing will reveal all assets with an
 address that starts with the selected entry.
