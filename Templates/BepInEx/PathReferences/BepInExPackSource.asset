@@ -27,8 +27,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4fa9e4f9ff58a344b7da26cb499b387, type: 3}
   m_Name: FindDirectory
   m_EditorClassIdentifier: 
-  searchOption: 0
-  searchPattern: '*BepInExPack*'
+  searchOption: 1
+  searchPattern: BepInEx
   path: Packages
 --- !u!114 &114974057467109836
 MonoBehaviour:
@@ -42,4 +42,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cebc722807299b54bb8733330087d5e3, type: 3}
   m_Name: Constant
   m_EditorClassIdentifier: 
-  Value: BepInExPack
+  Value: ..
