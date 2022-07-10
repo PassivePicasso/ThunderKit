@@ -20,7 +20,7 @@ namespace ThunderKit.Core.Paths.Components
             {
                 string resolvedPath = PathReference.ResolvePath(path, pipeline, this);
 
-                string first = Directory.GetDirectories(resolvedPath, searchPattern, searchOption).First();
+                string first = Directory.EnumerateDirectories(resolvedPath, searchPattern, searchOption).First();
                 return first;
             }
             catch (Exception e)
