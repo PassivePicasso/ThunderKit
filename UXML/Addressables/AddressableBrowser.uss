@@ -3,89 +3,127 @@
 }
 
 #addressable-icon {
-	width: 62px;
-	height: 62px;
-	margin-left: 1px;
-	margin-top: 1px;
-	margin-right: 1px;
-	margin-bottom: 1px;
+	width: 64px;
+	height: 64px;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
 	align-self: center;
 }
 
+#addressable-labels .unity-base-field__input {
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
+	padding-left: 0px;
+	padding-top: 0px;
+	padding-right: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	flex-grow: 0;
+	background-color: transparent;
+}
 #addressable-labels {
 	flex-grow: 1;
 	justify-content: center;
 }
-#addressable-label.unity-list-view__item--selected {
+
+.addressable-label {
+	-unity-text-align: middle-left;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	padding-left: 6px;
+	margin-right: 0px;
+	flex-grow: 1;
 	background-color: rgba(128,0,0,1);
 }
-#addressable-label {
-	-unity-text-align: middle-left;
-	padding-left: 4px;
-	background-color: rgba(128,128,128, 0.25);
-	flex-grow: 1;
-}
-#addressable-type-label {
-	-unity-text-align: middle-left;
-	padding-left: 4px;
-	color: rgba(255,255,255, 1);
-	background-color: rgba(0,0,0, 0.35);
-	flex-grow: 1;
-}
-
-#addressable-copy-button {
-	height: 20px;
-}
-
 #addressable-asset {
 	flex-direction: row;
 	justify-content: space-between;
-	border-color: rgba(0,0,0,0.5);
-	border-bottom-width: 2px;
-	border-left-width: 2px;
-	border-top-width: 2px;
-	border-right-width: 2px;
+	border-color: rgba(64,64,64,1);
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-width: 1px;
+	border-right-width: 1px;
 }
-
 #addressable-asset.unity-list-view__item--selected {
 	background-color: rgba(0, 0, 0, 0); 
 	border-color: rgba(128,0,0,1);
 }
-
+#directory-content #unity-content-container
+{
+	border-color: rgba(64,64,64,1);
+	border-top-width: 2px;
+}
 #directory-list {
 	background-color: rgba(0, 0, 0, 0.25); 
 	flex-grow: 0.5;
 }
-
-
 .toolbar {
 	flex-direction: row;
 	background-color: rgba(0,0,0,0.1);
-	padding-left: 4px;
-	padding-top: 4px;
-	padding-right: 4px;
-	padding-bottom: 4px;
+	padding-left: 0px;
+	padding-top: 2px;
+	padding-right: 0px;
+	padding-bottom: 2px;
 	justify-content: space-between;
 }
-
+.search-toolbar * {
+	height: 19px;
+	margin-top: 1px;
+	margin-bottom: 0px;
+}
 .search-toolbar {
 	flex-direction: row;
 	background-color: rgba(0,0,0,0.1);
 	flex-grow: 1;
 	padding-left: 0px;
-	padding-top: 2px;
 	padding-right: 0px;
 	padding-bottom: 2px;
+	flex-wrap: wrap;
 }
-
-.search-toolbar>.thunderkit-field-input
+.search-toolbar EnumFlagsField {
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-top: 0px;
+	margin-top: 0px;
+	padding-bottom: 0px;
+}
+.search-toolbar>#search-input
 {
+	min-width: 200px;
 	padding-right: 4px;
 }
-.search-toolbar>.regexFlags{
+.search-toolbar>.enumPicker {
 	flex-grow: 0;
+	flex-shrink: 1;
 }
-.search-toolbar>.regexFlags .unity-text-element {
+.search-toolbar>.enumPicker .unity-text-element {
 	padding-left: 4px;
 	padding-right: 4px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	height: 14px;
+}
+
+#directory-list .thunderkit-header{
+	background-color: rgba(0,0,0,0.15);
+	padding-left: 4px;
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 0px;
+	margin-right: 0px;
+}
+
+
+#addressable-label.addressable-label {
+	background-color: rgba(0,0,0,.1);
+}
+#addressable-type-label.addressable-label {
+	background-color: rgba(0,0,0,.3);
+}
+#addressable-provider-label.addressable-label {
+	background-color: rgba(0,0,0,.5);
 }

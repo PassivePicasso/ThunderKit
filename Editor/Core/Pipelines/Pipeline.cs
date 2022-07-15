@@ -21,6 +21,70 @@ namespace ThunderKit.Core.Pipelines
     using static LogLevel;
     public class Pipeline : ComposableObject
     {
+        public static async void BatchModeExecutePipeline()
+        {
+            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+            var args = Environment.GetCommandLineArgs();
+            var pipelinePath = string.Empty;
+            var manifestPath = string.Empty;
+            var showLogWindow = false;
+            foreach (var arg in args)
+                switch (arg)
+                {
+                    case string pipelineArg when arg.StartsWith("-pipeline="):
+                        pipelinePath = pipelineArg.Substring("-pipeline=".Length);
+                        break;
+                    case string manifestArg when arg.StartsWith("-manifest="):
+                        manifestPath = manifestArg.Substring("-manifest=".Length);
+                        break;
+                    case string manifestArg when arg.StartsWith("-show-log-window"):
+                        showLogWindow = true;
+                        break;
+                }
+
+            var reenableLogWindow = false;
+            if (Application.isBatchMode)
+            {
+                if (settings.ShowLogWindow && !showLogWindow)
+                {
+                    settings.ShowLogWindow = false;
+                    reenableLogWindow = true;
+                }
+            }
+            var pipeline = AssetDatabase.LoadAssetAtPath<Pipeline>(pipelinePath);
+            var manifest = AssetDatabase.LoadAssetAtPath<Manifest>(manifestPath);
+            var task = RunPipelineWithManifest(pipeline, manifest);
+            while (!task.IsCompleted)
+            {
+                await Task.Delay(1000);
+            }
+            if (reenableLogWindow)
+                settings.ShowLogWindow = true;
+
+            if (Application.isBatchMode)
+                EditorApplication.Exit(1);
+        }
+        public static async Task RunPipelineWithManifest(Pipeline pipeline, Manifest manifest)
+        {
+            // pipeline.manifest is the correct field to use, stop checking every time.
+            // pipeline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
+            var originalManifest = pipeline.manifest;
+            try
+            {
+                if (manifest)
+                {
+                    pipeline.manifest = manifest;
+                    await pipeline.Execute();
+                }
+                else
+                    await pipeline.Execute();
+            }
+            finally
+            {
+                pipeline.manifest = originalManifest;
+            }
+        }
+
         [MenuItem(Constants.ThunderKitContextRoot + nameof(Pipeline), false, priority = Constants.ThunderKitMenuPriority)]
         public static void Create() => ScriptableHelper.SelectNewAsset<Pipeline>();
 

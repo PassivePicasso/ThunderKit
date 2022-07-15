@@ -34,7 +34,7 @@ namespace ThunderKit.Pipelines.Jobs
             var manifests = pipeline.Manifests;
             var abdIndices = new Dictionary<AssetBundleDefinitions, int>();
             var abds = new List<AssetBundleDefinitions>();
-            for(int i = 0; i < manifests.Length; i++)
+            for (int i = 0; i < manifests.Length; i++)
                 foreach (var abd in manifests[i].Data.OfType<AssetBundleDefinitions>())
                 {
                     abds.Add(abd);
@@ -80,9 +80,12 @@ namespace ThunderKit.Pipelines.Jobs
                     var def = assetBundleDef.assetBundles[i];
                     var build = builds[buildsIndex];
                     var assets = new List<string>();
-                    var firstAsset = def.assets.FirstOrDefault(x => x is SceneAsset);
 
-                    if (firstAsset != null) assets.Add(AssetDatabase.GetAssetPath(firstAsset));
+                    if (def.assets.FirstOrDefault(x => x is SceneAsset) != null)
+                    {
+                        foreach (var sceneAsset in def.assets.Where(x => x is SceneAsset))
+                            assets.Add(AssetDatabase.GetAssetPath(sceneAsset));
+                    }
                     else
                     {
                         PopulateWithExplicitAssets(def.assets, assets);

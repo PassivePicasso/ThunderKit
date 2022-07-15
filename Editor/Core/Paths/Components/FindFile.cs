@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace ThunderKit.Core.Paths.Components
 {
-    public class FindDirectory : PathComponent
+    public class FindFile : PathComponent
     {
         public SearchOption searchOption;
         public string searchPattern;
@@ -20,7 +20,7 @@ namespace ThunderKit.Core.Paths.Components
             {
                 string resolvedPath = PathReference.ResolvePath(path, pipeline, this);
 
-                string first = Directory.EnumerateDirectories(resolvedPath, searchPattern, searchOption).First();
+                string first = Directory.EnumerateFiles(resolvedPath, searchPattern, searchOption).First();
                 return first;
             }
             catch (Exception e)

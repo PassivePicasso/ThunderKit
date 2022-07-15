@@ -31,8 +31,6 @@ namespace ThunderKit.Core
             stepField.objectReferenceValue = instance;
             stepField.serializedObject.SetIsDifferentCacheDirty();
             stepField.serializedObject.ApplyModifiedProperties();
-
-            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(instance));
         }
 
         public void RemoveElement(ComposableElement instance, int index)
@@ -54,11 +52,8 @@ namespace ThunderKit.Core
             for (int x = index; x < dataArray.arraySize; x++)
                 dataArray.MoveArrayElement(x + 1, x);
 
-            dataArray.arraySize--;
-
             so.SetIsDifferentCacheDirty();
             so.ApplyModifiedProperties();
-            AssetDatabase.SaveAssets();
         }
     }
 }

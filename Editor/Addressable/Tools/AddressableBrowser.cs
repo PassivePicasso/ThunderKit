@@ -1,17 +1,20 @@
 #if TK_ADDRESSABLE
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using ThunderKit.Common;
+using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using System.IO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using ThunderKit.Core.Windows;
-using System.Text.RegularExpressions;
-using UnityEngine.ResourceManagement;
 using UnityEngine.AddressableAssets.ResourceLocators;
-using System;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.ResourceManagement.ResourceLocations;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -23,6 +26,16 @@ using Object = UnityEngine.Object;
 
 namespace ThunderKit.Addressable.Tools
 {
+    [Flags]
+    public enum BrowserOptions
+    {
+        None = 0x0,
+        ShowType = 0x1,
+        ShowProvider = 0x2,
+        IgnoreCase = 0x4,
+        UseRegex = 0x8
+    }
+
     public class AddressableBrowser : TemplatedWindow
     {
         private const string Library = "Library";
@@ -41,44 +54,46 @@ namespace ThunderKit.Addressable.Tools
         private const string CopyButton = "addressable-copy-button";
         private const string NameLabel = "addressable-label";
         private const string TypeLabel = "addressable-type-label";
+        private const string ProviderLabel = "addressable-provider-label";
         private const string PreviewIcon = "addressable-icon";
         private const string AddressableAssetName = "addressable-asset";
         private const string ButtonPanel = "addressable-button-panel";
         private const string LoadSceneButton = "addressable-load-scene-button";
         private const string AddressableLabels = "addressable-labels";
-        List<string> CatalogDirectories;
-        Dictionary<string, List<string>> DirectoryContents;
-        static Dictionary<string, Type> LocationType;
+
+        Dictionary<string, List<IResourceLocation>> DirectoryContents;
 
         private ListView directory;
         private ListView directoryContent;
         private Texture sceneIcon;
         private TextField searchBox;
-        private EnumFlagsField regexOptionsField;
-        private Toggle useRegexToggle;
+        private EnumFlagsField displayOptionsField;
         private Button helpButton;
-        public bool useRegex;
-        public bool caseSensitive;
         public string searchInput;
-        public RegexOptions regexOptions;
+        public BrowserOptions browserOptions = BrowserOptions.ShowType | BrowserOptions.ShowProvider | BrowserOptions.IgnoreCase;
+
+        private object[] loadParams = new object[1];
+        private Type[] loadParamTypes = new Type[] { typeof(IResourceLocation) };
         private Regex regex;
         private string typeFilter;
 
-        private static void LoadIndex()
-        {
-            if (!Addressables.ResourceLocators.Any()) return;
 
-            LocationType = new Dictionary<string, Type>();
+        private List<IResourceLocation> LoadIndex()
+        {
+            var set = new HashSet<IResourceLocation>();
+            if (!Addressables.ResourceLocators.Any()) return set.ToList();
+
             foreach (var locator in Addressables.ResourceLocators)
             {
                 switch (locator)
                 {
                     case ResourceLocationMap rlm:
-                        foreach (var location in rlm.Locations.SelectMany(loc => loc.Value))
-                            LocationType[location.PrimaryKey] = location.ResourceType;
+                        foreach (var location in rlm.Locations.SelectMany(loc => loc.Value).Where(val => val.ResourceType != typeof(IAssetBundleResource)))
+                            set.Add(location);
                         break;
                 }
             }
+            return set.ToList();
         }
         public void OnDisable()
         {
@@ -98,46 +113,39 @@ namespace ThunderKit.Addressable.Tools
             sceneIcon = EditorGUIUtility.IconContent("d_UnityLogo").image;
 
             searchBox = rootVisualElement.Q<TextField>("search-input");
-            regexOptionsField = rootVisualElement.Q<EnumFlagsField>("regex-options");
+            displayOptionsField = rootVisualElement.Q<EnumFlagsField>("display-options");
             directory = rootVisualElement.Q<ListView>("directory");
             directoryContent = rootVisualElement.Q<ListView>("directory-content");
-            useRegexToggle = rootVisualElement.Q<Toggle>("use-regex-toggle");
             helpButton = rootVisualElement.Q<Button>("help-button");
             helpButton.clickable = new Clickable(() =>
             {
                 Documentation.ShowThunderKitDocumentation("Packages/com.passivepicasso.thunderkit/Documentation/ThunderKitDocumentation/Manual/AddressableBrowser.md");
             });
 
+            directory.itemsSource = new ArrayList();
+            directoryContent.itemsSource = new ArrayList();
             directory.makeItem = DirectoryLabel;
             directoryContent.makeItem = AssetLabel;
 
             directory.bindItem = (element, i) =>
             {
                 Label label = element.Q<Label>(NameLabel);
-                var address = (string)directory.itemsSource[i];
-                label.text = address;
+                var location = (IResourceLocation)directory.itemsSource[i];
+                label.text = GroupLocation(location);
             };
             directoryContent.bindItem = BindAsset;
 
-            LoadIndex();
-            var allKeys = Addressables.ResourceLocators.SelectMany(locator => locator.Keys).Select(key => key.ToString());
+            List<IResourceLocation> resourceLocations = LoadIndex();
 
-            var allGroups = allKeys.GroupBy(key => Path.GetDirectoryName(key).Replace("\\", "/"));
-            DirectoryContents = allGroups.ToDictionary(g => g.Key, g => g.OrderBy(k => k).ToList());
-            CatalogDirectories = DirectoryContents.Keys.OrderBy(k => k).ToList();
-            var scenes = allKeys.Where(key => key.EndsWith(".unity")).ToList();
-            CatalogDirectories.Insert(0, "Scenes");
-            DirectoryContents["Scenes"] = scenes;
+            DirectoryContents = resourceLocations.GroupBy(GroupLocation).ToDictionary(g => g.Key, g => g.Distinct().ToList());
+            DirectoryContents["Scenes"] = resourceLocations.Where(location => location.ResourceType == typeof(SceneInstance)).ToList();
 
-            directory.itemsSource = CatalogDirectories;
-
-            directory.Refresh();
             directory.onSelectionChanged += Directory_onSelectionChanged;
             directoryContent.onSelectionChanged += DirectoryContent_onSelectionChanged;
+
 #if UNITY_2019_1_OR_NEWER
             searchBox.RegisterValueChangedCallback(OnSearchChanged);
-            regexOptionsField.RegisterValueChangedCallback(OnRegexOptionsChanged);
-            useRegexToggle.RegisterValueChangedCallback(OnUseRegexChanged);
+            displayOptionsField.RegisterValueChangedCallback(OnOptionsChanged);
 #else
             searchBox.OnValueChanged(OnSearchChanged);
             regexOptionsField.OnValueChanged(OnRegexOptionsChanged);
@@ -146,8 +154,14 @@ namespace ThunderKit.Addressable.Tools
         }
 
         private void OnUseRegexChanged(ChangeEvent<bool> evt) => RefreshSearch();
-        private void OnRegexOptionsChanged(ChangeEvent<System.Enum> evt) => RefreshSearch();
+        private void OnOptionsChanged(ChangeEvent<System.Enum> evt) => RefreshSearch();
         private void OnSearchChanged(ChangeEvent<string> evt) => RefreshSearch();
+        private void MakeReadonlyTextField(VisualElement labelContainer, string name)
+        {
+            var field = new TextField { name = name, isReadOnly = true };
+            field.AddToClassList("addressable-label");
+            labelContainer.Add(field);
+        }
         private void RefreshSearch()
         {
             bool noFilter = string.IsNullOrEmpty(searchInput);
@@ -172,107 +186,127 @@ namespace ThunderKit.Addressable.Tools
             }
             else typeFilter = string.Empty;
 
-            if (!useRegex) searchValue = Regex.Escape(searchValue);
+            if (!browserOptions.HasFlag(BrowserOptions.UseRegex)) searchValue = Regex.Escape(searchValue);
 
             if (string.IsNullOrEmpty(searchValue))
                 regex = null;
             else
+            {
+                var regexOptions = browserOptions.HasFlag(BrowserOptions.IgnoreCase) ? RegexOptions.IgnoreCase : RegexOptions.None;
                 regex = new Regex(searchValue, regexOptions);
+            }
 
-            if (noFilter)
-                directory.itemsSource = CatalogDirectories;
-            else
-                EditorApplication.update += Refresh;
+            EditorApplication.update += Refresh;
         }
-
         private void Refresh()
         {
             EditorApplication.update -= Refresh;
-            if (regex != null || !string.IsNullOrEmpty(typeFilter))
-            {
-                var list = new List<string>();
+            directory.itemsSource.Clear();
+            foreach (var kvp in DirectoryContents)
+                Filter(directory.itemsSource, kvp.Value, true);
 
-                foreach (var kvp in DirectoryContents)
-                    Filter(list, kvp.Value, true, location => Path.GetDirectoryName(location).Replace("\\", "/"));
-
-                directory.itemsSource = list;
-            }
-            else directory.itemsSource = DirectoryContents.Keys.ToList();
+            directory.Refresh();
+            directoryContent.Refresh();
         }
-
         private void Directory_onSelectionChanged(List<object> obj)
         {
-            var selected = obj.First().ToString();
-            var addresses = DirectoryContents[selected];
+            var selected = GroupLocation(obj.OfType<IResourceLocation>().First());
+            var locations = DirectoryContents[selected];
 
-            if (regex != null || !string.IsNullOrEmpty(typeFilter))
+            directoryContent.itemsSource.Clear();
+            Filter(directoryContent.itemsSource, locations, false);
+            directoryContent.Refresh();
+        }
+        private string GroupLocation(IResourceLocation g)
+        {
+            var lastIndexForwardslash = g.PrimaryKey.LastIndexOf("/");
+            var lastIndexBackslash = g.PrimaryKey.LastIndexOf("\\");
+            if (lastIndexForwardslash > -1 || lastIndexBackslash > -1)
             {
-                var list = new List<string>();
-                Filter(list, addresses, false, location => location);
-                directoryContent.itemsSource = list;
+                if (lastIndexBackslash > lastIndexForwardslash)
+                    return g.PrimaryKey.Substring(0, lastIndexBackslash);
+                else
+                    return g.PrimaryKey.Substring(0, lastIndexForwardslash);
             }
             else
-                directoryContent.itemsSource = addresses;
+                return "Assorted";
         }
-        private void Filter(List<string> list, List<string> values, bool earlyReturn, Func<string, string> processValue)
+        private void Filter(IList list, List<IResourceLocation> values, bool earlyReturn)
         {
             foreach (var location in values)
             {
-                if (regex != null && !regex.IsMatch(location)) continue;
-                if (!string.IsNullOrEmpty(typeFilter))
-                    if (!LocationType.ContainsKey(location)) continue;
-                    else if (!LocationType[location].FullName.Contains(typeFilter)) continue;
-                list.Add(processValue(location));
+                if (regex != null && !regex.IsMatch(location.PrimaryKey)) continue;
+                if (!string.IsNullOrEmpty(typeFilter) && !location.ResourceType.FullName.Contains(typeFilter)) continue;
+                list.Add(location);
                 if (earlyReturn)
                     break;
             }
         }
-
-
-        async void BindAsset(VisualElement element, int i)
+        private async void BindAsset(VisualElement element, int i)
         {
+            var location = (IResourceLocation)directoryContent.itemsSource[i];
+
             var icon = element.Q<Image>(PreviewIcon);
-            var nameLabel = element.Q<Label>(NameLabel);
-            var typeLabel = element.Q<Label>(TypeLabel);
-            var copyBtn = element.Q<Button>(CopyButton);
             var loadSceneBtn = element.Q<Button>(LoadSceneButton);
-            copyBtn.clickable = new Clickable(() =>
+
+            var address = location.PrimaryKey;
+            var isAsset = IsLoadableAsset(location);
+
+            var nameLabel = element.Q<TextField>(NameLabel);
+            nameLabel.SetValueWithoutNotify(address);
+            if (browserOptions.HasFlag(BrowserOptions.ShowType))
             {
-                var text = directoryContent.itemsSource[i] as string;
-                EditorGUIUtility.systemCopyBuffer = text;
-            });
-            var address = (string)directoryContent.itemsSource[i];
-            nameLabel.text = address;
-            string typeText = string.Empty;
-            if (LocationType.ContainsKey(address))
-                typeText = LocationType[address].FullName;
-            typeLabel.text = typeText;
+                var typeLabel = element.Q<TextField>(TypeLabel);
+                typeLabel.SetValueWithoutNotify(location.ResourceType.FullName);
+            }
+            if (browserOptions.HasFlag(BrowserOptions.ShowProvider))
+            {
+                var providerLabel = element.Q<TextField>(ProviderLabel);
+                providerLabel.SetValueWithoutNotify(location.ProviderId);
+                switch (location.ProviderId)
+                {
+                    case "UnityEngine.ResourceManagement.ResourceProviders.LegacyResourcesProvider":
+                        providerLabel.tooltip = "Cannot load assets provided by LegacyResourcesProvider";
+                        break;
+                        //        case "UnityEngine.ResourceManagement.ResourceProviders.BundledAssetProvider":
+                        //            providerLabel.tooltip = location.Dependencies
+                        //                .Select(dep => dep.PrimaryKey)
+                        //                .Aggregate("Dependencies:",
+                        //                 (a, b) => $"{a}\r\n{b}");
+                        //            break;
+                }
+            }
 
             icon.image = null;
-            if (!address.EndsWith(".unity"))
+            loadSceneBtn.style.display = DisplayStyle.None;
+            if (isAsset)
             {
                 var texture = await RenderIcon(address);
                 if (texture)
-                {
                     icon.image = texture;
-                    Repaint();
+            }
+            else if (location.ResourceType == typeof(SceneInstance))
+            {
+                loadSceneBtn.style.display = DisplayStyle.Flex;
+                icon.image = sceneIcon;
+                if (EditorApplication.isPlaying)
+                {
+                    loadSceneBtn.clickable = new Clickable(() =>
+                    {
+                        var currentAddress = directoryContent.itemsSource[i] as string;
+                        Addressables.LoadSceneAsync(currentAddress);
+                    });
+                }
+                else
+                {
+                    loadSceneBtn.clickable = null;
                 }
             }
-            else
-                icon.image = sceneIcon;
-
-            if (address.EndsWith(".unity") && EditorApplication.isPlaying)
-            {
-                loadSceneBtn.RemoveFromClassList("hidden");
-                loadSceneBtn.clickable = new Clickable(() =>
-                {
-                    var currentAddress = directoryContent.itemsSource[i] as string;
-                    Addressables.LoadSceneAsync(currentAddress);
-                });
-            }
-            else
-                loadSceneBtn.AddToClassList("hidden");
         }
+        private bool IsLoadableAsset(IResourceLocation location) =>
+               location.ResourceType != typeof(SceneInstance)
+            && location.ResourceType != typeof(IAssetBundleResource)
+            && location.ProviderId != "UnityEngine.ResourceManagement.ResourceProviders.LegacyResourcesProvider";
         private async Task<Texture2D> RenderIcon(string address)
         {
             string previewCachePath = Path.Combine(PreviewRoot, $"{address}.png");
@@ -289,15 +323,12 @@ namespace ThunderKit.Addressable.Tools
             Object result = null;
             try
             {
-                if (!address.EndsWith(".unity"))
-                {
-                    var loadOperation = Addressables.LoadAssetAsync<Object>(address);
-                    await loadOperation.Task;
-                    result = loadOperation.Result;
-                    preview = UpdatePreview(result);
-                }
+                result = await Addressables.LoadAssetAsync<Object>(address).Task;
+                preview = UpdatePreview(result);
             }
-            catch { }
+            catch
+            {
+            }
             if (result)
                 while (AssetPreview.IsLoadingAssetPreviews())
                 {
@@ -317,8 +348,7 @@ namespace ThunderKit.Addressable.Tools
 
             return preview;
         }
-
-        private static Texture2D UpdatePreview(Object result)
+        private Texture2D UpdatePreview(Object result)
         {
             Texture2D preview;
             switch (result)
@@ -327,7 +357,7 @@ namespace ThunderKit.Addressable.Tools
                                        || gobj.GetComponentsInChildren<SpriteRenderer>().Any()
                                        || gobj.GetComponentsInChildren<MeshRenderer>().Any()
                                        || gobj.GetComponentsInChildren<CanvasRenderer>().Any():
-                case Material mat:
+                case Material _:
                     preview = AssetPreview.GetAssetPreview(result);
                     break;
                 default:
@@ -337,40 +367,73 @@ namespace ThunderKit.Addressable.Tools
 
             return preview;
         }
+        private MethodInfo GetLoadMethod(IResourceLocation location)
+        {
+            var addressablesType = typeof(Addressables);
+            var loadAsyncMethodTemplate = addressablesType.GetMethod(nameof(Addressables.LoadAssetAsync), loadParamTypes);
+            var loadAssetAsync = loadAsyncMethodTemplate.MakeGenericMethod(location.ResourceType);
+            return loadAssetAsync;
+        }
         private void DirectoryContent_onSelectionChanged(List<object> obj)
         {
             try
             {
-                var first = obj.OfType<string>().First();
-                if (first.EndsWith(".unity")) return;
-                var firstOp = Addressables.LoadAssetAsync<Object>(first);
-                var firstObj = firstOp.WaitForCompletion();
-                firstObj.hideFlags |= HideFlags.NotEditable;
-                Selection.activeObject = firstObj;
+                var location = obj.OfType<IResourceLocation>().First();
+                var isLoadable = IsLoadableAsset(location);
+                if (!isLoadable)
+                    return;
+
+                var loadAssetAsync = GetLoadMethod(location);
+
+                loadParams[0] = location;
+                var firstOp = loadAssetAsync.Invoke(null, loadParams);
+
+                var asyncOpType = firstOp.GetType();
+                var asyncOpWaitForCompletionMethod = asyncOpType.GetMethod("WaitForCompletion");
+
+                var firstObj = asyncOpWaitForCompletionMethod.Invoke(firstOp, null);
+                if (firstObj is Object uniObj)
+                {
+                    uniObj.hideFlags |= HideFlags.NotEditable;
+                    Selection.activeObject = uniObj;
+                }
+                else
+                    Debug.LogWarning("Loaded object is not a UnityEngine.Object");
+
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
             }
         }
-
-        VisualElement DirectoryLabel() => new Label { name = NameLabel };
-        VisualElement AssetLabel()
+        private VisualElement DirectoryLabel()
+        {
+            var label = new Label { name = NameLabel };
+            label.AddToClassList("addresable-label");
+            return label;
+        }
+        private VisualElement AssetLabel()
         {
             var element = new VisualElement { name = AddressableAssetName };
             element.Add(new Image { name = PreviewIcon });
+
             var labelContainer = new VisualElement { name = AddressableLabels };
-            labelContainer.Add(new Label { name = NameLabel });
-            labelContainer.Add(new Label { name = TypeLabel });
+
+            MakeReadonlyTextField(labelContainer, NameLabel);
+
+            if (browserOptions.HasFlag(BrowserOptions.ShowType))
+                MakeReadonlyTextField(labelContainer, TypeLabel);
+
+            if (browserOptions.HasFlag(BrowserOptions.ShowProvider))
+                MakeReadonlyTextField(labelContainer, ProviderLabel);
+
             element.Add(labelContainer);
 
             var buttonPanel = new VisualElement { name = ButtonPanel };
-            buttonPanel.Add(new Button { name = CopyButton, text = "Copy Address" });
 
-            var loadSceneBtn = new Button { name = LoadSceneButton, text = "Load Scene" };
-            loadSceneBtn.AddToClassList("hidden");
-
+            var loadSceneBtn = new Button { name = LoadSceneButton, text = "Load Scene", tooltip = "Editor must be in Play mode to load Scenes" };
             buttonPanel.Add(loadSceneBtn);
+
             element.Add(buttonPanel);
 
             return element;
