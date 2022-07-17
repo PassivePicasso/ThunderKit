@@ -1,3 +1,50 @@
+## 5.4.0
+
+### Features
+
+#### BatchMode (Command line execution)
+Added the ability to execute ThunderKit Pipelines using the Unity BatchMode and 
+Command line interface
+To use this feature you will need to execute the appropriate version of Unity
+and supply atleast the `-projectPath`, `-executeMethod` and `-pipeline` 
+arguments, and optionally the `-batchmode` and `-manifest` arguments.
+Using these command line arguments you can execute ThunderKit Pipelines.
+
+To learn more about Unity's command line arguments refer to 
+[Unity Editor command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html)
+
+Arguments:
+* `-pipeline=path` - Project Relative Path to target Pipeline 
+* `-manifest=path` - Project Relative Path to target Manifest
+* `-show-log-window` - Enables displaying the Pipeline Log window during 
+  execution
+
+To execute the pipeline you must call the execution method. You can do this 
+using the Unity Command line argument -executeMethod and providing 
+`ThunderKit.Core.Pipelines.Pipeline.BatchModeExecutePipeline` next.
+
+The following demonstrates a complete setup
+```
+C:\Program Files\Unity\Hub\Editor\2019.4.26f1\Editor\Unity.exe" -batchmode 
+-projectpath F:\Projects\Unity\ExampleProject
+-manifest="Assets/ThunderKitAssets/BundleManifest.asset"
+-pipeline="Assets/ThunderKitAssets/BuildBundles.asset"
+-executeMethod ThunderKit.Core.Pipelines.Pipeline.BatchModeExecutePipeline  
+```
+
+#### Other
+* Added FindFile PathComponent
+
+### Improvements
+* Updated BepInExPackSource to be more flexible
+* Fixed most cases in the change log where it didn't adhere to the 80 character
+  limit rule suggested for Markdown.
+
+### Fixes
+* Fixed case where winhttp.dll PathReference could create a directory instead
+  of copying the file when the winhttp.dll source is not found
+* Fixed an compatibility issue in StageAssetBundles for Unity 2019.1 and 2019.2
+
 ## 5.3.1
 
 ### Improvements and Features
