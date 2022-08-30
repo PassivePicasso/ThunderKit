@@ -19,7 +19,7 @@ namespace ThunderKit.Core.Utilities
     {
 #if UNITY_2021_1_OR_NEWER
         public static void ResolvePackages() => Client.Resolve();
-#elif UNITY_2019_1_OR_NEWER
+#elif UNITY_2019_3_OR_NEWER
         private static readonly MethodInfo ClientResolve = typeof(Client).GetMethod("Resolve", BindingFlags.NonPublic | BindingFlags.Static);
         public static void ResolvePackages() => ClientResolve.Invoke(null, null);
 #else
