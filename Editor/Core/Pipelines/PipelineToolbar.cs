@@ -158,7 +158,7 @@ namespace ThunderKit.Core.Pipelines
 
                         using (new DisabledScope((!pipeline)))
                             if (GUILayout.Button("Execute"))
-                                Pipeline.RunPipelineWithManifest(pipeline, manifest);
+                                _ = Pipeline.RunPipelineWithManifest(pipeline, manifest);
 
                         PipelineLog pipelineLog = null;
                         if (pipeline)
