@@ -6,10 +6,11 @@
 * Fix Casing of USS and Documentation/Tutorials folder for Linux
 * Fix version compatibility issue with 2019.2.17
 * Fix ImportAssemblies not respecting the fact that Linux can use Windows binaries
-  This is handled by just not filtering the executable file search. 
+  - This is handled by just not using an extension filter in the executable file search. 
+
 * Fix ImportAssemblies not importing plugins folder contenst on Linux
-  This is also because of an issue with extensions and is also handled by just removing filtering
-  as there is no known reason to filter the import of the plugins folder at this time.
+  - This is also because of an issue with extensions and is also handled by just removing filtering
+    as there is no known reason to filter the import of the plugins folder at this time.
 * Fix ImportConfiguration creating its sub assets twice during install of ThunderKit in some Unity versions
 * Fix a warning for PipelineToolbar about non-awaited call to an async task returning method
 
