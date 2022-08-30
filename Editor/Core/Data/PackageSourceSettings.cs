@@ -44,7 +44,7 @@ namespace ThunderKit.Core.Data
             PackageSources?.Clear();
             if (PackageSources == null)
                 PackageSources = new List<PackageSource>();
-            if (AssetDatabase.IsValidFolder(ThunderKitSettingsFolder))
+            if (AssetDatabase.GetSubFolders("Assets").Contains("ThunderKitSettings"))
             {
                 var assetGuids = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}", PackageSourceFolder);
                 var assetPaths = assetGuids.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
@@ -223,8 +223,7 @@ namespace ThunderKit.Core.Data
                     false,
                     () =>
                     {
-                        const string SettingsPath = "Assets/ThunderKitSettings";
-                        var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{SettingsPath}/{type.Name}.asset");
+                        var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{ThunderKitSettingsFolder}/{type.Name}.asset");
                         ScriptableHelper.EnsureAsset(assetPath, type);
                         EditorApplication.update -= RefreshList;
                         EditorApplication.update += RefreshList;
