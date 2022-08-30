@@ -1,3 +1,16 @@
+## 5.4.1
+
+### Fixes
+
+* Fix version number in package.json
+* Fix Casing of USS and Documentation/Tutorials folder for Linux
+* Fix version compatibility issue with 2019.2.17
+* Fix ImportAssemblies not respecting the fact that Linux can use Windows binaries
+  This is handled by just not filtering the executable file search. 
+* Fix ImportAssemblies not importing plugins folder contenst on Linux
+  This is also because of an issue with extensions and is also handled by just removing filtering
+  as there is no known reason to filter the import of the plugins folder at this time.
+
 ## 5.4.0
 
 ### Features
