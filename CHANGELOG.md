@@ -10,6 +10,7 @@
 * Fix ImportAssemblies not importing plugins folder contenst on Linux
   This is also because of an issue with extensions and is also handled by just removing filtering
   as there is no known reason to filter the import of the plugins folder at this time.
+* Fix ImportConfiguration creating its sub assets twice during install of ThunderKit in some Unity versions
 
 ## 5.4.0
 
