@@ -36,9 +36,6 @@ namespace ThunderKit.Core.Data
         static void Init()
         {
             EditorApplication.update += StepImporters;
-
-            var settings = GetOrCreateSettings<ImportConfiguration>();
-            settings.Initialize();
         }
 
 
