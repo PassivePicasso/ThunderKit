@@ -226,7 +226,7 @@ namespace ThunderKit.Core.Data
                         path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
                         break;
                     case RuntimePlatform.LinuxEditor:
-                        path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "*");
+                        path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "");
                         break;
                     //case RuntimePlatform.OSXEditor:
                     //    path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "app");

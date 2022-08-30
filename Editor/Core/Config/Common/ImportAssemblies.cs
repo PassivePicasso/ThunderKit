@@ -88,26 +88,11 @@ namespace ThunderKit.Core.Config
 
             try
             {
-                string nativeAssemblyExtension = string.Empty;
-
-                switch (Application.platform)
-                {
-                    case RuntimePlatform.OSXEditor:
-                        nativeAssemblyExtension = "dylib";
-                        break;
-                    case RuntimePlatform.WindowsEditor:
-                        nativeAssemblyExtension = "dll";
-                        break;
-                    case RuntimePlatform.LinuxEditor:
-                        nativeAssemblyExtension = "so";
-                        break;
-                }
-
                 AssetDatabase.StartAssetEditing();
                 EditorApplication.LockReloadAssemblies();
 
                 var blackList = BuildAssemblyBlacklist();
-                var whitelist = BuildAssemblyWhitelist(settings, nativeAssemblyExtension);
+                var whitelist = BuildBinaryWhitelist(settings);
 
                 var packagePath = Path.Combine("Packages", packageName);
                 var managedAssemblies = Directory.EnumerateFiles(settings.ManagedAssembliesPath, "*.dll", SearchOption.AllDirectories).Distinct().ToList();
@@ -118,7 +103,7 @@ namespace ThunderKit.Core.Config
                 if (Directory.Exists(pluginsPath))
                 {
                     var packagePluginsPath = Path.Combine(packagePath, "plugins");
-                    var plugins = Directory.EnumerateFiles(pluginsPath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories);
+                    var plugins = Directory.EnumerateFiles(pluginsPath, $"*", SearchOption.AllDirectories);
                     ImportFilteredAssemblies(packagePluginsPath, plugins, EmptySet, EmptySet);
                 }
             }
@@ -141,16 +126,14 @@ namespace ThunderKit.Core.Config
                 Directory.CreateDirectory(destinationFolder);
         }
 
-        private static HashSet<string> BuildAssemblyWhitelist(ThunderKitSettings settings, string nativeAssemblyExtension)
+        private static HashSet<string> BuildBinaryWhitelist(ThunderKitSettings settings)
         {
             string[] installedGameAssemblies = Array.Empty<string>();
             if (Directory.Exists(settings.PackagePath))
-                installedGameAssemblies = Directory.EnumerateFiles(settings.PackagePath, $"*.dll", SearchOption.AllDirectories)
-                                       .Union(Directory.EnumerateFiles(settings.PackagePath, $"*.{nativeAssemblyExtension}", SearchOption.AllDirectories))
+                installedGameAssemblies = Directory.EnumerateFiles(settings.PackagePath, "*", SearchOption.AllDirectories)
                                        .Select(path => Path.GetFileName(path))
                                        .Distinct()
                                        .ToArray();
-
 
             var whitelist = new HashSet<string>(installedGameAssemblies);
 
