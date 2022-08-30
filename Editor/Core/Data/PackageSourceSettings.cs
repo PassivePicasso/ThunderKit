@@ -6,6 +6,7 @@ using System.Linq;
 using ThunderKit.Core.UIElements;
 using ThunderKit.Common;
 using ThunderKit.Core.Utilities;
+using System.Security.AccessControl;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -28,7 +29,8 @@ namespace ThunderKit.Core.Data
         private Button refreshButton;
         private ScrollView selectedSourceSettings;
 
-        private static string[] PackageSourceFolder = new string[] { "Assets/ThunderKitSettings" };
+        private static readonly string ThunderKitSettingsFolder = "Assets/ThunderKitSettings";
+        private static string[] PackageSourceFolder = new string[] { ThunderKitSettingsFolder };
 
         [InitializeOnLoadMethod]
         public static void InitSources()
@@ -42,10 +44,13 @@ namespace ThunderKit.Core.Data
             PackageSources?.Clear();
             if (PackageSources == null)
                 PackageSources = new List<PackageSource>();
-            var assetGuids = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}", PackageSourceFolder);
-            var assetPaths = assetGuids.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
-            foreach (var asset in assetPaths.Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path)))
-                RegisterSource(asset);
+            if (AssetDatabase.IsValidFolder(ThunderKitSettingsFolder))
+            {
+                var assetGuids = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}", PackageSourceFolder);
+                var assetPaths = assetGuids.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
+                foreach (var asset in assetPaths.Select(path => AssetDatabase.LoadAssetAtPath<PackageSource>(path)))
+                    RegisterSource(asset);
+            }
         }
 
         private static void ProcessRegistrations()
