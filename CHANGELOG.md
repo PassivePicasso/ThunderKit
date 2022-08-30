@@ -13,7 +13,7 @@
     as there is no known reason to filter the import of the plugins folder at this time.
 * Fix ImportConfiguration creating its sub assets twice during install of ThunderKit in some Unity versions
 * Fix a warning for PipelineToolbar about non-awaited call to an async task returning method
-
+* Fix warning when trying to search for ThunderKitSettings when no ThunderKitSettings have been created yet.
 ## 5.4.0
 
 ### Features
