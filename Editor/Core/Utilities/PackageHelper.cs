@@ -17,7 +17,7 @@ namespace ThunderKit.Core.Utilities
 {
     public static class PackageHelper
     {
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2020_3_OR_NEWER
         public static void ResolvePackages() => Client.Resolve();
 #elif UNITY_2019_3_OR_NEWER
         private static readonly MethodInfo ClientResolve = typeof(Client).GetMethod("Resolve", BindingFlags.NonPublic | BindingFlags.Static);
