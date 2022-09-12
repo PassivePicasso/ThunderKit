@@ -1,3 +1,9 @@
+## 5.4.2
+
+### Fixes
+
+* Fix issue in PackageHelper that would cause ThunderKit to try to call a method which doesn't exist in Unity 2020.3
+
 ## 5.4.1
 
 ### Fixes
