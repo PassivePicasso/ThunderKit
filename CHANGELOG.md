@@ -1,3 +1,9 @@
+## 5.4.3
+
+### Fixes
+
+* Fix PackageSources not rendering correcly in Packages window or Package Source Settings
+
 ## 5.4.2
 
 ### Fixes
