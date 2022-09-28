@@ -44,7 +44,9 @@ namespace ThunderKit.Core.Data
             PackageSources?.Clear();
             if (PackageSources == null)
                 PackageSources = new List<PackageSource>();
-            if (AssetDatabase.GetSubFolders("Assets").Contains("ThunderKitSettings"))
+            var assetsFolders = AssetDatabase.GetSubFolders("Assets");
+
+            if (assetsFolders.Contains("Assets/ThunderKitSettings"))
             {
                 var assetGuids = AssetDatabase.FindAssets($"t:{nameof(PackageSource)}", PackageSourceFolder);
                 var assetPaths = assetGuids.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
