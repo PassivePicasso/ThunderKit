@@ -1,3 +1,9 @@
+## 5.4.4
+
+### Fixes
+
+* Fix issue where the Import button would launch the LocateGame function and require the user to import the game to close the dialog.
+
 ## 5.4.3
 
 ### Fixes
