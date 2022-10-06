@@ -1,3 +1,9 @@
+## 5.4.5
+
+### Fixes 
+
+* Fix issue where loading scenes from the AddressableBrowser would fail even when in play mode
+
 ## 5.4.4
 
 ### Fixes

@@ -293,7 +293,8 @@ namespace ThunderKit.Addressable.Tools
                 {
                     loadSceneBtn.clickable = new Clickable(() =>
                     {
-                        var currentAddress = directoryContent.itemsSource[i] as string;
+                        var currentAddress = directoryContent.itemsSource[i] as IResourceLocation;
+                        var key = currentAddress.ToString();
                         Addressables.LoadSceneAsync(currentAddress);
                     });
                 }
