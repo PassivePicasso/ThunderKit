@@ -171,7 +171,10 @@ namespace ThunderKit.Core.Data
 
             if (string.IsNullOrEmpty(thunderKitSettings.GamePath) || string.IsNullOrEmpty(thunderKitSettings.GameExecutable))
             {
-                LocateGame(thunderKitSettings);
+                if(!LocateGame(thunderKitSettings))
+                {
+                    ConfigurationIndex = -1;
+                }
                 return;
             }
 
@@ -209,7 +212,7 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        public static void LocateGame(ThunderKitSettings tkSettings)
+        public static bool LocateGame(ThunderKitSettings tkSettings)
         {
             string currentDir = Directory.GetCurrentDirectory();
             var foundExecutable = false;
@@ -230,15 +233,16 @@ namespace ThunderKit.Core.Data
                     //    break;
                     default:
                         EditorUtility.DisplayDialog("Unsupported", "Your operating system is partially or completely unsupported. Contributions to improve this are welcome", "Ok");
-                        return;
+                        return false;
                 }
-                if (string.IsNullOrEmpty(path)) return;
+                if (string.IsNullOrEmpty(path)) return false;
                 //For Linux, we will have to check the selected file to see if the GameExecutable_Data folder exists, we can use this to verify the executable was selected
                 tkSettings.GameExecutable = Path.GetFileName(path);
                 tkSettings.GamePath = Path.GetDirectoryName(path);
                 foundExecutable = Directory.GetFiles(tkSettings.GamePath, tkSettings.GameExecutable).Any();
             }
             EditorUtility.SetDirty(tkSettings);
+            return true;
         }
 
 
