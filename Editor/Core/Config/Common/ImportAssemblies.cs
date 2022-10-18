@@ -25,7 +25,6 @@ namespace ThunderKit.Core.Config
     public class ImportAssemblies : OptionalExecutor
     {
         private const string TemplatePath = Constants.SettingsTemplatesPath + "/ImportAssemblies.uxml";
-        private static readonly HashSet<string> EmptySet = new HashSet<string>();
 
         public static IReadOnlyList<BlacklistProcessor> BlacklistProcessors { get; private set; }
         public static IReadOnlyList<WhitelistProcessor> WhitelistProcessors { get; private set; }
@@ -104,7 +103,7 @@ namespace ThunderKit.Core.Config
                 {
                     var packagePluginsPath = Path.Combine(packagePath, "plugins");
                     var plugins = Directory.EnumerateFiles(pluginsPath, $"*", SearchOption.AllDirectories);
-                    ImportFilteredAssemblies(packagePluginsPath, plugins, EmptySet, EmptySet);
+                    ImportFilteredAssemblies(packagePluginsPath, plugins, blackList, whitelist);
                 }
             }
             finally
