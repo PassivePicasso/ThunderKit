@@ -19,13 +19,9 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.Config
 {
-    public enum GuidMode { Original, Stabilized, AssetRipperCompatibility }
-
     [Serializable]
     public class ImportAssemblies : OptionalExecutor
     {
-        private const string TemplatePath = Constants.SettingsTemplatesPath + "/ImportAssemblies.uxml";
-
         public static IReadOnlyList<BlacklistProcessor> BlacklistProcessors { get; private set; }
         public static IReadOnlyList<WhitelistProcessor> WhitelistProcessors { get; private set; }
         public static IReadOnlyList<AssemblyProcessor> AssemblyProcessors { get; private set; }
@@ -74,9 +70,6 @@ namespace ThunderKit.Core.Config
 
         public override int Priority => Constants.Priority.AssemblyImport;
         public override string Description => "Import's Assemblies from Game identified in ThunderKit Settings";
-
-        public GuidMode OldGuidGenerationMode = GuidMode.Original;
-        public GuidMode GuidGenerationMode = GuidMode.Original;
 
         public override bool Execute()
         {
@@ -229,89 +222,10 @@ namespace ThunderKit.Core.Config
             }
         }
 
-        protected override VisualElement CreateProperties()
-        {
-            var importAssemblies = TemplateHelpers.LoadTemplateInstance(TemplatePath);
-            importAssemblies.AddEnvironmentAwareSheets(Constants.ThunderKitSettingsTemplatePath);
-
-            var guidGenerationModeField = importAssemblies.Q<EnumField>("guid-mode-field");
-#if UNITY_2019_1_OR_NEWER
-            guidGenerationModeField.RegisterValueChangedCallback(OnGuidChanged);
-#elif UNITY_2018_1_OR_NEWER
-            guidGenerationModeField.OnValueChanged(OnGuidChanged);
-#endif
-            guidGenerationModeField.value = GuidGenerationMode;
-
-
-            var updateButton = importAssemblies.Q<Button>("update-button");
-            updateButton.clickable.clicked -= UpdateGuids;
-            updateButton.clickable.clicked += UpdateGuids;
-
-            return importAssemblies;
-        }
-
-        void OnGuidChanged(ChangeEvent<Enum> evt)
-        {
-            var guidMode = (GuidMode)evt.newValue;
-            GuidGenerationMode = guidMode;
-        }
-        private void UpdateGuids()
-        {
-            var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
-            string nativeAssemblyExtension = string.Empty;
-
-            switch (Application.platform)
-            {
-                case RuntimePlatform.OSXEditor:
-                    nativeAssemblyExtension = "dylib";
-                    break;
-                case RuntimePlatform.WindowsEditor:
-                    nativeAssemblyExtension = "dll";
-                    break;
-                case RuntimePlatform.LinuxEditor:
-                    nativeAssemblyExtension = "so";
-                    break;
-            }
-            Dictionary<string, string> guidMaps = new Dictionary<string, string>();
-
-            foreach (var installedAssembly in Directory.EnumerateFiles(settings.PackagePath, $"*.dll", SearchOption.TopDirectoryOnly))
-            {
-                var asmPath = installedAssembly.Replace("\\", "/");
-                string assemblyFileName = Path.GetFileName(asmPath);
-                var destinationMetaData = Path.Combine(settings.PackagePath, $"{assemblyFileName}.meta");
-                guidMaps[GetFileNameHash(assemblyFileName, OldGuidGenerationMode)] = GetFileNameHash(assemblyFileName, GuidGenerationMode);
-                PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
-            }
-            foreach (var installedAssembly in Directory.EnumerateFiles(settings.PackagePluginsPath, $"*.{nativeAssemblyExtension}", SearchOption.TopDirectoryOnly))
-            {
-                var asmPath = installedAssembly.Replace("\\", "/");
-                string assemblyFileName = Path.GetFileName(asmPath);
-                var destinationMetaData = Path.Combine(settings.PackagePluginsPath, $"{assemblyFileName}.meta");
-                guidMaps[GetFileNameHash(assemblyFileName, OldGuidGenerationMode)] = GetFileNameHash(assemblyFileName, GuidGenerationMode);
-                PackageHelper.WriteAssemblyMetaData(asmPath, destinationMetaData);
-            }
-            OldGuidGenerationMode = GuidGenerationMode;
-            new SerializedObject(this).ApplyModifiedProperties();
-            AssetDatabase.Refresh();
-        }
-
-        public static string GetFileNameHash(string assemblyPath, GuidMode mode)
+        public static string GetFileNameHash(string assemblyPath)
         {
             string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-            string result;
-            switch (mode)
-            {
-                case GuidMode.AssetRipperCompatibility:
-                    result = PackageHelper.GetAssetRipperStringHash(shortName);
-                    break;
-                case GuidMode.Stabilized:
-                    result = PackageHelper.GetStringHashUTF8(shortName);
-                    break;
-                case GuidMode.Original:
-                default:
-                    result = PackageHelper.GetStringHash(shortName);
-                    break;
-            }
+            string result = PackageHelper.GetStringHashUTF8(shortName);
             return result;
         }
     }
