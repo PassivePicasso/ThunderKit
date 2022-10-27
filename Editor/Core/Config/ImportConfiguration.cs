@@ -106,10 +106,26 @@ namespace ThunderKit.Core.Data
         public override void Initialize()
         {
             Type[] loadedTypes = null;
-            var configurationAssemblies = AppDomain.CurrentDomain
-                            .GetAssemblies()
-                            .Where(asm => asm != null)
-                            .Where(asm => asm.GetCustomAttribute<ImportExtensionsAttribute>() != null);
+            var configurationAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            for (int i = configurationAssemblies.Count - 1; i >= 0; i--)
+            {
+                try
+                {
+                    var asm = configurationAssemblies[i];
+                    try
+                    {
+                        if (asm?.GetCustomAttribute<ImportExtensionsAttribute>() == null)
+                            configurationAssemblies.RemoveAt(i);
+                    }
+                    catch
+                    {
+                        Debug.LogError($"Failed to analyze {asm.Location} for ImportExtensions");
+                        configurationAssemblies.RemoveAt(i);
+                    }
+                }
+                catch (Exception ex) { Debug.LogError(ex.Message); }
+            }
+
             loadedTypes = configurationAssemblies
                .SelectMany(asm =>
                {
@@ -171,7 +187,7 @@ namespace ThunderKit.Core.Data
 
             if (string.IsNullOrEmpty(thunderKitSettings.GamePath) || string.IsNullOrEmpty(thunderKitSettings.GameExecutable))
             {
-                if(!LocateGame(thunderKitSettings))
+                if (!LocateGame(thunderKitSettings))
                 {
                     ConfigurationIndex = -1;
                 }
@@ -205,7 +221,7 @@ namespace ThunderKit.Core.Data
                 Debug.LogError($"Error during Import: {e}");
                 return;
             }
-            if(ConfigurationIndex > ConfigurationExecutors.Length)
+            if (ConfigurationIndex > ConfigurationExecutors.Length)
             {
                 foreach (var ce in ConfigurationExecutors)
                     ce.Cleanup();
