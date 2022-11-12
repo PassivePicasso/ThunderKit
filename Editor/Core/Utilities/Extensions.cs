@@ -30,5 +30,17 @@ namespace ThunderKit.Core.Utilities
         {
             return (input & flag) == flag;
         }
+
+        public static bool TryGetValue<TValue>(this IDictionary<string, object> dict, string key, out TValue value)
+        {
+            if (!dict.TryGetValue(key, out var objValue))
+            {
+                value = default;
+                return false;
+            }
+
+            value = (TValue)objValue;
+            return true;
+        }
     }
 }
