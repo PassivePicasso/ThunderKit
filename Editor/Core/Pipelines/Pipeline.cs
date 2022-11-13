@@ -140,6 +140,7 @@ namespace {0}
         public Manifest Manifest => Manifests?[ManifestIndex];
         [HideInInspector, NonSerialized]
         public PipelineLog Logger;
+        public Dictionary<string, object> ExecutionInfo;
 
         string ProgressTitle
         {
@@ -179,6 +180,10 @@ namespace {0}
                 {
                     Logger = PipelineLog.CreateLog(this);
                     isRoot = true;
+                }
+                if (ExecutionInfo == null)
+                {
+                    ExecutionInfo = new Dictionary<string, object>();
                 }
 
                 using (progressBar = new ProgressBar())
@@ -254,6 +259,7 @@ namespace {0}
             finally
             {
                 Logger = null;
+                ExecutionInfo = null;
                 if (!isRoot)
                     AssetDatabase.SaveAssets();
             }

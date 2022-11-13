@@ -14,11 +14,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
             // pipeline.manifest is the correct field to use, stop checking every time.
             // pipieline.manifest is the manifest that is assigned to the pipeline containing this job via the editor
             var manifest = targetpipeline.manifest;
-            PipelineLog priorLogger = null;
+            var priorLogger = targetpipeline.Logger;
+            var priorExecutionInfo = targetpipeline.ExecutionInfo;
             try
             {
-                priorLogger = targetpipeline.Logger;
                 targetpipeline.Logger = pipeline.Logger;
+                targetpipeline.ExecutionInfo = pipeline.ExecutionInfo;
                 if (OverrideManifest && pipeline.manifest)
                 {
                     targetpipeline.manifest = pipeline.manifest;
@@ -31,6 +32,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 targetpipeline.manifest = manifest;
                 targetpipeline.Logger = priorLogger;
+                targetpipeline.ExecutionInfo = priorExecutionInfo;
             }
         }
     }

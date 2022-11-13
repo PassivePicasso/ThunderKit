@@ -16,16 +16,24 @@ namespace ThunderKit.Core.Paths
         [MenuItem(Constants.ThunderKitContextRoot + nameof(PathReference), false, priority = Constants.ThunderKitMenuPriority)]
         public static void Create() => ScriptableHelper.SelectNewAsset<PathReference>();
 
+        const string pathReferenceCacheKey = "PathReferenceCache";
         const char opo = '<';
         const char opc = '>';
         private static readonly Regex referenceIdentifier = new Regex($"\\{opo}(.*?)\\{opc}", RegexOptions.Compiled);
+
         public static string ResolvePath(string input, Pipeline pipeline, UnityEngine.Object caller)
         {
             var result = input;
-            var pathReferenceGuids = AssetDatabase.FindAssets($"t:{nameof(PathReference)}", Constants.FindAllFolders);
-            var pathReferencePaths = pathReferenceGuids.Select(x => AssetDatabase.GUIDToAssetPath(x)).ToArray();
-            var pathReferences = pathReferencePaths.Select(x => AssetDatabase.LoadAssetAtPath<PathReference>(x)).ToArray();
-            var pathReferenceDictionary = pathReferences.ToDictionary(pr => pr.name);
+
+            Dictionary<string, PathReference> pathReferenceCache;
+            if (!pipeline || pipeline.ExecutionInfo == null)
+            {
+                pathReferenceCache = FindAllPathReferences();
+            }
+            else if (!pipeline.ExecutionInfo.TryGetValue(pathReferenceCacheKey, out pathReferenceCache))
+            {
+                pipeline.ExecutionInfo[pathReferenceCacheKey] = pathReferenceCache = FindAllPathReferences(); 
+            }
 
             var callerPath = string.Empty;
             var callerLink = string.Empty;
@@ -36,11 +44,11 @@ namespace ThunderKit.Core.Paths
                 callerLink = $"[{pipeline.name}.{caller.name}](assetlink://{callerPath})";
             }
 
-            Match match = referenceIdentifier.Match(result);
+            var match = referenceIdentifier.Match(result);
             while (match != null && !string.IsNullOrEmpty(match.Value))
             {
                 var matchValue = match.Value.Trim(opo, opc);
-                if (!pathReferenceDictionary.ContainsKey(matchValue))
+                if (!pathReferenceCache.TryGetValue(matchValue, out var pathReference))
                 {
                     if (caller)
                     {
@@ -49,12 +57,7 @@ namespace ThunderKit.Core.Paths
                     throw new InvalidOperationException($"{callerLink} No PathReference named \"{matchValue}\" found in AssetDatabase");
                 }
 
-                var pathReference = pathReferenceDictionary[matchValue];
-                var pathReferencePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(pathReference));
-                var pathReferenceLink = $"[{pathReference.name}](assetlink://{pathReferencePath})";
-
                 var replacement = pathReference.GetPath(pipeline);
-                if (replacement == null) throw new NullReferenceException($"{callerLink} {pathReferenceLink} returned null. Error may have been encountered");
                 result = result.Replace(match.Value, replacement);
                 match = match.NextMatch();
             }
@@ -68,23 +71,16 @@ namespace ThunderKit.Core.Paths
 
         public string GetPath(Pipeline pipeline)
         {
-            string result = string.Empty;
-            foreach (var pc in Data.OfType<PathComponent>())
-            {
-                //try
-                //{
-                    result = Combine(result, pc.GetPath(this, pipeline));
-                //}
-                //catch (Exception e)
-                //{
-                //    var pathReferencePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(this));
-                //    var pathReferenceLink = $"[{name}](assetlink://{pathReferencePath})";
+            return Combine(Data.OfType<PathComponent>().Select(pc => pc.GetPath(this, pipeline)).ToArray());
+        }
 
-                //    var exception = new InvalidOperationException($"{pipeline.pipelineLink} {pathReferenceLink} resolution failed", e);
-                //    throw exception;
-                //}
-            }
-            return result;
+        private static Dictionary<string, PathReference> FindAllPathReferences()
+        {
+            var pathReferenceGuids = AssetDatabase.FindAssets($"t:{nameof(PathReference)}", Constants.FindAllFolders);
+            return pathReferenceGuids
+                .Select(x => AssetDatabase.GUIDToAssetPath(x))
+                .Select(x => AssetDatabase.LoadAssetAtPath<PathReference>(x))
+                .ToDictionary(pr => pr.name);
         }
 
         public override string ElementTemplate =>
