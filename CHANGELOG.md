@@ -1,26 +1,57 @@
+## 6.0.0
+
+### Improvements
+
+* Utilize blacklist and whitelist AssemblyProcessors for processing plugins in
+  addition to managed assemblies during import
+
+* Remove Original and <2.0.0 AssetRipper GUID generation modes 
+  (Thanks to @Nebby for this contribution)
+
+* Modify ImportConfiguration to load ImportExtensions more defensively
+* Improve PathReference to minimize calls to AssetDatabase.FindAssets()
+  This significantly improves CPU and RAM costs durting pipeline execution
+  (Thanks to @KingEnderBrine for this contribution)
+
+* Rework the Copy PipelineJob to allow non-overwriting copies, this chagne is
+  setup to be backwards compatible.
+  (Thanks to @KYPremco for this contribution)
+
+### Fixes
+
+* Fix installing latest package version from a PackageSource causing 
+  invalid Version information to propogate in a project
+  (Thanks to @Nebby for this contribution)
+
+* Clean up ChangeLog entries with widths over 80 characters
+
 ## 5.4.5
 
 ### Fixes 
 
-* Fix issue where loading scenes from the AddressableBrowser would fail even when in play mode
+* Fix issue where loading scenes from the AddressableBrowser would fail even 
+  when in play mode
 
 ## 5.4.4
 
 ### Fixes
 
-* Fix issue where the Import button would launch the LocateGame function and require the user to import the game to close the dialog.
+* Fix issue where the Import button would launch the LocateGame function and 
+  require the user to import the game to close the dialog.
 
 ## 5.4.3
 
 ### Fixes
 
-* Fix PackageSources not rendering correcly in Packages window or Package Source Settings
+* Fix PackageSources not rendering correcly in Packages window or 
+  PackageSourceSettings
 
 ## 5.4.2
 
 ### Fixes
 
-* Fix issue in PackageHelper that would cause ThunderKit to try to call a method which doesn't exist in Unity 2020.3
+* Fix issue in PackageHelper that would cause ThunderKit to try to call a 
+  method which doesn't exist in Unity 2020.3
 
 ## 5.4.1
 
@@ -29,15 +60,21 @@
 * Fix version number in package.json
 * Fix Casing of USS and Documentation/Tutorials folder for Linux
 * Fix version compatibility issue with 2019.2.17
-* Fix ImportAssemblies not respecting the fact that Linux can use Windows binaries
-  - This is handled by just not using an extension filter in the executable file search. 
+* Fix ImportAssemblies not respecting the fact that Linux can use Windows
+  binaries
+  - This is handled by just not using an extension filter in the executable 
+    file search.
 
 * Fix ImportAssemblies not importing plugins folder contenst on Linux
-  - This is also because of an issue with extensions and is also handled by just removing filtering
-    as there is no known reason to filter the import of the plugins folder at this time.
-* Fix ImportConfiguration creating its sub assets twice during install of ThunderKit in some Unity versions
-* Fix a warning for PipelineToolbar about non-awaited call to an async task returning method
-* Fix warning when trying to search for ThunderKitSettings when no ThunderKitSettings have been created yet.
+  - This is also because of an issue with extensions and is also handled by
+    just removing filtering as there is no known reason to filter the import 
+    of the plugins folder at this time.
+* Fix ImportConfiguration creating its sub assets twice during install of 
+  ThunderKit in some Unity versions
+* Fix a warning for PipelineToolbar about non-awaited call to an async task 
+  returning method
+* Fix warning when trying to search for ThunderKitSettings when no 
+  ThunderKitSettings have been created yet.
 
 
 ## 5.4.0
