@@ -45,7 +45,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var destination = Destination.Resolve(pipeline, this);
 
             if (EstablishDestination)
-                Directory.CreateDirectory((isSourceFile ? Path.GetDirectoryName(destination) : destination)!);
+                Directory.CreateDirectory((isSourceFile ? Path.GetDirectoryName(destination) : destination));
 
             if (Recursive)
                 ExecuteRecursiveCopy(pipeline, isSourceFile, source, destination);
