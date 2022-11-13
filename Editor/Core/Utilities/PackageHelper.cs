@@ -97,62 +97,15 @@ namespace ThunderKit.Core.Utilities
         public static string GetFileNameHash(string assemblyPath)
         {
             string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-            var settings = ThunderKitSetting.GetOrCreateSettings<ImportConfiguration>();
-            var importAssemblies = settings.ConfigurationExecutors.OfType<ImportAssemblies>().First();
-            string result;
-            switch (importAssemblies.GuidGenerationMode)
-            {
-                case GuidMode.AssetRipperCompatibility:
-                    result = GetAssetRipperStringHash(shortName);
-                    break;
-                case GuidMode.Stabilized:
-                    result = GetStringHashUTF8(shortName);
-                    break;
-                case GuidMode.Original:
-                default:
-                    result = GetStringHash(shortName);
-                    break;
-            }
+            string result = GetStringHashUTF8(shortName);
             return result;
         }
 
-        public static string GetStringHash(string value)
-        {
-            using (var md5 = MD5.Create())
-            {
-                byte[] hashBytes = md5.ComputeHash(Encoding.Default.GetBytes(value));
-                var guid = new Guid(hashBytes);
-                var cleanedGuid = guid.ToString().ToLower().Replace("-", "");
-                return cleanedGuid;
-            }
-        }
         public static string GetStringHashUTF8(string value)
         {
             using (var md5 = MD5.Create())
             {
                 byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
-                var guid = new Guid(hashBytes);
-                var cleanedGuid = guid.ToString().ToLower().Replace("-", "");
-                return cleanedGuid;
-            }
-        }
-
-        public static string GetAssetRipperStringHash(string value)
-        {
-            const byte VersionMask = 0xF0;
-            const byte Md5GuidVersion = 0x30;
-            const byte ClockSeqHiAndReservedMask = 0xC0;
-            const byte ClockSeqHiAndReservedValue = 0x80;
-
-            using (var md5 = MD5.Create())
-            {
-                byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
-
-                // time_hi_and_version
-                hashBytes[7] = (byte)(hashBytes[7] & ~VersionMask | Md5GuidVersion);
-                // clock_seq_hi_and_reserved
-                hashBytes[8] = (byte)(hashBytes[8] & ~ClockSeqHiAndReservedMask | ClockSeqHiAndReservedValue);
-
                 var guid = new Guid(hashBytes);
                 var cleanedGuid = guid.ToString().ToLower().Replace("-", "");
                 return cleanedGuid;
