@@ -193,6 +193,8 @@ namespace ThunderKit.Core.Data
             if (EditorApplication.isCompiling) return;
             var package = group[version];
 
+            version = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
+
             var installSet = EnumerateDependencies(package).Where(dep => !dep.group.Installed).ToArray();
             var progress = 0.01f;
             var stepSize = 0.33f / installSet.Length;
