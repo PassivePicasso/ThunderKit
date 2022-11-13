@@ -1,11 +1,26 @@
 ## 6.0.0
 
+### BREAKING CHANGES
+
+This update includes breaking changes to how GUIDs are generated for assemblies.
+Before updating to ThunderKit 6.0.0 you should be sure that your project's 
+assemblies are using the Stabilized Assembly GUID mode.
+
+If you're not using the Stabilized Assembly GUID mode, or if you're unsure if 
+you are, open up [ThunderKit Settings](menulink://Tools/ThunderKit/Settings) 
+and navigate to Import Configuration.
+In the ImportConfiguration screen, locate the Import Assemblies entry and then
+select "Stabilized" from the dropdown menu and finally press Update.
+This will convert any assemblies managed by ThunderKit to use the Stabilized
+GUID mode and should limit the impact of updating to ThunderKit 6.0.0
+
 ### Improvements
 
 * Utilize blacklist and whitelist AssemblyProcessors for processing plugins in
   addition to managed assemblies during import
 
 * Remove Original and <2.0.0 AssetRipper GUID generation modes 
+  This can be a breaking change for some projects
   (Thanks to @Nebby for this contribution)
 
 * Modify ImportConfiguration to load ImportExtensions more defensively
