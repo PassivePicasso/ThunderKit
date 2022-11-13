@@ -221,13 +221,6 @@ namespace ThunderKit.Core.Config
                 }
             }
         }
-
-        public static string GetFileNameHash(string assemblyPath)
-        {
-            string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-            string result = PackageHelper.GetStringHashUTF8(shortName);
-            return result;
-        }
     }
 
 }
