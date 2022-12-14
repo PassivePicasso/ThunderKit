@@ -1,3 +1,9 @@
+## 6.0.1
+
+### Fixes
+
+* Fix ThunderKit's package.json to reflect the current version
+
 ## 6.0.0
 
 ### BREAKING CHANGES
