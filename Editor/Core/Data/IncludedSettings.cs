@@ -4,7 +4,7 @@
 namespace ThunderKit.Core.Data
 {
     [Flags]
-    public enum IncludedSettings
+    public enum IncludedSettings : long
     {
         AudioManager = 1,
         ClusterInputManager = 2,
