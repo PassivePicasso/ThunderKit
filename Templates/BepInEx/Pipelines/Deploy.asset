@@ -16,6 +16,7 @@ MonoBehaviour:
   PerManifest: 1
   ListType: 0
   Manifests: []
+  StrictDictionaryReplace: 1
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1
@@ -56,7 +57,7 @@ MonoBehaviour:
   - {fileID: 2078919326612615040}
   - {fileID: 114803605343111210}
   QuickAccess: 0
-  manifest: {fileID: 11400000, guid: 664afe1b83bf27a44bf805bf1a2fa1b9, type: 2}
+  manifest: {fileID: 0}
 --- !u!114 &114803605343111210
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -73,6 +74,7 @@ MonoBehaviour:
   PerManifest: 0
   ListType: 0
   Manifests: []
+  StrictDictionaryReplace: 1
   Recursive: 0
   SourceRequired: 0
   EstablishDestination: 1
@@ -94,6 +96,7 @@ MonoBehaviour:
   PerManifest: 0
   ListType: 0
   Manifests: []
+  StrictDictionaryReplace: 1
   Recursive: 0
   SourceRequired: 1
   EstablishDestination: 0
@@ -115,6 +118,7 @@ MonoBehaviour:
   PerManifest: 1
   ListType: 0
   Manifests: []
+  StrictDictionaryReplace: 1
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1
@@ -136,6 +140,7 @@ MonoBehaviour:
   PerManifest: 0
   ListType: 0
   Manifests: []
+  StrictDictionaryReplace: 1
   Recursive: 1
   SourceRequired: 1
   EstablishDestination: 1
@@ -157,6 +162,7 @@ MonoBehaviour:
   PerManifest: 1
   ListType: 0
   Manifests: []
+  StrictDictionaryReplace: 1
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1
