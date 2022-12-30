@@ -1,3 +1,8 @@
+## 6.0.2
+
+* Fix exception when scanning for types in the Add Component menu preventing it 
+  from opening (@Nebby1999)
+
 ## 6.0.1
 
 ### Fixes
@@ -27,7 +32,7 @@ GUID mode and should limit the impact of updating to ThunderKit 6.0.0
 
 * Remove Original and <2.0.0 AssetRipper GUID generation modes 
   This can be a breaking change for some projects
-  (Thanks to @Nebby for this contribution)
+  (Thanks to @Nebby1999 for this contribution)
 
 * Modify ImportConfiguration to load ImportExtensions more defensively
 * Improve PathReference to minimize calls to AssetDatabase.FindAssets()
@@ -42,7 +47,7 @@ GUID mode and should limit the impact of updating to ThunderKit 6.0.0
 
 * Fix installing latest package version from a PackageSource causing 
   invalid Version information to propogate in a project
-  (Thanks to @Nebby for this contribution)
+  (Thanks to @Nebby1999 for this contribution)
 
 * Clean up ChangeLog entries with widths over 80 characters
 
