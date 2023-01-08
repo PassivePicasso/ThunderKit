@@ -1,3 +1,8 @@
+## 6.1.0
+
+* Update ExecuteProcess to be a FlowPipelineJob instead of a PipelineJob 
+  allowing it to utilize manifest data
+
 ## 6.0.2
 
 * Fix exception when scanning for types in the Add Component menu preventing it 

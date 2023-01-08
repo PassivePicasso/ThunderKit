@@ -7,7 +7,7 @@ using ThunderKit.Core.Paths;
 namespace ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
-    public class ExecuteProcess : PipelineJob
+    public class ExecuteProcess : FlowPipelineJob
     {
         [PathReferenceResolver]
         public string workingDirectory;
@@ -16,7 +16,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         [PathReferenceResolver]
         public string[] arguments;
 
-        public override Task Execute(Pipeline pipeline)
+        protected override Task ExecuteInternal(Pipeline pipeline)
         {
             var args = new StringBuilder();
             for (int i = 0; i < arguments.Length; i++)
