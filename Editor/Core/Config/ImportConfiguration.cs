@@ -225,6 +225,17 @@ namespace ThunderKit.Core.Data
             {
                 foreach (var ce in ConfigurationExecutors)
                     ce.Cleanup();
+
+                PromptRestart();
+            }
+        }
+
+        private void PromptRestart()
+        {
+            EditorApplication.Beep();
+            if(EditorUtility.DisplayDialog("Import Process Complete", "The game has been imported succesfully, It is extremely recommended to Restart your project to ensure stability", "Restart Project", "Restartt Later"))
+            {
+                EditorApplication.OpenProject(Directory.GetCurrentDirectory());
             }
         }
 
