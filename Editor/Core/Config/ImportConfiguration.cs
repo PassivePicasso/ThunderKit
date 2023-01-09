@@ -31,11 +31,32 @@ namespace ThunderKit.Core.Data
     {
         public OptionalExecutor[] ConfigurationExecutors;
         public int ConfigurationIndex = -1;
+        [SerializeField, HideInInspector] private int totalAssemblyCount = -1;
+        [SerializeField, HideInInspector] private int configExtensionAssemblyCount = -1;
 
         [InitializeOnLoadMethod]
         static void Init()
         {
             EditorApplication.update += StepImporters;
+            ImportConfiguration configInstance = GetOrCreateSettings<ImportConfiguration>();
+            string assetPath = GetAssetPath(configInstance);
+            string guid = AssetPathToGUID(assetPath);
+            if(configInstance.CheckForNewImportConfigs(out var assemblies))
+            {
+                var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
+                foreach (var obj in objs)
+                {
+                    if (obj)
+                    {
+                        RemoveObjectFromAsset(obj);
+                        DestroyImmediate(obj, true);
+                    }
+                }
+                ComposableObject.FixMissingScriptSubAssets(configInstance);
+                configInstance = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
+                configInstance.LoadImportExtensions(assemblies);
+                SaveAssets();
+            }
         }
 
 
@@ -105,28 +126,59 @@ namespace ThunderKit.Core.Data
 
         public override void Initialize()
         {
-            Type[] loadedTypes = null;
             var configurationAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-            for (int i = configurationAssemblies.Count - 1; i >= 0; i--)
+            FilterForConfigurationAssemblies(configurationAssemblies);
+            LoadImportExtensions(configurationAssemblies);
+            SaveAssets();
+            EditorApplication.update += DoImport;
+        }
+
+        private bool CheckForNewImportConfigs(out List<Assembly> configurationExtensionAssemblies)
+        {
+            List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            if (assemblies.Count == totalAssemblyCount)
+            {
+                configurationExtensionAssemblies = null;
+                return false;
+            }
+            totalAssemblyCount = assemblies.Count;
+
+            FilterForConfigurationAssemblies(assemblies);
+            if(assemblies.Count == configExtensionAssemblyCount)
+            {
+                configurationExtensionAssemblies = null;
+                return false;
+            }
+            configExtensionAssemblyCount = assemblies.Count;
+            configurationExtensionAssemblies = assemblies;
+            return true;
+        }
+
+        private void FilterForConfigurationAssemblies(List<Assembly> assemblies)
+        {
+            for (int i = assemblies.Count - 1; i >= 0; i--)
             {
                 try
                 {
-                    var asm = configurationAssemblies[i];
+                    var asm = assemblies[i];
                     try
                     {
                         if (asm?.GetCustomAttribute<ImportExtensionsAttribute>() == null)
-                            configurationAssemblies.RemoveAt(i);
+                            assemblies.RemoveAt(i);
                     }
                     catch
                     {
                         Debug.LogError($"Failed to analyze {asm.Location} for ImportExtensions");
-                        configurationAssemblies.RemoveAt(i);
+                        assemblies.RemoveAt(i);
                     }
                 }
                 catch (Exception ex) { Debug.LogError(ex.Message); }
             }
+        }
 
-            loadedTypes = configurationAssemblies
+        private void LoadImportExtensions(List<Assembly> assemblies)
+        {
+            var loadedTypes = assemblies
                .SelectMany(asm =>
                {
                    try
@@ -164,9 +216,7 @@ namespace ThunderKit.Core.Data
                     builder.AppendLine(executor.GetType().FullName);
                 }
             }
-            EditorApplication.update += DoImport;
         }
-
 
         private void DoImport()
         {
