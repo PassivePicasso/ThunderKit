@@ -115,6 +115,7 @@ namespace ThunderKit.Core.Data
         [SerializeField]
         private bool FirstLoad = true;
         public bool ShowOnStartup = true;
+        public bool notifyWhenImportCompletes = true;
         public string GameExecutable;
         public string GamePath;
         public bool Is64Bit;
