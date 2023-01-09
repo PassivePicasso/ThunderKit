@@ -31,8 +31,7 @@ namespace ThunderKit.Core.Data
     {
         public OptionalExecutor[] ConfigurationExecutors;
         public int ConfigurationIndex = -1;
-        [SerializeField, HideInInspector] private int totalAssemblyCount = -1;
-        [SerializeField, HideInInspector] private int configExtensionAssemblyCount = -1;
+        [SerializeField, HideInInspector] private int totalImportExtensionCount = -1;
 
         [InitializeOnLoadMethod]
         static void Init()
@@ -41,7 +40,7 @@ namespace ThunderKit.Core.Data
             ImportConfiguration configInstance = GetOrCreateSettings<ImportConfiguration>();
             string assetPath = GetAssetPath(configInstance);
             string guid = AssetPathToGUID(assetPath);
-            if(configInstance.CheckForNewImportConfigs(out var assemblies))
+            if(configInstance.CheckForNewImportConfigs(out var executors))
             {
                 var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
                 foreach (var obj in objs)
@@ -54,7 +53,7 @@ namespace ThunderKit.Core.Data
                 }
                 ComposableObject.FixMissingScriptSubAssets(configInstance);
                 configInstance = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
-                configInstance.LoadImportExtensions(assemblies);
+                configInstance.LoadImportExtensions(executors);
                 SaveAssets();
             }
         }
@@ -128,29 +127,22 @@ namespace ThunderKit.Core.Data
         {
             var configurationAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
             FilterForConfigurationAssemblies(configurationAssemblies);
-            LoadImportExtensions(configurationAssemblies);
+            LoadImportExtensions(GetOptionalExecutors(configurationAssemblies));
             SaveAssets();
             EditorApplication.update += DoImport;
         }
 
-        private bool CheckForNewImportConfigs(out List<Assembly> configurationExtensionAssemblies)
+        private bool CheckForNewImportConfigs(out List<Type> executorTypes)
         {
             List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-            if (assemblies.Count == totalAssemblyCount)
-            {
-                configurationExtensionAssemblies = null;
-                return false;
-            }
-            totalAssemblyCount = assemblies.Count;
-
             FilterForConfigurationAssemblies(assemblies);
-            if(assemblies.Count == configExtensionAssemblyCount)
+            executorTypes = GetOptionalExecutors(assemblies);
+            if(executorTypes.Count == totalImportExtensionCount)
             {
-                configurationExtensionAssemblies = null;
+                executorTypes = null;
                 return false;
             }
-            configExtensionAssemblyCount = assemblies.Count;
-            configurationExtensionAssemblies = assemblies;
+            totalImportExtensionCount = executorTypes.Count;
             return true;
         }
 
@@ -176,9 +168,9 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        private void LoadImportExtensions(List<Assembly> assemblies)
+        private List<Type> GetOptionalExecutors(List<Assembly> assemblies)
         {
-            var loadedTypes = assemblies
+            return assemblies
                .SelectMany(asm =>
                {
                    try
@@ -192,13 +184,15 @@ namespace ThunderKit.Core.Data
                })
                .Where(t => t != null)
                .Where(t => !t.IsAbstract && !t.IsInterface)
-               .ToArray();
+               .Where(t => typeof(OptionalExecutor).IsAssignableFrom(t))
+               .ToList();
+        }
 
+        private void LoadImportExtensions(List<Type> executorTypes)
+        {
+            var settingsPath = GetAssetPath(this);
             var builder = new StringBuilder("Loaded Import Extensions");
             builder.AppendLine();
-            var settingsPath = GetAssetPath(this);
-
-            var executorTypes = loadedTypes.Where(t => typeof(OptionalExecutor).IsAssignableFrom(t)).ToArray();
             var objs = LoadAllAssetRepresentationsAtPath(settingsPath).Where(obj => obj).ToArray();
             var distinctObjcs = objs.Distinct().ToArray();
             var objectTypes = distinctObjcs.Select(obj => obj.GetType()).ToArray();
