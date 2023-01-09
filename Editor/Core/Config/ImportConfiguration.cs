@@ -265,7 +265,7 @@ namespace ThunderKit.Core.Data
                 Debug.LogError($"Error during Import: {e}");
                 return;
             }
-            if (ConfigurationIndex > ConfigurationExecutors.Length - 1)
+            if (ConfigurationIndex >= ConfigurationExecutors.Length)
             {
                 foreach (var ce in ConfigurationExecutors)
                     ce.Cleanup();
@@ -279,7 +279,7 @@ namespace ThunderKit.Core.Data
             if(GetOrCreateSettings<ThunderKitSettings>().notifyWhenImportCompletes)
                 EditorApplication.Beep();
             
-            if(EditorUtility.DisplayDialog("Import Process Complete", "The game has been imported succesfully, It is extremely recommended to Restart your project to ensure stability", "Restart Project", "Restartt Later"))
+            if(EditorUtility.DisplayDialog("Import Process Complete", "The game has been imported successfully. It is recommended to restart your project to ensure stability", "Restart Project", "Restart Later"))
             {
                 EditorApplication.OpenProject(Directory.GetCurrentDirectory());
             }
