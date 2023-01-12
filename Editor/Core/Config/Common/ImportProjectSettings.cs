@@ -14,7 +14,7 @@ namespace ThunderKit.Core.Config.Common
     {
         public override int Priority => Constants.Priority.ProjectSettingsImport;
         public override string Description => "Import ProjectSettings from games with globalgamemanagers";
-        public int IncludedSettings;
+        public long IncludedSettings;
 
         public override bool Execute()
         {
@@ -33,6 +33,7 @@ namespace ThunderKit.Core.Config.Common
             var importedSettings = new List<string>();
             foreach (IncludedSettings include in (IncludedSettings[])Enum.GetValues(typeof(IncludedSettings)))
             {
+                if (include == 0) continue;
                 if (!includedSettings.HasFlag(include)) continue;
 
                 string settingName = $"{include}.asset";

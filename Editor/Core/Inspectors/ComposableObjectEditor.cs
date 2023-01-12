@@ -360,13 +360,21 @@ namespace ThunderKit.Core.Inspectors
                 popup.ScriptTemplate = composableObject.ElementTemplate;
                 popup.Filter = (MonoScript script) =>
                 {
-                    var scriptClass = script.GetClass();
-                    if (scriptClass == null) return false;
-                    if (scriptClass.IsAbstract) return false;
-                    if (scriptClass.GetCustomAttributes(true).OfType<HideFromScriptWindow>().Any()) return false;
-                    if (!composableObject.SupportsType(scriptClass)) return false;
+                    try
+                    {
+                        var scriptClass = script.GetClass();
+                        if (scriptClass == null) return false;
+                        if (scriptClass.IsAbstract) return false;
+                        if (scriptClass.GetCustomAttributes(true).OfType<HideFromScriptWindow>().Any()) return false;
+                        if (!composableObject.SupportsType(scriptClass)) return false;
 
-                    return true;
+                        return true;
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogError(e);
+                        return false;
+                    }
                 };
                 popup.Create = createFromScript;
 
