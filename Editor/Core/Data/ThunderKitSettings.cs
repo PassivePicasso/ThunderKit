@@ -47,11 +47,13 @@ namespace ThunderKit.Core.Data
             settings.QuickAccessPipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
                 .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
                 .Select(path => AssetDatabase.LoadAssetAtPath<Pipeline>(path))
+                .Where(pipeline => pipeline)
                 .Where(pipeline => pipeline.QuickAccess)
                 .ToArray();
             settings.QuickAccessManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
                 .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
                 .Select(path => AssetDatabase.LoadAssetAtPath<Manifest>(path))
+                .Where(manifest => manifest)
                 .Where(manifest => manifest.QuickAccess)
                 .ToArray();
         }
