@@ -1,3 +1,7 @@
+## 6.1.1
+
+* Fix Package.json version
+
 ## 6.1.0
 
 * Update ExecuteProcess to be a FlowPipelineJob instead of a PipelineJob 
