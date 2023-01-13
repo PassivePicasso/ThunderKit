@@ -29,7 +29,7 @@ namespace ThunderKit.Core.Data
 
     public class ImportConfiguration : ThunderKitSetting
     {
-        public OptionalExecutor[] ConfigurationExecutors;
+        public OptionalExecutor[] ConfigurationExecutors = Array.Empty<OptionalExecutor>();
         public int ConfigurationIndex = -1;
         [SerializeField, HideInInspector] private int totalImportExtensionCount = -1;
 
@@ -43,6 +43,7 @@ namespace ThunderKit.Core.Data
             if(configInstance.CheckForNewImportConfigs(out var executors))
             {
                 var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
+                configInstance.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
                 foreach (var obj in objs)
                 {
                     if (obj)
@@ -125,9 +126,11 @@ namespace ThunderKit.Core.Data
 
         public override void Initialize()
         {
-            var configurationAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-            FilterForConfigurationAssemblies(configurationAssemblies);
-            LoadImportExtensions(GetOptionalExecutors(configurationAssemblies));
+            var configAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            FilterForConfigurationAssemblies(configAssemblies);
+            var executorTypes = GetOptionalExecutors(configAssemblies);
+            totalImportExtensionCount = executorTypes.Count;
+            LoadImportExtensions(executorTypes);
             SaveAssets();
             EditorApplication.update += DoImport;
         }
