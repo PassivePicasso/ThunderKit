@@ -188,6 +188,46 @@ namespace ThunderKit.Core.Data
             yield return package;
         }
 
+        public async Task InstallPackages(IEnumerable<(PackageGroup group, string version)> packages)
+        {
+            if (EditorApplication.isCompiling) return;
+            using (var progressBar = new ProgressBar("Installing Packages"))
+            {
+                var installSet = new List<PackageVersion>();
+                foreach (var (group, version) in packages)
+                {
+                    var package = group[version];
+
+                    var resolvedVersion = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
+
+                    installSet.AddRange(EnumerateDependencies(package).Where(dep => !dep.group.Installed));
+                }
+
+                var installSetArray = installSet.ToArray();
+                var progress = 0.01f;
+                var stepSize = 0.33f / installSetArray.Length;
+
+                //Wait till all files are put in place to load new assemblies to make installation more consistent and faster
+                try
+                {
+                    EditorApplication.LockReloadAssemblies();
+                    progress = await CreatePackages(installSetArray, progress, stepSize);
+                    progress = await CreateManifests(installSetArray, progress, stepSize);
+                    progress = await ExtractPackageFiles(installSetArray, progress, stepSize);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+                finally
+                {
+                    EditorApplication.UnlockReloadAssemblies();
+                    EditorUtility.ClearProgressBar();
+                    PackageHelper.ResolvePackages();
+                }
+            }
+        }
+
         public async Task InstallPackage(PackageGroup group, string version)
         {
             if (EditorApplication.isCompiling) return;
@@ -206,7 +246,7 @@ namespace ThunderKit.Core.Data
                 {
                     EditorApplication.LockReloadAssemblies();
                     progress = await CreatePackages(installSet, progress, stepSize);
-                    progress = await CreateManifests(version, installSet, progress, stepSize);
+                    progress = await CreateManifests(installSet, progress, stepSize);
                     progress = await ExtractPackageFiles(installSet, progress, stepSize);
                 }
             }
@@ -246,7 +286,7 @@ namespace ThunderKit.Core.Data
             return Task.FromResult(progress);
         }
 
-        private static Task<float> CreateManifests(string version, PackageVersion[] installSet, float progress, float stepSize)
+        private static Task<float> CreateManifests(PackageVersion[] installSet, float progress, float stepSize)
         {
             using (var progressBar = new ProgressBar("Creating Package Manifests"))
             {
@@ -261,7 +301,8 @@ namespace ThunderKit.Core.Data
                                                         .Select(pv => PackageHelper.GetStringHashUTF8(pv.group.DependencyId))
                                                         .Select(guid => $"  - {{fileID: 11400000, guid: {guid}, type: 2}}")
                                                         .ToArray();
-                    var manifestYaml = Manifest.GeneratePlainTextManifest(installableGroup.Author, installableGroup.PackageName, installableGroup.Description, version, dependenciesArray);
+
+                    var manifestYaml = Manifest.GeneratePlainTextManifest(installableGroup.Author, installableGroup.PackageName, installableGroup.Description, installable.version, dependenciesArray);
                     File.WriteAllText(manifestPath, manifestYaml);
                     PackageHelper.WriteAssetMetaData(manifestPath, manifestGuid);
                 }
