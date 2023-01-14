@@ -11,8 +11,11 @@ namespace ThunderKit.Common.Configuration
             return attrs.Length > 0;
         }
 
-        internal static bool ContainsDefine(string define)
+        public static bool ContainsDefine(string define)
         {
+            define = define.ToUpperInvariant();
+            define = define.Replace("-", "_");
+
             foreach (BuildTargetGroup targetGroup in System.Enum.GetValues(typeof(BuildTargetGroup)))
             {
                 if (targetGroup == BuildTargetGroup.Unknown || IsObsolete(targetGroup))
@@ -33,6 +36,9 @@ namespace ThunderKit.Common.Configuration
         /// <param name="define"></param>
         public static void AddScriptingDefine(string define)
         {
+            define = define.ToUpperInvariant();
+            define = define.Replace("-", "_");
+
             foreach (BuildTargetGroup targetGroup in System.Enum.GetValues(typeof(BuildTargetGroup)))
             {
                 if (targetGroup == BuildTargetGroup.Unknown || IsObsolete(targetGroup))
@@ -60,6 +66,9 @@ namespace ThunderKit.Common.Configuration
         /// <param name="define"></param>
         public static void RemoveScriptingDefine(string define)
         {
+            define = define.ToUpperInvariant();
+            define = define.Replace("-", "_");
+
             foreach (BuildTargetGroup targetGroup in System.Enum.GetValues(typeof(BuildTargetGroup)))
             {
                 if (targetGroup == BuildTargetGroup.Unknown || IsObsolete(targetGroup))

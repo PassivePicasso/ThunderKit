@@ -60,3 +60,6 @@ This package contains third-party software components governed by the license(s)
 * License:  [The MIT License](https://raw.githubusercontent.com/LogosBible/bsdiff.net/master/ReadMe.txt)
 * [Local License](assetlink://GUID/a497c35352fe7154dbee71f93bc5e633)
 * BsTool is a replacement for the original project's 2 programs, BsDiff and BsPatch, providing an API instead of programs
+
+## subassetmissingscriptdelete
+* https://gitlab.com/RotaryHeart-UnityShare/subassetmissingscriptdelete/-/tree/master/

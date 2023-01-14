@@ -29,13 +29,34 @@ namespace ThunderKit.Core.Data
 
     public class ImportConfiguration : ThunderKitSetting
     {
-        public OptionalExecutor[] ConfigurationExecutors;
+        public OptionalExecutor[] ConfigurationExecutors = Array.Empty<OptionalExecutor>();
         public int ConfigurationIndex = -1;
+        [SerializeField, HideInInspector] private int totalImportExtensionCount = -1;
 
         [InitializeOnLoadMethod]
         static void Init()
         {
             EditorApplication.update += StepImporters;
+            ImportConfiguration configInstance = GetOrCreateSettings<ImportConfiguration>();
+            string assetPath = GetAssetPath(configInstance);
+            string guid = AssetPathToGUID(assetPath);
+            if(configInstance.CheckForNewImportConfigs(out var executors))
+            {
+                var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
+                configInstance.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
+                foreach (var obj in objs)
+                {
+                    if (obj)
+                    {
+                        RemoveObjectFromAsset(obj);
+                        DestroyImmediate(obj, true);
+                    }
+                }
+                ComposableObject.FixMissingScriptSubAssets(configInstance);
+                configInstance = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
+                configInstance.LoadImportExtensions(executors);
+                SaveAssets();
+            }
         }
 
 
@@ -105,28 +126,54 @@ namespace ThunderKit.Core.Data
 
         public override void Initialize()
         {
-            Type[] loadedTypes = null;
-            var configurationAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-            for (int i = configurationAssemblies.Count - 1; i >= 0; i--)
+            var configAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            FilterForConfigurationAssemblies(configAssemblies);
+            var executorTypes = GetOptionalExecutors(configAssemblies);
+            totalImportExtensionCount = executorTypes.Count;
+            LoadImportExtensions(executorTypes);
+            SaveAssets();
+            EditorApplication.update += DoImport;
+        }
+
+        private bool CheckForNewImportConfigs(out List<Type> executorTypes)
+        {
+            List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            FilterForConfigurationAssemblies(assemblies);
+            executorTypes = GetOptionalExecutors(assemblies);
+            if(executorTypes.Count == totalImportExtensionCount)
+            {
+                executorTypes = null;
+                return false;
+            }
+            totalImportExtensionCount = executorTypes.Count;
+            return true;
+        }
+
+        private void FilterForConfigurationAssemblies(List<Assembly> assemblies)
+        {
+            for (int i = assemblies.Count - 1; i >= 0; i--)
             {
                 try
                 {
-                    var asm = configurationAssemblies[i];
+                    var asm = assemblies[i];
                     try
                     {
                         if (asm?.GetCustomAttribute<ImportExtensionsAttribute>() == null)
-                            configurationAssemblies.RemoveAt(i);
+                            assemblies.RemoveAt(i);
                     }
                     catch
                     {
                         Debug.LogError($"Failed to analyze {asm.Location} for ImportExtensions");
-                        configurationAssemblies.RemoveAt(i);
+                        assemblies.RemoveAt(i);
                     }
                 }
                 catch (Exception ex) { Debug.LogError(ex.Message); }
             }
+        }
 
-            loadedTypes = configurationAssemblies
+        private List<Type> GetOptionalExecutors(List<Assembly> assemblies)
+        {
+            return assemblies
                .SelectMany(asm =>
                {
                    try
@@ -140,13 +187,15 @@ namespace ThunderKit.Core.Data
                })
                .Where(t => t != null)
                .Where(t => !t.IsAbstract && !t.IsInterface)
-               .ToArray();
+               .Where(t => typeof(OptionalExecutor).IsAssignableFrom(t))
+               .ToList();
+        }
 
+        private void LoadImportExtensions(List<Type> executorTypes)
+        {
+            var settingsPath = GetAssetPath(this);
             var builder = new StringBuilder("Loaded Import Extensions");
             builder.AppendLine();
-            var settingsPath = GetAssetPath(this);
-
-            var executorTypes = loadedTypes.Where(t => typeof(OptionalExecutor).IsAssignableFrom(t)).ToArray();
             var objs = LoadAllAssetRepresentationsAtPath(settingsPath).Where(obj => obj).ToArray();
             var distinctObjcs = objs.Distinct().ToArray();
             var objectTypes = distinctObjcs.Select(obj => obj.GetType()).ToArray();
@@ -164,9 +213,7 @@ namespace ThunderKit.Core.Data
                     builder.AppendLine(executor.GetType().FullName);
                 }
             }
-            EditorApplication.update += DoImport;
         }
-
 
         private void DoImport()
         {
@@ -221,10 +268,23 @@ namespace ThunderKit.Core.Data
                 Debug.LogError($"Error during Import: {e}");
                 return;
             }
-            if (ConfigurationIndex > ConfigurationExecutors.Length)
+            if (ConfigurationIndex >= ConfigurationExecutors.Length)
             {
                 foreach (var ce in ConfigurationExecutors)
                     ce.Cleanup();
+
+                PromptRestart();
+            }
+        }
+
+        private void PromptRestart()
+        {
+            if(GetOrCreateSettings<ThunderKitSettings>().notifyWhenImportCompletes)
+                EditorApplication.Beep();
+            
+            if(EditorUtility.DisplayDialog("Import Process Complete", "The game has been imported successfully. It is recommended to restart your project to ensure stability", "Restart Project", "Restart Later"))
+            {
+                EditorApplication.OpenProject(Directory.GetCurrentDirectory());
             }
         }
 
