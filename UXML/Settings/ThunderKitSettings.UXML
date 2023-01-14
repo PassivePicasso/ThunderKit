@@ -13,6 +13,15 @@
             <ui:Label text="Game Executable" class="thunderkit-field-label"/>
             <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
         </ui:VisualElement>
+        
+        <ui:VisualElement style="flex-direction: row;">
+            <ui:VisualElement class="field-section">
+                <ui:VisualElement class="thunderkit-field">
+                    <ui:Label text="Notify when import is complete" class="thunderkit-field-label"/>
+                    <ui:Toggle name="asset-name-field" binding-path="notifyWhenImportCompletes" class="thunderkit-field-input"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
 
         <ui:VisualElement name="game-config-button-container">
             <ui:Button name="browse-button" text="Browse" class="standardbutton"/>
