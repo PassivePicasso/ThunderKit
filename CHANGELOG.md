@@ -1,6 +1,6 @@
 ## 7.0.0
 
-Big thanks to @Nebby199 for this building the majority of this update
+Big thanks to @Nebby1999 for this building the majority of this update
 
 ### Possible Breaking Change
 
