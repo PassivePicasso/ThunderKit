@@ -1,3 +1,36 @@
+## 7.0.0
+
+Big thanks to @Nebby199 for this building the majority of this update
+
+### Possible Breaking Change
+
+* Fix ScriptingSymbolManager using `-` instead of `_` for spaces in symbols due
+  to `-` not being supported by Visual Studio or .NET in defined symbols.
+
+  This is only a breaking change if your project has used Define Constraints 
+  in Assembly Definitions, otherwise this should have no impact.
+
+### Improvements
+
+* Added PackageSource.InstallPackages for ImportExtensions that need to install
+  multiple packages.  This allows for a significant improvement in install time
+  for these types of extensions.
+  Improvements to the ThunderKit Package Manager related to this have not been 
+  made but are planned.
+
+* Add Post import prompt requesting the user restarts unity. A restart avoids a
+  class of erronous experiences where the Unity environment has not loaded
+  entirely after an import.
+
+* Add a Beep when the importing process has completed (Default ON)
+
+* Add a toggle to disable post import beep in ThunderKit Settings.
+
+### Fixes
+
+* Fix ImportConfiguration not updating correctly when new ImportExtensions are 
+  loaded into the environment.
+
 ## 6.1.1
 
 * Fix Package.json version
