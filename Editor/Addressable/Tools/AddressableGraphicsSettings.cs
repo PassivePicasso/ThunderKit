@@ -2,7 +2,9 @@
 using System;
 using System.IO;
 using ThunderKit.Core.Data;
+using ThunderKit.Pipelines.Jobs;
 using UnityEditor;
+using UnityEditor.Build.Content;
 using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -24,10 +26,10 @@ namespace ThunderKit.Addressable.Tools
         [InitializeOnLoadMethod]
         public static void OnLoad()
         {
-            Addressables.InternalIdTransformFunc = RedirectInternalIdsToGameDirectory;
             CompilationPipeline.compilationStarted -= ClearSelectionIfUnsavable;
             CompilationPipeline.compilationStarted += ClearSelectionIfUnsavable;
             AssemblyReloadEvents.beforeAssemblyReload += () => AssetBundle.UnloadAllAssetBundles(true);
+
             InitializeAddressables();
         }
 
@@ -48,6 +50,8 @@ namespace ThunderKit.Addressable.Tools
 
         static void InitializeAddressables()
         {
+            AssetBundle.UnloadAllAssetBundles(true);
+            Addressables.InternalIdTransformFunc = RedirectInternalIdsToGameDirectory;
             var aop = Addressables.InitializeAsync();
             aop.WaitForCompletion();
             AssignShaders();
