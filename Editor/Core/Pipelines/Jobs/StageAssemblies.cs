@@ -76,10 +76,10 @@ namespace ThunderKit.Core.Pipelines.Jobs
 #pragma warning restore CS0649 
 
         public bool stageDebugDatabases;
+        public bool releaseBuild;
         [PathReferenceResolver, Tooltip("Location where built assemblies will be cached before being staged")]
         public string assemblyArtifactPath = "<AssemblyStaging>";
         public BuildTarget buildTarget = BuildTarget.StandaloneWindows;
-        public BuildTargetGroup buildTargetGroup = BuildTargetGroup.Standalone;
 
 
         public sealed override async Task Execute(Pipeline pipeline)
@@ -148,8 +148,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
                 additionalReferences = definition.asm.allReferences,
             };
+            builder.flags = releaseBuild ? AssemblyBuilderFlags.None : AssemblyBuilderFlags.DevelopmentBuild;
             builder.excludeReferences = builder.defaultReferences.Where(rf => rf.Contains(assemblyName)).ToArray();
-            builder.buildTargetGroup = buildTargetGroup;
+            builder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
             builder.buildTarget = buildTarget;
             builder.buildFinished += OnBuildFinished;
             builder.buildStarted += OnBuildStarted;
