@@ -61,7 +61,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         private void ExecuteRecursiveCopy(Pipeline pipeline, bool isSourceFile, string source, string destination)
         {
-            ValidateRecursiveSource(pipeline, isSourceFile, source);
+            if (!ValidateRecursiveSource(pipeline, isSourceFile, source))
+                return;
 
             if (StrictDictionaryReplace)
                 ExecuteStrictDictionaryCopy(pipeline, source, destination);
@@ -93,14 +94,18 @@ namespace ThunderKit.Core.Pipelines.Jobs
             pipeline.Log(LogLevel.Information, $"{CopyStatement}\r\n\r\nCopied ``` {source} ``` to ``` {destination} ```", copiedFiles);
         }
 
-        private void ValidateRecursiveSource(Pipeline pipeline, bool isSourceFile, string source)
+        private bool ValidateRecursiveSource(Pipeline pipeline, bool isSourceFile, string source)
         {
             if (!Directory.Exists(source) && !SourceRequired)
+            {
                 pipeline.Log(LogLevel.Information, $"{CopyStatement} Source not found and is not required, copy skipped");
+                return false;
+            }
             if (!Directory.Exists(source) && SourceRequired)
                 throw new ArgumentException($"{CopyStatement} Source not found and is required");
             if (isSourceFile)
                 throw new ArgumentException($"{CopyStatement} Expected Directory for recursive copy, Received file path: {source}");
+            return true;
         }
 
         private string ResolveSource(Pipeline pipeline)
