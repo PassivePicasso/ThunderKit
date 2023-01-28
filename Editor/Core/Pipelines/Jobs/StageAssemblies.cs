@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -76,7 +76,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 #pragma warning restore CS0649 
 
         public bool stageDebugDatabases;
-        public bool releaseBuild;
+        public bool releaseBuild = true;
         [PathReferenceResolver, Tooltip("Location where built assemblies will be cached before being staged")]
         public string assemblyArtifactPath = "<AssemblyStaging>";
         public BuildTarget buildTarget = BuildTarget.StandaloneWindows;
