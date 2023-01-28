@@ -12,6 +12,7 @@ using ThunderKit.Core.Utilities;
 using ThunderKit.Core.Windows;
 using ThunderKit.Markdown.ObjectRenderers;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -229,6 +230,9 @@ namespace {0}
                     JobIndex = -1;
                 }
                 Log(Information, $"Finished execution");
+#if UNITY_2019_3_OR_NEWER && TK_ADDRESSABLE
+                CompilationPipeline.RequestScriptCompilation();
+#endif
             }
             catch (Exception e)
             {
