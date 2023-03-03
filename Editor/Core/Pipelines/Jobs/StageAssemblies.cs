@@ -146,6 +146,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             var builder = new AssemblyBuilder(assemblyOutputPath, definition.asm.sourceFiles)
             {
+#if UNITY_2019_3_OR_NEWER
+                referencesOptions = ReferencesOptions.None,
+#endif
                 flags = releaseBuild ? AssemblyBuilderFlags.None : AssemblyBuilderFlags.DevelopmentBuild,
                 buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget),
                 buildTarget = buildTarget
