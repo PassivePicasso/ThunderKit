@@ -2,18 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Manifests.Datums;
 using ThunderKit.Core.Paths;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
-using System.Threading.Tasks;
 using UnityEditor.Compilation;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Text;
-using System.Reflection;
-using ThunderKit.Core.Utilities;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
