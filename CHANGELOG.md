@@ -1,3 +1,14 @@
+## 7.1.0
+
+### Improvements
+
+* Improve StageAssemblies error reporting to provide build errors with a context for each build error in the log entry
+* Improve formatting of StageAssembly error reports to include source file links for errors
+
+### Fixes
+
+* Fix Assemblies not building correctly on Unity 2020.x
+
 ## 7.0.0
 
 Big thanks to @Nebby1999 for this building the majority of this update
