@@ -146,7 +146,6 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             var builder = new AssemblyBuilder(assemblyOutputPath, definition.asm.sourceFiles)
             {
-                additionalReferences = definition.asm.allReferences,
             };
             builder.flags = releaseBuild ? AssemblyBuilderFlags.None : AssemblyBuilderFlags.DevelopmentBuild;
             builder.excludeReferences = builder.defaultReferences.Where(rf => rf.Contains(assemblyName)).ToArray();
