@@ -148,6 +148,11 @@ namespace ThunderKit.Core.Pipelines.Jobs
             {
 #if UNITY_2019_3_OR_NEWER
                 referencesOptions = ReferencesOptions.None,
+                compilerOptions = new ScriptCompilerOptions()
+                {
+                    CodeOptimization = releaseBuild ? CodeOptimization.Release : CodeOptimization.Debug,
+                    
+                },
 #endif
                 flags = releaseBuild ? AssemblyBuilderFlags.None : AssemblyBuilderFlags.DevelopmentBuild,
                 buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget),
