@@ -150,13 +150,17 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 compilerOptions = new ScriptCompilerOptions()
                 {
                     CodeOptimization = releaseBuild ? CodeOptimization.Release : CodeOptimization.Debug,
-                    
+
                 },
 #endif
                 flags = releaseBuild ? AssemblyBuilderFlags.None : AssemblyBuilderFlags.DevelopmentBuild,
                 buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget),
                 buildTarget = buildTarget
             };
+
+            var errors = 0;
+            var lastPath = string.Empty;
+            List<string> errorDatas = new List<string>();
 
             builder.excludeReferences = builder.defaultReferences.Where(rf => rf.Contains(assemblyName)).ToArray();
             builder.buildFinished += OnBuildFinished;
@@ -172,19 +176,31 @@ namespace ThunderKit.Core.Pipelines.Jobs
                     await Task.Delay(100);
             }
 
+            if (errors > 0)
+            {
+                pipeline.Log(LogLevel.Error, $"Build Failed: ``` {lastPath} ``` with {errors} errors.", errorDatas.ToArray());
+                throw new Exception($"StageAssemblies terminated");
+            }
+            else
+                pipeline.Log(LogLevel.Information, $"Build Completed: ``` {lastPath} ```");
+
             await Build(pipeline, resolvedArtifactPath, definitions, definitionIndex + 1);
 
             void OnBuildStarted(string path) => pipeline.Log(LogLevel.Information, $"Building : {path}");
             void OnBuildFinished(string path, CompilerMessage[] messages)
             {
+                lastPath = path;
+
                 if (messages.Any())
                     foreach (var message in messages.OrderBy(msg => msg.type))
                     {
-                        var extraData = $"{message.file} ({message.line}:{message.column})";
+                        var extraData = $"{message.file} ({message.line}:{message.column})\r\n" +
+                            $"[{message.message}]({Pipeline.ExceptionScheme}://{Path.GetFullPath(message.file)}#{message.line})";
                         switch (message.type)
                         {
                             case CompilerMessageType.Error:
-                                pipeline.Log(LogLevel.Error, message.message, extraData);
+                                errorDatas.Add(extraData);
+                                errors++;
                                 break;
                             case CompilerMessageType.Warning:
                                 pipeline.Log(LogLevel.Warning, message.message, extraData);
@@ -192,7 +208,8 @@ namespace ThunderKit.Core.Pipelines.Jobs
                         }
                     }
 
-                pipeline.Log(LogLevel.Information, $"Build Completed: ``` {path} ```");
+                if (errors > 0)
+                    return;
 
                 var prevIndex = pipeline.ManifestIndex;
                 pipeline.ManifestIndex = manifestIndex;
@@ -240,7 +257,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
         private static void TryUNetWeave(UnityEditor.Compilation.Assembly assembly, string assemblyName, string outputPath)
         {
             var domain = AppDomain.CreateDomain("UnetWeaver");
-            
+
             domain.Load(typeof(UNetWeaverHelper).Assembly.GetName());
 
             var weaverHelper = (UNetWeaverHelper)domain.CreateInstanceAndUnwrap(typeof(UNetWeaverHelper).Assembly.FullName, typeof(UNetWeaverHelper).FullName);

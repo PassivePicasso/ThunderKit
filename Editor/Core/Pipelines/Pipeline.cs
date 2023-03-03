@@ -116,7 +116,7 @@ namespace {0}
     }}
 }}
 ";
-        const string ExceptionScheme = "exceptionsource";
+        public const string ExceptionScheme = "exceptionsource";
         [InitializeOnLoadMethod]
         static void RegisterScheme()
         {
