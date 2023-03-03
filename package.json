@@ -1,8 +1,8 @@
 {
   "name": "com.passivepicasso.thunderkit",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "displayName": "ThunderKit",
-  "description": "Mod toolkit for working with Thunderstore",
+  "description": "Unity Game Mod Development extension with build, packaging and analysis tools",
   "unity": "2018.4",
   "release": "12f1",
   "author": {
