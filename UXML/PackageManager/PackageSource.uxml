@@ -14,6 +14,7 @@ xsi:schemaLocation="
 ">
   <engine:VisualElement name="tkpm-package-source-header" class="tkpm-toolbar">
     <engine:Label name="tkpm-package-source-label"/>
+    <engine:VisualElement name="tkpm-package-source-loading-indicator" class="loading-spinner hidden"/>
   </engine:VisualElement>
   <engine:Foldout name="tkpm-package-source-foldout" >
     <engine:ListView name="tkpm-package-list"  item-height="23"  />

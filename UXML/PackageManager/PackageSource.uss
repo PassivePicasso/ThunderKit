@@ -3,6 +3,14 @@
 	margin-left: 20px;
 }
 
+.loading-spinner {
+    background-image: resource("icons/packagemanager/dark/loading.png");
+	position: absolute;
+	right: 0px;
+	width: 16px;
+	height: 16px;
+}
+
 #tkpm-package-source-header {
 	position: absolute;
 	left: 0px;
@@ -38,4 +46,8 @@
 	margin-top: 4px;
 	margin-left: 0px;
 	flex-grow: 1;
+}
+
+.hidden {
+    visibility: hidden;
 }

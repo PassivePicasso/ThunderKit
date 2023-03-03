@@ -1,0 +1,17 @@
+{
+    "name": "ThunderKit.SpaceDock",
+    "rootNamespace": "",
+    "references": [
+        "GUID:280569ac301428d4d950fdf647900922",
+        "GUID:48abf88f565f4bb4fb35fbe2385f0894"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

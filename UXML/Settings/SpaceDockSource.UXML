@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="/Packages/com.passivepicasso.thunderkit/USS/PackageSourceSettings.uss" />
+    <Style src="/Packages/com.passivepicasso.thunderkit/USS/thunderkit_style.uss" />
+    <ui:VisualElement name="package-source">
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Package Source:" class="thunderkit-field-label"/>
+            <ui:TextField name="asset-name-field" binding-path="name" class="thunderkit-field-input"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

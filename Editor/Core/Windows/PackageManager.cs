@@ -121,6 +121,30 @@ namespace ThunderKit.Core.Windows
                     else
                         packageSource.RemoveFromClassList("grow");
                 });
+                var loadingIndicator = packageSource.Q<VisualElement>(name: "tkpm-package-source-loading-indicator");
+
+                int m_Rotation = 0;
+                source.OnLoadingStarted += Source_OnLoadingStarted;
+                source.OnLoadingStopped += Source_OnLoadingStopped;
+                void UpdateProgress()
+                {
+                    loadingIndicator.transform.rotation = Quaternion.Euler(0, 0, m_Rotation);
+                    m_Rotation += 3;
+                    if (m_Rotation > 360)
+                        m_Rotation -= 360;
+                }
+                void Source_OnLoadingStopped()
+                {
+                    loadingIndicator.AddToClassList("hidden");
+                    EditorApplication.update -= UpdateProgress;
+                }
+
+                void Source_OnLoadingStarted()
+                {
+                    loadingIndicator.RemoveFromClassList("hidden");
+                    m_Rotation = 0;
+                    EditorApplication.update += UpdateProgress;
+                }
 
                 packageSource.AddToClassList("tkpm-package-source");
                 packageSource.name = groupName;
@@ -149,6 +173,7 @@ namespace ThunderKit.Core.Windows
             }
             UpdatePackageList();
         }
+
 
         private void FiltersClicked()
         {
