@@ -146,11 +146,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             var builder = new AssemblyBuilder(assemblyOutputPath, definition.asm.sourceFiles)
             {
+                flags = releaseBuild ? AssemblyBuilderFlags.None : AssemblyBuilderFlags.DevelopmentBuild,
+                buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget),
+                buildTarget = buildTarget
             };
-            builder.flags = releaseBuild ? AssemblyBuilderFlags.None : AssemblyBuilderFlags.DevelopmentBuild;
+
             builder.excludeReferences = builder.defaultReferences.Where(rf => rf.Contains(assemblyName)).ToArray();
-            builder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
-            builder.buildTarget = buildTarget;
             builder.buildFinished += OnBuildFinished;
             builder.buildStarted += OnBuildStarted;
 
