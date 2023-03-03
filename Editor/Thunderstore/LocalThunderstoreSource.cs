@@ -2,6 +2,7 @@
 using SharpCompress.Readers;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ThunderKit.Core.Data;
 using UnityEngine;
 
@@ -32,6 +33,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public override string Name => "Local Thunderstore";
         public override string SourceGroup => "Thunderstore";
+
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
         protected override void OnLoadPackages()
         {
@@ -88,5 +90,9 @@ namespace ThunderKit.Integrations.Thunderstore
             }
         }
 
+        protected override Task ReloadPagesAsyncInternal()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

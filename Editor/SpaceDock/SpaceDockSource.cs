@@ -8,39 +8,14 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Utilities;
-using UnityEditor;
 using UnityEngine;
 
-namespace ThunderKit.Integrations.Thunderstore
+namespace ThunderKit.Integrations.SpaceDock
 {
     using PV = Core.Data.PackageVersion;
-    public class ThunderstoreSource : PackageSource
+    public class SpaceDockSource : PackageSource
     {
-
-        const string SettingsPath = "Assets/ThunderKitSettings";
-        [InitializeOnLoadMethod]
-        static void CreateThunderKitExtensionSource() => EditorApplication.update += EnsureThunderKitExtensions;
-        private static void EnsureThunderKitExtensions()
-        {
-            EditorApplication.update -= EnsureThunderKitExtensions;
-
-            var basePath = $"{SettingsPath}/ThunderKit Extensions.asset";
-            var source = AssetDatabase.LoadAssetAtPath<ThunderstoreSource>(basePath);
-            if (!source)
-            {
-                if (File.Exists(basePath))
-                    File.Delete(basePath);
-
-                source = ScriptableHelper.EnsureAsset(basePath, typeof(ThunderstoreSource), asset =>
-                {
-                    var src = asset as ThunderstoreSource;
-                    src.Url = "https://thunderkit.thunderstore.io";
-                    EditorUtility.SetDirty(src);
-                }) as ThunderstoreSource;
-            }
-        }
-
+        enum OrderBy { name, updated, created }
         [Serializable]
         public struct SDateTime
         {
@@ -66,11 +41,8 @@ namespace ThunderKit.Integrations.Thunderstore
 
         private PackageListing[] packageListings;
 
-        public string Url = "https://thunderstore.io";
-
-        public override string Name => "Thunderstore Source";
-        public string PackageListApi => Url + "/api/v1/package/";
-        public override string SourceGroup => "Thunderstore";
+        public override string Name => "SpaceDock Source";
+        public override string SourceGroup => "SpaceDock";
 
         private void OnEnable()
         {
@@ -88,19 +60,18 @@ namespace ThunderKit.Integrations.Thunderstore
 
         private void Initialize(object sender, EventArgs e)
         {
-            ReloadPages(true);
+            ReloadPages();
         }
 
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
 
         protected override void OnLoadPackages()
         {
-            var realMods = packageListings.Where(tsp => !tsp.categories.Contains("Modpacks"));
             //var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
-            foreach (var tsp in realMods)
+            foreach (var tsp in packageListings)
             {
-                var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies));
-                AddPackageGroup(tsp.owner, tsp.name, tsp.Latest.description, tsp.full_name, tsp.categories, versions);
+                var versions = tsp.versions.Select(v => new PackageVersionInfo(v.friendly_version, tsp.name, Array.Empty<string>()));
+                AddPackageGroup(tsp.author, tsp.name, tsp.short_description, tsp.name, Array.Empty<string>(), versions);
             }
             SourceUpdated();
         }
@@ -108,12 +79,12 @@ namespace ThunderKit.Integrations.Thunderstore
         protected override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
             var tsPackage = LookupPackage(version.group.DependencyId).First();
-            var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
-            var filePath = Path.Combine(packageDirectory, $"{tsPackageVersion.full_name}.zip");
+            var tsPackageVersion = tsPackage.versions.First(tspv => tspv.friendly_version.Equals(version.version));
+            var filePath = Path.Combine(packageDirectory, $"{tsPackage.name}-{tsPackageVersion.friendly_version}.zip");
 
             using (var client = new WebClient())
             {
-                client.DownloadFile(tsPackageVersion.download_url, filePath);
+                client.DownloadFile(tsPackageVersion.download_path, filePath);
             }
 
             using (var archive = ArchiveFactory.Open(filePath))
@@ -132,17 +103,31 @@ namespace ThunderKit.Integrations.Thunderstore
             File.Delete(filePath);
         }
 
+        private string PackageListApi(int count, int page, OrderBy orderby)
+            => $"https://spacedock.info/api/browse?count={count}&page={page}&orderby={orderby}";
+
         protected override async Task ReloadPagesAsyncInternal()
         {
             using (var client = new GZipWebClient())
             {
-                var address = new Uri(PackageListApi);
-                var result = await client.DownloadStringTaskAsync(address);
-                var json = $"{{ \"{nameof(PackagesResponse.results)}\": {result} }}";
-                var response = JsonUtility.FromJson<PackagesResponse>(json);
-                packageListings = response.results;
-                LoadPackages();
+                var aggregate = Enumerable.Empty<PackageListing>();
+                var endPage = 1;
+                for (int p = 1; p <= endPage; p++)
+                {
+                    var address = new Uri(PackageListApi(500, p, OrderBy.name));
+                    var result = await client.DownloadStringTaskAsync(address);
+                    var response = JsonUtility.FromJson<PackagesResponse>(result);
+                    aggregate = aggregate.Union(response.result.Where(pl =>
+                    {
+                        if (pl.game_id == 22407) return true;
+                        return false;
+                    }));
+                    endPage = response.pages;
+                }
+
+                packageListings = aggregate.ToArray();
             }
+            LoadPackages();
         }
 
         public IEnumerable<PackageListing> LookupPackage(string name)
@@ -158,12 +143,11 @@ namespace ThunderKit.Integrations.Thunderstore
             CompareInfo comparer = CultureInfo.CurrentCulture.CompareInfo;
             var compareOptions = CompareOptions.IgnoreCase;
             var nameMatch = comparer.IndexOf(package.name, name, compareOptions) >= 0;
-            var fullNameMatch = comparer.IndexOf(package.full_name, name, compareOptions) >= 0;
+            var fullNameMatch = comparer.IndexOf(package.name, name, compareOptions) >= 0;
 
-            var latest = package.versions.OrderByDescending(pck => pck.version_number).First();
-            var latestFullNameMatch = comparer.IndexOf(latest.full_name, name, compareOptions) >= 0;
+            var latest = package.versions.OrderByDescending(pck => pck.id).First();
+            var latestFullNameMatch = comparer.IndexOf(package.name, name, compareOptions) >= 0;
             return nameMatch || fullNameMatch || latestFullNameMatch;
         }
-
     }
 }

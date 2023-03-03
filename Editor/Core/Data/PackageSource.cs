@@ -17,6 +17,10 @@ namespace ThunderKit.Core.Data
         public static event EventHandler SourcesInitialized;
         public static event EventHandler InitializeSources;
 
+        public bool IsLoadingPages { get; private set; }
+        public event Action OnLoadingStarted;
+        public event Action OnLoadingStopped;
+
         public static void LoadAllSources()
         {
             InitializeSources?.Invoke(null, EventArgs.Empty);
@@ -82,6 +86,30 @@ namespace ThunderKit.Core.Data
         private Dictionary<string, HashSet<string>> dependencyMap;
         private Dictionary<string, PackageGroup> groupMap;
         private List<PackageGroup> packages;
+
+        protected abstract Task ReloadPagesAsyncInternal();
+        public async Task ReloadPagesAsync()
+        {
+            if (IsLoadingPages) return;
+            IsLoadingPages = true;
+            try
+            {
+                OnLoadingStarted?.Invoke();
+                await ReloadPagesAsyncInternal();
+            }
+            finally
+            {
+                IsLoadingPages = false;
+                OnLoadingStopped?.Invoke();
+            }
+        }
+
+        public void ReloadPages(bool force = false)
+        {
+            if (force) IsLoadingPages = false;
+            _ = ReloadPagesAsync();
+
+        }
 
         /// <summary>
         /// Generates a new PackageGroup for this PackageSource
