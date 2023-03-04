@@ -91,7 +91,7 @@ namespace ThunderKit.Core.Windows
 
         private void PackageSource_SourceInitialized(object sender, EventArgs e)
         {
-            UpdatePackageList();
+            ConstructPackageSourceList(PackageSourceSettings.PackageSources);
         }
 
         private void RefreshClicked()
@@ -103,15 +103,24 @@ namespace ThunderKit.Core.Windows
         {
             var packageSourceList = rootVisualElement.Q(name = "tkpm-package-source-list");
 
-            packageSourceList.Clear();
+            foreach (var child in packageSourceList.Children().ToArray())
+            {
+                if (!packageSources.Contains(child.userData as PackageSource))
+                    child.RemoveFromHierarchy();
+            }
 
             for (int sourceIndex = 0; sourceIndex < packageSources.Count; sourceIndex++)
             {
                 var source = packageSources[sourceIndex];
+                var groupName = $"tkpm-package-source-{NormalizeName(source.name)}";
+
+                var existingSource = packageSourceList.Q(groupName);
+                if (existingSource != null)
+                    continue;
+
                 var packageSource = GetTemplateInstance("PackageSource");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
                 var foldOut = packageSource.Q<Foldout>();
-                var groupName = $"tkpm-package-source-{NormalizeName(source.name)}";
                 packageSource.RemoveFromClassList("grow");
                 foldOut.value = false;
                 foldOut.RegisterCallback<ChangeEvent<bool>>((evt) =>
