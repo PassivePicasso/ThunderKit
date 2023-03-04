@@ -47,7 +47,7 @@
 }
 
 .tkpm-sidebar-width {
-	width: 290px;
+	min-width: 300px;
 }
 
 .tkpm-toolbar {
@@ -174,4 +174,10 @@
 	padding-top: 1px;
 	padding-right: 2px;
 	padding-bottom: 2px;
+}
+
+.tkpm-resize-thumb {
+	background-color: rgba(128, 128, 128, 0.5);
+	width: 4px;
+	cursor: resize-horizontal;
 }
