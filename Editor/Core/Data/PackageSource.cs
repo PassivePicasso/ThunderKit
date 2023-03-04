@@ -86,11 +86,13 @@ namespace ThunderKit.Core.Data
         private Dictionary<string, HashSet<string>> dependencyMap;
         private Dictionary<string, PackageGroup> groupMap;
         private List<PackageGroup> packages;
+        private ThunderKitSettings settings;
 
         private void OnEnable()
         {
             InitializeSources -= Initialize;
             InitializeSources += Initialize;
+            settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
         }
 
         private void OnDisable()
@@ -118,6 +120,8 @@ namespace ThunderKit.Core.Data
         {
             if (IsLoadingPages) return;
             IsLoadingPages = true;
+            var stopWatch = new System.Diagnostics.Stopwatch();
+            stopWatch.Start();
             try
             {
                 OnLoadingStarted?.Invoke();
@@ -125,6 +129,9 @@ namespace ThunderKit.Core.Data
             }
             finally
             {
+                stopWatch.Stop();
+                if (settings.LogPackageSourceTimings)
+                    Debug.Log($"PackageSource {name} took {stopWatch.Elapsed.TotalSeconds} seconds to update.");
                 IsLoadingPages = false;
                 OnLoadingStopped?.Invoke();
             }
