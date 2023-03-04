@@ -89,37 +89,50 @@ namespace ThunderKit.Integrations.SpaceDock
 
         protected override async Task ReloadPagesAsyncInternal()
         {
+            const int PageCount = 500;
+            var aggregate = Enumerable.Empty<PackageListing>();
+            var tasks = new List<Task<string>>();
+            var clients = new List<GZipWebClient>();
+            PackagesResponse firstResponse;
             using (var client = new GZipWebClient())
             {
-                var aggregate = Enumerable.Empty<PackageListing>();
-                var endPage = 1;
-                var tasks = new List<Task<string>>();
-                for (int p = 1; p <= endPage; p++)
+                var address = new Uri(PackageListApi(PageCount, 1, OrderBy.name));
+                var firstPage = await client.DownloadStringTaskAsync(address);
+                firstResponse = JsonUtility.FromJson<PackagesResponse>(firstPage);
+                aggregate = aggregate.Union(firstResponse.result.Where(pl =>
                 {
-                    var address = new Uri(PackageListApi(500, p, OrderBy.name));
-                    var task = client.DownloadStringTaskAsync(address);
-                    tasks.Add(task);
-                }
-                while (tasks.Any())
-                {
-                    foreach(var request in tasks.ToArray())
-                    {
-                        if (!request.IsCompleted) continue;
-                        var result = await request;
-                        tasks.Remove(request);
-                        var response = JsonUtility.FromJson<PackagesResponse>(result);
-                        aggregate = aggregate.Union(response.result.Where(pl =>
-                        {
-                            if (pl.game_id == 22407) return true;
-                            return false;
-                        }));
-                        endPage = response.pages;
-                    }
-                    await Task.Delay(100);
-                }
-
-                packageListings = aggregate.ToArray();
+                    if (pl.game_id == 22407) return true;
+                    return false;
+                }));
             }
+
+            for (int p = 2; p <= firstResponse.pages; p++)
+            {
+                var client = new GZipWebClient();
+                clients.Add(client);
+                var address = new Uri(PackageListApi(PageCount, p, OrderBy.name));
+                var task = client.DownloadStringTaskAsync(address);
+                tasks.Add(task);
+            }
+            while (tasks.Any())
+            {
+                foreach (var request in tasks.ToArray())
+                {
+                    if (!request.IsCompleted) continue;
+                    var result = await request;
+                    tasks.Remove(request);
+                    var response = JsonUtility.FromJson<PackagesResponse>(result);
+                    aggregate = aggregate.Union(response.result.Where(pl =>
+                    {
+                        if (pl.game_id == 22407) return true;
+                        return false;
+                    }));
+                }
+                await Task.Delay(100);
+            }
+            foreach (var client in clients) client.Dispose();
+
+            packageListings = aggregate.ToArray();
             LoadPackages();
         }
 
