@@ -315,6 +315,14 @@ namespace ThunderKit.Core.Windows
         void RepopulateLabels(VisualElement container, IEnumerable<string> texts, params string[] classes)
         {
             container.Clear();
+            if (!texts.Any())
+            {
+                container.parent.AddToClassList("hidden");
+                return;
+            }
+            else
+                container.parent.RemoveFromClassList("hidden");
+
             foreach (var text in texts)
             {
                 if (string.IsNullOrEmpty(text)) continue;
