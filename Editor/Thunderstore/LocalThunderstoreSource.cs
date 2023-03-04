@@ -37,6 +37,7 @@ namespace ThunderKit.Integrations.Thunderstore
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
         protected override void OnLoadPackages()
         {
+            if (string.IsNullOrEmpty(LocalRepositoryPath)) return;
             var potentialPackages = Directory.GetFiles(LocalRepositoryPath, "*.zip", SearchOption.TopDirectoryOnly);
             foreach (var filePath in potentialPackages)
             {
