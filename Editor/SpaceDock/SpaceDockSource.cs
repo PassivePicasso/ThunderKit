@@ -60,7 +60,7 @@ namespace ThunderKit.Integrations.SpaceDock
 
         private void Initialize(object sender, EventArgs e)
         {
-            ReloadPages();
+            ReloadPages(true);
         }
 
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
