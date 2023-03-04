@@ -22,7 +22,6 @@ namespace ThunderKit.Core.UIElements
             innerElement.AddToClassList("loading-spinner");
             innerElement.AddToClassList("hidden");
             Add(innerElement);
-            EditorApplication.update += UpdateProgress;
         }
 
         private void UpdateProgress()
@@ -40,6 +39,7 @@ namespace ThunderKit.Core.UIElements
 
             m_Rotation = 0;
 
+            EditorApplication.update += UpdateProgress;
 
             started = true;
             innerElement.RemoveFromClassList("hidden");
