@@ -180,4 +180,6 @@
 	background-color: rgba(128, 128, 128, 0.5);
 	width: 4px;
 	cursor: resize-horizontal;
+	margin-left: 1px;
+	margin-right: 1px;
 }
