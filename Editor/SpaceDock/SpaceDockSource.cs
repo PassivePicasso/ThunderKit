@@ -93,17 +93,29 @@ namespace ThunderKit.Integrations.SpaceDock
             {
                 var aggregate = Enumerable.Empty<PackageListing>();
                 var endPage = 1;
+                var tasks = new List<Task<string>>();
                 for (int p = 1; p <= endPage; p++)
                 {
                     var address = new Uri(PackageListApi(500, p, OrderBy.name));
-                    var result = await client.DownloadStringTaskAsync(address);
-                    var response = JsonUtility.FromJson<PackagesResponse>(result);
-                    aggregate = aggregate.Union(response.result.Where(pl =>
+                    var task = client.DownloadStringTaskAsync(address);
+                    tasks.Add(task);
+                }
+                while (tasks.Any())
+                {
+                    foreach(var request in tasks.ToArray())
                     {
-                        if (pl.game_id == 22407) return true;
-                        return false;
-                    }));
-                    endPage = response.pages;
+                        if (!request.IsCompleted) continue;
+                        var result = await request;
+                        tasks.Remove(request);
+                        var response = JsonUtility.FromJson<PackagesResponse>(result);
+                        aggregate = aggregate.Union(response.result.Where(pl =>
+                        {
+                            if (pl.game_id == 22407) return true;
+                            return false;
+                        }));
+                        endPage = response.pages;
+                    }
+                    await Task.Delay(100);
                 }
 
                 packageListings = aggregate.ToArray();
