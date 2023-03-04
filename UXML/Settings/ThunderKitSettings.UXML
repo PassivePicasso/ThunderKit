@@ -60,6 +60,13 @@
                     <ui:Toggle name="asset-name-field" binding-path="ShowLogWindow" class="thunderkit-field-input"/>
                 </ui:VisualElement>
 
+                <ui:VisualElement class="field-section">
+                    <ui:VisualElement class="thunderkit-field">
+                        <ui:Label text="Show PackageSource refresh times" class="thunderkit-field-label"/>
+                        <ui:Toggle name="asset-name-field" binding-path="LogPackageSourceTimings" class="thunderkit-field-input"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
             </ui:VisualElement>
 
         </ui:VisualElement>

@@ -124,6 +124,7 @@ namespace ThunderKit.Core.Data
         public string DateTimeFormat = "HH:mm:ss:fff";
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
         public bool ShowLogWindow = true;
+        public bool LogPackageSourceTimings;
         public MarkdownOpenMode MarkdownOpenMode = MarkdownOpenMode.UnityExternalEditor;
 
         public Pipeline SelectedPipeline;
