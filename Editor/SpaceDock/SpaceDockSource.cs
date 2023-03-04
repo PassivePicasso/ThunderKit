@@ -44,25 +44,6 @@ namespace ThunderKit.Integrations.SpaceDock
         public override string Name => "SpaceDock Source";
         public override string SourceGroup => "SpaceDock";
 
-        private void OnEnable()
-        {
-            InitializeSources -= Initialize;
-            InitializeSources += Initialize;
-        }
-        private void OnDisable()
-        {
-            InitializeSources -= Initialize;
-        }
-        private void OnDestroy()
-        {
-            InitializeSources -= Initialize;
-        }
-
-        private void Initialize(object sender, EventArgs e)
-        {
-            ReloadPages(true);
-        }
-
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
 
         protected override void OnLoadPackages()

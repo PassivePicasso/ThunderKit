@@ -72,24 +72,6 @@ namespace ThunderKit.Integrations.Thunderstore
         public string PackageListApi => Url + "/api/v1/package/";
         public override string SourceGroup => "Thunderstore";
 
-        private void OnEnable()
-        {
-            InitializeSources -= Initialize;
-            InitializeSources += Initialize;
-        }
-        private void OnDisable()
-        {
-            InitializeSources -= Initialize;
-        }
-        private void OnDestroy()
-        {
-            InitializeSources -= Initialize;
-        }
-
-        private void Initialize(object sender, EventArgs e)
-        {
-            ReloadPages(true);
-        }
 
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
 
