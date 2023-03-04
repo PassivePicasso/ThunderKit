@@ -87,7 +87,33 @@ namespace ThunderKit.Core.Data
         private Dictionary<string, PackageGroup> groupMap;
         private List<PackageGroup> packages;
 
-        protected abstract Task ReloadPagesAsyncInternal();
+        private void OnEnable()
+        {
+            InitializeSources -= Initialize;
+            InitializeSources += Initialize;
+        }
+
+        private void OnDisable()
+        {
+            InitializeSources -= Initialize;
+        }
+
+        private void OnDestroy()
+        {
+            InitializeSources -= Initialize;
+        }
+
+        private void Initialize(object sender, EventArgs e)
+        {
+            ReloadPages(true);
+        }
+
+        public void ReloadPages(bool force = false)
+        {
+            if (force) IsLoadingPages = false;
+            _ = ReloadPagesAsync();
+        }
+
         public async Task ReloadPagesAsync()
         {
             if (IsLoadingPages) return;
@@ -104,31 +130,7 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        private void OnEnable()
-        {
-            InitializeSources -= Initialize;
-            InitializeSources += Initialize;
-        }
-        private void OnDisable()
-        {
-            InitializeSources -= Initialize;
-        }
-        private void OnDestroy()
-        {
-            InitializeSources -= Initialize;
-        }
-
-        private void Initialize(object sender, EventArgs e)
-        {
-            ReloadPages(true);
-        }
-
-        public void ReloadPages(bool force = false)
-        {
-            if (force) IsLoadingPages = false;
-            _ = ReloadPagesAsync();
-
-        }
+        protected abstract Task ReloadPagesAsyncInternal();
 
         /// <summary>
         /// Generates a new PackageGroup for this PackageSource
