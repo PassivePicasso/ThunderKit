@@ -103,21 +103,19 @@ namespace ThunderKit.Core.Windows
         {
             var packageSourceList = rootVisualElement.Q(name = "tkpm-package-source-list");
 
+            var existingSources = new List<PackageSource>();
             foreach (var child in packageSourceList.Children().ToArray())
             {
-                if (!packageSources.Contains(child.userData as PackageSource))
+                var source = child.userData as PackageSource;
+                if (!packageSources.Contains(source))
                     child.RemoveFromHierarchy();
-            }
-
-            for (int sourceIndex = 0; sourceIndex < packageSources.Count; sourceIndex++)
-            {
-                var source = packageSources[sourceIndex];
+                existingSources.Add(source);
                 var groupName = $"tkpm-package-source-{NormalizeName(source.name)}";
-
-                var existingSource = packageSourceList.Q(groupName);
-                if (existingSource != null)
-                    continue;
-
+                child.name = groupName;
+            }
+            foreach (var source in packageSources.Except(existingSources))
+            {
+                var groupName = $"tkpm-package-source-{NormalizeName(source.name)}";
                 var packageSource = GetTemplateInstance("PackageSource");
                 var packageList = packageSource.Q<ListView>("tkpm-package-list");
                 var foldOut = packageSource.Q<Foldout>();
