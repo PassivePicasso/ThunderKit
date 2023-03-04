@@ -104,6 +104,25 @@ namespace ThunderKit.Core.Data
             }
         }
 
+        private void OnEnable()
+        {
+            InitializeSources -= Initialize;
+            InitializeSources += Initialize;
+        }
+        private void OnDisable()
+        {
+            InitializeSources -= Initialize;
+        }
+        private void OnDestroy()
+        {
+            InitializeSources -= Initialize;
+        }
+
+        private void Initialize(object sender, EventArgs e)
+        {
+            ReloadPages(true);
+        }
+
         public void ReloadPages(bool force = false)
         {
             if (force) IsLoadingPages = false;
