@@ -9,8 +9,8 @@ using PackageSource = ThunderKit.Core.Data.PackageSource;
 using System;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Core.Utilities;
+using ThunderKit.Core.UIElements;
 #if UNITY_2019_1_OR_NEWER
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #else
 using UnityEngine.Experimental.UIElements;
@@ -24,7 +24,6 @@ namespace ThunderKit.Core.Windows
         private static readonly PackageVersion[] EmptyPackages = new PackageVersion[0];
 
         private VisualElement packageView;
-        //private Button searchBoxCancel;
         private Button filtersButton, refreshButton;
         private TextField searchBox;
 
@@ -44,26 +43,6 @@ namespace ThunderKit.Core.Windows
             PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
             PackageSource.SourcesInitialized += PackageSource_SourceInitialized;
             EditorApplication.update += OnLoad;
-        }
-
-        private void OnLoad()
-        {
-            EditorApplication.update -= OnLoad;
-            PackageSource.LoadAllSources();
-        }
-
-        private void OnInspectorUpdate()
-        {
-            TryDelete();
-        }
-
-        private void OnDestroy()
-        {
-            PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
-        }
-
-        private void PackageSource_SourceInitialized(object sender, EventArgs e)
-        {
             if (rootVisualElement == null)
             {
                 PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
@@ -94,6 +73,27 @@ namespace ThunderKit.Core.Windows
             ConstructPackageSourceList(PackageSourceSettings.PackageSources);
         }
 
+        private void OnLoad()
+        {
+            EditorApplication.update -= OnLoad;
+            PackageSource.LoadAllSources();
+        }
+
+        private void OnInspectorUpdate()
+        {
+            TryDelete();
+        }
+
+        private void OnDestroy()
+        {
+            PackageSource.SourcesInitialized -= PackageSource_SourceInitialized;
+        }
+
+        private void PackageSource_SourceInitialized(object sender, EventArgs e)
+        {
+            UpdatePackageList();
+        }
+
         private void RefreshClicked()
         {
             PackageSource.LoadAllSources();
@@ -121,30 +121,9 @@ namespace ThunderKit.Core.Windows
                     else
                         packageSource.RemoveFromClassList("grow");
                 });
-                var loadingIndicator = packageSource.Q<VisualElement>(name: "tkpm-package-source-loading-indicator");
-
-                int m_Rotation = 0;
-                source.OnLoadingStarted += Source_OnLoadingStarted;
-                source.OnLoadingStopped += Source_OnLoadingStopped;
-                void UpdateProgress()
-                {
-                    loadingIndicator.transform.rotation = Quaternion.Euler(0, 0, m_Rotation);
-                    m_Rotation += 3;
-                    if (m_Rotation > 360)
-                        m_Rotation -= 360;
-                }
-                void Source_OnLoadingStopped()
-                {
-                    loadingIndicator.AddToClassList("hidden");
-                    EditorApplication.update -= UpdateProgress;
-                }
-
-                void Source_OnLoadingStarted()
-                {
-                    loadingIndicator.RemoveFromClassList("hidden");
-                    m_Rotation = 0;
-                    EditorApplication.update += UpdateProgress;
-                }
+                var loadingIndicator = packageSource.Q<LoadingSpinner>(name: "tkpm-package-source-loading-indicator");
+                source.OnLoadingStarted += () => loadingIndicator.Start();
+                source.OnLoadingStopped += () => loadingIndicator.Stop();
 
                 packageSource.AddToClassList("tkpm-package-source");
                 packageSource.name = groupName;
