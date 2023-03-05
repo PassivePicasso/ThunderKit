@@ -145,7 +145,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
             var builder = new AssemblyBuilder(assemblyOutputPath, definition.asm.sourceFiles)
             {
-#if UNITY_2019_3_OR_NEWER
+#if UNITY_2020_1_OR_NEWER
                 referencesOptions = ReferencesOptions.None,
                 compilerOptions = new ScriptCompilerOptions()
                 {
