@@ -2,7 +2,7 @@
 
 ### Fixes
 
-* Fix StageAssemblies using facilities not available in Untiy 2019
+* Fix StageAssemblies using facilities not available in Unity 2019
 
 ## 7.1.0
 
