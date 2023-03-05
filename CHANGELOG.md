@@ -1,9 +1,17 @@
+## 7.1.1
+
+### Fixes
+
+* Fix StageAssemblies using facilities not available in Untiy 2019
+
 ## 7.1.0
 
 ### Improvements
 
-* Improve StageAssemblies error reporting to provide build errors with a context for each build error in the log entry
-* Improve formatting of StageAssembly error reports to include source file links for errors
+* Improve StageAssemblies error reporting to provide build errors with a 
+  context for each build error in the log entry
+* Improve formatting of StageAssembly error reports to include source file
+  links for errors
 
 ### Fixes
 
