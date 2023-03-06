@@ -2,8 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using static UnityEngine.GraphicsBuffer;
+#else
+using UnityEngine.Experimental.UIElements;
+#endif
 
 namespace ThunderKit.Core.UIElements
 {
@@ -37,7 +42,8 @@ namespace ThunderKit.Core.UIElements
             set
             {
                 target = value;
-                dragManipulator ??= new DragManipulator(this, value);
+                if (dragManipulator == null) dragManipulator = new DragManipulator(this, value);
+
                 dragManipulator.resizeTarget = value;
             }
         }
@@ -63,7 +69,7 @@ namespace ThunderKit.Core.UIElements
 
     }
 
-    public class DragManipulator : PointerManipulator
+    public class DragManipulator : Manipulator
     {
         private bool enabled { get; set; }
 
@@ -74,7 +80,7 @@ namespace ThunderKit.Core.UIElements
             this.target = target;
             resizeTarget = target.parent;
         }
-
+#if UNITY_2019_1_OR_NEWER
         protected override void RegisterCallbacksOnTarget()
         {
             target.RegisterCallback<PointerDownEvent>(PointerDownHandler);
@@ -100,7 +106,7 @@ namespace ThunderKit.Core.UIElements
         private void PointerMoveHandler(PointerMoveEvent evt)
         {
             if (!enabled || !target.HasPointerCapture(evt.pointerId)) return;
-            
+
             resizeTarget.style.width = new StyleLength(resizeTarget.resolvedStyle.width + evt.deltaPosition.x);
         }
 
@@ -115,5 +121,47 @@ namespace ThunderKit.Core.UIElements
             if (enabled)
                 enabled = false;
         }
+#else
+        protected override void RegisterCallbacksOnTarget()
+        {
+            target.RegisterCallback<MouseDownEvent>(MouseDownHandler);
+            target.RegisterCallback<MouseMoveEvent>(MouseMoveHandler);
+            target.RegisterCallback<MouseUpEvent>(MouseUpHandler);
+            target.RegisterCallback<MouseCaptureOutEvent>(MouseCaptureOutHandler);
+        }
+
+        protected override void UnregisterCallbacksFromTarget()
+        {
+            target.UnregisterCallback<MouseDownEvent>(MouseDownHandler);
+            target.UnregisterCallback<MouseMoveEvent>(MouseMoveHandler);
+            target.UnregisterCallback<MouseUpEvent>(MouseUpHandler);
+            target.UnregisterCallback<MouseCaptureOutEvent>(MouseCaptureOutHandler);
+        }
+
+        private void MouseDownHandler(MouseDownEvent evt)
+        {
+            target.CaptureMouse();
+            enabled = true;
+        }
+
+        private void MouseMoveHandler(MouseMoveEvent evt)
+        {
+            if (!enabled || !target.HasMouseCapture()) return;
+            var width = resizeTarget.layout.width + evt.mouseDelta.x;
+            resizeTarget.style.width = width;
+        }
+
+        private void MouseUpHandler(MouseUpEvent evt)
+        {
+            if (enabled && target.HasMouseCapture())
+                target.ReleaseMouse();
+        }
+
+        private void MouseCaptureOutHandler(MouseCaptureOutEvent evt)
+        {
+            if (enabled)
+                enabled = false;
+        }
+#endif
     }
 }
