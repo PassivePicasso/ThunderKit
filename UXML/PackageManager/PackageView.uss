@@ -1,6 +1,8 @@
 ﻿#tkpm-package-view-controls{
 	position: absolute;
 	right: 0px;
+	margin-right: 5px;
+	margin-top: 5px;
 }
 
 .package-control-button {
@@ -24,6 +26,16 @@
 	border-bottom-left-radius: 0px;
 }
 
+#tkpm-package-view-header {
+	height: 100px;
+	min-height: 100px;
+	max-height: 100px;
+}
+#tkpm-package-body {
+	border-color: rgba(128,128,128, 0.5);
+	border-top-width: 2px;
+}
+
 #tkpm-package-install-button {
 	border-right-width: 0px;
 }
@@ -33,17 +45,17 @@
 	flex-basis: 0;
 	flex-grow: 1;
 	flex-shrink: 0;
-	margin-left: 2px;
-	margin-top: 2px;
-	margin-right: 2px;
-	margin-bottom: 2px;
+}
+#tkpm-package-dependencies Label {
+	padding-left: 4px;
+	padding-right: 4px;
 }
 
-#tkpm-package-body {
-	flex-grow: 1;
-}
 #tkpm-package-dependencies-label {
 	-unity-font-style: bold;
+	background-color: rgba(128,128,128, 0.5);
+	padding-left: 4px;
+	padding-right: 4px;
 }
 
 #tkpm-package-tags-label {
@@ -56,12 +68,23 @@
 	flex-grow: 0.5;
 	flex-shrink: 0.5;
 }
+#tkpm-package-title {
+	margin-bottom: 0px;
+	height: 64px;
+}
+#tkpm-package-footer {
+	border-color: rgba(128,128,128, 0.5);
+	border-top-width: 2px;
+	padding-top: 4px;
+	max-height: 250px;
+}
 
 .tag {
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
-	border-bottom-right-radius: 10px;
-	border-bottom-left-radius: 10px;
+	height: 16px;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	border-bottom-right-radius: 7px;
+	border-bottom-left-radius: 7px;
 	background-color: #ddd;
 	padding-top: 2px;
 	padding-left: 4px;
@@ -79,15 +102,79 @@
 	font-size: 11px;
 	-unity-font-style: italic;
 }
-
+.package-description {
+	flex-grow: 1;
+	margin-top: 10px;
+}
+.package-description #unity-content-container {
+	flex-grow: 1;
+}
+.package-description MarkdownElement {
+	flex-grow: 1;
+}
 .package-details {
+	width: 300px;
+	min-width: 300px;
+	max-width: 300px;
 	border-color: rgba(128,128,128, 0.5);
-	border-top-width: 2px;
-	padding-top: 4px;
+	border-left-width: 1px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	margin-top: 2px;
 
+}
+.package-details-page {
+	flex-grow: 1;
+
+}
+.icon {
 	position: absolute;
-	height: 200;
-	bottom: 0px;
+	top: 2px;
+	left: -67px;
+	max-width: 64px;
+	max-height: 64px;
+	
+}
+.background {
+	position: absolute;
 	left: 0px;
+	top: 0px;
 	right: 0px;
+	bottom: 0px;
+	min-height: 62px;
+	max-height: 62px;
+	overflow: hidden;
+}
+.background-title.paragraph {
+	-unity-text-align: middle-left;
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+	padding-right: 0px;
+	padding-left: 0px;
+	position: absolute;
+	left:0px;
+	top:0px;
+	right:0px;
+	bottom:0px;
+	background-color: rgba(0,0,0,0.5);
+}
+.background-title #inline {
+	color: rgba(256,256,256,0.75);
+	padding-left: 10px;
+}
+
+.icon-title.paragraph {
+	margin-left: 70px;
+	margin-bottom: 20px;
+}
+.links {
+	position: absolute;
+	top: 0px;
+	right: 10px;
+}
+.license {
+	position: absolute;
+	bottom: -4px;
+	left: 24px;
 }

@@ -16,17 +16,6 @@ namespace ThunderKit.Integrations.SpaceDock
     public class SpaceDockSource : PackageSource
     {
         enum OrderBy { name, updated, created }
-        [Serializable]
-        public struct SDateTime
-        {
-            public long ticks;
-            public SDateTime(long ticks)
-            {
-                this.ticks = ticks;
-            }
-            public static implicit operator DateTime(SDateTime sdt) => new DateTime(sdt.ticks);
-            public static implicit operator SDateTime(DateTime sdt) => new SDateTime(sdt.Ticks);
-        }
 
         class GZipWebClient : WebClient
         {
@@ -48,13 +37,44 @@ namespace ThunderKit.Integrations.SpaceDock
 
         protected override void OnLoadPackages()
         {
-            //var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
             foreach (var tsp in packageListings)
             {
-                var versions = tsp.versions.Select(v => new PackageVersionInfo(v.friendly_version, tsp.name, Array.Empty<string>()));
-                AddPackageGroup(tsp.author, tsp.name, tsp.short_description, tsp.name, Array.Empty<string>(), versions);
+                var versions = tsp.versions.OrderByDescending(v => v.id).Select(v => new PackageVersionInfo(v.friendly_version, tsp.name, Array.Empty<string>(), ConstructMarkdown(v, tsp))).ToArray();
+
+                var header = string.Empty;
+                if (!string.IsNullOrEmpty(tsp.background))
+                    header += $"![]({tsp.background}){{ .background }}\r\n\r\n";
+                header += $"{tsp.name}{{ .background-title .header-1 }}";
+
+                var changeLog = $"### ChangeLog\r\n\r\n{tsp.versions[0].changelog}";
+
+                AddPackageGroup(new PackageGroupInfo
+                {
+                    Author = tsp.author,
+                    Name = tsp.name,
+                    Description = tsp.short_description,
+                    DependencyId = tsp.name,
+                    HeaderMarkdown = header,
+                    FooterMarkdown = changeLog,
+                    Versions = versions
+                });
             }
             SourceUpdated();
+        }
+
+        private static string ConstructMarkdown(PackageVersion pv, PackageListing pl)
+        {
+            var markdown = $"### Description\r\n\r\n{pl.short_description}\r\n\r\n";
+
+            if (!string.IsNullOrWhiteSpace(pl.source_code) || !string.IsNullOrWhiteSpace(pl.website))
+                markdown += $"{{ .links }}";
+
+            if (!string.IsNullOrWhiteSpace(pl.source_code)) markdown += $"[Repository]({pl.source_code})";
+            if (!string.IsNullOrWhiteSpace(pl.website)) markdown += $"[Website]({pl.website})";
+
+            markdown += $"\r\n\r\n{{ .license }} License: {pl.license}";
+
+            return markdown;
         }
 
         protected override void OnInstallPackageFiles(PV version, string packageDirectory)
@@ -84,8 +104,8 @@ namespace ThunderKit.Integrations.SpaceDock
             File.Delete(filePath);
         }
 
-        private string PackageListApi(int count, int page, OrderBy orderby)
-            => $"https://spacedock.info/api/browse?count={count}&page={page}&orderby={orderby}";
+        private string PackageListApi(int count, int page, int gameId, OrderBy orderby)
+            => $"https://spacedock.info/api/browse?count={count}&page={page}&orderby={orderby}&game_id={gameId}";
 
         protected override async Task ReloadPagesAsyncInternal()
         {
@@ -96,21 +116,17 @@ namespace ThunderKit.Integrations.SpaceDock
             PackagesResponse firstResponse;
             using (var client = new GZipWebClient())
             {
-                var address = new Uri(PackageListApi(PageCount, 1, OrderBy.name));
+                var address = new Uri(PackageListApi(PageCount, 1, 22407, OrderBy.name));
                 var firstPage = await client.DownloadStringTaskAsync(address);
                 firstResponse = JsonUtility.FromJson<PackagesResponse>(firstPage);
-                aggregate = aggregate.Union(firstResponse.result.Where(pl =>
-                {
-                    if (pl.game_id == 22407) return true;
-                    return false;
-                }));
+                aggregate = aggregate.Union(firstResponse.result);
             }
 
             for (int p = 2; p <= firstResponse.pages; p++)
             {
                 var client = new GZipWebClient();
                 clients.Add(client);
-                var address = new Uri(PackageListApi(PageCount, p, OrderBy.name));
+                var address = new Uri(PackageListApi(PageCount, p, 22407, OrderBy.name));
                 var task = client.DownloadStringTaskAsync(address);
                 tasks.Add(task);
             }
@@ -122,11 +138,7 @@ namespace ThunderKit.Integrations.SpaceDock
                     var result = await request;
                     tasks.Remove(request);
                     var response = JsonUtility.FromJson<PackagesResponse>(result);
-                    aggregate = aggregate.Union(response.result.Where(pl =>
-                    {
-                        if (pl.game_id == 22407) return true;
-                        return false;
-                    }));
+                    aggregate = aggregate.Union(response.result);
                 }
                 await Task.Delay(100);
             }

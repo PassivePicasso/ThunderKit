@@ -54,10 +54,17 @@ namespace ThunderKit.Integrations.Thunderstore
 
                         var versionId = Path.GetFileNameWithoutExtension(filePath);
                         var author = versionId.Split('-')[0];
-                        var groupId = $"{author}-{tsp.name}";
-                        var versions = new PackageVersionInfo[] { new PackageVersionInfo(tsp.version_number, versionId, tsp.dependencies) };
-                        AddPackageGroup(author, tsp.name, tsp.description, groupId, EmptyStringArray, versions);
-                        //don't process additional manifest files
+
+                        AddPackageGroup(new PackageGroupInfo
+                        {
+                            Author = author,
+                            Name = tsp.name,
+                            Description = tsp.description,
+                            DependencyId = $"{author}-{tsp.name}",
+                            Versions = new PackageVersionInfo[] {
+                                new PackageVersionInfo(tsp.version_number, versionId, tsp.dependencies, string.Empty)
+                            }
+                        });
                         break;
                     }
             }

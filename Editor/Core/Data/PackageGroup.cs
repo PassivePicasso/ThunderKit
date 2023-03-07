@@ -28,6 +28,8 @@ namespace ThunderKit.Core.Data
         public string PackageName;
         public string Author;
         public string Description;
+        public string HeaderMarkdown;
+        public string FooterMarkdown;
         [HideInInspector]
         public string DependencyId;
         public string[] Tags;

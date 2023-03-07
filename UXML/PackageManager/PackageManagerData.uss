@@ -166,14 +166,11 @@
 #tkpm-package-title {
 	-unity-font-style: bold;
 	font-size: 18px;
-	margin-left: 4px;
 	margin-top: 0px;
+	margin-left: 0px;
 	margin-right: 0px;
-	margin-bottom: 0px;
-	padding-left: 2px;
-	padding-top: 1px;
-	padding-right: 2px;
-	padding-bottom: 2px;
+	padding-left: 0px;
+	padding-right: 0px;
 }
 
 .tkpm-resize-thumb {
@@ -185,6 +182,7 @@
 }
 .hidden {
     visibility: hidden;
+	display: none;
 }
 
 .float-right {
@@ -194,6 +192,11 @@
 
 .tint {
 	background-color: rgba(128, 128, 128, 0.5);
+}
+
+
+.dark-tint {
+	background-color: rgba(64, 64, 64, 0.5);
 }
 
 .m1 {
