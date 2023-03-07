@@ -32,16 +32,30 @@ namespace ThunderKit.Core.Data
         [Serializable]
         public class PackageVersionInfo
         {
-            public string version;
-            public string versionDependencyId;
-            public string[] dependencies;
+            public string Version;
+            public string VersionDependencyId;
+            public string Markdown;
+            public string[] Dependencies;
 
-            public PackageVersionInfo(string version, string dependencyId, string[] dependencies)
+            public PackageVersionInfo(string version, string dependencyId, string[] dependencies, string markdown)
             {
-                this.version = version;
-                this.versionDependencyId = dependencyId;
-                this.dependencies = dependencies;
+                this.Version = version;
+                this.VersionDependencyId = dependencyId;
+                this.Dependencies = dependencies;
+                Markdown = markdown;
             }
+        }
+        [Serializable]
+        public class PackageGroupInfo
+        {
+            public string Author;
+            public string Name;
+            public string Description;
+            public string DependencyId;
+            public string HeaderMarkdown;
+            public string FooterMarkdown;
+            public string[] Tags;
+            public IEnumerable<PackageVersionInfo> Versions;
         }
 
         static Dictionary<string, List<PackageSource>> sourceGroups;
@@ -148,34 +162,38 @@ namespace ThunderKit.Core.Data
         /// <param name="dependencyId">DependencyId for PackageGroup, this is used for mapping dependencies</param>
         /// <param name="tags"></param>
         /// <param name="versions">Collection of version numbers, DependencyIds and dependencies as an array of versioned DependencyIds</param>
-        protected void AddPackageGroup(string author, string name, string description, string dependencyId, string[] tags, IEnumerable<PackageVersionInfo> versions)
+        protected void AddPackageGroup(PackageGroupInfo groupInfo)
         {
             if (groupMap == null) groupMap = new Dictionary<string, PackageGroup>();
             if (dependencyMap == null) dependencyMap = new Dictionary<string, HashSet<string>>();
             var group = CreateInstance<PackageGroup>();
 
-            group.Author = author;
-            group.name = group.PackageName = name;
-            group.Description = description;
-            group.DependencyId = dependencyId;
-            group.Tags = tags;
+            group.Author = groupInfo.Author;
+            group.name = group.PackageName = groupInfo.Name;
+            group.Description = groupInfo.Description;
+            group.DependencyId = groupInfo.DependencyId;
+            group.Tags = groupInfo.Tags;
             group.Source = this;
-            groupMap[dependencyId] = group;
+            group.HeaderMarkdown = groupInfo.HeaderMarkdown;
+            group.FooterMarkdown = groupInfo.FooterMarkdown;
+            groupMap[groupInfo.DependencyId] = group;
 
             group.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
 
-            var versionData = versions.ToArray();
+            var versionData = groupInfo.Versions.ToArray();
             group.Versions = new PackageVersion[versionData.Length];
             for (int i = 0; i < versionData.Length; i++)
             {
-                var version = versionData[i].version;
-                var versionDependencyId = versionData[i].versionDependencyId;
-                var dependencies = versionData[i].dependencies;
+                var versionInfo = versionData[i];
+                var versionNumber = versionInfo.Version;
+                var versionDependencyId = versionInfo.VersionDependencyId;
+                var dependencies = versionInfo.Dependencies;
 
                 var packageVersion = CreateInstance<PackageVersion>();
                 packageVersion.name = packageVersion.dependencyId = versionDependencyId;
                 packageVersion.group = group;
-                packageVersion.version = version;
+                packageVersion.version = versionNumber;
+                packageVersion.VersionMarkdown = versionInfo.Markdown;
                 packageVersion.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
                 group.Versions[i] = packageVersion;
 

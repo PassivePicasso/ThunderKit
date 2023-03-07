@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThunderKit.Core.Data
@@ -8,6 +7,7 @@ namespace ThunderKit.Core.Data
     {
         public string version;
         public string dependencyId;
+        public string VersionMarkdown;
         public PackageGroup group;
         public PackageVersion[] dependencies;
         public override bool Equals(object obj)

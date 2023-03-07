@@ -81,12 +81,33 @@ namespace ThunderKit.Integrations.Thunderstore
             //var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
             foreach (var tsp in realMods)
             {
-                var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies));
-                AddPackageGroup(tsp.owner, tsp.name, tsp.Latest.description, tsp.full_name, tsp.categories, versions);
+                var versions = tsp.versions.Select(v => new PackageVersionInfo(v.version_number, v.full_name, v.dependencies, ConstructMarkdown(v, tsp)));
+                AddPackageGroup(new PackageGroupInfo
+                {
+                    Author = tsp.owner,
+                    Name = tsp.name,
+                    Description = tsp.Latest.description,
+                    DependencyId = tsp.name,
+                    HeaderMarkdown = $"![]({tsp.Latest.icon}){{ .icon }} {tsp.name}{{ .icon-title .header-1 }}",
+                    FooterMarkdown = $"",
+                    Versions = versions,
+                    Tags = tsp.categories
+                });
             }
             SourceUpdated();
         }
 
+        private static string ConstructMarkdown(PackageVersion pv, PackageListing pl)
+        {
+            var markdown = $"{pv.description}\r\n\r\n";
+
+            if (!string.IsNullOrWhiteSpace(pl.package_url))
+                markdown += $"{{ .links }}";
+
+            if (!string.IsNullOrWhiteSpace(pl.package_url)) markdown += $"[Thunderstore]({pl.package_url})";
+
+            return markdown;
+        }
         protected override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
             var tsPackage = LookupPackage(version.group.DependencyId).First();
