@@ -69,14 +69,7 @@ namespace ThunderKit.Markdown.Helpers
         static void SetupImage(Image imageElement, Texture texture)
         {
             imageElement.image = texture;
-#if UNITY_2019_1_OR_NEWER
-            imageElement.style.width = texture.width;
-            imageElement.style.height = texture.height;
-#else
-            imageElement.style.width = new StyleValue<float>(texture.width);
-            imageElement.style.height = new StyleValue<float>(texture.height);
-
-#endif
+            imageElement.scaleMode = ScaleMode.ScaleAndCrop;
         }
 
 
