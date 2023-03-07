@@ -61,7 +61,6 @@ namespace ThunderKit.Markdown.Helpers
                     SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
 
                 imageElement.UnregisterCallback<DetachFromPanelEvent, UnityWebRequest>(CancelRequest);
-                GameObject.DestroyImmediate(gameObject);
             }
         }
         static void CancelRequest(DetachFromPanelEvent evt, UnityWebRequest webRequest) => webRequest.Abort();
