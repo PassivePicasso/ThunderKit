@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using ThunderKit.Markdown.ObjectRenderers;
 using UnityEditor;
+using System;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -58,11 +59,26 @@ namespace ThunderKit.Markdown.Helpers
                         Debug.Log(request.error);
                 }
                 else
-                    SetupImage(imageElement, ((DownloadHandlerTexture)request.downloadHandler).texture);
+                {
+                    var downloadHandler = (DownloadHandlerTexture)request.downloadHandler;
+                    var texture = downloadHandler.texture;
+                    SetupImage(imageElement, texture);
+                    imageElement.RegisterCallback<DetachFromPanelEvent>(DestroyTexture);
+                }
+
 
                 imageElement.UnregisterCallback<DetachFromPanelEvent, UnityWebRequest>(CancelRequest);
             }
         }
+
+        private static void DestroyTexture(DetachFromPanelEvent evt)
+        {
+            var imageElement = evt.target as Image;
+            var texture = imageElement.image;
+            if (texture)
+                UnityEngine.Object.DestroyImmediate(texture);
+        }
+
         static void CancelRequest(DetachFromPanelEvent evt, UnityWebRequest webRequest) => webRequest.Abort();
 
         static void SetupImage(Image imageElement, Texture texture)
