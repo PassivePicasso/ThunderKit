@@ -55,7 +55,12 @@
 .grow {
     flex-grow: 1;
 }
-
+.m0 {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
 .m2 {
     margin-left: 2px;
     margin-right: 2px;
@@ -163,7 +168,7 @@
 
 .thunderkit-field {
     margin-top: 0px;
-    margin-bottom: 2px;
+    margin-bottom: 0px;
     flex-direction: row;
     flex-grow: 1;
     align-self: stretch;
