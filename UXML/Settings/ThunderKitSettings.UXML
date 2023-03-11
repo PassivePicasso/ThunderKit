@@ -37,6 +37,22 @@
                 <ui:Button name="cache-browse-button" text="Browse" class="standardbutton"/>
             </ui:VisualElement>
         </ui:VisualElement>
+        
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Cached Images" class="thunderkit-field-label"/>
+            <ui:VisualElement class="horizontal grow thunderkit-field-input m0">
+                <ui:Label text="486" tooltip="Cached Images" binding-path="CachedImageCount" />
+                <ui:Label text="files" tooltip="Files" />
+                <ui:Button name="clear-cache-button" text="Clear" class="standardbutton" style="position: absolute; right:4px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Cached Bytes" class="thunderkit-field-label"/>
+            <ui:VisualElement class="horizontal grow thunderkit-field-input m0">
+                <ui:Label text="0" tooltip="Cached Bytes" binding-path="CacheSize" />
+                <ui:Label text="megabytes" tooltip="Cached Bytes" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 
     <ui:VisualElement name="log-configuration-section" class="section">

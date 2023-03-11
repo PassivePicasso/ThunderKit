@@ -12,6 +12,7 @@ using ThunderKit.Core.Manifests;
 using System.Reflection;
 using System;
 using ThunderKit.Markdown.Helpers;
+using System.Net;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -57,7 +58,23 @@ namespace ThunderKit.Core.Data
                 .Where(manifest => manifest.QuickAccess)
                 .ToArray();
             ImageElementFactory.CachePath = settings.ImageCachePath;
+
+            ImageElementFactory.CacheUpdated += ImageElementFactory_CacheUpdated;
+            ImageElementFactory_CacheUpdated(null, EventArgs.Empty);
         }
+
+        private static void ImageElementFactory_CacheUpdated(object sender, EventArgs e)
+        {
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
+            settings.CachedImageCount = ImageElementFactory.Count;
+            var realSize = ImageElementFactory.Size / (1024f * 1024f);
+            var grownSize = realSize * 100;
+            var truncatedGrownSize = (double)(int)grownSize;
+            var truncatedSize = truncatedGrownSize / 100;
+            settings.CacheSize = truncatedSize;
+            EditorUtility.SetDirty(settings);
+        }
+
         private static void EditorApplicationQuitting() => CopyAssemblyCSharp(null, null);
         private static bool EditorApplication_wantsToQuit()
         {
@@ -126,6 +143,8 @@ namespace ThunderKit.Core.Data
         public bool ShowLogWindow = true;
         public bool LogPackageSourceTimings;
         public string ImageCachePath = "Library/MarkdownImageCache";
+        public int CachedImageCount;
+        public double CacheSize;
         public MarkdownOpenMode MarkdownOpenMode = MarkdownOpenMode.UnityExternalEditor;
 
         public Pipeline SelectedPipeline;
@@ -187,11 +206,20 @@ namespace ThunderKit.Core.Data
             cacheBrowseButton.clickable.clicked -= BrowserForCacheFolder;
             cacheBrowseButton.clickable.clicked += BrowserForCacheFolder;
 
+            var clearCacheButton = settingsElement.Q<Button>("clear-cache-button");
+            clearCacheButton.clickable.clicked -= ClearCache;
+            clearCacheButton.clickable.clicked += ClearCache;
 
             if (thunderKitSettingsSO == null)
                 thunderKitSettingsSO = new SerializedObject(this);
 
             rootElement.Bind(thunderKitSettingsSO);
+        }
+
+        private void ClearCache()
+        {
+            CachedImageCount = 0;
+            ImageElementFactory.ClearCache();
         }
 
         private void BrowserForCacheFolder()
