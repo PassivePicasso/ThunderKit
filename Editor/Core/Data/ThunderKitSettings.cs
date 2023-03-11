@@ -56,7 +56,7 @@ namespace ThunderKit.Core.Data
                 .Where(manifest => manifest)
                 .Where(manifest => manifest.QuickAccess)
                 .ToArray();
-            VisualElementFactory.CachePath = settings.ImageCachePath;
+            ImageElementFactory.CachePath = settings.ImageCachePath;
         }
         private static void EditorApplicationQuitting() => CopyAssemblyCSharp(null, null);
         private static bool EditorApplication_wantsToQuit()
@@ -141,7 +141,7 @@ namespace ThunderKit.Core.Data
         public override void Initialize()
         {
             GamePath = "";
-            VisualElementFactory.CachePath = ImageCachePath;
+            ImageElementFactory.CachePath = ImageCachePath;
         }
 
 
@@ -208,7 +208,7 @@ namespace ThunderKit.Core.Data
                         path = path.Substring(currentDir.Length).TrimStart('/');
 
                     ImageCachePath = path;
-                    VisualElementFactory.CachePath = ImageCachePath;
+                    ImageElementFactory.CachePath = ImageCachePath;
                     EditorUtility.SetDirty(this);
                     break;
                 //case RuntimePlatform.OSXEditor:
