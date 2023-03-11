@@ -6,6 +6,8 @@ namespace ThunderKit.Core.Config.Common
     {
         public override int Priority => int.MinValue;
 
+        public override string Description => "Invokes UnityEditor.EditorApplication.Beep() to play the system default beep";
+
         public override bool Execute()
         {
             EditorApplication.Beep();
