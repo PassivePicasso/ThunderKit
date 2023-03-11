@@ -18,8 +18,8 @@
             <ui:Button name="browse-button" text="Browse" class="standardbutton"/>
             <ui:Button name="load-button" text="Import" class="standardbutton"/>
         </ui:VisualElement>
-
     </ui:VisualElement>
+
     <ui:VisualElement name="log-configuration-section" class="section">
         <ui:VisualElement class="setting-section">
             <ui:Label text="General" class="thunderkit-header"/>
