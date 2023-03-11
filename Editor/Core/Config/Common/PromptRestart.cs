@@ -7,6 +7,8 @@ namespace ThunderKit.Core.Config.Common
     {
         public override int Priority => int.MinValue;
 
+        public override string Description => "Prompt the user to Restart Unity at the end of the import cycle";
+
         public override bool Execute()
         {
             var restart = EditorUtility.DisplayDialog(
