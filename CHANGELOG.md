@@ -1,3 +1,9 @@
+## 7.1.2
+
+### Fixes
+
+* Fix StageAssemblies failing builds in some cases for non-Unity 2020 editors
+
 ## 7.1.1
 
 ### Fixes
