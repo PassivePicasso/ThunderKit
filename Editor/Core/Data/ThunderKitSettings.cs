@@ -13,6 +13,7 @@ using System.Reflection;
 using System;
 using ThunderKit.Markdown.Helpers;
 using System.Net;
+using System.Collections.Generic;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -154,6 +155,7 @@ namespace ThunderKit.Core.Data
         private MarkdownElement markdown;
         private SerializedObject thunderKitSettingsSO;
         public ImportConfiguration ImportConfiguration;
+        private Label logCountLabel;
 
         #endregion
 
@@ -210,10 +212,28 @@ namespace ThunderKit.Core.Data
             clearCacheButton.clickable.clicked -= ClearCache;
             clearCacheButton.clickable.clicked += ClearCache;
 
+            logCountLabel = settingsElement.Q<Label>("log-count-label");
+            var logCount = AssetDatabase.FindAssets("t:PipelineLog").Length;
+            logCountLabel.text = $"{logCount}";
+            var clearLogsButton = settingsElement.Q<Button>("clear-logs-button");
+            clearLogsButton.clickable.clicked -= ClearLogCache;
+            clearLogsButton.clickable.clicked += ClearLogCache;
+
             if (thunderKitSettingsSO == null)
                 thunderKitSettingsSO = new SerializedObject(this);
 
             rootElement.Bind(thunderKitSettingsSO);
+        }
+
+        private void ClearLogCache()
+        {
+            var logs = AssetDatabase.FindAssets("t:PipelineLog")
+                                    .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                                    .ToArray();
+            var remaining = new List<string>();
+            if (AssetDatabase.DeleteAssets(logs, remaining) && remaining.Count > 0)
+                Debug.Log(remaining.Aggregate("Some logs were not deleted\r\n", (a, b) => $"{a}\r\n{b}"));
+            logCountLabel.text = $"{0}";
         }
 
         private void ClearCache()
