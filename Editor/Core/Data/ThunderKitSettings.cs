@@ -6,12 +6,12 @@ using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Core.Windows;
 using ThunderKit.Core.UIElements;
-using ThunderKit.Core.Config;
 using ThunderKit.Markdown;
 using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Manifests;
 using System.Reflection;
 using System;
+using ThunderKit.Markdown.Helpers;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -56,6 +56,7 @@ namespace ThunderKit.Core.Data
                 .Where(manifest => manifest)
                 .Where(manifest => manifest.QuickAccess)
                 .ToArray();
+            VisualElementFactory.CachePath = settings.ImageCachePath;
         }
         private static void EditorApplicationQuitting() => CopyAssemblyCSharp(null, null);
         private static bool EditorApplication_wantsToQuit()
@@ -124,6 +125,7 @@ namespace ThunderKit.Core.Data
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
         public bool ShowLogWindow = true;
         public bool LogPackageSourceTimings;
+        public string ImageCachePath = "Library/MarkdownImageCache";
         public MarkdownOpenMode MarkdownOpenMode = MarkdownOpenMode.UnityExternalEditor;
 
         public Pipeline SelectedPipeline;
@@ -139,6 +141,7 @@ namespace ThunderKit.Core.Data
         public override void Initialize()
         {
             GamePath = "";
+            VisualElementFactory.CachePath = ImageCachePath;
         }
 
 
@@ -172,17 +175,49 @@ namespace ThunderKit.Core.Data
 
 
             var browseButton = settingsElement.Q<Button>("browse-button");
-            browseButton.clickable.clicked -= BrowserForGame;
-            browseButton.clickable.clicked += BrowserForGame;
+            browseButton.clickable.clicked -= BrowseForGame;
+            browseButton.clickable.clicked += BrowseForGame;
 
             var loadButton = settingsElement.Q<Button>("load-button");
             loadButton.clickable.clicked -= LoadGame;
             loadButton.clickable.clicked += LoadGame;
 
+
+            var cacheBrowseButton = settingsElement.Q<Button>("cache-browse-button");
+            cacheBrowseButton.clickable.clicked -= BrowserForCacheFolder;
+            cacheBrowseButton.clickable.clicked += BrowserForCacheFolder;
+
+
             if (thunderKitSettingsSO == null)
                 thunderKitSettingsSO = new SerializedObject(this);
 
             rootElement.Bind(thunderKitSettingsSO);
+        }
+
+        private void BrowserForCacheFolder()
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.LinuxEditor:
+                case RuntimePlatform.WindowsEditor:
+                    var path = EditorUtility.OpenFolderPanel("Select Cache Location", ImageCachePath, "MarkdownImageCahe");
+                    if (string.IsNullOrEmpty(path)) return;
+
+                    string currentDir = Directory.GetCurrentDirectory().Replace("\\", "/");
+                    if (path.StartsWith(currentDir))
+                        path = path.Substring(currentDir.Length).TrimStart('/');
+
+                    ImageCachePath = path;
+                    VisualElementFactory.CachePath = ImageCachePath;
+                    EditorUtility.SetDirty(this);
+                    break;
+                //case RuntimePlatform.OSXEditor:
+                //    path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "app");
+                //    break;
+                default:
+                    EditorUtility.DisplayDialog("Unsupported", "Your operating system is partially or completely unsupported. Contributions to improve this are welcome", "Ok");
+                    return;
+            }
         }
 
         void OnEditorModeChanged(ChangeEvent<Enum> evt)
@@ -199,7 +234,7 @@ namespace ThunderKit.Core.Data
             ImportConfiguration.ConfigurationIndex = 0;
             ImportConfiguration.ImportGame();
         }
-        private void BrowserForGame()
+        private void BrowseForGame()
         {
             ImportConfiguration.LocateGame(this);
             if (!string.IsNullOrEmpty(GameExecutable) && !string.IsNullOrEmpty(GamePath))
