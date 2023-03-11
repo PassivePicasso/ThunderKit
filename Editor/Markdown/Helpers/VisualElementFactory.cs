@@ -1,11 +1,3 @@
-using System.Collections;
-using UnityEngine;
-using UnityEngine.Networking;
-using UnityEditor;
-using System.IO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -15,7 +7,6 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Markdown.Helpers
 {
-    using static Helpers.UnityPathUtility;
     public static class VisualElementFactory
     {
         public static T GetTextElement<T>(string text, string className) where T : TextElement, new()
