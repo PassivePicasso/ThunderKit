@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.Experimental.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements" editor-extension-mode="True">
-        
     <ui:VisualElement name="game-configuration-section" class="section">
         <ui:VisualElement class="setting-section">
             <ui:Label text="Locate and Load game files for project" class="thunderkit-header"/>
@@ -9,6 +8,7 @@
             <ui:Label text="Game Path" class="thunderkit-field-label"/>
             <ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
         </ui:VisualElement>
+
         <ui:VisualElement class="thunderkit-field">
             <ui:Label text="Game Executable" class="thunderkit-field-label"/>
             <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
@@ -87,6 +87,5 @@
 
         </ui:VisualElement>
     </ui:VisualElement>
-
 </ui:UXML>
 
