@@ -6,6 +6,7 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
@@ -27,23 +28,29 @@ namespace ThunderKit.Markdown.Helpers
         [Serializable]
         public struct ImageCache
         {
+            public long Size;
             public ImageCacheRecord[] Records;
         }
 
-
+        private static long size;
+        private static int count;
         private static Dictionary<string, string> CacheRecords = new Dictionary<string, string>();
         private static GameObject imageLoaderObject;
         private static ImageLoadBehaviour imageLoader;
 
+        public static long Size => size;
+        public static int Count => count;
         public static string CachePath = "Library/MarkdownImageCache";
         private static string CacheRecordsPath => Path.Combine(GetCacheRoot(), "cacheRecords.json");
 
         private static string GetCacheRoot() => Path.Combine(Directory.GetCurrentDirectory(), CachePath.TrimStart('/'));
 
+        public static event EventHandler CacheUpdated;
+
         [InitializeOnLoadMethod]
         static void BeforeUnload()
         {
-            AssemblyReloadEvents.afterAssemblyReload += LoadCacheRecords;
+            LoadCacheRecords();
             AssemblyReloadEvents.beforeAssemblyReload += SaveCacheRecords;
         }
 
@@ -56,15 +63,38 @@ namespace ThunderKit.Markdown.Helpers
                 var cacheRecords = JsonUtility.FromJson<ImageCache>(cacheRecordsJson);
                 foreach (var record in cacheRecords.Records)
                     CacheRecords[record.Url] = record.Hash;
+
+                size = cacheRecords.Size;
+                count = cacheRecords.Records.Length;
             }
         }
         private static void SaveCacheRecords()
         {
             var cacheRecords = CacheRecords.Select(kvp => new ImageCacheRecord { Url = kvp.Key, Hash = kvp.Value }).ToArray();
-            var cacheRecordsJson = JsonUtility.ToJson(new ImageCache { Records = cacheRecords }, true);
+            var cacheRecordsJson = JsonUtility.ToJson(new ImageCache { Records = cacheRecords, Size = size }, true);
             File.Delete(CacheRecordsPath);
             File.WriteAllText(CacheRecordsPath, cacheRecordsJson);
         }
+        public static void ClearCache()
+        {
+            CacheRecords.Clear();
+            foreach (var file in Directory.EnumerateFiles(GetCacheRoot()))
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+            size = 0;
+            count = 0;
+            SaveCacheRecords();
+            CacheUpdated?.Invoke(null, EventArgs.Empty);
+        }
+
 
         internal class ImageLoadBehaviour : MonoBehaviour { }
         public static Image GetImageElement(string url, params string[] classNames)
@@ -126,12 +156,17 @@ namespace ThunderKit.Markdown.Helpers
                         if (!File.Exists(fullPath))
                         {
                             var pngBytes = texture.EncodeToPNG();
+                            size += pngBytes.Length;
+                            count++;
                             File.WriteAllBytes(fullPath, pngBytes);
                         }
                         var containedKey = CacheRecords.ContainsKey(url);
                         CacheRecords[url] = imageHash;
                         if (!containedKey)
+                        {
                             SaveCacheRecords();
+                        }
+                        CacheUpdated?.Invoke(null, EventArgs.Empty);
                     }
                     catch (System.Exception ex)
                     {
