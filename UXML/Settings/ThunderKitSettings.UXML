@@ -43,31 +43,24 @@
         <ui:VisualElement class="setting-section">
             <ui:Label text="Logging" class="thunderkit-header"/>
         </ui:VisualElement>
-        <ui:VisualElement style="flex-direction: row;">
-                
-            <ui:VisualElement class="field-section">
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="DateTime Format" class="thunderkit-field-label"/>
-                    <ui:TextField name="asset-name-field" binding-path="DateTimeFormat" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Created Date Format" class="thunderkit-field-label"/>
-                    <ui:TextField name="asset-name-field" binding-path="CreatedDateFormat" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Display pipeline log during execution" tooltip="Show log window when executing a pipeline" class="thunderkit-field-label"/>
-                    <ui:Toggle name="asset-name-field" binding-path="ShowLogWindow" class="thunderkit-field-input"/>
-                </ui:VisualElement>
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="DateTime Format" class="thunderkit-field-label"/>
+            <ui:TextField name="asset-name-field" binding-path="DateTimeFormat" class="thunderkit-field-input"/>
+        </ui:VisualElement>
 
-                <ui:VisualElement class="field-section">
-                    <ui:VisualElement class="thunderkit-field">
-                        <ui:Label text="Show PackageSource refresh times" class="thunderkit-field-label"/>
-                        <ui:Toggle name="asset-name-field" binding-path="LogPackageSourceTimings" class="thunderkit-field-input"/>
-                    </ui:VisualElement>
-                </ui:VisualElement>
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Created Date Format" class="thunderkit-field-label"/>
+            <ui:TextField name="asset-name-field" binding-path="CreatedDateFormat" class="thunderkit-field-input"/>
+        </ui:VisualElement>
 
-            </ui:VisualElement>
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Display pipeline log during execution" tooltip="Show log window when executing a pipeline" class="thunderkit-field-label"/>
+            <ui:Toggle name="asset-name-field" binding-path="ShowLogWindow" class="thunderkit-field-input"/>
+        </ui:VisualElement>
 
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Show PackageSource refresh times" class="thunderkit-field-label"/>
+            <ui:Toggle name="asset-name-field" binding-path="LogPackageSourceTimings" class="thunderkit-field-input"/>
         </ui:VisualElement>
     </ui:VisualElement>
 
@@ -75,15 +68,10 @@
         <ui:VisualElement class="setting-section">
             <ui:Label text="Settings Window" class="thunderkit-header"/>
         </ui:VisualElement>
-        <ui:VisualElement style="flex-direction: row;">
-                
-            <ui:VisualElement class="field-section">
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Show at Startup" class="thunderkit-field-label"/>
-                    <ui:Toggle name="asset-name-field" binding-path="ShowOnStartup" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-            </ui:VisualElement>
-
+        
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Show at Startup" class="thunderkit-field-label"/>
+            <ui:Toggle name="asset-name-field" binding-path="ShowOnStartup" class="thunderkit-field-input"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
