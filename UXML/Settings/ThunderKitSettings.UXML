@@ -39,7 +39,7 @@
         </ui:VisualElement>
         
         <ui:VisualElement class="thunderkit-field">
-            <ui:Label text="Cached Info" class="thunderkit-field-label"/>
+            <ui:Label text="Cache Details" class="thunderkit-field-label"/>
             <ui:VisualElement class="horizontal thunderkit-field-input m0">
                 <ui:Label text="486" tooltip="Cached Images" binding-path="CachedImageCount" />
                 <ui:Label text="files" tooltip="Files" />
