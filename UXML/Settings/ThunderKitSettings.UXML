@@ -45,7 +45,7 @@
                 <ui:Label text="files" tooltip="Files" />
                 <ui:Label text="   "/>
                 <ui:Label text="0" tooltip="Cached Bytes" binding-path="CacheSize" />
-                <ui:Label text="megabytes" tooltip="Cached Bytes" />
+                <ui:Label text="mb" tooltip="Cached Bytes" />
                 <ui:Button name="clear-cache-button" text="Clear" class="standardbutton" style="position: absolute; right:4px;"/>
             </ui:VisualElement>
         </ui:VisualElement>
@@ -73,6 +73,15 @@
         <ui:VisualElement class="thunderkit-field">
             <ui:Label text="Show PackageSource refresh times" class="thunderkit-field-label"/>
             <ui:Toggle name="asset-name-field" binding-path="LogPackageSourceTimings" class="thunderkit-field-input"/>
+        </ui:VisualElement>
+        
+        <ui:VisualElement class="thunderkit-field">
+            <ui:Label text="Cache Details" class="thunderkit-field-label"/>
+            <ui:VisualElement class="horizontal thunderkit-field-input m0">
+                <ui:Label name="log-count-label" text="486" tooltip="Logs" />
+                <ui:Label text="files" tooltip="Log Files" />
+                <ui:Button name="clear-logs-button" text="Clear" class="standardbutton" style="position: absolute; right:4px;"/>
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 
