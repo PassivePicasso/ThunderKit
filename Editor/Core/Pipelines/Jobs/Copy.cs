@@ -15,7 +15,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     public class Copy : FlowPipelineJob
     {
         [Tooltip("While enabled, replace target directory, removing all prior files")]
-        [FormerlySerializedAs("StrictDictionaryReplace")]
+        [FormerlySerializedAs("StrictDictionaryReplace"), FormerlySerializedAs("Replace")]
         public bool ReplaceDirectory = true;
 
         [Tooltip("While enabled, will copy entire specified directory & subdirectories. Source and destination should be folders")]
