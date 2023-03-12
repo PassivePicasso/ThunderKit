@@ -361,7 +361,5 @@ namespace ThunderKit.Core.Data
                         $"\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.");
             return versionMatch;
         }
-
-
     }
 }
