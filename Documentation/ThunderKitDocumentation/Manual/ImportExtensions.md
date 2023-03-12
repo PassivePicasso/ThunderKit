@@ -12,9 +12,11 @@ ThunderKit's game import process is extensible, providing the ability to rework
 the entire import process to suit your projects needs.  
 
 Import extensions can be created to import Unity Packages, ThunderKit Packages,
-Import additional game files, modify assemblies before import, and much more.
+Import additional game files, modify assemblies before import, and anything else.
 
-ThunderKit comes with some base classes for some of these processes.
+
+ThunderKit comes with some base classes for some of these processes, however all 
+ImportExtensions are built ontop of the [OptionalExecutor](documentation://GUID/e80287c690b4c0742a39805bede11894)
 
 Adding a new import extension is simple, follow this short guide to make an 
 importer which simply logs "Hello World" to the unity console at the beggining 
