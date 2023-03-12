@@ -64,6 +64,8 @@ namespace ThunderKit.Markdown.ObjectRenderers
 
                 return container;
             });
+            RegisterScheme("file", link => System.Diagnostics.Process.Start(link));
+
             RegisterScheme("menulink", link =>
             {
                 var schemelessUri = link.Substring("menulink://".Length);
