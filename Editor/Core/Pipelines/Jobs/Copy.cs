@@ -16,7 +16,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
     {
         [Tooltip("While enabled, replace target directory, removing all prior files")]
         [FormerlySerializedAs("StrictDictionaryReplace")]
-        public bool Replace = true;
+        public bool ReplaceDirectory = true;
 
         [Tooltip("While enabled, will copy entire specified directory & subdirectories. Source and destination should be folders")]
         public bool Recursive;
@@ -47,7 +47,9 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var destination = Destination.Resolve(pipeline, this);
 
             if (EstablishDestination)
+            {
                 Directory.CreateDirectory((isSourceFile ? Path.GetDirectoryName(destination) : destination));
+            }
 
             if (Recursive)
                 CopyRecursively(pipeline, isSourceFile, source, destination);
@@ -66,7 +68,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             if (!ValidateRecursiveSource(pipeline, isSourceFile, source))
                 return;
 
-            if (Replace)
+            if (ReplaceDirectory)
                 ReplaceDirectory(pipeline, source, destination);
             else
                 ReplaceFiles(pipeline, source, destination);
