@@ -35,6 +35,26 @@
     background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_Documentation_2X_Icon.png');
 }
 
+.w16h16 {
+	width: 16px;
+	height: 16px;
+}
+.w24h24 {
+	width: 24px;
+	height: 24px;
+}
+.w32h32 {
+	width: 32px;
+	height: 32px;
+}
+.w64h64 {
+	width: 64px;
+	height: 64px;
+}
+.w128h128 {
+	width: 128px;
+	height: 128px;
+}
 .horizontal {
     flex-direction: row;
 }
@@ -308,11 +328,11 @@
 }
 
 .warning Label {
-    color: rgba(200, 128, 0, 1);
+    color: rgba(64, 48, 0, 1);
 }
 
 .error Label {
-    color: rgba(255, 70, 0, 1);
+    color: rgba(128, 0, 0, 1);
 }
 
 Label.morality,

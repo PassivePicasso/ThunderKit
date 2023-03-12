@@ -193,7 +193,7 @@ namespace {0}
                     currentJobs = Jobs.Where(SupportsType).ToArray();
                     //Needs to run after CurrentJobs is populated
                     Manifests = manifest?.EnumerateManifests()?.Distinct()?.ToArray();
-                    Log(Information, $"Execute Pipeline");
+                    Log(Verbose, $"Execute Pipeline");
 
                     var manifestJobs = currentJobs.Where(j => j.GetType().GetCustomAttributes(true).OfType<ManifestProcessorAttribute>().Any())
                                .Union(currentJobs.OfType<FlowPipelineJob>().Where(fpj => fpj.PerManifest)).ToArray();
@@ -219,7 +219,7 @@ namespace {0}
                     {
                         if (!Job().Active) continue;
 
-                        Log(Information, $"Execute Job");
+                        Log(Verbose, $"Execute Job");
                         progressBar.Update($"Executing PipelineJob {Job().name}");
                         if (JobIsManifestProcessor())
                             await ExecuteManifestLoop();
@@ -229,7 +229,7 @@ namespace {0}
                     ManifestIndex =
                     JobIndex = -1;
                 }
-                Log(Information, $"Finished execution");
+                Log(Verbose, $"Finished execution");
 #if UNITY_2019_3_OR_NEWER && TK_ADDRESSABLE
                 CompilationPipeline.RequestScriptCompilation();
 #endif
