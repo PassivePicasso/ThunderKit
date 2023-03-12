@@ -8,6 +8,8 @@
 
 ---
 
+{ .cfw200 .bb1 .bdblack }[Source](assetlink://GUID/dca7ed776a90eea49a7bd29ccedcec51)
+
 ThunderKit's game import process is extensible, providing the ability to rework
 the entire import process to suit your projects needs.  
 
