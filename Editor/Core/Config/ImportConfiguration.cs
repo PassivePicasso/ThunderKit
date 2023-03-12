@@ -40,7 +40,7 @@ namespace ThunderKit.Core.Data
             ImportConfiguration configInstance = GetOrCreateSettings<ImportConfiguration>();
             string assetPath = GetAssetPath(configInstance);
             string guid = AssetPathToGUID(assetPath);
-            if(configInstance.CheckForNewImportConfigs(out var executors))
+            if (configInstance.CheckForNewImportConfigs(out var executors))
             {
                 var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
                 configInstance.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
@@ -140,7 +140,7 @@ namespace ThunderKit.Core.Data
             List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
             FilterForConfigurationAssemblies(assemblies);
             executorTypes = GetOptionalExecutors(assemblies);
-            if(executorTypes.Count == totalImportExtensionCount)
+            if (executorTypes.Count == totalImportExtensionCount)
             {
                 executorTypes = null;
                 return false;
@@ -279,10 +279,10 @@ namespace ThunderKit.Core.Data
 
         private void PromptRestart()
         {
-            if(GetOrCreateSettings<ThunderKitSettings>().notifyWhenImportCompletes)
+            if (GetOrCreateSettings<ThunderKitSettings>().notifyWhenImportCompletes)
                 EditorApplication.Beep();
-            
-            if(EditorUtility.DisplayDialog("Import Process Complete", "The game has been imported successfully. It is recommended to restart your project to ensure stability", "Restart Project", "Restart Later"))
+
+            if (EditorUtility.DisplayDialog("Import Process Complete", "The game has been imported successfully. It is recommended to restart your project to ensure stability", "Restart Project", "Restart Later"))
             {
                 EditorApplication.OpenProject(Directory.GetCurrentDirectory());
             }
@@ -328,25 +328,34 @@ namespace ThunderKit.Core.Data
             var regs = new Regex(".*?(\\d{1,4}\\.\\d+\\.\\d+\\w\\d+).*");
 
             var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
+            var playerVersion = string.Empty;
 
             var informationFile = Combine(settings.GameDataPath, "globalgamemanagers");
-            var playerVersion = string.Empty;
             if (!File.Exists(informationFile))
-            {
                 informationFile = Combine(settings.GameDataPath, "data.unity3d");
-            }
+
+            bool foundVersion = false;
             if (File.Exists(informationFile))
             {
-                var am = new AssetsManager();
-                var ggm = am.LoadAssetsFile(informationFile, false);
+                try
+                {
+                    var am = new AssetsManager();
+                    var ggm = am.LoadAssetsFile(informationFile, false);
 
-                playerVersion = ggm.table.file.typeTree.unityVersion;
+                    playerVersion = ggm.table.file.typeTree.unityVersion;
 
-                am.UnloadAll(true);
+                    am.UnloadAll(true);
 
-                versionMatch = unityVersion.Equals(playerVersion);
+                    versionMatch = unityVersion.Equals(playerVersion);
+                    foundVersion = true;
+                }
+                catch (Exception ex)
+                {
+                    foundVersion = false;
+                }
             }
-            else
+
+            if (!foundVersion)
             {
                 var exePath = Combine(settings.GamePath, settings.GameExecutable);
                 var fvi = FileVersionInfo.GetVersionInfo(exePath);
