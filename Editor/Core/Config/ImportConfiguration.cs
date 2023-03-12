@@ -321,20 +321,18 @@ namespace ThunderKit.Core.Data
             return true;
         }
 
-
         private static bool CheckUnityVersion(ThunderKitSettings settings)
         {
             var versionMatch = false;
-            var regs = new Regex(".*?(\\d{1,4}\\.\\d+\\.\\d+\\w\\d+).*");
+            var regs = new Regex("(\\d{1,4}\\.\\d+\\.\\d+)(.*)");
 
             var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
             var playerVersion = string.Empty;
 
-            var informationFile = Combine(settings.GameDataPath, "globalgamemanagers");
-            if (!File.Exists(informationFile))
-                informationFile = Combine(settings.GameDataPath, "data.unity3d");
-
             bool foundVersion = false;
+
+            var informationFile = Combine(settings.GameDataPath, "globalgamemanagers");
+            if (!File.Exists(informationFile)) informationFile = Combine(settings.GameDataPath, "data.unity3d");
             if (File.Exists(informationFile))
             {
                 try
@@ -342,31 +340,25 @@ namespace ThunderKit.Core.Data
                     var am = new AssetsManager();
                     var ggm = am.LoadAssetsFile(informationFile, false);
 
-                    playerVersion = ggm.table.file.typeTree.unityVersion;
-
+                    playerVersion = regs.Replace(ggm.table.file.typeTree.unityVersion, match => match.Groups[1].Value);
                     am.UnloadAll(true);
-
                     versionMatch = unityVersion.Equals(playerVersion);
                     foundVersion = true;
                 }
-                catch (Exception ex)
-                {
-                    foundVersion = false;
-                }
+                catch (Exception ex) { foundVersion = false; }
             }
 
             if (!foundVersion)
             {
-                var exePath = Combine(settings.GamePath, settings.GameExecutable);
-                var fvi = FileVersionInfo.GetVersionInfo(exePath);
-                playerVersion = fvi.FileVersion.Substring(0, fvi.FileVersion.LastIndexOf("."));
+                var fvi = FileVersionInfo.GetVersionInfo(Combine(settings.GamePath, settings.GameExecutable));
+                playerVersion = regs.Replace(fvi.FileVersion, match => match.Groups[1].Value);
                 if (playerVersion.Count(f => f == '.') == 2)
                     versionMatch = unityVersion.Equals(playerVersion);
             }
 
             if (!versionMatch)
                 Debug.LogError($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}), aborting setup." +
-                      $"\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.");
+                        $"\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.");
             return versionMatch;
         }
 
