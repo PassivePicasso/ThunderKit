@@ -20,7 +20,24 @@ xsi:schemaLocation="
                 <ui:Label text="Created:" />
                 <ui:Label name="created-date-label" />
             </ui:VisualElement>
-            <ui:Label text="Supporting the right for women to have bodily autonomy"/>
+
+            <ui:Button name="error-filter-button" class="filter-button b1 w24h24" >
+                <ui:VisualElement class="error-icon-sml w16h16"/>
+            </ui:Button>
+
+            <ui:Button name="warning-filter-button" class="filter-button b1 w24h24 " >
+                <ui:VisualElement class="warning-icon-sml w16h16"/>
+            </ui:Button>
+            
+            <ui:Button name="information-filter-button" class="filter-button b1 w24h24 " >
+                <ui:VisualElement class="information-icon-sml w16h16"/>
+            </ui:Button>
+
+            <ui:Button name="verbose-filter-button" class="filter-button b1 w24h24 " >
+                <ui:VisualElement class="verbose-icon-sml w16h16"/>
+            </ui:Button>
+
+            <ui:Label text="Supporting the right for women to have bodily autonomy" style="position:absolute; right:0px; font-size:10px;"/>
 
         </ui:VisualElement>
         <ui:ListView focusable="true" name="logentry-list-view" item-height="40" style="flex-grow: 1;" />
