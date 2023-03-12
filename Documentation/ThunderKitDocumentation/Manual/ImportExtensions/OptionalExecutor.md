@@ -7,6 +7,9 @@
 }
 
 ---
+[Source](assetlink://GUID/a87a9f1780c348d4080afaf9971d3a7e){ .absolute .pat0 .par0 }
+[Import Extensions](documentation://GUID/00b9d411fd716fd4893e9cb7c7811f0c) >
+[OptionalExecutor](documentation://GUID/e80287c690b4c0742a39805bede11894)
 
 ## Description
 
@@ -14,9 +17,6 @@ Base class which provides the ability to make import extensions that can be
 enabled and disabled by users and code. 
 
 
-## Inheritance 
-{ .m0 }[Import Extensions](documentation://GUID/00b9d411fd716fd4893e9cb7c7811f0c) >
-[OptionalExecutor](documentation://GUID/e80287c690b4c0742a39805bede11894)
 
 ## Derived 
  - { .cfw200 }[ImportAssemblies](documentation://GUID/b216ba4bf77cd2b4eacfed464cc6540e)
