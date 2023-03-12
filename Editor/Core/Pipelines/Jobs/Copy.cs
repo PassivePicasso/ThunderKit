@@ -69,7 +69,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 return;
 
             if (ReplaceDirectory)
-                ReplaceDirectory(pipeline, source, destination);
+                ExecuteReplaceDirectory(pipeline, source, destination);
             else
                 ReplaceFiles(pipeline, source, destination);
         }
@@ -91,7 +91,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             pipeline.Log(LogLevel.Information, $"{CopyStatement}Copied ``` {source} ``` to ``` {destination} ```", copiedFiles.Aggregate("Copied Files", (a, b) => $"{a}\r\n\r\n. {b}"));
         }
 
-        private void ReplaceDirectory(Pipeline pipeline, string source, string destination)
+        private void ExecuteReplaceDirectory(Pipeline pipeline, string source, string destination)
         {
             FileUtil.ReplaceDirectory(source, destination);
             int i = 1;
