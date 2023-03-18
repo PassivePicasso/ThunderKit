@@ -95,6 +95,7 @@ namespace ThunderKit.Addressable.Tools
         {
             AddressableGraphicsSettings.AddressablesInitialized -= InitializeBrowser;
             AddressableGraphicsSettings.AddressablesInitialized += InitializeBrowser;
+
             InitializeBrowser();
         }
 
@@ -228,7 +229,7 @@ namespace ThunderKit.Addressable.Tools
                     break;
             }
         }
-        private async void BindAsset(VisualElement element, int i)
+        private void BindAsset(VisualElement element, int i)
         {
             var location = (IResourceLocation)directoryContent.itemsSource[i];
 
@@ -272,27 +273,39 @@ namespace ThunderKit.Addressable.Tools
                 inspectBtn.clickable = new Clickable(async () =>
                 {
                     var handle = Addressables.LoadAssetAsync<GameObject>(location);
-                    await handle.Task;
+
+                    EditorApplication.CallbackFunction updateSceneView = null;
+                    updateSceneView = new EditorApplication.CallbackFunction(UpdateSceneView);
+                    EditorApplication.update += updateSceneView;
+                    void UpdateSceneView()
+                    {
+                        SceneView.lastActiveSceneView.Repaint();
+                        if (handle.IsDone)
+                        {
+                            var instance = Instantiate(handle.Result);
+                            instance.transform.position = Vector3.zero;
+                            SetRecursiveFlags(instance.transform);
 #if UNITY_2020_1_OR_NEWER
-                    var previewStage = CreateInstance<AddressablePreviewStage>();
-                    StageUtility.GoToStage(previewStage, true);
-                    var scene = previewStage.scene;
+                            var previewStage = CreateInstance<AddressablePreviewStage>();
+                            StageUtility.GoToStage(previewStage, true);
+                            var scene = previewStage.scene;
 
-                    previewStage.StageName = handle.Result.name;
+                            previewStage.StageName = handle.Result.name;
 
-                    ThunderStageUtility.InstantiateStageLight(scene, 45);
-                    ThunderStageUtility.InstantiateStageLight(scene, -45, 180);
-                    ThunderStageUtility.InstantiateStageLight(scene, -45, 90);
-                    ThunderStageUtility.InstantiateStageLight(scene, 45, -90);
-                    var instance = Instantiate(handle.Result);
-                    instance.transform.position = Vector3.zero;
-                    SetRecursiveFlags(instance.transform);
-                    SceneManager.MoveGameObjectToScene(instance, scene);
-                    Selection.activeGameObject = instance;
-                    SceneView.lastActiveSceneView.FrameSelected();
+                            ThunderStageUtility.InstantiateStageLight(scene, 45);
+                            ThunderStageUtility.InstantiateStageLight(scene, -45, 180);
+                            ThunderStageUtility.InstantiateStageLight(scene, -45, 90);
+                            ThunderStageUtility.InstantiateStageLight(scene, 45, -90);
+                            SceneManager.MoveGameObjectToScene(instance, scene);
+                            Selection.activeGameObject = instance;
+                            SceneView.lastActiveSceneView.FrameSelected();
 #else
-                    AddressablePreviewStage.ShowWindow(handle.Result);
+                            AddressablePreviewStage.ShowWindow(instance);
 #endif
+                            Addressables.Release(handle);
+                            EditorApplication.update -= updateSceneView;
+                        }
+                    }
                 });
             }
             else if (location.ResourceType == typeof(SceneInstance))
@@ -316,6 +329,8 @@ namespace ThunderKit.Addressable.Tools
             _ = icon.Render(location, address, isAsset);
 
         }
+
+
         static void SetRecursiveFlags(Transform transform)
         {
             transform.gameObject.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
