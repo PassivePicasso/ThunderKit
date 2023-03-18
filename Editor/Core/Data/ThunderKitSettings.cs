@@ -231,8 +231,17 @@ namespace ThunderKit.Core.Data
                                     .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
                                     .ToArray();
             var remaining = new List<string>();
+#if UNITY_2020_1_OR_NEWER
             if (AssetDatabase.DeleteAssets(logs, remaining) && remaining.Count > 0)
                 Debug.Log(remaining.Aggregate("Some logs were not deleted\r\n", (a, b) => $"{a}\r\n{b}"));
+#else
+            foreach (var log in logs)
+                if (!AssetDatabase.DeleteAsset(log))
+                    remaining.Add(log);
+
+            if (remaining.Count > 0)
+                Debug.Log(remaining.Aggregate("Some logs were not deleted\r\n", (a, b) => $"{a}\r\n{b}"));
+#endif
             logCountLabel.text = $"{0}";
         }
 
