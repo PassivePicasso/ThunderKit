@@ -137,12 +137,18 @@ namespace ThunderKit.Core.Windows
             rootVisualElement.Bind(new SerializedObject(this));
         }
 
-        string FilterStateMessage(LogLevel level) => level switch
+        string FilterStateMessage(LogLevel level)
         {
-            LogLevel.Information => $"{level} {(levelFilters.Contains(level) ? "Visible" : "Hidden")}",
-            LogLevel.Verbose => $"{level} {(levelFilters.Contains(level) ? "Visible" : "Hidden")}",
-            _=> $"{level}s {(levelFilters.Contains(level) ? "Visible" : "Hidden")}"
-        };
+            switch (level)
+            {
+                case LogLevel.Information:
+                    return $"{level} {(levelFilters.Contains(level) ? "Visible" : "Hidden")}";
+                case LogLevel.Verbose:
+                    return $"{level} {(levelFilters.Contains(level) ? "Visible" : "Hidden")}";
+                default:
+                    return $"{level}s {(levelFilters.Contains(level) ? "Visible" : "Hidden")}";
+            };
+        }
 
         void ConfigureFilterButton(LogLevel level, Button button)
         {
