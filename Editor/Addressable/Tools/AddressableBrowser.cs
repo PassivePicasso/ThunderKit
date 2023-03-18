@@ -15,6 +15,8 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
+using UnityEditor.Experimental.SceneManagement;
+using UnityEngine.Rendering;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -69,8 +71,6 @@ namespace ThunderKit.Addressable.Tools
         private Type[] loadParamTypes = new Type[] { typeof(IResourceLocation) };
         private Regex regex;
         private string typeFilter;
-
-
         private List<IResourceLocation> LoadIndex()
         {
             var set = new HashSet<IResourceLocation>();
@@ -271,23 +271,28 @@ namespace ThunderKit.Addressable.Tools
                 inspectBtn.style.display = DisplayStyle.Flex;
                 inspectBtn.clickable = new Clickable(async () =>
                 {
-                    var previewStage = CreateInstance<AddressablePreviewStage>();
-                    StageUtility.GoToStage(previewStage, true);
-
                     var handle = Addressables.LoadAssetAsync<GameObject>(location);
                     await handle.Task;
+#if UNITY_2020_1_OR_NEWER
+                    var previewStage = CreateInstance<AddressablePreviewStage>();
+                    StageUtility.GoToStage(previewStage, true);
+                    var scene = previewStage.scene;
+
                     previewStage.StageName = handle.Result.name;
 
+                    ThunderStageUtility.InstantiateStageLight(scene, 45);
+                    ThunderStageUtility.InstantiateStageLight(scene, -45, 180);
+                    ThunderStageUtility.InstantiateStageLight(scene, -45, 90);
+                    ThunderStageUtility.InstantiateStageLight(scene, 45, -90);
                     var instance = Instantiate(handle.Result);
                     instance.transform.position = Vector3.zero;
                     SetRecursiveFlags(instance.transform);
-                    SceneManager.MoveGameObjectToScene(instance, previewStage.scene);
-                    InstantiateStageLight(previewStage, 45);
-                    InstantiateStageLight(previewStage, -45, 180);
-                    InstantiateStageLight(previewStage, -45, 90);
-                    InstantiateStageLight(previewStage, 45, -90);
+                    SceneManager.MoveGameObjectToScene(instance, scene);
                     Selection.activeGameObject = instance;
-                    SceneView.FrameLastActiveSceneView();
+                    SceneView.lastActiveSceneView.FrameSelected();
+#else
+                    AddressablePreviewStage.ShowWindow(handle.Result);
+#endif
                 });
             }
             else if (location.ResourceType == typeof(SceneInstance))
@@ -311,19 +316,6 @@ namespace ThunderKit.Addressable.Tools
             _ = icon.Render(location, address, isAsset);
 
         }
-
-        private static void InstantiateStageLight(AddressablePreviewStage previewStage, float x = 0, float y = 0, float z = 0)
-        {
-            var stageLight = new GameObject("Stage Lighting", typeof(Light));
-            var light = stageLight.GetComponent<Light>();
-            light.type = LightType.Directional;
-            light.intensity = 0.5f;
-            var stageLightTransform = stageLight.GetComponent<Transform>();
-            stageLightTransform.rotation = Quaternion.Euler(x, y, z);
-            stageLight.hideFlags = HideFlags.HideAndDontSave;
-            SceneManager.MoveGameObjectToScene(stageLight, previewStage.scene);
-        }
-
         static void SetRecursiveFlags(Transform transform)
         {
             transform.gameObject.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
