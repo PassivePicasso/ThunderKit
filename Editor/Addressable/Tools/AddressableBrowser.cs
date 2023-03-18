@@ -279,32 +279,13 @@ namespace ThunderKit.Addressable.Tools
                     EditorApplication.update += updateSceneView;
                     void UpdateSceneView()
                     {
-                        SceneView.lastActiveSceneView.Repaint();
                         if (handle.IsDone)
                         {
-                            var instance = Instantiate(handle.Result);
-                            instance.transform.position = Vector3.zero;
-                            SetRecursiveFlags(instance.transform);
-#if UNITY_2020_1_OR_NEWER
-                            var previewStage = CreateInstance<AddressablePreviewStage>();
-                            StageUtility.GoToStage(previewStage, true);
-                            var scene = previewStage.scene;
-
-                            previewStage.StageName = handle.Result.name;
-
-                            ThunderStageUtility.InstantiateStageLight(scene, 45);
-                            ThunderStageUtility.InstantiateStageLight(scene, -45, 180);
-                            ThunderStageUtility.InstantiateStageLight(scene, -45, 90);
-                            ThunderStageUtility.InstantiateStageLight(scene, 45, -90);
-                            SceneManager.MoveGameObjectToScene(instance, scene);
-                            Selection.activeGameObject = instance;
-                            SceneView.lastActiveSceneView.FrameSelected();
-#else
-                            AddressablePreviewStage.ShowWindow(instance);
-#endif
-                            Addressables.Release(handle);
                             EditorApplication.update -= updateSceneView;
+                            AddressablePreviewStage.Show(handle.Result);
+                            Addressables.Release(handle);
                         }
+                        SceneView.lastActiveSceneView.Repaint();
                     }
                 });
             }
@@ -330,13 +311,6 @@ namespace ThunderKit.Addressable.Tools
 
         }
 
-
-        static void SetRecursiveFlags(Transform transform)
-        {
-            transform.gameObject.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
-            for (int i = 0; i < transform.childCount; i++)
-                SetRecursiveFlags(transform.GetChild(i));
-        }
         private bool IsLoadableAsset(IResourceLocation location) =>
                location.ResourceType != typeof(SceneInstance)
             && location.ResourceType != typeof(IAssetBundleResource)
