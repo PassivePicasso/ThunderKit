@@ -130,10 +130,7 @@ namespace ThunderKit.Core.UIElements
         }
 
 
-        public static string GetAssetDirectory(UnityEngine.Object asset)
-        {
-            return Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset));
-        }
+        public static string GetAssetDirectory(UnityEngine.Object asset) => Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset));
 
         public static VisualElement LoadTemplateInstance(string templatePath, VisualElement instance = null)
         {
