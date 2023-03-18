@@ -286,6 +286,8 @@ namespace ThunderKit.Addressable.Tools
                     InstantiateStageLight(previewStage, -45, 180);
                     InstantiateStageLight(previewStage, -45, 90);
                     InstantiateStageLight(previewStage, 45, -90);
+                    Selection.activeGameObject = instance;
+                    SceneView.FrameLastActiveSceneView();
                 });
             }
             else if (location.ResourceType == typeof(SceneInstance))
