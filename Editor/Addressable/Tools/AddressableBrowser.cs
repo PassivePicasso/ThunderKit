@@ -2,11 +2,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Core.Windows;
 using UnityEditor;
@@ -15,6 +13,8 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -26,6 +26,7 @@ using Object = UnityEngine.Object;
 
 namespace ThunderKit.Addressable.Tools
 {
+    using static ThunderKit.Core.UIElements.TemplateHelpers;
     [Flags]
     public enum BrowserOptions
     {
@@ -38,14 +39,6 @@ namespace ThunderKit.Addressable.Tools
 
     public class AddressableBrowser : TemplatedWindow
     {
-        private const string Library = "Library";
-        private const string SimplyAddress = "SimplyAddress";
-        private const string Previews = "Previews";
-
-        private static string PreviewRoot => Path.Combine(Library, SimplyAddress, Previews);
-
-        public static readonly Dictionary<string, Texture2D> PreviewCache = new Dictionary<string, Texture2D>();
-
         [MenuItem(Constants.ThunderKitMenuRoot + "Addressable Browser")]
         public static void ShowAddressableBrowser() => GetWindow<AddressableBrowser>();
 
@@ -59,13 +52,13 @@ namespace ThunderKit.Addressable.Tools
         private const string AddressableAssetName = "addressable-asset";
         private const string ButtonPanel = "addressable-button-panel";
         private const string LoadSceneButton = "addressable-load-scene-button";
+        private const string InspectButton = "addressable-inspect-button";
         private const string AddressableLabels = "addressable-labels";
 
         Dictionary<string, List<IResourceLocation>> DirectoryContents;
 
         private ListView directory;
         private ListView directoryContent;
-        private Texture sceneIcon;
         private TextField searchBox;
         private EnumFlagsField displayOptionsField;
         private Button helpButton;
@@ -95,10 +88,9 @@ namespace ThunderKit.Addressable.Tools
             }
             return set.ToList();
         }
-        public void OnDisable()
-        {
-            AddressableGraphicsSettings.AddressablesInitialized -= InitializeBrowser;
-        }
+
+        public void OnDisable() => AddressableGraphicsSettings.AddressablesInitialized -= InitializeBrowser;
+
         public override void OnEnable()
         {
             AddressableGraphicsSettings.AddressablesInitialized -= InitializeBrowser;
@@ -110,7 +102,6 @@ namespace ThunderKit.Addressable.Tools
         private void InitializeBrowser(object sender = null, EventArgs e = null)
         {
             base.OnEnable();
-            sceneIcon = EditorGUIUtility.IconContent("d_UnityLogo").image;
 
             searchBox = rootVisualElement.Q<TextField>("search-input");
             displayOptionsField = rootVisualElement.Q<EnumFlagsField>("display-options");
@@ -125,7 +116,7 @@ namespace ThunderKit.Addressable.Tools
             directory.itemsSource = new ArrayList();
             directoryContent.itemsSource = new ArrayList();
             directory.makeItem = DirectoryLabel;
-            directoryContent.makeItem = AssetLabel;
+            directoryContent.makeItem = LoadAssetTemplate;
 
             directory.bindItem = (element, i) =>
             {
@@ -156,12 +147,6 @@ namespace ThunderKit.Addressable.Tools
         private void OnUseRegexChanged(ChangeEvent<bool> evt) => RefreshSearch();
         private void OnOptionsChanged(ChangeEvent<System.Enum> evt) => RefreshSearch();
         private void OnSearchChanged(ChangeEvent<string> evt) => RefreshSearch();
-        private void MakeReadonlyTextField(VisualElement labelContainer, string name)
-        {
-            var field = new TextField { name = name, isReadOnly = true };
-            field.AddToClassList("addressable-label");
-            labelContainer.Add(field);
-        }
         private void RefreshSearch()
         {
             bool noFilter = string.IsNullOrEmpty(searchInput);
@@ -235,6 +220,7 @@ namespace ThunderKit.Addressable.Tools
         {
             foreach (var location in values)
             {
+                if (!typeof(Object).IsAssignableFrom(location.ResourceType)) continue;
                 if (regex != null && !regex.IsMatch(location.PrimaryKey)) continue;
                 if (!string.IsNullOrEmpty(typeFilter) && !location.ResourceType.FullName.Contains(typeFilter)) continue;
                 list.Add(location);
@@ -246,8 +232,7 @@ namespace ThunderKit.Addressable.Tools
         {
             var location = (IResourceLocation)directoryContent.itemsSource[i];
 
-            var icon = element.Q<Image>(PreviewIcon);
-            var loadSceneBtn = element.Q<Button>(LoadSceneButton);
+            var icon = element.Q<AddressablePreviewImage>(PreviewIcon);
 
             var address = location.PrimaryKey;
             var isAsset = IsLoadableAsset(location);
@@ -277,18 +262,35 @@ namespace ThunderKit.Addressable.Tools
                 }
             }
 
-            icon.image = null;
+            var loadSceneBtn = element.Q<Button>(LoadSceneButton);
+            var inspectBtn = element.Q<Button>(InspectButton);
+            inspectBtn.style.display = DisplayStyle.None;
             loadSceneBtn.style.display = DisplayStyle.None;
-            if (isAsset)
+            if (typeof(GameObject).IsAssignableFrom(location.ResourceType))
             {
-                var texture = await RenderIcon(address);
-                if (texture)
-                    icon.image = texture;
+                inspectBtn.style.display = DisplayStyle.Flex;
+                inspectBtn.clickable = new Clickable(async () =>
+                {
+                    var previewStage = CreateInstance<AddressablePreviewStage>();
+                    StageUtility.GoToStage(previewStage, true);
+
+                    var handle = Addressables.LoadAssetAsync<GameObject>(location);
+                    await handle.Task;
+                    previewStage.StageName = handle.Result.name;
+
+                    var instance = Instantiate(handle.Result);
+                    instance.transform.position = Vector3.zero;
+                    SetRecursiveFlags(instance.transform);
+                    SceneManager.MoveGameObjectToScene(instance, previewStage.scene);
+                    InstantiateStageLight(previewStage, 45);
+                    InstantiateStageLight(previewStage, -45, 180);
+                    InstantiateStageLight(previewStage, -45, 90);
+                    InstantiateStageLight(previewStage, 45, -90);
+                });
             }
             else if (location.ResourceType == typeof(SceneInstance))
             {
                 loadSceneBtn.style.display = DisplayStyle.Flex;
-                icon.image = sceneIcon;
                 if (EditorApplication.isPlaying)
                 {
                     loadSceneBtn.clickable = new Clickable(() =>
@@ -303,71 +305,34 @@ namespace ThunderKit.Addressable.Tools
                     loadSceneBtn.clickable = null;
                 }
             }
+
+            _ = icon.Render(location, address, isAsset);
+
+        }
+
+        private static void InstantiateStageLight(AddressablePreviewStage previewStage, float x = 0, float y = 0, float z = 0)
+        {
+            var stageLight = new GameObject("Stage Lighting", typeof(Light));
+            var light = stageLight.GetComponent<Light>();
+            light.type = LightType.Directional;
+            light.intensity = 0.5f;
+            var stageLightTransform = stageLight.GetComponent<Transform>();
+            stageLightTransform.rotation = Quaternion.Euler(x, y, z);
+            stageLight.hideFlags = HideFlags.HideAndDontSave;
+            SceneManager.MoveGameObjectToScene(stageLight, previewStage.scene);
+        }
+
+        static void SetRecursiveFlags(Transform transform)
+        {
+            transform.gameObject.hideFlags = HideFlags.DontSave | HideFlags.NotEditable;
+            for (int i = 0; i < transform.childCount; i++)
+                SetRecursiveFlags(transform.GetChild(i));
         }
         private bool IsLoadableAsset(IResourceLocation location) =>
                location.ResourceType != typeof(SceneInstance)
             && location.ResourceType != typeof(IAssetBundleResource)
-            && location.ProviderId != "UnityEngine.ResourceManagement.ResourceProviders.LegacyResourcesProvider";
-        private async Task<Texture2D> RenderIcon(string address)
-        {
-            string previewCachePath = Path.Combine(PreviewRoot, $"{address}.png");
-            if (File.Exists(previewCachePath))
-            {
-                var texture = new Texture2D(128, 128);
-                texture.LoadImage(File.ReadAllBytes(previewCachePath));
-                texture.Apply();
-                PreviewCache[address] = texture;
-                return texture;
-            }
-
-            Texture2D preview = null;
-            Object result = null;
-            try
-            {
-                result = await Addressables.LoadAssetAsync<Object>(address).Task;
-                preview = UpdatePreview(result);
-            }
-            catch
-            {
-            }
-            if (result)
-                while (AssetPreview.IsLoadingAssetPreviews())
-                {
-                    await Task.Delay(100);
-                    preview = UpdatePreview(result);
-                    if (preview && preview.isReadable)
-                    {
-                        var png = preview.EncodeToPNG();
-                        var fileName = $"{Path.GetFileName(address)}.png";
-                        string addressFolder = Path.GetDirectoryName(address);
-                        var finalFolder = Path.Combine(PreviewRoot, addressFolder);
-                        Directory.CreateDirectory(finalFolder);
-                        var filePath = Path.Combine(finalFolder, fileName);
-                        File.WriteAllBytes(filePath, png);
-                    }
-                }
-
-            return preview;
-        }
-        private Texture2D UpdatePreview(Object result)
-        {
-            Texture2D preview;
-            switch (result)
-            {
-                case GameObject gobj when gobj.GetComponentsInChildren<SkinnedMeshRenderer>().Any()
-                                       || gobj.GetComponentsInChildren<SpriteRenderer>().Any()
-                                       || gobj.GetComponentsInChildren<MeshRenderer>().Any()
-                                       || gobj.GetComponentsInChildren<CanvasRenderer>().Any():
-                case Material _:
-                    preview = AssetPreview.GetAssetPreview(result);
-                    break;
-                default:
-                    preview = AssetPreview.GetMiniThumbnail(result);
-                    break;
-            }
-
-            return preview;
-        }
+            && location.ProviderId != "UnityEngine.ResourceManagement.ResourceProviders.LegacyResourcesProvider"
+            && typeof(Object).IsAssignableFrom(location.ResourceType);
         private MethodInfo GetLoadMethod(IResourceLocation location)
         {
             var addressablesType = typeof(Addressables);
@@ -400,7 +365,6 @@ namespace ThunderKit.Addressable.Tools
                 }
                 else
                     Debug.LogWarning("Loaded object is not a UnityEngine.Object");
-
             }
             catch (Exception e)
             {
@@ -413,29 +377,13 @@ namespace ThunderKit.Addressable.Tools
             label.AddToClassList("addresable-label");
             return label;
         }
-        private VisualElement AssetLabel()
+        private VisualElement LoadAssetTemplate()
         {
-            var element = new VisualElement { name = AddressableAssetName };
-            element.Add(new Image { name = PreviewIcon });
+            var element = GetTemplateInstance("AddressableAsset");
+            var labelContainer = element.Q(AddressableLabels);
 
-            var labelContainer = new VisualElement { name = AddressableLabels };
-
-            MakeReadonlyTextField(labelContainer, NameLabel);
-
-            if (browserOptions.HasFlag(BrowserOptions.ShowType))
-                MakeReadonlyTextField(labelContainer, TypeLabel);
-
-            if (browserOptions.HasFlag(BrowserOptions.ShowProvider))
-                MakeReadonlyTextField(labelContainer, ProviderLabel);
-
-            element.Add(labelContainer);
-
-            var buttonPanel = new VisualElement { name = ButtonPanel };
-
-            var loadSceneBtn = new Button { name = LoadSceneButton, text = "Load Scene", tooltip = "Editor must be in Play mode to load Scenes" };
-            buttonPanel.Add(loadSceneBtn);
-
-            element.Add(buttonPanel);
+            if (browserOptions.HasFlag(BrowserOptions.ShowType)) /**/labelContainer.Q(TypeLabel/**/).style.display = DisplayStyle.Flex;
+            if (browserOptions.HasFlag(BrowserOptions.ShowProvider)) labelContainer.Q(ProviderLabel).style.display = DisplayStyle.Flex;
 
             return element;
         }
