@@ -78,7 +78,6 @@ enabled and disabled by users and code.
 
 ## Remarks
 
-The [OptionalExecutor](assetlink://GUID/984ac7aa6325ea24889e2b091ee9b636) is 
 The OptionalExecutor is the base class for all ImportExtensions. It is an 
 abstract class which you can extend to make new import extensions, as see in
 the example on the 
