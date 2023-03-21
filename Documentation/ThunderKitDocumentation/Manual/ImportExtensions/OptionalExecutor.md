@@ -79,7 +79,34 @@ enabled and disabled by users and code.
 ## Remarks
 
 The OptionalExecutor is the base class for all ImportExtensions. It is an 
-abstract class which you can extend to make new import extensions, as see in
-the example on the 
-[Import Extensions](documentation://GUID/00b9d411fd716fd4893e9cb7c7811f0c) 
-page.
+abstract class can be extend to make new import extensions. All 
+OptionalExecutors have the ability to be enabled or disabled to modify the 
+setup of a project.
+
+OptionalExecutors enable the ability to easily reproduce setup steps in for a
+project.
+
+The following is an example of an OptionalExecutor implementation. This 
+extension will display on the ThunderKit Settings Import Configuration page.
+While enabled, each time the Import process is run the HelloWorldImporter will
+log "Hello world" to the Unity [Console.](menulink://Window/General/Console)
+   ```cs
+    using ThunderKit.Core.Config;
+    using UnityEngine;
+
+    namespace HelloWorldImporter
+    {
+        public class HelloWorldImporter : OptionalExecutor
+        {
+            public override int Priority => int.MaxValue;
+
+            public override string Description => "Logs Hello World";
+
+            public override bool Execute()
+            {
+                Debug.Log("Hello world");
+                return true;
+            }
+        }
+    }
+   ```
