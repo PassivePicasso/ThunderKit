@@ -1,6 +1,6 @@
 ﻿namespace AssetsTools.NET
 {
-    public enum EnumValueTypes
+    public enum AssetValueType
     {
         None,
         Bool,
@@ -17,5 +17,6 @@
         String,
         Array,
         ByteArray,
+        ManagedReferencesRegistry
     }
 }

@@ -11,17 +11,17 @@ namespace AssetsExporter.YAMLExporters
     {
         public static YAMLNode ExportArray(ExportContext context, AssetTypeValueField arrayField)
         {
-            switch (arrayField.templateField.valueType)
+            switch (arrayField.TemplateField.ValueType)
             {
-                case EnumValueTypes.ByteArray:
-                    return arrayField.GetValue().value.asByteArray.data.ExportYAML();
-                case EnumValueTypes.Array:
+                case AssetValueType.ByteArray:
+                    return arrayField.AsByteArray.ExportYAML();
+                case AssetValueType.Array:
                     var node = new YAMLSequenceNode();
-                    if (arrayField.childrenCount > 0)
+                    if (arrayField.Children.Count > 0)
                     {
-                        for (var i = 0; i < arrayField.childrenCount; i++)
+                        for (var i = 0; i < arrayField.Children.Count; i++)
                         {
-                            node.Add(context.Export(arrayField, arrayField.children[i]));
+                            node.Add(context.Export(arrayField, arrayField.Children[i]));
                         }
                     }
 

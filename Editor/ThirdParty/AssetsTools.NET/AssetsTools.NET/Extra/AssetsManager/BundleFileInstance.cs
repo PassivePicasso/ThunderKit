@@ -1,44 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace AssetsTools.NET.Extra
 {
     public class BundleFileInstance
     {
-        public Stream stream;
         public string path;
         public string name;
         public AssetBundleFile file;
         public List<AssetsFileInstance> loadedAssetsFiles;
 
-        public BundleFileInstance(Stream stream, string filePath, string root, bool unpackIfPacked)
+        public Stream BundleStream => file.Reader.BaseStream;
+        public Stream DataStream => file.DataReader.BaseStream;
+
+        public BundleFileInstance(Stream stream, string filePath, bool unpackIfPacked = true)
         {
-            this.stream = stream;
             path = Path.GetFullPath(filePath);
-            name = Path.Combine(root, Path.GetFileName(path));
+            name = Path.GetFileName(path);
             file = new AssetBundleFile();
-            file.Read(new AssetsFileReader(stream), true);
-            if (file.bundleHeader6.GetCompressionType() != 0 && unpackIfPacked)
+            file.Read(new AssetsFileReader(stream));
+            if (file.Header != null && file.DataIsCompressed && unpackIfPacked)
             {
                 file = BundleHelper.UnpackBundle(file);
             }
             loadedAssetsFiles = new List<AssetsFileInstance>();
         }
-        public BundleFileInstance(FileStream stream, string root, bool unpackIfPacked)
+
+        public BundleFileInstance(FileStream stream, bool unpackIfPacked = true)
+            : this(stream, stream.Name, unpackIfPacked)
         {
-            this.stream = stream;
-            path = stream.Name;
-            name = Path.Combine(root, Path.GetFileName(path));
-            file = new AssetBundleFile();
-            file.Read(new AssetsFileReader(stream), true);
-            if (file.bundleHeader6.GetCompressionType() != 0 && unpackIfPacked)
-            {
-                file = BundleHelper.UnpackBundle(file);
-            }
-            loadedAssetsFiles = new List<AssetsFileInstance>();
         }
     }
 }

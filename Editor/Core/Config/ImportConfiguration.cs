@@ -265,8 +265,9 @@ namespace ThunderKit.Core.Data
             catch (Exception e)
             {
                 ConfigurationIndex = ConfigurationExecutors.Length + 1;
-                Debug.LogError($"Error during Import: {e}");
-                return;
+                throw new Exception("Import Failed", e);
+                //Debug.LogError(e);
+                //return;
             }
             if (ConfigurationIndex >= ConfigurationExecutors.Length)
             {
@@ -340,7 +341,8 @@ namespace ThunderKit.Core.Data
                     var am = new AssetsManager();
                     var ggm = am.LoadAssetsFile(informationFile, false);
 
-                    playerVersion = regs.Replace(ggm.table.file.typeTree.unityVersion, match => match.Groups[1].Value);
+                    playerVersion = regs.Replace(ggm.file.Metadata.UnityVersion, match => match.Groups[1].Value);
+
                     am.UnloadAll(true);
                     versionMatch = unityVersion.Equals(playerVersion);
                     foundVersion = true;
