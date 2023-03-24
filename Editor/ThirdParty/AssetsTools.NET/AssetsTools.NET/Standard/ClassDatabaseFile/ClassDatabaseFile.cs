@@ -1,155 +1,163 @@
 ﻿using AssetsTools.NET.Extra;
 using AssetsTools.NET.Extra.Decompressors.LZ4;
+using LZ4ps;
 using SevenZip.Compression.LZMA;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace AssetsTools.NET
 {
     public class ClassDatabaseFile
     {
-        public bool valid;
-        public ClassDatabaseFileHeader header;
+        public ClassDatabaseFileHeader Header;
+        public List<ClassDatabaseType> Classes;
+        public ClassDatabaseStringTable StringTable;
+        public List<ushort> CommonStringBufferIndices;
 
-        public List<ClassDatabaseType> classes;
+        public string GetString(ushort index) => StringTable.GetString(index);
 
-        public byte[] stringTable;
-
-        public bool bodyParsed;
-        public byte[] unparsedData;
-
-        public bool ReadHeader(AssetsFileReader reader)
+        public void Read(AssetsFileReader reader)
         {
-            header = new ClassDatabaseFileHeader();
-            header.Read(reader);
-            if (header.header != "cldb" || header.fileVersion > 4 || header.fileVersion < 1)
+            Header ??= new ClassDatabaseFileHeader();
+            Header.Read(reader);
+
+            AssetsFileReader dReader = GetDecompressedReader(reader);
+            int classCount = dReader.ReadInt32();
+            Classes = new List<ClassDatabaseType>(classCount);
+            for (int i = 0; i < classCount; i++)
             {
-                return valid = false;
+                ClassDatabaseType type = new ClassDatabaseType();
+                type.Read(dReader);
+                Classes.Add(type);
             }
 
-            unparsedData = reader.ReadBytes((int)header.compressedSize);
-            
-            return valid = true;
-        }
-        public void ParseBody()
-        {
-            if (bodyParsed)
-            {
-                return;
-            }
-            classes = new List<ClassDatabaseType>();
+            StringTable ??= new ClassDatabaseStringTable();
+            StringTable.Read(dReader);
 
-            MemoryStream stream;
-            if (header.compressionType == 0)
+            CommonStringBufferIndices ??= new List<ushort>();
+            int size = dReader.ReadInt32();
+            for (int i = 0; i < size; i++)
             {
-                stream = new MemoryStream(unparsedData);
+                CommonStringBufferIndices.Add(dReader.ReadUInt16());
             }
-            else if (header.compressionType == 1) //lz4
-            {
-                byte[] uncompressedBytes = new byte[header.uncompressedSize];
-                using (MemoryStream tempMs = new MemoryStream(unparsedData))
-                {
-                    var decoder = new Lz4DecoderStream(tempMs);
-                    decoder.Read(uncompressedBytes, 0, (int)header.uncompressedSize);
-                    decoder.Dispose();
-                }
-                stream = new MemoryStream(uncompressedBytes);
-            }
-            else if (header.compressionType == 2) //lzma
-            {
-                using (MemoryStream tempMs = new MemoryStream(unparsedData))
-                {
-                    stream = SevenZipHelper.StreamDecompress(tempMs, header.uncompressedSize);
-                }
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-            using (var reader = new AssetsFileReader(stream))
-            {
-                reader.bigEndian = false;
-
-                reader.Position = header.stringTablePos;
-                stringTable = reader.ReadBytes((int)header.stringTableLen);
-                reader.Position = 0;
-                var size = reader.ReadUInt32();
-                for (int i = 0; i < size; i++)
-                {
-                    var cdt = new ClassDatabaseType();
-                    cdt.Read(reader, header.fileVersion, header.flags);
-                    classes.Add(cdt);
-                }
-            }
-
-            unparsedData = null;
-            bodyParsed = true;
-            stream.Dispose();
         }
 
-        public void Write(AssetsFileWriter writer)
+        public void Write(AssetsFileWriter writer, ClassFileCompressionType compressionType)
         {
-            if (!valid)
+            Header.CompressionType = compressionType;
+
+            MemoryStream dStream = new MemoryStream();
+            AssetsFileWriter dWriter = new AssetsFileWriter(dStream);
+            dWriter.Write(Classes.Count);
+            for (int i = 0; i < Classes.Count; i++)
             {
-                throw new InvalidDataException("cldb is not valid");
+                Classes[i].Write(dWriter);
             }
 
-            if (!bodyParsed)
+            StringTable.Write(dWriter);
+
+            dWriter.Write(CommonStringBufferIndices.Count);
+            for (int i = 0; i < CommonStringBufferIndices.Count; i++)
             {
-                header.Write(writer);
-                writer.Write(unparsedData);
-                return;
+                dWriter.Write(CommonStringBufferIndices[i]);
             }
 
-            var stringTablePos = 0L;
-            var uncompressedSize = 0L;
-            var compressedBytes = Net35Polyfill.ArrayEmpty<byte>();
+            using MemoryStream cStream = GetCompressedStream(dStream);
 
-            using (var uncompressedStream = new MemoryStream())
-            using (var uncompressedWriter = new AssetsFileWriter(uncompressedStream))
-            {
-                uncompressedWriter.bigEndian = writer.bigEndian;
-                uncompressedWriter.Write(classes.Count);
-                for (int i = 0; i < classes.Count; i++)
-                {
-                    classes[i].Write(uncompressedWriter, header.fileVersion, header.flags);
-                }
-                stringTablePos = uncompressedWriter.Position;
-                uncompressedWriter.Write(stringTable);
-                uncompressedSize = uncompressedWriter.Position;
-                switch (header.compressionType)
-                {
-                    case 0:
-                        compressedBytes = uncompressedStream.ToArray();
-                        break;
-                    case 2:
-                        using (var compressedStream = new MemoryStream())
-                        {
-                            uncompressedStream.Position = 0;
-                            SevenZipHelper.Compress(uncompressedStream, compressedStream);
-                            compressedBytes = compressedStream.ToArray();
-                        }
-                        break;
-                    default:
-                        throw new NotSupportedException("Only lzma (2) compression is supported, or no compression at all (0)");
-                }
-            }
-            
-            header.stringTablePos = (uint)stringTablePos;
-            header.stringTableLen = (uint)(uncompressedSize - stringTablePos);
-            header.uncompressedSize = (uint)uncompressedSize;
-            header.compressedSize = (uint)compressedBytes.Length;
+            Header.CompressedSize = (int)cStream.Length;
+            Header.DecompressedSize = (int)dStream.Length;
+            Header.Write(writer);
 
-            header.Write(writer);
-            writer.Write(compressedBytes);
+            cStream.CopyToCompat(writer.BaseStream);
         }
 
-        public bool IsValid()
+        private AssetsFileReader GetDecompressedReader(AssetsFileReader reader)
         {
-            return valid;
+            AssetsFileReader newReader = reader;
+            if (Header.CompressionType != ClassFileCompressionType.Uncompressed)
+            {
+                MemoryStream ms;
+                if (Header.CompressionType == ClassFileCompressionType.Lz4) // lz4
+                {
+                    byte[] uncompressedBytes = new byte[Header.DecompressedSize];
+                    using (MemoryStream tempMs = new MemoryStream(reader.ReadBytes(Header.CompressedSize)))
+                    {
+                        Lz4DecoderStream decoder = new Lz4DecoderStream(tempMs);
+                        decoder.Read(uncompressedBytes, 0, Header.DecompressedSize);
+                        decoder.Dispose();
+                    }
+                    ms = new MemoryStream(uncompressedBytes);
+                }
+                else if (Header.CompressionType == ClassFileCompressionType.Lzma) // lzma
+                {
+                    using (MemoryStream tempMs = new MemoryStream(reader.ReadBytes(Header.CompressedSize)))
+                    {
+                        ms = SevenZipHelper.StreamDecompress(tempMs);
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Class database is using invalid compression type {Header.CompressionType}!");
+                }
+
+                newReader = new AssetsFileReader(ms);
+            }
+
+            return newReader;
         }
-        
-        public ClassDatabaseFile() { }
+
+        private MemoryStream GetCompressedStream(MemoryStream inStream)
+        {
+            if (Header.CompressionType != ClassFileCompressionType.Uncompressed)
+            {
+                if (Header.CompressionType == ClassFileCompressionType.Lz4) // lz4
+                {
+                    byte[] data = LZ4Codec.Encode32HC(inStream.ToArray(), 0, (int)inStream.Length);
+                    return new MemoryStream(data);
+                }
+                else if (Header.CompressionType == ClassFileCompressionType.Lzma) // lzma
+                {
+                    MemoryStream outStream = new MemoryStream();
+                    SevenZipHelper.Compress(inStream, outStream);
+                    outStream.Position = 0;
+                    return outStream;
+                }
+                else
+                {
+                    throw new Exception($"Class database is using invalid compression type {Header.CompressionType}!");
+                }
+            }
+
+            inStream.Position = 0;
+            return inStream;
+        }
+
+        public ClassDatabaseType FindAssetClassByID(int id)
+        {
+            // 5.4-
+            if (id < 0)
+            {
+                id = 0x72;
+            }
+
+            foreach (ClassDatabaseType type in Classes)
+            {
+                if (type.ClassId == id)
+                    return type;
+            }
+            return null;
+        }
+
+        public ClassDatabaseType FindAssetClassByName(string name)
+        {
+            foreach (ClassDatabaseType type in Classes)
+            {
+                if (GetString(type.Name) == name)
+                    return type;
+            }
+            return null;
+        }
     }
 }

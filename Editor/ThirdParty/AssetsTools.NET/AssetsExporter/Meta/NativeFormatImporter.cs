@@ -14,7 +14,7 @@ namespace AssetsExporter.Meta
         public long mainObjectFileID;
         public override void AssignCollection(BaseAssetCollection collection)
         {
-            mainObjectFileID = collection.Assets.First().info.index;
+            mainObjectFileID = collection.Assets.First().info.PathId;
         }
 
         public override YAMLNode ExportYAML()

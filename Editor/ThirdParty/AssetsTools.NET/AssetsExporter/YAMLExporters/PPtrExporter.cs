@@ -16,8 +16,8 @@ namespace AssetsExporter.YAMLExporters
         public YAMLNode Export(ExportContext context, AssetTypeValueField parentField, AssetTypeValueField field, bool raw = false)
         {
             var node = new YAMLMappingNode(MappingStyle.Flow);
-            var fileID = field.Get("m_FileID").GetValue().value.asInt32;
-            var pathID = field.Get("m_PathID").GetValue().value.asInt64;
+            var fileID = field.Get("m_FileID").AsInt;
+            var pathID = field.Get("m_PathID").AsLong;
 
             if (pathID == 0)
             {
@@ -27,11 +27,11 @@ namespace AssetsExporter.YAMLExporters
 
             if (fileID != 0)
             {
-                var dep = context.SourceAsset.file.file.dependencies.dependencies[fileID - 1];
-                if (dep.guid != Guid.Empty)
+                var dep = context.SourceAsset.file.file.Metadata.Externals[fileID - 1];
+                if (!dep.Guid.IsEmpty)
                 {
                     node.Add("fileID", pathID);
-                    node.Add("guid", dep.guid.ToString("N"));
+                    node.Add("guid", dep.Guid.ToString());
                     node.Add("type", 0);
                     return node;
                 }
@@ -41,34 +41,42 @@ namespace AssetsExporter.YAMLExporters
             var info = context.Info.GetOrAdd<PPtrExporterInfo>(nameof(PPtrExporterInfo));
 
             var depInfo = context.AssetsManager.GetExtAsset(file, 0, pathID, true);
-            if ((AssetClassID)depInfo.info.curFileType == AssetClassID.MonoScript)
+            if ((AssetClassID)depInfo.info.TypeId == AssetClassID.MonoScript)
             {
                 var scriptsCache = info.scriptsCache.GetOrAdd(file);
                 if (!scriptsCache.TryGetValue(pathID, out var scriptRef))
                 {
                     var scriptAsset = context.AssetsManager.GetExtAsset(file, 0, pathID);
-                    var scriptBase = scriptAsset.instance.GetBaseField();
+                    var scriptBase = scriptAsset.baseField;
 
-                    var className = scriptBase.Get("m_ClassName").GetValue().value.asString;
-                    var @namespace = scriptBase.Get("m_Namespace").GetValue().value.asString;
-                    var assemblyName = scriptBase.Get("m_AssemblyName").GetValue().value.asString;
+                    var className = scriptBase.Get("m_ClassName").AsString;
+                    var @namespace = scriptBase.Get("m_Namespace").AsString;
+                    var assemblyName = scriptBase.Get("m_AssemblyName").AsString;
 
-                    var scriptFileID = HashUtils.ComputeScriptFileID(@namespace, className);
-                    //Unity has guids for their extension assemblies in editor folder (ivy.xml files), use them if found
-                    if (!info.unityExtensionAssebmlies.TryGetValue(assemblyName, out var scriptGuid))
+                    var fullName = $"{assemblyName}, {@namespace}{(string.IsNullOrEmpty(@namespace) ? "" : ".")}{className}";
+                    if (!info.typeReferenceOverrides.TryGetValue(fullName, out scriptRef))
                     {
-                        scriptGuid = HashUtils.GetMD5HashGuid(Path.GetFileNameWithoutExtension(assemblyName));
+                        scriptsCache[pathID] = scriptRef;
                     }
-                    scriptsCache[pathID] = scriptRef = new KeyValuePair<long, Guid>(scriptFileID, scriptGuid);
+                    else
+                    {
+                        var scriptFileID = HashUtils.ComputeScriptFileID(@namespace, className);
+                        //Unity has guids for their extension assemblies in editor folder (ivy.xml files), use them if found
+                        if (!info.unityExtensionAssebmlies.TryGetValue(assemblyName, out var scriptGuid))
+                        {
+                            scriptGuid = HashUtils.GetMD5HashGuid(Path.GetFileNameWithoutExtension(assemblyName));
+                        }
+                        scriptsCache[pathID] = scriptRef = (scriptFileID, scriptGuid, 3);
+                    }
                 }
 
-                node.Add("fileID", scriptRef.Key);
-                node.Add("guid", scriptRef.Value.ToString("N"));
-                node.Add("type", 3);
+                node.Add("fileID", scriptRef.pathID);
+                node.Add("guid", scriptRef.fileID.ToString("N"));
+                node.Add("type", scriptRef.type);
                 return node;
             }
             
-            if (fileID == 0 && context.Collection.Assets.Any(el => el.info.index == pathID))
+            if (fileID == 0 && context.Collection.Assets.Any(el => el.info.PathId == pathID))
             {
                 node.Add("fileID", pathID);
                 return node;
@@ -78,11 +86,14 @@ namespace AssetsExporter.YAMLExporters
             if (!assetToRootAsset.TryGetValue(pathID, out var rootPathID))
             {
                 var dependencyCollection = AssetCollection.CreateAssetCollection(context.AssetsManager, context.AssetsManager.GetExtAsset(file, 0, pathID));
-                info.foundNewCollections.Add(dependencyCollection);
-                rootPathID = dependencyCollection.MainAsset.Value.info.index;
+                if (info.storeFoundCollections)
+                {
+                    info.foundNewCollections.Add(dependencyCollection);
+                }
+                rootPathID = dependencyCollection.MainAsset.Value.info.PathId;
                 foreach (var cAsset in dependencyCollection.Assets)
                 {
-                    assetToRootAsset[cAsset.info.index] = rootPathID;
+                    assetToRootAsset[cAsset.info.PathId] = rootPathID;
                 }
             }
 
