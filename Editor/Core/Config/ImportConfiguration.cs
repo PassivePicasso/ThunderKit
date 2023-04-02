@@ -21,6 +21,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using ThunderKit.Core.Config;
+using UnityEngine.Serialization;
 
 namespace ThunderKit.Core.Data
 {
@@ -30,52 +31,71 @@ namespace ThunderKit.Core.Data
     public class ImportConfiguration : ThunderKitSetting
     {
         public OptionalExecutor[] ConfigurationExecutors = Array.Empty<OptionalExecutor>();
-        public int ConfigurationIndex = -1;
+        [SerializeField]
+        [FormerlySerializedAs("ConfigurationIndex")]
+        private int configurationIndex = -1;
+        public int ConfigurationIndex
+        {
+            get => configurationIndex;
+            set
+            {
+                if (value == configurationIndex)
+                {
+                    return;
+                }
+                configurationIndex = value;
+                EditorUtility.SetDirty(this);
+            }
+        }
         [SerializeField, HideInInspector] private int totalImportExtensionCount = -1;
 
         [InitializeOnLoadMethod]
         static void Init()
         {
             EditorApplication.update += StepImporters;
-            ImportConfiguration configInstance = GetOrCreateSettings<ImportConfiguration>();
-            string assetPath = GetAssetPath(configInstance);
-            string guid = AssetPathToGUID(assetPath);
-            if (configInstance.CheckForNewImportConfigs(out var executors))
+        }
+
+        private static void StepImporters()
+        {
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
             {
+                return;
+            }
+
+            EditorApplication.update -= StepImporters;
+
+            var settings = GetOrCreateSettings<ImportConfiguration>();
+            var assetPath = GetAssetPath(settings);
+            var guid = AssetPathToGUID(assetPath);
+            if (settings.CheckForNewImportConfigs(out var executors))
+            {
+                var enabledExecutorTypes = new HashSet<Type>();
                 var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
-                configInstance.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
+                settings.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
                 foreach (var obj in objs)
                 {
                     if (obj)
                     {
+                        if (obj is OptionalExecutor executor && executor.enabled)
+                        {
+                            enabledExecutorTypes.Add(executor.GetType());
+                        }
                         RemoveObjectFromAsset(obj);
                         DestroyImmediate(obj, true);
                     }
                 }
-                ComposableObject.FixMissingScriptSubAssets(configInstance);
-                configInstance = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
-                configInstance.LoadImportExtensions(executors);
+                ComposableObject.FixMissingScriptSubAssets(settings);
+                settings = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
+                settings.LoadImportExtensions(executors, enabledExecutorTypes);
                 SaveAssets();
             }
-        }
 
+            settings.ConfigurationExecutors = LoadAllAssetRepresentationsAtPath(assetPath)
+                .OfType<OptionalExecutor>()
+                .OrderByDescending(executor => executor.Priority)
+                .ToArray();
 
-        private static void StepImporters()
-        {
-            if (!EditorApplication.isCompiling && !EditorApplication.isUpdating)
-            {
-                var settings = GetOrCreateSettings<ImportConfiguration>();
-                var settingsPath = GetAssetPath(settings);
-                var executors = LoadAllAssetRepresentationsAtPath(settingsPath)
-                                .OfType<OptionalExecutor>()
-                                .OrderByDescending(executor => executor.Priority)
-                                .ToArray();
-
-                if (settings.ConfigurationExecutors == null || !executors.SequenceEqual(settings.ConfigurationExecutors))
-                    settings.ConfigurationExecutors = executors;
-
-                settings.ImportGame();
-            }
+            settings.ImportGame();
         }
 
         public override void CreateSettingsUI(VisualElement rootElement)
@@ -191,7 +211,7 @@ namespace ThunderKit.Core.Data
                .ToList();
         }
 
-        private void LoadImportExtensions(List<Type> executorTypes)
+        private void LoadImportExtensions(List<Type> executorTypes, HashSet<Type> enabledTypes = null)
         {
             var settingsPath = GetAssetPath(this);
             var builder = new StringBuilder("Loaded Import Extensions");
@@ -210,6 +230,10 @@ namespace ThunderKit.Core.Data
                 {
                     AddObjectToAsset(executor, this);
                     executor.name = executor.Name;
+                    if (enabledTypes != null)
+                    {
+                        executor.enabled = enabledTypes.Contains(t);
+                    }
                     builder.AppendLine(executor.GetType().FullName);
                 }
             }
@@ -271,8 +295,21 @@ namespace ThunderKit.Core.Data
             if (ConfigurationIndex >= ConfigurationExecutors.Length)
             {
                 foreach (var ce in ConfigurationExecutors)
-                    ce.Cleanup();
+                {
+                    try
+                    {
+                        if (ce.enabled)
+                        {
+                            ce.Cleanup();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"Error during Cleanup: {e}");
+                    }
+                }
 
+                AssetDatabase.SaveAssets();
                 PromptRestart();
             }
         }
