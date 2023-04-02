@@ -52,6 +52,8 @@ namespace ThunderKit.Core
             for (int x = index; x < dataArray.arraySize; x++)
                 dataArray.MoveArrayElement(x + 1, x);
 
+			dataArray.arraySize--;
+
             so.SetIsDifferentCacheDirty();
             so.ApplyModifiedProperties();
         }
