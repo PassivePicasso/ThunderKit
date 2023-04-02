@@ -69,16 +69,16 @@ namespace ThunderKit.Core.Data
             var guid = AssetPathToGUID(assetPath);
             if (settings.CheckForNewImportConfigs(out var executors))
             {
-                var enabledExecutorTypes = new HashSet<Type>();
+                var executorStates = new Dictionary<Type, bool>();
                 var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
                 settings.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
                 foreach (var obj in objs)
                 {
                     if (obj)
                     {
-                        if (obj is OptionalExecutor executor && executor.enabled)
+                        if (obj is OptionalExecutor executor)
                         {
-                            enabledExecutorTypes.Add(executor.GetType());
+                            executorStates[executor.GetType()] = executor.enabled;
                         }
                         RemoveObjectFromAsset(obj);
                         DestroyImmediate(obj, true);
@@ -86,7 +86,7 @@ namespace ThunderKit.Core.Data
                 }
                 ComposableObject.FixMissingScriptSubAssets(settings);
                 settings = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
-                settings.LoadImportExtensions(executors, enabledExecutorTypes);
+                settings.LoadImportExtensions(executors, executorStates);
                 SaveAssets();
             }
 
@@ -211,7 +211,7 @@ namespace ThunderKit.Core.Data
                .ToList();
         }
 
-        private void LoadImportExtensions(List<Type> executorTypes, HashSet<Type> enabledTypes = null)
+        private void LoadImportExtensions(List<Type> executorTypes, Dictionary<Type, bool> previousStates = null)
         {
             var settingsPath = GetAssetPath(this);
             var builder = new StringBuilder("Loaded Import Extensions");
@@ -230,9 +230,9 @@ namespace ThunderKit.Core.Data
                 {
                     AddObjectToAsset(executor, this);
                     executor.name = executor.Name;
-                    if (enabledTypes != null)
+                    if (previousStates != null && previousStates.TryGetValue(t, out var enabled))
                     {
-                        executor.enabled = enabledTypes.Contains(t);
+                        executor.enabled = enabled;
                     }
                     builder.AppendLine(executor.GetType().FullName);
                 }
@@ -318,7 +318,7 @@ namespace ThunderKit.Core.Data
         {
             if (GetOrCreateSettings<ThunderKitSettings>().notifyWhenImportCompletes)
                 EditorApplication.Beep();
-
+            
             if (EditorUtility.DisplayDialog("Import Process Complete", "The game has been imported successfully. It is recommended to restart your project to ensure stability", "Restart Project", "Restart Later"))
             {
                 EditorApplication.OpenProject(Directory.GetCurrentDirectory());
