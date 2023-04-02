@@ -64,14 +64,14 @@ namespace ThunderKit.Core.Data
 
             EditorApplication.update -= StepImporters;
 
-            var settings = GetOrCreateSettings<ImportConfiguration>();
-            var assetPath = GetAssetPath(settings);
+            var configInstance = GetOrCreateSettings<ImportConfiguration>();
+            var assetPath = GetAssetPath(configInstance);
             var guid = AssetPathToGUID(assetPath);
-            if (settings.CheckForNewImportConfigs(out var executors))
+            if (configInstance.CheckForNewImportConfigs(out var executors))
             {
                 var executorStates = new Dictionary<Type, bool>();
                 var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
-                settings.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
+                configInstance.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
                 foreach (var obj in objs)
                 {
                     if (obj)
@@ -84,18 +84,18 @@ namespace ThunderKit.Core.Data
                         DestroyImmediate(obj, true);
                     }
                 }
-                ComposableObject.FixMissingScriptSubAssets(settings);
-                settings = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
-                settings.LoadImportExtensions(executors, executorStates);
+                ComposableObject.FixMissingScriptSubAssets(configInstance);
+                configInstance = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
+                configInstance.LoadImportExtensions(executors, executorStates);
                 SaveAssets();
             }
 
-            settings.ConfigurationExecutors = LoadAllAssetRepresentationsAtPath(assetPath)
+            configInstance.ConfigurationExecutors = LoadAllAssetRepresentationsAtPath(assetPath)
                 .OfType<OptionalExecutor>()
                 .OrderByDescending(executor => executor.Priority)
                 .ToArray();
 
-            settings.ImportGame();
+            configInstance.ImportGame();
         }
 
         public override void CreateSettingsUI(VisualElement rootElement)
