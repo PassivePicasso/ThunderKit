@@ -26,10 +26,23 @@ namespace ThunderKit.Core.Data
 
         private Editor editor;
         [InitializeOnLoadMethod]
-        static void Ensure()
+        static void EnsureSubscriptions()
         {
             SettingsWindow.OnSettingsLoading -= Ensure;
             SettingsWindow.OnSettingsLoading += Ensure;
+
+            EditorApplication.update -= Ensure;
+            EditorApplication.update += Ensure;
+        }
+
+        private static void Ensure()
+        {
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                return;
+            }
+
+            EditorApplication.update -= Ensure;
 
             if (thunderKitSettingsTypes == null)
                 try
