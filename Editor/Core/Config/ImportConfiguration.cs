@@ -312,6 +312,10 @@ namespace ThunderKit.Core.Data
                 AssetDatabase.SaveAssets();
                 PromptRestart();
             }
+            else
+            {
+                EditorApplication.update += StepImporters;
+            }
         }
 
         private void PromptRestart()
