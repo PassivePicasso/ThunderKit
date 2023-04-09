@@ -9,7 +9,7 @@ namespace ThunderKit.Addressable.Tools
 {
     public abstract class AddressableGraphicsImport : OptionalExecutor
     {
-        public override int Priority => Constants.Priority.AddressableGraphicsImport;
+        public override int Priority => ThunderKit.Common.Constants.Priority.AddressableGraphicsImport;
 
         public virtual string CustomDeferredReflection => null;
         public virtual string CustomDeferredScreenspaceShadows => null;
