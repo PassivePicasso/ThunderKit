@@ -11,7 +11,7 @@ namespace ThunderKit.Addressable.Config
     using static ThunderKit.Common.PathExtensions;
     public class ImportAddressableCatalog : OptionalExecutor
     {
-        public override int Priority => Constants.Priority.AddressableCatalog;
+        public override int Priority => ThunderKit.Common.Constants.Priority.AddressableCatalog;
 
         public override bool Execute()
         {
