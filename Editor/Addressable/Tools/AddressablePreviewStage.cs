@@ -1,3 +1,4 @@
+#if TK_ADDRESSABLE
 #if UNITY_2020_1_OR_NEWER
 #else
 using System;
@@ -201,3 +202,4 @@ namespace ThunderKit.Addressable.Tools
 
     }
 }
+#endif
