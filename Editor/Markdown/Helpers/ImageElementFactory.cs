@@ -72,7 +72,11 @@ namespace ThunderKit.Markdown.Helpers
         {
             var cacheRecords = CacheRecords.Select(kvp => new ImageCacheRecord { Url = kvp.Key, Hash = kvp.Value }).ToArray();
             var cacheRecordsJson = JsonUtility.ToJson(new ImageCache { Records = cacheRecords, Size = size }, true);
-            File.Delete(CacheRecordsPath);
+            try
+            {
+                File.Delete(CacheRecordsPath);
+            }
+            catch {/* Do nothing because we don't care if the delete fails we are overwriting it anyawys*/}
             File.WriteAllText(CacheRecordsPath, cacheRecordsJson);
         }
         public static void ClearCache()
