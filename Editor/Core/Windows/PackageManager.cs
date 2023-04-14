@@ -14,6 +14,7 @@ using ThunderKit.Markdown;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 #else
+using UnityEngine.Experimental.UIElements.StyleEnums;
 using UnityEngine.Experimental.UIElements;
 #endif
 
@@ -330,12 +331,20 @@ namespace ThunderKit.Core.Windows
             markdownElement.Data = headerMarkdown;
             if (!string.IsNullOrWhiteSpace(markdownElement.Data))
             {
+#if UNITY_2019_1_OR_NEWER
                 markdownElement.style.display = DisplayStyle.Flex;
+#else
+                markdownElement.style.visibility = Visibility.Visible;
+#endif
                 markdownElement.RefreshContent();
             }
             else
             {
+#if UNITY_2019_1_OR_NEWER
                 markdownElement.style.display = DisplayStyle.None;
+#else
+                markdownElement.style.visibility = Visibility.Hidden;
+#endif
                 markdownElement.RefreshContent();
             }
         }
@@ -352,13 +361,21 @@ namespace ThunderKit.Core.Windows
             if (texts == null || !texts.Any())
             {
                 labelContainer.parent.AddToClassList("hidden");
+#if UNITY_2019_1_OR_NEWER
                 hidingElement.style.display = DisplayStyle.None;
+#else
+                hidingElement.style.visibility = Visibility.Hidden;
+#endif
                 return;
             }
             else
             {
                 labelContainer.parent.RemoveFromClassList("hidden");
+#if UNITY_2019_1_OR_NEWER
                 hidingElement.style.display = DisplayStyle.Flex;
+#else
+                hidingElement.style.visibility = Visibility.Visible;
+#endif
             }
 
             foreach (var text in texts)
