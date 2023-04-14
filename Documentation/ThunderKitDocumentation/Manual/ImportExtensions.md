@@ -41,7 +41,13 @@ Use the following steps to get started;
         {
             public override int Priority => int.MaxValue;
 
-            public override string Description => "Logs Hello World";
+            public override string Description 
+            {
+                get 
+                {
+                    return "Logs Hello World";
+                }
+            }
 
             public override bool Execute()
             {
