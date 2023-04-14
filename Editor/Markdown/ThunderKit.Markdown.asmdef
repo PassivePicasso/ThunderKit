@@ -1,7 +1,7 @@
 {
     "name": "ThunderKit.Markdown",
+    "rootNamespace": "",
     "references": [],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -9,8 +9,13 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "Markdig.Signed.dll"
+        "Markdig.Signed.dll",
+        "Microsoft.CodeAnalysis.CSharp.dll",
+        "Microsoft.CSharp.dll",
+        "Microsoft.CodeAnalysis.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -1,0 +1,45 @@
+
+Label {
+    margin-left: -1px;
+    margin-top: -3px;
+    margin-right: 0px;
+    margin-bottom: -3px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Bold.otf');
+    font-size: 12px;
+    color: #d4cdc4;
+}
+
+.line-number {
+    position: absolute;
+    left: 0px;
+}
+.line-elements {
+}
+
+.line {
+    flex-direction: row;
+    margin-left: 25px;
+}
+
+.keyword {
+    color: #4e8dc6;
+}
+
+.class {
+    color: #4bab70;
+}
+
+.identifier {
+}
+
+.string-literal {
+    color: #bb7c55;
+}
+
+.simple-base-type {
+    color: #bb7c55;
+}
