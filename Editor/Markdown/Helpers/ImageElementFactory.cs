@@ -184,7 +184,11 @@ namespace ThunderKit.Markdown.Helpers
         private static void DestroyTexture(DetachFromPanelEvent evt)
         {
             var imageElement = evt.target as Image;
+#if UNITY_2019_1_OR_NEWER
             var texture = imageElement.image;
+#else
+            var texture = imageElement.image.value;
+#endif
             if (texture)
                 UnityEngine.Object.DestroyImmediate(texture);
         }
