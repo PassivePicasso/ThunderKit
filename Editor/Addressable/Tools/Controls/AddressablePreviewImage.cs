@@ -1,3 +1,4 @@
+#if TK_ADDRESSABLE
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -110,3 +111,4 @@ namespace ThunderKit.Addressable.Tools
         }
     }
 }
+#endif
