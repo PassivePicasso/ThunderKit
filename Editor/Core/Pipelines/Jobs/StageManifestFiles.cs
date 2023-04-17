@@ -40,6 +40,17 @@ namespace ThunderKit.Core.Pipelines.Jobs
                                 .Aggregate((a, b) => $"{a}\r\n\r\n {i++}. {b}");
                             pipeline.Log(LogLevel.Information, $"staged ``` {sourcePath} ``` in ``` {destPath} ```", copiedFiles);
                         }
+
+                        if (files.includeMetaFiles)
+                        {
+                            var metaSourcePath = sourcePath + ".meta";
+                            if (File.Exists(metaSourcePath))
+                            {
+                                var metaDestPath = Path.Combine(outputPath, Path.GetFileName(metaSourcePath)).Replace("\\", "/");
+                                FileUtil.ReplaceFile(metaSourcePath, metaDestPath);
+                                pipeline.Log(LogLevel.Information, $"staged ``` {metaSourcePath} ``` in ``` {metaDestPath} ```");
+                            }
+                        }
                     }
 
             return Task.CompletedTask;
