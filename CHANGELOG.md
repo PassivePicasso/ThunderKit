@@ -1,3 +1,62 @@
+## 8.0.0
+
+### New Features
+
+* Add Addressable Prefab Preview stages for all Unity Versions.
+  This feature allows you to inspect Prefab objects in a SceneView style
+  environment. Allowing you to look at the Transform Hierarchy of prefabs, and
+  inspect their configuration. In Unity 2018 this is a custom
+  SceneView, while newer version make use of the PreviewSceneStage.
+
+* Add Limited Support for SpaceDock as a PackageSource.  This will KSP mod 
+  developers to utilize SpaceDock to download mod packages from for supporting 
+  their projects, however discovering and resolving dependencies is currently 
+  not supported.
+
+
+### Changes
+
+* Change PromptRestart to an OptionalExecutor for consistency
+* Change Beep on import completion to an OptionalExecutor for consistency
+
+### Improvements
+
+* Add Loading indicators to loading PackageSources in the Package Manager
+* Rework and Improve the way Packages are listed in the Package Manager
+* Improve load times and consistency of PackageSources
+* Allow PackageManager to resize its columns
+* Create a reusable UIToolkit loading indicator, LoadingSpinner
+* Improve package selection highlighting for Dark and Light themes
+* Improve Package Loading to incrementally populate as results are provided
+* Improve PackageSource re-usability by abstracting auto-loading
+* Add ability to clear Build Log history
+* Add ability to clear image caches for Markdown
+* Improve PackageView to utilize MarkdownElements for the Package Header, Body, 
+  and Footer sections so that their content is more customizable per 
+  PackageSource. Additional work needs to be done here to improve the workflow 
+  and modularity of this feature
+* Improve the Browse button to open in the selected path if it is not empty
+* Improve image caching solution in MarkdownElement system
+* Improve Pipeline Log View to with log level filtering
+* Update Copy PipelineJob documentation
+* Improve logging and code design of Copy
+* Add OptionalExecutor documentation
+* Add some tree paths to some documentation
+* Improve addressable integration to avoid interfering with normal addressable
+  package usage
+* Generally improve code quality
+
+### Fixes
+
+* Fix issue where import could fail for certain build layouts
+* Fix an issue in the latest version of Unity 2022.2 that would cause package
+  installs to fail.
+* Fix MarkdownElement not loading all images correctly or consistently
+* Fix a memory leak in the Markdown system tied to not releasing displayed 
+  images
+
+
+
 ## 7.1.2
 
 ### Fixes
