@@ -13,6 +13,32 @@
   their projects, however discovering and resolving dependencies is currently 
   not supported.
 
+### Community Contributions
+
+Thanks to @KingEnderbine for these improvements
+
+#### Features
+
+* Add ability to include unity meta files to the Files PipelineJob and Manifest
+  This improves support for source re-distribution and asset redistribution via
+  packages.
+
+#### Improvements
+
+* Improve ImportConfiguration system to reduce the occurrence of unnecessary 
+  work.
+
+#### Fixes 
+
+* Fix ComposableObject not properly removing elements in some versions of Unity
+  This fixes a pesky issue that affected some users where it would cause 
+  Missing Script errors in ComposableObjects such as PipelineJobs and Manifests
+* Fix ThunderKitSettings sometimes overwriting itself during domain 
+  initialization 
+* Fix ImportConfiguration not saving the last ConfigurationIndex used leading
+  to the ImportSystem repeating final steps.
+* Fix Quick Access selections not saving correctly
+* Fix Quick Access Toolbar not initializing correctly
 
 ### Changes
 
@@ -45,6 +71,7 @@
 * Improve addressable integration to avoid interfering with normal addressable
   package usage
 * Generally improve code quality
+* Improve Import 
 
 ### Fixes
 
@@ -54,7 +81,6 @@
 * Fix MarkdownElement not loading all images correctly or consistently
 * Fix a memory leak in the Markdown system tied to not releasing displayed 
   images
-
 
 
 ## 7.1.2
