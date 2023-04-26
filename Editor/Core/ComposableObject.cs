@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using System.IO;
 
 namespace ThunderKit.Core
 {
@@ -126,16 +127,16 @@ namespace ThunderKit.Core
 			AssetDatabase.SaveAssets();
 
 			//Here's the magic. First, we need the system path of the assets
-			string globalToDeletePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Application.dataPath), toDeletePath);
-			string globalClonePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Application.dataPath), clonePath);
+			string globalToDeletePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), toDeletePath);
+			string globalClonePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), clonePath);
 
 			//We need to delete the original file (the one with the missing script asset)
 			//Rename the clone to the original file and finally
 			//Delete the meta file from the clone since it no longer exists
 
-			System.IO.File.Delete(globalToDeletePath);
-			System.IO.File.Delete(globalClonePath + ".meta");
-			System.IO.File.Move(globalClonePath, globalToDeletePath);
+			File.Delete(globalToDeletePath);
+			File.Delete(globalClonePath + ".meta");
+			File.Move(globalClonePath, globalToDeletePath);
 
 			AssetDatabase.Refresh();
 		}
