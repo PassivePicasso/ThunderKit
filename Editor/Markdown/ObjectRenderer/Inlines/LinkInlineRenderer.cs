@@ -14,6 +14,7 @@ using UnityEngine.Experimental.UIElements;
 namespace ThunderKit.Markdown.ObjectRenderers
 {
     using static Helpers.VisualElementFactory;
+    using static Helpers.ImageElementFactory;
     public class LinkInlineRenderer : UIElementObjectRenderer<LinkInline>
     {
         public struct SchemeHandler
@@ -63,6 +64,8 @@ namespace ThunderKit.Markdown.ObjectRenderers
 
                 return container;
             });
+            RegisterScheme("file", link => System.Diagnostics.Process.Start(link));
+
             RegisterScheme("menulink", link =>
             {
                 var schemelessUri = link.Substring("menulink://".Length);
@@ -96,7 +99,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
             var url = UnityWebRequest.UnEscapeURL(link.Url);
             if (link.IsImage)
             {
-                var imageElement = GetImageElement<Image>(link.Url, "image");
+                var imageElement = GetImageElement(link.Url, "image");
 
                 renderer.WriteAttributes(link.TryGetAttributes(), imageElement);
                 renderer.Push(imageElement);

@@ -8,6 +8,7 @@ using ThunderKit.Core.Data;
 using ThunderKit.Markdown;
 using UnityEngine;
 using UnityEditor.Callbacks;
+using ThunderKit.Common;
 #if UNITY_2019_1_OR_NEWER
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -30,6 +31,7 @@ namespace ThunderKit.Core.Windows
         private PipelineLog pipelineLog;
         private Label nameLabel;
         private Label createdDateLabel;
+        private List<LogLevel> levelFilters = new List<LogLevel> { LogLevel.Information, LogLevel.Warning, LogLevel.Error };
 
         public static void ShowLog(PipelineLog pipelineLog)
         {
@@ -52,7 +54,9 @@ namespace ThunderKit.Core.Windows
             {
                 window.nameLabel.text = pipelineLog.name;
                 window.createdDateLabel.text = pipelineLog.CreatedDate.ToString(window.settings.CreatedDateFormat);
-                window.logEntryListView.itemsSource = (IList)pipelineLog.Entries;
+                window.logEntryListView.itemsSource = (IList)pipelineLog.Entries.Where(entry => window.levelFilters.Contains(entry.logLevel)).ToList();
+                if (window.logEntryListView.itemsSource.Count > 0)
+                    window.logEntryListView.selectedIndex = 0;
 #if UNITY_2021_2_OR_NEWER
                 window.logEntryListView.Rebuild();
 #else
@@ -92,6 +96,7 @@ namespace ThunderKit.Core.Windows
         {
             base.OnEnable();
             Initialize();
+
             IsOpen = true;
         }
         private void OnDestroy() => IsOpen = false;
@@ -121,10 +126,52 @@ namespace ThunderKit.Core.Windows
 
             nameLabel.text = pipelineLog.name;
             createdDateLabel.text = pipelineLog.CreatedDate.ToString(settings.CreatedDateFormat);
-            logEntryListView.itemsSource = (IList)pipelineLog.Entries;
-            logEntryListView.selectedIndex = 0;
+            RefreshListView();
 
+            ConfigureFilterButton(LogLevel.Error, rootVisualElement.Q<Button>("error-filter-button"));
+            ConfigureFilterButton(LogLevel.Information, rootVisualElement.Q<Button>("information-filter-button"));
+            ConfigureFilterButton(LogLevel.Verbose, rootVisualElement.Q<Button>("verbose-filter-button"));
+            ConfigureFilterButton(LogLevel.Warning, rootVisualElement.Q<Button>("warning-filter-button"));
+
+            rootVisualElement.AddSheet(Constants.ThunderKitStyle);
             rootVisualElement.Bind(new SerializedObject(this));
+        }
+
+        string FilterStateMessage(LogLevel level)
+        {
+            switch (level)
+            {
+                case LogLevel.Information:
+                    return $"{level} {(levelFilters.Contains(level) ? "Visible" : "Hidden")}";
+                case LogLevel.Verbose:
+                    return $"{level} {(levelFilters.Contains(level) ? "Visible" : "Hidden")}";
+                default:
+                    return $"{level}s {(levelFilters.Contains(level) ? "Visible" : "Hidden")}";
+            };
+        }
+
+        void ConfigureFilterButton(LogLevel level, Button button)
+        {
+            var filterActive = levelFilters.Contains(level);
+            button.tooltip = FilterStateMessage(level);
+            button.clickable.clicked += () =>
+            {
+                if (levelFilters.Contains(level)) levelFilters.Remove(level);
+                else levelFilters.Add(level);
+                var updatedActive = levelFilters.Contains(level);
+                button.tooltip = FilterStateMessage(level);
+                button.ToggleInClassList("filter-active");
+                RefreshListView();
+            };
+            if (!levelFilters.Contains(level)) button.RemoveFromClassList("filter-active");
+            if (levelFilters.Contains(level)) button.AddToClassList("filter-active");
+        }
+
+        private void RefreshListView()
+        {
+            logEntryListView.itemsSource = (IList)pipelineLog.Entries.Where(entry => levelFilters.Contains(entry.logLevel)).ToList();
+            if (logEntryListView.itemsSource.Count > 0)
+                logEntryListView.selectedIndex = 0;
         }
 
 #if UNITY_2020_1_OR_NEWER

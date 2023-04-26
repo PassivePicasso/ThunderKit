@@ -272,37 +272,23 @@ namespace ThunderKit.Core.Data
             {
                 foreach (var ce in ConfigurationExecutors)
                     ce.Cleanup();
-
-                PromptRestart();
-            }
-        }
-
-        private void PromptRestart()
-        {
-            if (GetOrCreateSettings<ThunderKitSettings>().notifyWhenImportCompletes)
-                EditorApplication.Beep();
-
-            if (EditorUtility.DisplayDialog("Import Process Complete", "The game has been imported successfully. It is recommended to restart your project to ensure stability", "Restart Project", "Restart Later"))
-            {
-                EditorApplication.OpenProject(Directory.GetCurrentDirectory());
             }
         }
 
         public static bool LocateGame(ThunderKitSettings tkSettings)
         {
-            string currentDir = Directory.GetCurrentDirectory();
             var foundExecutable = false;
 
             while (!foundExecutable)
             {
-                var path = string.Empty;
+                var path = string.IsNullOrEmpty(tkSettings.GamePath) ? Directory.GetCurrentDirectory() : tkSettings.GamePath;
                 switch (Application.platform)
                 {
                     case RuntimePlatform.WindowsEditor:
-                        path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "exe");
+                        path = EditorUtility.OpenFilePanel("Open Game Executable", path, "exe");
                         break;
                     case RuntimePlatform.LinuxEditor:
-                        path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "");
+                        path = EditorUtility.OpenFilePanel("Open Game Executable", path, "");
                         break;
                     //case RuntimePlatform.OSXEditor:
                     //    path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "app");
