@@ -13,11 +13,6 @@
   their projects, however discovering and resolving dependencies is currently 
   not supported.
 
-### Changes
-
-* Change PromptRestart to an OptionalExecutor for consistency
-* Change Beep on import completion to an OptionalExecutor for consistency
-
 ### Improvements
 
 * Add Loading indicators to loading PackageSources in the Package Manager
@@ -43,6 +38,8 @@
 * Add some tree paths to some documentation
 * Improve addressable integration to avoid interfering with normal addressable
   package usage
+* Change PromptRestart to an OptionalExecutor for consistency
+* Change Beep on import completion to an OptionalExecutor for consistency
 * Generally improve code quality
 
 ### Fixes
