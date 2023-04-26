@@ -23,6 +23,11 @@ namespace ThunderKit.Integrations.Thunderstore
         static void CreateThunderKitExtensionSource() => EditorApplication.update += EnsureThunderKitExtensions;
         private static void EnsureThunderKitExtensions()
         {
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                return;
+            }
+            
             EditorApplication.update -= EnsureThunderKitExtensions;
 
             var basePath = $"{SettingsPath}/ThunderKit Extensions.asset";

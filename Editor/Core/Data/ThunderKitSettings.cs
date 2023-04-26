@@ -42,26 +42,7 @@ namespace ThunderKit.Core.Data
             CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
             CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
 
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            if (settings.FirstLoad && settings.ShowOnStartup)
-                EditorApplication.update += ShowSettings;
-
-            settings.QuickAccessPipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
-                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-                .Select(path => AssetDatabase.LoadAssetAtPath<Pipeline>(path))
-                .Where(pipeline => pipeline)
-                .Where(pipeline => pipeline.QuickAccess)
-                .ToArray();
-            settings.QuickAccessManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
-                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
-                .Select(path => AssetDatabase.LoadAssetAtPath<Manifest>(path))
-                .Where(manifest => manifest)
-                .Where(manifest => manifest.QuickAccess)
-                .ToArray();
-            ImageElementFactory.CachePath = settings.ImageCachePath;
-
-            ImageElementFactory.CacheUpdated += ImageElementFactory_CacheUpdated;
-            ImageElementFactory_CacheUpdated(null, EventArgs.Empty);
+            EditorApplication.update += InitSettings;
         }
 
         private static void ImageElementFactory_CacheUpdated(object sender, EventArgs e)
@@ -95,11 +76,41 @@ namespace ThunderKit.Core.Data
                 FileUtil.ReplaceFile(file, outputPath);
             }
         }
-        private static void ShowSettings()
+        private static void InitSettings()
         {
-            EditorApplication.update -= ShowSettings;
-            SettingsWindow.ShowSettings();
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                return;
+            }
+
+            EditorApplication.update -= InitSettings;
+
             var settings = GetOrCreateSettings<ThunderKitSettings>();
+            settings.QuickAccessPipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(path => AssetDatabase.LoadAssetAtPath<Pipeline>(path))
+                .Where(pipeline => pipeline)
+                .Where(pipeline => pipeline.QuickAccess)
+                .ToArray();
+            settings.QuickAccessManifests = AssetDatabase.FindAssets($"t:{nameof(Manifest)}", Constants.FindAllFolders)
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(path => AssetDatabase.LoadAssetAtPath<Manifest>(path))
+                .Where(manifest => manifest)
+                .Where(manifest => manifest.QuickAccess)
+                .ToArray();
+
+            ImageElementFactory.CachePath = settings.ImageCachePath;
+
+            ImageElementFactory.CacheUpdated += ImageElementFactory_CacheUpdated;
+            ImageElementFactory_CacheUpdated(null, EventArgs.Empty);
+
+            if (!settings.FirstLoad || !settings.ShowOnStartup)
+            {
+                settings.FirstLoad = false;
+                return;
+            }
+
+            SettingsWindow.ShowSettings();
             settings.FirstLoad = false;
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();

@@ -34,28 +34,25 @@ namespace ThunderKit.Core
             stepField.serializedObject.ApplyModifiedProperties();
         }
 
-        public void RemoveElement(ComposableElement instance, int index)
-        {
-            var so = new SerializedObject(this);
-            var dataArray = so.FindProperty(nameof(Data));
-            var elementAtIndex = dataArray.GetArrayElementAtIndex(index).objectReferenceValue as ComposableElement;
-            if (elementAtIndex != instance)
-            {
-                Debug.LogError("ComposableObject.RemoveElement: instance does not match index");
-                return;
-            }
-            AssetDatabase.RemoveObjectFromAsset(instance);
+		public void RemoveElement(ComposableElement instance, int index)
+		{
+			var so = new SerializedObject(this);
+			var dataArray = so.FindProperty(nameof(Data));
+			var elementAtIndex = dataArray.GetArrayElementAtIndex(index).objectReferenceValue as ComposableElement;
+			if (elementAtIndex != instance)
+			{
+				Debug.LogError("ComposableObject.RemoveElement: instance does not match index");
+				return;
+			}
+			AssetDatabase.RemoveObjectFromAsset(instance);
 
-            dataArray.DeleteArrayElementAtIndex(index);
+			DeleteElementAtIndex(dataArray, index);
 
-            DestroyImmediate(instance);
+			DestroyImmediate(instance);
 
-            for (int x = index; x < dataArray.arraySize; x++)
-                dataArray.MoveArrayElement(x + 1, x);
-
-            so.SetIsDifferentCacheDirty();
-            so.ApplyModifiedProperties();
-        }
+			so.SetIsDifferentCacheDirty();
+			so.ApplyModifiedProperties();
+		}
 
 		/// <summary>
 		/// Function used to remove a sub-asset that is missing the script reference
@@ -141,5 +138,12 @@ namespace ThunderKit.Core
 			AssetDatabase.Refresh();
 		}
 
+		private void DeleteElementAtIndex(SerializedProperty array, int index)
+		{
+			var elementToDelete = array.GetArrayElementAtIndex(index);
+			if (elementToDelete.propertyType == SerializedPropertyType.ObjectReference)
+				elementToDelete.objectReferenceValue = null;
+			array.DeleteArrayElementAtIndex(index);
+		}
 	}
 }
