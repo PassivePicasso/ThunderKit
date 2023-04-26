@@ -6,9 +6,9 @@
   This feature allows you to inspect Prefab objects in a SceneView style
   environment. Allowing you to look at the Transform Hierarchy of prefabs, and
   inspect their configuration. In Unity 2018 this is a custom
-  SceneView, while newer version make use of the PreviewSceneStage.
+  SceneView, while newer Unity versions make use of the PreviewSceneStage.
 
-* Add Limited Support for SpaceDock as a PackageSource.  This will KSP mod 
+* Add Limited Support for SpaceDock as a PackageSource.  This will allow KSP mod 
   developers to utilize SpaceDock to download mod packages from for supporting 
   their projects, however discovering and resolving dependencies is currently 
   not supported.
