@@ -44,7 +44,6 @@
 * Improve addressable integration to avoid interfering with normal addressable
   package usage
 * Generally improve code quality
-* Improve Import 
 
 ### Fixes
 
