@@ -82,7 +82,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         protected override void OnLoadPackages()
         {
-            var realMods = packageListings.Where(tsp => !tsp.categories.Contains("Modpacks"));
+            var realMods = packageListings.Where(tsp => !tsp.categories.Contains("Modpacks")).ToArray();
             //var orderByPinThenName = realMods.OrderByDescending(tsp => tsp.is_pinned).ThenBy(tsp => tsp.name);
             foreach (var tsp in realMods)
             {
@@ -92,7 +92,7 @@ namespace ThunderKit.Integrations.Thunderstore
                     Author = tsp.owner,
                     Name = tsp.name,
                     Description = tsp.Latest.description,
-                    DependencyId = tsp.name,
+                    DependencyId = tsp.full_name,
                     HeaderMarkdown = $"![]({tsp.Latest.icon}){{ .icon }} {tsp.name}{{ .icon-title .header-1 }}\r\n\r\n",
                     FooterMarkdown = $"",
                     Versions = versions,
