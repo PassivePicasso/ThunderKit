@@ -95,15 +95,7 @@ namespace ThunderKit.Core.Windows
         public override void OnEnable()
         {
             base.OnEnable();
-            Initialize();
 
-            IsOpen = true;
-        }
-        private void OnDestroy() => IsOpen = false;
-        private void OnDisable() => IsOpen = false;
-
-        private void Initialize()
-        {
             var content = EditorGUIUtility.IconContent("d_UnityEditor.ConsoleWindow");
             content.text = $"Pipeline Log";
             titleContent = content;
@@ -127,6 +119,15 @@ namespace ThunderKit.Core.Windows
 #endif
             }
 
+            Initialize();
+
+            IsOpen = true;
+        }
+        private void OnDestroy() => IsOpen = false;
+        private void OnDisable() => IsOpen = false;
+
+        private void Initialize()
+        {
             if (pipelineLog)
             {
                 nameLabel = rootVisualElement.Q<Label>("name-label");
@@ -162,11 +163,17 @@ namespace ThunderKit.Core.Windows
             button.tooltip = FilterStateMessage(level);
             button.clickable.clicked += () =>
             {
-                if (levelFilters.Contains(level)) levelFilters.Remove(level);
-                else levelFilters.Add(level);
-                var updatedActive = levelFilters.Contains(level);
+                if (levelFilters.Contains(level))
+                {
+                    levelFilters.Remove(level);
+                    button.RemoveFromClassList("filter-active");
+                }
+                else
+                {
+                    levelFilters.Add(level);
+                    button.AddToClassList("filter-active");
+                }
                 button.tooltip = FilterStateMessage(level);
-                button.ToggleInClassList("filter-active");
                 RefreshListView();
             };
             if (!levelFilters.Contains(level)) button.RemoveFromClassList("filter-active");
