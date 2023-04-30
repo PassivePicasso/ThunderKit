@@ -1,6 +1,10 @@
 ﻿using Markdig.Helpers;
 using System;
 using System.IO;
+#if UNITY_2020_3_OR_NEWER
+#elif UNITY_2019_3_OR_NEWER
+using System.Reflection;
+#endif
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
