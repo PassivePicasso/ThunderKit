@@ -369,7 +369,7 @@ namespace ThunderKit.Core.Data
 
                     progressBar.Update($"Creating package.json for {installable.group.PackageName}", "Creating Packages", progress += stepSize / 2);
                     PackageHelper.GeneratePackageManifest(
-                          installable.group.DependencyId, installable.group.InstallDirectory,
+                          installable.group.DependencyId.ToLower(), installable.group.InstallDirectory,
                           installable.group.PackageName, installable.group.Author,
                           installable.version,
                           installable.group.Description);
