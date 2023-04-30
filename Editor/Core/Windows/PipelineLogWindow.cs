@@ -104,10 +104,15 @@ namespace ThunderKit.Core.Windows
 
         private void Initialize()
         {
-            if (!pipelineLog) return;
             var content = EditorGUIUtility.IconContent("d_UnityEditor.ConsoleWindow");
             content.text = $"Pipeline Log";
             titleContent = content;
+
+            ConfigureFilterButton(LogLevel.Error, rootVisualElement.Q<Button>("error-filter-button"));
+            ConfigureFilterButton(LogLevel.Information, rootVisualElement.Q<Button>("information-filter-button"));
+            ConfigureFilterButton(LogLevel.Verbose, rootVisualElement.Q<Button>("verbose-filter-button"));
+            ConfigureFilterButton(LogLevel.Warning, rootVisualElement.Q<Button>("warning-filter-button"));
+
             if (logEntryListView == null)
             {
                 logEntryListView = rootVisualElement.Q<ListView>("logentry-list-view");
@@ -121,20 +126,21 @@ namespace ThunderKit.Core.Windows
                 logEntryListView.onItemChosen += UpdateContextWindow;
 #endif
             }
-            nameLabel = rootVisualElement.Q<Label>("name-label");
-            createdDateLabel = rootVisualElement.Q<Label>("created-date-label");
 
-            nameLabel.text = pipelineLog.name;
-            createdDateLabel.text = pipelineLog.CreatedDate.ToString(settings.CreatedDateFormat);
+            if (pipelineLog)
+            {
+                nameLabel = rootVisualElement.Q<Label>("name-label");
+                createdDateLabel = rootVisualElement.Q<Label>("created-date-label");
+
+                nameLabel.text = pipelineLog.name;
+                createdDateLabel.text = pipelineLog.CreatedDate.ToString(settings.CreatedDateFormat);
+            }
+
             RefreshListView();
-
-            ConfigureFilterButton(LogLevel.Error, rootVisualElement.Q<Button>("error-filter-button"));
-            ConfigureFilterButton(LogLevel.Information, rootVisualElement.Q<Button>("information-filter-button"));
-            ConfigureFilterButton(LogLevel.Verbose, rootVisualElement.Q<Button>("verbose-filter-button"));
-            ConfigureFilterButton(LogLevel.Warning, rootVisualElement.Q<Button>("warning-filter-button"));
 
             rootVisualElement.AddSheet(Constants.ThunderKitStyle);
             rootVisualElement.Bind(new SerializedObject(this));
+
         }
 
         string FilterStateMessage(LogLevel level)
@@ -207,9 +213,6 @@ namespace ThunderKit.Core.Windows
             var entry = (LogEntry)logEntryListView.itemsSource[entryIndex];
             var timeStamp = element.Q<Label>("time-stamp");
             var shotContextButton = element.Q<Button>("show-context-button");
-#if UNITY_2019_1_OR_NEWER
-#elif UNITY_2018_1_OR_NEWER
-#endif
 
             var icon = element.Q<VisualElement>("icon-log-level");
             var messageElement = element.Q<MarkdownElement>("message-label");

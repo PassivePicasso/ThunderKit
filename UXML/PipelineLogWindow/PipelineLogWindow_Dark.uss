@@ -1,4 +1,1 @@
 ﻿
-#log-entry:selected {
-	background-color: rgba(64,0,0,0.75);
-}
