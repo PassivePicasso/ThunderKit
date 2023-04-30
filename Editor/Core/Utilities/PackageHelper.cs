@@ -30,10 +30,10 @@ namespace ThunderKit.Core.Utilities
         static readonly Regex NameValidator = new Regex("^(?:@[a-z0-9-*~][a-z0-9-*._~]*/)?[a-z0-9-~][a-z0-9-._~]*$");
         public static string GetCleanPackageName(string input)
         {
+            input = input.ToLower();
             var validName = NameValidator.IsMatch(input);
             if (validName) return input;
 
-            input = input.ToLower();
             var builder = new StringBuilder();
             for (int i = 0; i < input.Length; i++)
             {
@@ -79,7 +79,6 @@ namespace ThunderKit.Core.Utilities
 
             var packageManifest = new PackageManagerManifest(author, GetCleanPackageName(packageName), ObjectNames.NicifyVariableName(displayName), ver, unityVersion, description);
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
-            ScriptingSymbolManager.AddScriptingDefine(packageName);
 
             string fullOutputPath = Path.Combine(outputDir, "package.json");
             if (File.Exists(fullOutputPath)) File.Delete(fullOutputPath);

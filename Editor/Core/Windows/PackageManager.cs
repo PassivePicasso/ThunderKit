@@ -403,9 +403,9 @@ namespace ThunderKit.Core.Windows
         {
             var installButton = obj.currentTarget as Button;
             var selection = installButton.userData as PackageGroup;
+            var packageName = selection.PackageManifest.name;
             if (selection.Installed)
             {
-                var packageName = selection.PackageManifest.name;
                 ScriptingSymbolManager.RemoveScriptingDefine(packageName);
                 deletePackage = CreateInstance<DeletePackage>();
                 deletePackage.directory = selection.InstallDirectory;
@@ -414,6 +414,7 @@ namespace ThunderKit.Core.Windows
             else
             {
                 await selection.Source.InstallPackage(selection, targetVersion);
+                ScriptingSymbolManager.AddScriptingDefine(packageName);
             }
         }
 
