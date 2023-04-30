@@ -13,9 +13,12 @@
   their projects, however discovering and resolving dependencies is currently 
   not supported.
 
-### Improvements
+* Add Log Level Filtering to Pipeline Log window
 
 * Add Loading indicators to loading PackageSources in the Package Manager
+
+### Improvements
+
 * Rework and Improve the way Packages are listed in the Package Manager
 * Improve load times and consistency of PackageSources
 * Allow PackageManager to resize its columns
