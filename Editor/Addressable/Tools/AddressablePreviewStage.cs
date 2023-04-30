@@ -114,7 +114,7 @@ namespace ThunderKit.Addressable.Tools
             FrameSelected();
 #endif
         }
-        private new void OnDestroy()
+        private void OnDestroy()
         {
             Cleanup();
 #if UNITY_2020_1_OR_NEWER

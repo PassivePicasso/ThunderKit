@@ -88,7 +88,7 @@ namespace ThunderKit.Markdown.Helpers
                 {
                     File.Delete(file);
                 }
-                catch (Exception ex)
+                catch
                 {
 
                 }
