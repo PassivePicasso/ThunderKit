@@ -132,8 +132,13 @@ namespace ThunderKit.Addressable.Tools
             DirectoryContents = resourceLocations.GroupBy(GroupLocation).ToDictionary(g => g.Key, g => g.Distinct().ToList());
             DirectoryContents["Scenes"] = resourceLocations.Where(location => location.ResourceType == typeof(SceneInstance)).ToList();
 
+#if UNITY_2020_1_OR_NEWER
+            directory.onSelectionChange += Directory_onSelectionChanged;
+            directoryContent.onSelectionChange += DirectoryContent_onSelectionChanged;
+#else
             directory.onSelectionChanged += Directory_onSelectionChanged;
             directoryContent.onSelectionChanged += DirectoryContent_onSelectionChanged;
+#endif
 
 #if UNITY_2019_1_OR_NEWER
             searchBox.RegisterValueChangedCallback(OnSearchChanged);
@@ -145,7 +150,6 @@ namespace ThunderKit.Addressable.Tools
             RefreshSearch();
         }
 
-        private void OnUseRegexChanged(ChangeEvent<bool> evt) => RefreshSearch();
         private void OnOptionsChanged(ChangeEvent<System.Enum> evt) => RefreshSearch();
         private void OnSearchChanged(ChangeEvent<string> evt) => RefreshSearch();
         private void RefreshSearch()
@@ -194,7 +198,7 @@ namespace ThunderKit.Addressable.Tools
             directory.Refresh();
             directoryContent.Refresh();
         }
-        private void Directory_onSelectionChanged(List<object> obj)
+        private void Directory_onSelectionChanged(IEnumerable<object> obj)
         {
             var selected = GroupLocation(obj.OfType<IResourceLocation>().First());
             var locations = DirectoryContents[selected];
@@ -270,7 +274,7 @@ namespace ThunderKit.Addressable.Tools
             if (typeof(GameObject).IsAssignableFrom(location.ResourceType))
             {
                 inspectBtn.style.display = DisplayStyle.Flex;
-                inspectBtn.clickable = new Clickable(async () =>
+                inspectBtn.clickable = new Clickable(() =>
                 {
                     var handle = Addressables.LoadAssetAsync<GameObject>(location);
 
@@ -323,7 +327,7 @@ namespace ThunderKit.Addressable.Tools
             var loadAssetAsync = loadAsyncMethodTemplate.MakeGenericMethod(location.ResourceType);
             return loadAssetAsync;
         }
-        private void DirectoryContent_onSelectionChanged(List<object> obj)
+        private void DirectoryContent_onSelectionChanged(IEnumerable<object> obj)
         {
             try
             {

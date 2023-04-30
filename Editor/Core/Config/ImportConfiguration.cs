@@ -372,7 +372,7 @@ namespace ThunderKit.Core.Data
                     versionMatch = unityVersion.Equals(playerVersion);
                     foundVersion = true;
                 }
-                catch (Exception ex) { foundVersion = false; }
+                catch { foundVersion = false; }
             }
 
             if (!foundVersion)
