@@ -104,10 +104,6 @@ namespace ThunderKit.Addressable.Tools
                 image = EditorGUIUtility.IconContent("GameObject Icon").image
             };
 #endif
-            //ThunderStageUtility.InstantiateStageLight(scene, 45);
-            //ThunderStageUtility.InstantiateStageLight(scene, -45, 180);
-            //ThunderStageUtility.InstantiateStageLight(scene, -45, 90);
-            //ThunderStageUtility.InstantiateStageLight(scene, 45, -90);
 
             previewInstance.transform.position = Vector3.zero;
             Selection.activeObject = previewInstance;
