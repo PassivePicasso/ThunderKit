@@ -3,6 +3,7 @@
 #else
 using System;
 using System.Collections.Generic;
+using System.Linq;
 #endif
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -91,6 +92,7 @@ namespace ThunderKit.Addressable.Tools
             var scene = this.scene;
             scene.name = previewObject.name;
             this.scene = scene;
+            this.sceneLighting = false;
 
 #if UNITY_2020_1_OR_NEWER
             StageName = previewInstance.name;
