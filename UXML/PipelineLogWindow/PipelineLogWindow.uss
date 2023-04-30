@@ -179,24 +179,31 @@
 .error-icon-sml {
     background-image: resource("console.erroricon.sml");
 }
+
 .warning-icon-sml {
     background-image: resource("console.warnicon.sml");
 }
+
 .information-icon-sml {
     background-image: resource("console.infoicon.sml");
 }
+
 .verbose-icon-sml {
     background-image: resource("console.infoicon.inactive.sml");
 }
+
 .error-icon {
     background-image: resource("console.erroricon");
 }
+
 .warning-icon {
     background-image: resource("console.warnicon");
 }
+
 .information-icon {
     background-image: resource("console.infoicon");
 }
+
 .verbose-icon {
     background-image: resource("console.infoicon.inactive.sml");
 }
@@ -218,7 +225,8 @@
     #log-entry.error {
         background-color: rgba(255,0,0,0.1);
     }
-    #log-entry .paragraph>.inline {
+
+    #log-entry .paragraph > .inline {
         color: rgba(0, 0, 0, 0.75);
     }
 
@@ -239,7 +247,7 @@
         padding-left: -2px;
         padding-right: -2px;
         padding-top: 0px;
-        border-color: rgba(0,0,0,0.75);
+        border-color: rgba(0,0,255,0.75);
     }
 
     #log-entry #show-context-button {
