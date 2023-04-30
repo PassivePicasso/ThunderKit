@@ -327,6 +327,9 @@ namespace ThunderKit.Core.Data
             catch (Exception e)
             {
                 Debug.LogError(e);
+                progress = 0;
+                stepSize = 1;
+                progress = await DestroyPackages(installSet, progress, stepSize);
             }
             finally
             {
@@ -334,6 +337,22 @@ namespace ThunderKit.Core.Data
                 EditorUtility.ClearProgressBar();
                 PackageHelper.ResolvePackages();
             }
+        }
+
+        private static Task<float> DestroyPackages(PackageVersion[] installSet, float progress, float stepSize)
+        {
+            using (var progressBar = new ProgressBar("Deleting Packages"))
+            {
+                progressBar.Update($"{installSet.Length} packages", progress: progress);
+                foreach (var installable in installSet)
+                {
+                    string packageDirectory = installable.group.InstallDirectory;
+                    if (Directory.Exists(packageDirectory))
+                        Directory.Delete(packageDirectory, true);
+                }
+            }
+
+            return Task.FromResult(progress);
         }
 
         private static Task<float> CreatePackages(PackageVersion[] installSet, float progress, float stepSize)
@@ -350,7 +369,7 @@ namespace ThunderKit.Core.Data
 
                     progressBar.Update($"Creating package.json for {installable.group.PackageName}", "Creating Packages", progress += stepSize / 2);
                     PackageHelper.GeneratePackageManifest(
-                          installable.group.DependencyId.ToLower(), installable.group.InstallDirectory,
+                          installable.group.DependencyId, installable.group.InstallDirectory,
                           installable.group.PackageName, installable.group.Author,
                           installable.version,
                           installable.group.Description);
@@ -400,6 +419,7 @@ namespace ThunderKit.Core.Data
 
                     foreach (var assemblyPath in Directory.GetFiles(packageDirectory, "*.dll", SearchOption.AllDirectories))
                         PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
+
                 }
             }
 
