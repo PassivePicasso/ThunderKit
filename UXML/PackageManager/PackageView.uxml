@@ -32,9 +32,9 @@ xsi:schemaLocation="
             </engine:VisualElement>
         </engine:VisualElement>
 
-        <engine:VisualElement name="tkpm-package-body" class="grow"  >
+        <engine:VisualElement name="tkpm-package-body" >
             <engine:ScrollView class="package-description">
-                <md:MarkdownElement name="tkpm-package-details" markdown-data-type="Text" Data=""/>
+				<md:MarkdownElement name="tkpm-package-details" markdown-data-type="Text" Data=""/>
             </engine:ScrollView>
         </engine:VisualElement>
 
@@ -43,13 +43,16 @@ xsi:schemaLocation="
                 <engine:Label name="tkpm-package-tags-label" text="Tags" />
                 <engine:VisualElement name="tkpm-package-tags" class="horizontal-stack" />
             </engine:VisualElement>
-                
-            <engine:VisualElement class="horizontal-stack grow">
-                <engine:ScrollView name="tkpm-package-dependencies-scrollview" class="package-details"  mode="VerticalAndHorizontal">
-                    <engine:Label name="tkpm-package-dependencies-label" text="Dependencies" />
-                    <engine:VisualElement name="tkpm-package-dependencies" class="vertical-stack" />
-                </engine:ScrollView>
-                <engine:ScrollView class="package-details-page">
+
+			<engine:VisualElement class="horizontal-stack grow">
+				<engine:VisualElement class="vertical-stack">
+				    <engine:Label name="tkpm-package-dependencies-label" text="Dependencies" />
+				    <engine:ScrollView name="tkpm-package-dependencies-scrollview" class="package-dependencies"  mode="VerticalAndHorizontal">
+                        <engine:VisualElement name="tkpm-package-dependencies" class="vertical-stack" />
+                    </engine:ScrollView>
+				</engine:VisualElement>
+				
+				<engine:ScrollView class="package-details-page">
                     <md:MarkdownElement name="tkpm-package-footer-markdown" markdown-data-type="Text"  Data=""/>
                 </engine:ScrollView>
             </engine:VisualElement>

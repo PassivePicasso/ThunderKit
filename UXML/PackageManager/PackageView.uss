@@ -1,184 +1,204 @@
-﻿#tkpm-package-view-controls{
-	position: absolute;
-	right: 0px;
-	margin-right: 5px;
-	margin-top: 5px;
+﻿#tkpm-package-view-controls {
+    position: absolute;
+    right: 0px;
+    margin-right: 5px;
+    margin-top: 5px;
 }
 
 .package-control-button {
-	height: 18px;
-	border-color: rgb(128,128,128);
-	border-top-width: 1px;
-	border-left-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	padding-top: 0px;
-	padding-left: 4px;
-	padding-right: 4px;
-	padding-bottom: 0px;
-	-unity-slice-left: 1;
-	-unity-slice-top: 1;
-	-unity-slice-right: 1;
-	-unity-slice-bottom: 1;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	border-bottom-right-radius: 0px;
-	border-bottom-left-radius: 0px;
+    height: 18px;
+    border-color: rgb(128,128,128);
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    padding-top: 0px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 0px;
+    -unity-slice-left: 1;
+    -unity-slice-top: 1;
+    -unity-slice-right: 1;
+    -unity-slice-bottom: 1;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
 }
 
 #tkpm-package-view-header {
-	height: 100px;
-	min-height: 100px;
-	max-height: 100px;
+    height: 100px;
+    min-height: 100px;
+    max-height: 100px;
 }
+
 #tkpm-package-body {
-	border-color: rgba(128,128,128, 0.5);
-	border-top-width: 2px;
+    border-color: rgba(128,128,128, 0.5);
+    border-top-width: 2px;
+    height: 250px;
 }
 
 #tkpm-package-install-button {
-	border-right-width: 0px;
+    border-right-width: 0px;
 }
 
 #tkpm-package-view {
-	border-color: rgb(128,128,128);
-	flex-basis: 0;
-	flex-grow: 1;
-	flex-shrink: 0;
-}
-#tkpm-package-dependencies Label {
-	padding-left: 4px;
-	padding-right: 4px;
-}
-
-#tkpm-package-dependencies-label {
-	-unity-font-style: bold;
-	background-color: rgba(128,128,128, 0.5);
-	padding-left: 4px;
-	padding-right: 4px;
+    border-color: rgb(128,128,128);
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 0;
 }
 
 #tkpm-package-tags-label {
-	-unity-font-style: bold;
+    -unity-font-style: bold;
 }
 
 #tkpm-package-title {
-	margin-bottom: 0px;
-	height: 64px;
+    margin-bottom: 0px;
+    height: 64px;
 }
+
 #tkpm-package-footer {
-	border-color: rgba(128,128,128, 0.5);
-	border-top-width: 2px;
-	padding-top: 4px;
-	max-height: 250px;
-	flex-grow: 1;
-	flex-shrink: 0.5;
+    border-color: rgba(128,128,128, 0.5);
+    border-top-width: 2px;
+    padding-top: 4px;
+    flex-grow: 1;
 }
 
 .tag {
-	height: 16px;
-	border-top-left-radius: 7px;
-	border-top-right-radius: 7px;
-	border-bottom-right-radius: 7px;
-	border-bottom-left-radius: 7px;
-	background-color: #ddd;
-	padding-top: 2px;
-	padding-left: 4px;
-	padding-right: 4px;
-	padding-bottom: 2px;
-	margin-top: 1px;
-	margin-left: 6px;
-	margin-right: -2px;
-	margin-bottom: 1px;
-	font-size: 10px;
-	-unity-font-style: bold;
+    height: 16px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    background-color: #ddd;
+    padding-top: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 2px;
+    margin-top: 1px;
+    margin-left: 6px;
+    margin-right: -2px;
+    margin-bottom: 1px;
+    font-size: 10px;
+    -unity-font-style: bold;
 }
 
 .dependency {
-	font-size: 11px;
-	-unity-font-style: italic;
+    font-size: 11px;
+    -unity-font-style: italic;
 }
+
+#tkpm-package-body #unity-content-container,
 #tkpm-package-body .content-view {
-	left: 0px;
-	top: 0px;
-	right: 0px;
-	bottom: 0px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
 }
+
 .package-description {
-	margin-top: 10px;
+    margin-top: 4px;
 }
-.package-description #unity-content-container {
-}
-	.package-description MarkdownElement {
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		right: 0px;
-		bottom: 0px;
-	}
-.package-details {
-	width: 300px;
-	min-width: 300px;
-	max-width: 300px;
-	border-color: rgba(128,128,128, 0.5);
-	border-left-width: 1px;
-	border-top-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	margin-top: 2px;
 
+    .package-description MarkdownElement {
+        flex-grow: 1;
+    }
+
+#tkpm-package-dependencies-label {
+    -unity-font-style: bold;
+    background-color: rgba(128,128,128, 0.5);
+    margin-left: 0px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding-left: 4px;
+    padding-right: 4px;
+    position: absolute;
+    width: 320px;
 }
+
 .package-details-page {
-	flex-grow: 1;
+    flex-grow: 1;
+}
+.package-dependencies {
+    width: 320px;
+    min-width: 320px;
+    max-width: 320px;
+    border-color: rgba(128,128,128, 0.5);
+    border-left-width: 1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    margin-top: 16px;
+    margin-bottom: 2px;
+}
 
-}
+    .package-dependencies Label {
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .package-dependencies .content-view {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        right: 0px;
+    }
+
 .icon {
-	position: absolute;
-	top: 2px;
-	left: -67px;
-	max-width: 64px;
-	max-height: 64px;
-	
+    position: absolute;
+    top: 2px;
+    left: -67px;
+    max-width: 64px;
+    max-height: 64px;
 }
+
 .background {
-	position: absolute;
-	left: 0px;
-	top: 0px;
-	right: 0px;
-	bottom: 0px;
-	min-height: 62px;
-	max-height: 62px;
-	overflow: hidden;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    min-height: 62px;
+    max-height: 62px;
+    overflow: hidden;
 }
+
 .background-title.paragraph {
-	-unity-text-align: middle-left;
-	margin-bottom: 0px;
-	padding-bottom: 0px;
-	padding-right: 0px;
-	padding-left: 0px;
-	position: absolute;
-	left:0px;
-	top:0px;
-	right:0px;
-	bottom:0px;
-	background-color: rgba(0,0,0,0.5);
+    -unity-text-align: middle-left;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-color: rgba(0,0,0,0.5);
 }
+
 .background-title #inline {
-	color: rgba(256,256,256,0.75);
-	padding-left: 10px;
+    color: rgba(256,256,256,0.75);
+    padding-left: 10px;
 }
 
 .icon-title.paragraph {
-	margin-left: 70px;
-	margin-bottom: 20px;
+    margin-left: 70px;
+    margin-bottom: 20px;
 }
+
 .links {
-	position: absolute;
-	top: 0px;
-	right: 10px;
+    position: absolute;
+    top: 0px;
+    right: 10px;
 }
+
 .license {
-	position: absolute;
-	bottom: -4px;
-	left: 24px;
+    position: absolute;
+    bottom: -4px;
+    left: 24px;
 }
