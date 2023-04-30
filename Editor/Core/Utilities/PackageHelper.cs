@@ -26,9 +26,8 @@ namespace ThunderKit.Core.Utilities
         static readonly Regex NameValidator = new Regex("^(?:@[a-z0-9-*~][a-z0-9-*._~]*/)?[a-z0-9-~][a-z0-9-._~]*$");
         public static string GetCleanPackageName(string input)
         {
-            var cleaning = !NameValidator.IsMatch(input);
-            if (cleaning)
-                Debug.LogWarning($"Package name invalid: {input}\r\nAttempting Cleanup...");
+            var validName = NameValidator.IsMatch(input);
+            if (validName) return input;
 
             input = input.ToLower();
             var builder = new StringBuilder();
@@ -52,9 +51,6 @@ namespace ThunderKit.Core.Utilities
                 }
             }
             input = builder.ToString();
-
-            if (cleaning)
-                Debug.LogWarning($"Cleaned up Package name: {input}");
 
             return input;
         }
