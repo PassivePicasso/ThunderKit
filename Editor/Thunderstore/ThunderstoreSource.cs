@@ -93,7 +93,7 @@ namespace ThunderKit.Integrations.Thunderstore
                     Name = tsp.name,
                     Description = tsp.Latest.description,
                     DependencyId = tsp.name,
-                    HeaderMarkdown = $"![]({tsp.Latest.icon}){{ .icon }} {tsp.name}{{ .icon-title .header-1 }}",
+                    HeaderMarkdown = $"![]({tsp.Latest.icon}){{ .icon }} {tsp.name}{{ .icon-title .header-1 }}\r\n\r\n",
                     FooterMarkdown = $"",
                     Versions = versions,
                     Tags = tsp.categories
@@ -104,7 +104,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         private static string ConstructMarkdown(PackageVersion pv, PackageListing pl)
         {
-            var markdown = $"{pv.description}\r\n\r\n";
+            var markdown = $"### Description\r\n\r\n{pv.description}\r\n\r\n";
 
             if (!string.IsNullOrWhiteSpace(pl.package_url))
                 markdown += $"{{ .links }}";
