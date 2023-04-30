@@ -62,12 +62,6 @@
 	-unity-font-style: bold;
 }
 
-#tkpm-package-description {
-	white-space: normal;
-	-unity-word-wrap: true;
-	flex-grow: 0.5;
-	flex-shrink: 0.5;
-}
 #tkpm-package-title {
 	margin-bottom: 0px;
 	height: 64px;
@@ -77,6 +71,8 @@
 	border-top-width: 2px;
 	padding-top: 4px;
 	max-height: 250px;
+	flex-grow: 1;
+	flex-shrink: 0.5;
 }
 
 .tag {
@@ -102,16 +98,24 @@
 	font-size: 11px;
 	-unity-font-style: italic;
 }
+#tkpm-package-body .content-view {
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+}
 .package-description {
-	flex-grow: 1;
 	margin-top: 10px;
 }
 .package-description #unity-content-container {
-	flex-grow: 1;
 }
-.package-description MarkdownElement {
-	flex-grow: 1;
-}
+	.package-description MarkdownElement {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		right: 0px;
+		bottom: 0px;
+	}
 .package-details {
 	width: 300px;
 	min-width: 300px;
