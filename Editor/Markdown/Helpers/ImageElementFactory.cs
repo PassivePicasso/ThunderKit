@@ -156,12 +156,14 @@ namespace ThunderKit.Markdown.Helpers
                     try
                     {
                         var imageHash = $"{texture.imageContentsHash}";
-                        var fullPath = Path.GetFullPath(Path.Combine(GetCacheRoot(), $"{imageHash}.png"));
+                        var cacheRoot = GetCacheRoot();
+                        var fullPath = Path.GetFullPath(Path.Combine(cacheRoot, $"{imageHash}.png"));
                         if (!File.Exists(fullPath))
                         {
                             var pngBytes = texture.EncodeToPNG();
                             size += pngBytes.Length;
                             count++;
+                            Directory.CreateDirectory(cacheRoot);
                             File.WriteAllBytes(fullPath, pngBytes);
                         }
                         var containedKey = CacheRecords.ContainsKey(url);
