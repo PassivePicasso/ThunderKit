@@ -289,7 +289,11 @@ namespace ThunderKit.Addressable.Tools
                             AddressablePreviewStage.Show(handle.Result);
                             Addressables.Release(handle);
                         }
-                        SceneView.lastActiveSceneView.Repaint();
+                        if (SceneView.lastActiveSceneView)
+                        {
+                            SceneView.lastActiveSceneView.sceneLighting = false;
+                            SceneView.lastActiveSceneView.Repaint();
+                        }
                     }
                 });
             }

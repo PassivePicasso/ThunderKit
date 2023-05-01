@@ -31,7 +31,7 @@ namespace ThunderKit.Addressable.Tools
             return localRootItem;
         }
 
-        private void ConstructTree( int depth, TreeViewItem parentItem, Transform parent)
+        private void ConstructTree(int depth, TreeViewItem parentItem, Transform parent)
         {
             if (parentItem.children == null) parentItem.children = new List<TreeViewItem>();
             foreach (Transform child in parent)
@@ -44,7 +44,7 @@ namespace ThunderKit.Addressable.Tools
                     parent = parentItem,
                     displayName = child.name
                 };
-                ConstructTree( depth + 1, childItem, child);
+                ConstructTree(depth + 1, childItem, child);
                 parentItem.children.Add(childItem);
             }
         }
@@ -58,7 +58,8 @@ namespace ThunderKit.Addressable.Tools
         {
             base.DoubleClickedItem(id);
             Selection.activeGameObject = transformLookup[id].gameObject;
-            SceneView.lastActiveSceneView.FrameSelected();
+            if (SceneView.lastActiveSceneView)
+                SceneView.lastActiveSceneView.FrameSelected();
         }
 
     }
