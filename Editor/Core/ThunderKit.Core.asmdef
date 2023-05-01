@@ -1,12 +1,13 @@
 {
     "name": "ThunderKit.Core",
+    "rootNamespace": "",
     "references": [
         "ThunderKit.Common",
         "ThunderKit.Markdown",
         "ToolbarExtender.Editor",
-        "AssetsExporter",
-        "AssetsTools.NET",
-        "BsDiff"
+        "BsDiff",
+        "Assets",
+        "AssetsTools.NET"
     ],
     "includePlatforms": [
         "Editor"

@@ -1,12 +1,10 @@
 {
-    "name": "AssetsExporter",
+    "name": "Assets",
+    "rootNamespace": "",
     "references": [
-        "AssetsTools.NET",
-        "UnityVersion"
+        "AssetsTools.NET"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
