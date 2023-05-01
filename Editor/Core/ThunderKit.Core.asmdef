@@ -1,13 +1,11 @@
 {
     "name": "ThunderKit.Core",
-    "rootNamespace": "",
     "references": [
         "ThunderKit.Common",
         "ThunderKit.Markdown",
         "ToolbarExtender.Editor",
         "BsDiff",
-        "Assets",
-        "AssetsTools.NET"
+        "Assets"
     ],
     "includePlatforms": [
         "Editor"
@@ -17,7 +15,8 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "SharpCompress.dll",
-        "Markdig.Signed.dll"
+        "Markdig.Signed.dll",
+        "AssetsTools.NET.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
