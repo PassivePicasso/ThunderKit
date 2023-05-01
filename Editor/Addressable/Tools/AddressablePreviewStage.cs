@@ -57,8 +57,11 @@ namespace ThunderKit.Addressable.Tools
             previewStage.SetupScene(previewObject);
 
 #if UNITY_2020_1_OR_NEWER
-            SceneView.lastActiveSceneView.FrameSelected();
-            SceneView.lastActiveSceneView.Repaint();
+            if (SceneView.lastActiveSceneView)
+            {
+                SceneView.lastActiveSceneView.FrameSelected();
+                SceneView.lastActiveSceneView.Repaint();
+            }
 #else
             previewStage.FrameSelected();
             previewStage.Repaint();
@@ -92,11 +95,12 @@ namespace ThunderKit.Addressable.Tools
             var scene = this.scene;
             scene.name = previewObject.name;
             this.scene = scene;
-            this.sceneLighting = false;
 
 #if UNITY_2020_1_OR_NEWER
             StageName = previewInstance.name;
 #else
+            this.sceneLighting = false;
+
             transformHierarchyTreeView = new TransformHierarchyTreeView(new UnityEditor.IMGUI.Controls.TreeViewState(), previewInstance.transform);
             transformHierarchyTreeView.Reload();
             titleContent = new GUIContent(name)
