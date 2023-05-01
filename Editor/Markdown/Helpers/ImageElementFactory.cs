@@ -77,6 +77,7 @@ namespace ThunderKit.Markdown.Helpers
                 File.Delete(CacheRecordsPath);
             }
             catch {/* Do nothing because we don't care if the delete fails we are overwriting it anyawys*/}
+            Directory.CreateDirectory(Path.GetDirectoryName(CacheRecordsPath));
             File.WriteAllText(CacheRecordsPath, cacheRecordsJson);
         }
         public static void ClearCache()
