@@ -5,411 +5,280 @@ namespace AssetsTools.NET
 {
     public class AssetTypeValue
     {
-        public EnumValueTypes type;
+        public AssetValueType ValueType { get; set; }
+        private object Value { get; set; }
 
-        public struct ValueTypes
+        public AssetTypeValue(bool value)
         {
-            private object value;
-            public AssetTypeArray asArray
-            {
-                get { return (AssetTypeArray)value; }
-                set { this.value = value; }
-            }
-            public AssetTypeByteArray asByteArray
-            {
-                get { return (AssetTypeByteArray)value; }
-                set { this.value = value; }
-            }
-            public bool asBool
-            {
-                get { return (bool)value; }
-                set { this.value = value; }
-            }
-            public sbyte asInt8
-            {
-                get { return (sbyte)value; }
-                set { this.value = value; }
-            }
-            public byte asUInt8
-            {
-                get { return (byte)value; }
-                set { this.value = value; }
-            }
-            public short asInt16
-            {
-                get { return (short)value; }
-                set { this.value = value; }
-            }
-            public ushort asUInt16
-            {
-                get { return (ushort)value; }
-                set { this.value = value; }
-            }
-            public int asInt32
-            {
-                get { return (int)value; }
-                set { this.value = value; }
-            }
-            public uint asUInt32
-            {
-                get { return (uint)value; }
-                set { this.value = value; }
-            }
-            public long asInt64
-            {
-                get { return (long)value; }
-                set { this.value = value; }
-            }
-            public ulong asUInt64
-            {
-                get { return (ulong)value; }
-                set { this.value = value; }
-            }
-            public float asFloat
-            {
-                get { return (float)value; }
-                set { this.value = value; }
-            }
-            public double asDouble
-            {
-                get { return (double)value; }
-                set { this.value = value; }
-            }
-            public string asString
-            {
-                get { return (string)value; }
-                set { this.value = value; }
-            }
+            ValueType = AssetValueType.Bool;
+            Value = value;
         }
-        public ValueTypes value = new ValueTypes();
+        public AssetTypeValue(sbyte value)
+        {
+            ValueType = AssetValueType.Int8;
+            Value = value;
+        }
+        public AssetTypeValue(byte value)
+        {
+            ValueType = AssetValueType.UInt8;
+            Value = value;
+        }
+        public AssetTypeValue(short value)
+        {
+            ValueType = AssetValueType.Int16;
+            Value = value;
+        }
+        public AssetTypeValue(ushort value)
+        {
+            ValueType = AssetValueType.UInt16;
+            Value = value;
+        }
+        public AssetTypeValue(int value)
+        {
+            ValueType = AssetValueType.Int32;
+            Value = value;
+        }
+        public AssetTypeValue(uint value)
+        {
+            ValueType = AssetValueType.UInt32;
+            Value = value;
+        }
+        public AssetTypeValue(long value)
+        {
+            ValueType = AssetValueType.Int64;
+            Value = value;
+        }
+        public AssetTypeValue(ulong value)
+        {
+            ValueType = AssetValueType.UInt64;
+            Value = value;
+        }
+        public AssetTypeValue(float value)
+        {
+            ValueType = AssetValueType.Float;
+            Value = value;
+        }
+        public AssetTypeValue(double value)
+        {
+            ValueType = AssetValueType.Double;
+            Value = value;
+        }
+        public AssetTypeValue(string value)
+        {
+            ValueType = AssetValueType.String;
+            Value = Encoding.UTF8.GetBytes(value);
+        }
+        public AssetTypeValue(byte[] value, bool asString)
+        {
+            ValueType = asString ? AssetValueType.String : AssetValueType.ByteArray;
+            Value = value;
+        }
+        public AssetTypeValue(ManagedReferencesRegistry value)
+        {
+            ValueType = AssetValueType.ManagedReferencesRegistry;
+            Value = value;
+        }
+        public AssetTypeValue(AssetValueType valueType, object value = null)
+        {
+            ValueType = valueType;
 
-        public AssetTypeValue(EnumValueTypes type, object valueContainer)
-        {
-            this.type = type;
-            if (valueContainer != null)
-                Set(valueContainer);
+            if (value is string stringValue)
+                Value = Encoding.UTF8.GetBytes(stringValue);
+            else
+                Value = value;
         }
-        public EnumValueTypes GetValueType()
+
+        public bool AsBool
         {
-            return type;
-        }
-        public void Set(object valueContainer)
-        {
-            unchecked
+            get
             {
-                switch (type)
+                if (Value is bool boolValue)
                 {
-                    case EnumValueTypes.Bool:
-                        value.asBool = Convert.ToByte(valueContainer) == 1 ? true : false;
-                        break;
-                    case EnumValueTypes.Int8:
-                        value.asInt8 = Convert.ToSByte(valueContainer);
-                        break;
-                    case EnumValueTypes.UInt8:
-                        value.asUInt8 = Convert.ToByte(valueContainer);
-                        break;
-                    case EnumValueTypes.Int16:
-                        value.asInt16 = Convert.ToInt16(valueContainer);
-                        break;
-                    case EnumValueTypes.UInt16:
-                        value.asUInt16 = Convert.ToUInt16(valueContainer);
-                        break;
-                    case EnumValueTypes.Int32:
-                        value.asInt32 = Convert.ToInt32(valueContainer);
-                        break;
-                    case EnumValueTypes.UInt32:
-                        value.asUInt32 = Convert.ToUInt32(valueContainer);
-                        break;
-                    case EnumValueTypes.Int64:
-                        value.asInt64 = Convert.ToInt64(valueContainer);
-                        break;
-                    case EnumValueTypes.UInt64:
-                        value.asUInt64 = Convert.ToUInt64(valueContainer);
-                        break;
-                    case EnumValueTypes.Float:
-                        value.asFloat = Convert.ToSingle(valueContainer);
-                        break;
-                    case EnumValueTypes.Double:
-                        value.asDouble = Convert.ToDouble(valueContainer);
-                        break;
-                    case EnumValueTypes.String:
-                        if (valueContainer is byte[] byteArr)
-                            value.asString = Encoding.UTF8.GetString(byteArr);
-                        else if (valueContainer is string str)
-                            value.asString = str;
-                        else
-                            value.asString = string.Empty;
-                        break;
-                    case EnumValueTypes.Array:
-                        value.asArray = (AssetTypeArray)valueContainer;
-                        break;
-                    case EnumValueTypes.ByteArray:
-                        value.asByteArray = (AssetTypeByteArray)valueContainer;
-                        break;
-                    default:
-                        break;
+                    return boolValue;
                 }
+                if (Value is byte byteValue)
+                {
+                    return byteValue == 1;
+                }
+                return false;
             }
+            set => Value = value;
         }
-        public AssetTypeArray AsArray()
+        public sbyte AsSByte
         {
-            return (type == EnumValueTypes.Array) ? value.asArray : new AssetTypeArray() { size = 0xFFFF };
-        }
-        public AssetTypeByteArray AsByteArray()
-        {
-            return (type == EnumValueTypes.ByteArray) ? value.asByteArray : new AssetTypeByteArray() { size = 0xFFFF };
-        }
-        public string AsString()
-        {
-            switch (type)
+            get
             {
-                case EnumValueTypes.Bool:
-                    return value.asBool ? "true" : "false";
-                case EnumValueTypes.Int8:
-                    return value.asInt8.ToString();
-                case EnumValueTypes.UInt8:
-                    return value.asUInt8.ToString();
-                case EnumValueTypes.Int16:
-                    return value.asInt16.ToString();
-                case EnumValueTypes.UInt16:
-                    return value.asUInt16.ToString();
-                case EnumValueTypes.Int32:
-                    return value.asInt32.ToString();
-                case EnumValueTypes.UInt32:
-                    return value.asUInt32.ToString();
-                case EnumValueTypes.Int64:
-                    return value.asInt64.ToString();
-                case EnumValueTypes.UInt64:
-                    return value.asUInt64.ToString();
-                case EnumValueTypes.Float:
-                    return value.asFloat.ToString();
-                case EnumValueTypes.Double:
-                    return value.asDouble.ToString();
-                case EnumValueTypes.String:
-                    return value.asString;
-                case EnumValueTypes.None:
-                case EnumValueTypes.Array:
-                case EnumValueTypes.ByteArray:
-                default:
-                    return "";
+                if (Value is sbyte sbyteValue)
+                    return sbyteValue;
+                else
+                    return (sbyte)Convert.ChangeType(Value, typeof(sbyte));
             }
+            set => Value = value;
         }
-        public byte[] AsStringBytes()
+        public byte AsByte
         {
-            return (type == EnumValueTypes.String) ? Encoding.UTF8.GetBytes(value.asString) : null;
-        }
-        public bool AsBool()
-        {
-            switch (type)
+            get
             {
-                case EnumValueTypes.Float:
-                case EnumValueTypes.Double:
-                case EnumValueTypes.String:
-                case EnumValueTypes.ByteArray:
-                case EnumValueTypes.Array:
-                    return false;
-                //new casts
-                case EnumValueTypes.Int8:
-                    return value.asInt8 == 1;
-                case EnumValueTypes.Int16:
-                    return value.asInt16 == 1;
-                case EnumValueTypes.Int32:
-                    return value.asInt32 == 1;
-                case EnumValueTypes.Int64:
-                    return value.asInt64 == 1;
-                case EnumValueTypes.UInt8:
-                    return value.asUInt8 == 1;
-                case EnumValueTypes.UInt16:
-                    return value.asUInt16 == 1;
-                case EnumValueTypes.UInt32:
-                    return value.asUInt32 == 1;
-                case EnumValueTypes.UInt64:
-                    return value.asUInt64 == 1;
-                default:
-                    return value.asBool;
+                if (Value is byte byteValue)
+                    return byteValue;
+                else
+                    return (byte)Convert.ChangeType(Value, typeof(byte));
+            }
+            set => Value = value;
+        }
+        public short AsShort
+        {
+            get
+            {
+                if (Value is short shortValue)
+                    return shortValue;
+                else
+                    return (short)Convert.ChangeType(Value, typeof(short));
+            }
+            set => Value = value;
+        }
+        public ushort AsUShort
+        {
+            get
+            {
+                if (Value is ushort ushortValue)
+                    return ushortValue;
+                else
+                    return (ushort)Convert.ChangeType(Value, typeof(ushort));
+            }
+            set => Value = value;
+        }
+        public int AsInt
+        {
+            get
+            {
+                if (Value is int intValue)
+                    return intValue;
+                else
+                    return (int)Convert.ChangeType(Value, typeof(int));
+            }
+            set => Value = value;
+        }
+        public uint AsUInt
+        {
+            get
+            {
+                if (Value is uint uintValue)
+                    return uintValue;
+                else
+                    return (uint)Convert.ChangeType(Value, typeof(uint));
+            }
+            set => Value = value;
+        }
+        public long AsLong
+        {
+            get
+            {
+                if (Value is long longValue)
+                    return longValue;
+                else
+                    return (long)Convert.ChangeType(Value, typeof(long));
+            }
+            set => Value = value;
+        }
+        public ulong AsULong
+        {
+            get
+            {
+                if (Value is ulong uintValue)
+                    return uintValue;
+                else
+                    return (ulong)Convert.ChangeType(Value, typeof(ulong));
+            }
+            set => Value = value;
+        }
+        public float AsFloat
+        {
+            get
+            {
+                if (Value is float floatValue)
+                    return floatValue;
+                else
+                    return (float)Convert.ChangeType(Value, typeof(float));
+            }
+            set => Value = value;
+        }
+        public double AsDouble
+        {
+            get
+            {
+                if (Value is double doubleValue)
+                    return doubleValue;
+                else
+                    return (double)Convert.ChangeType(Value, typeof(double));
+            }
+            set => Value = value;
+        }
+        public string AsString
+        {
+            get
+            {
+                if (ValueType == AssetValueType.String)
+                    return Encoding.UTF8.GetString((byte[])Value);
+                else if (ValueType == AssetValueType.Bool)
+                    return (bool)Value ? "true" : "false";
+                else if (ValueType == AssetValueType.ByteArray)
+                    return SimpleHexDump((byte[])Value);
+                else
+                    return Value.ToString();
+            }
+            set => Value = Encoding.UTF8.GetBytes(value);
+        }
+
+        // probably will get removed soon
+        public AssetTypeArrayInfo AsArray
+        {
+            get => (AssetTypeArrayInfo)Value;
+            set => Value = value;
+        }
+        public byte[] AsByteArray
+        {
+            get => (byte[])Value;
+            set => Value = value;
+        }
+        public ManagedReferencesRegistry AsManagedReferencesRegistry
+        {
+            get => (ManagedReferencesRegistry)Value;
+            set => Value = value;
+        }
+
+        // use this only if you have to!
+        public object AsObject
+        {
+            get => Value;
+            set
+            {
+                if (value is string stringValue)
+                    Value = Encoding.UTF8.GetBytes(stringValue);
+                else
+                    Value = value;
             }
         }
-        public int AsInt()
+
+        public override string ToString()
         {
-            switch (type)
-            {
-                case EnumValueTypes.Float:
-                    return (int)value.asFloat;
-                case EnumValueTypes.Double:
-                    return (int)value.asDouble;
-                case EnumValueTypes.String:
-                case EnumValueTypes.ByteArray:
-                case EnumValueTypes.Array:
-                    return 0;
-                case EnumValueTypes.Int8:
-                    return (int)value.asInt8;
-                case EnumValueTypes.Int16:
-                    return (int)value.asInt16;
-                case EnumValueTypes.Int64:
-                    return (int)value.asInt64;
-                //new casts
-                case EnumValueTypes.UInt8:
-                    return (int)value.asUInt8;
-                case EnumValueTypes.UInt16:
-                    return (int)value.asUInt16;
-                case EnumValueTypes.UInt32:
-                    return (int)value.asUInt32;
-                case EnumValueTypes.UInt64:
-                    return (int)value.asUInt64;
-                default:
-                    return value.asInt32;
-            }
+            return AsString;
         }
-        public uint AsUInt()
+
+        private string SimpleHexDump(byte[] byteArray)
         {
-            switch (type)
+            StringBuilder sb = new StringBuilder();
+            if (byteArray.Length <= 0)
+                return string.Empty;
+
+            int i;
+            for (i = 0; i < byteArray.Length - 1; i++)
             {
-                case EnumValueTypes.Float:
-                    return (uint)value.asFloat;
-                case EnumValueTypes.Double:
-                    return (uint)value.asDouble;
-                case EnumValueTypes.String:
-                case EnumValueTypes.ByteArray:
-                case EnumValueTypes.Array:
-                    return 0;
-                case EnumValueTypes.UInt8:
-                    return (uint)value.asUInt8;
-                case EnumValueTypes.UInt16:
-                    return (uint)value.asUInt16;
-                case EnumValueTypes.UInt64:
-                    return (uint)value.asUInt64;
-                //new casts
-                case EnumValueTypes.Int8:
-                    return (uint)value.asUInt8;
-                case EnumValueTypes.Int16:
-                    return (uint)value.asUInt16;
-                case EnumValueTypes.Int32:
-                    return (uint)value.asUInt32;
-                case EnumValueTypes.Int64:
-                    return (uint)value.asUInt64;
-                default:
-                    return value.asUInt32;
+                sb.Append(byteArray[i].ToString("x2"));
+                sb.Append(" ");
             }
-        }
-        public long AsInt64()
-        {
-            switch (type)
-            {
-                case EnumValueTypes.Float:
-                    return (long)value.asFloat;
-                case EnumValueTypes.Double:
-                    return (long)value.asDouble;
-                case EnumValueTypes.String:
-                case EnumValueTypes.ByteArray:
-                case EnumValueTypes.Array:
-                    return 0;
-                case EnumValueTypes.Int8:
-                    return (long)value.asInt8;
-                case EnumValueTypes.Int16:
-                    return (long)value.asInt16;
-                case EnumValueTypes.Int32:
-                    return (long)value.asInt32;
-                //new casts
-                case EnumValueTypes.UInt8:
-                    return (long)value.asUInt8;
-                case EnumValueTypes.UInt16:
-                    return (long)value.asUInt16;
-                case EnumValueTypes.UInt32:
-                    return (long)value.asUInt32;
-                case EnumValueTypes.UInt64:
-                    return (long)value.asUInt64;
-                default:
-                    return value.asInt64;
-            }
-        }
-        public ulong AsUInt64()
-        {
-            switch (type)
-            {
-                case EnumValueTypes.Float:
-                    return (ulong)value.asFloat;
-                case EnumValueTypes.Double:
-                    return (ulong)value.asDouble;
-                case EnumValueTypes.String:
-                case EnumValueTypes.ByteArray:
-                case EnumValueTypes.Array:
-                    return 0;
-                case EnumValueTypes.UInt8:
-                    return (ulong)value.asUInt8;
-                case EnumValueTypes.UInt16:
-                    return (ulong)value.asUInt16;
-                case EnumValueTypes.UInt32:
-                    return (ulong)value.asUInt32;
-                //new casts
-                case EnumValueTypes.Int8:
-                    return (ulong)value.asUInt8;
-                case EnumValueTypes.Int16:
-                    return (ulong)value.asUInt16;
-                case EnumValueTypes.Int32:
-                    return (ulong)value.asUInt32;
-                case EnumValueTypes.Int64:
-                    return (ulong)value.asUInt64;
-                default:
-                    return value.asUInt64;
-            }
-        }
-        public float AsFloat()
-        {
-            switch (type)
-            {
-                case EnumValueTypes.Float:
-                    return value.asFloat;
-                case EnumValueTypes.Double:
-                    return (float)value.asDouble;
-                case EnumValueTypes.String:
-                case EnumValueTypes.ByteArray:
-                case EnumValueTypes.Array:
-                    return 0;
-                case EnumValueTypes.Int8:
-                    return (float)value.asInt8;
-                case EnumValueTypes.Int16:
-                    return (float)value.asInt16;
-                case EnumValueTypes.Int32:
-                    return (float)value.asInt32;
-                //new casts
-                case EnumValueTypes.UInt8:
-                    return (float)value.asUInt8;
-                case EnumValueTypes.UInt16:
-                    return (float)value.asUInt16;
-                case EnumValueTypes.UInt32:
-                    return (float)value.asUInt32;
-                default:
-                    return (float)value.asUInt64;
-            }
-        }
-        public double AsDouble()
-        {
-            switch (type)
-            {
-                case EnumValueTypes.Float:
-                    return (double)value.asFloat;
-                case EnumValueTypes.Double:
-                    return value.asDouble;
-                case EnumValueTypes.String:
-                case EnumValueTypes.ByteArray:
-                case EnumValueTypes.Array:
-                    return 0;
-                case EnumValueTypes.Int8:
-                    return (double)value.asInt8;
-                case EnumValueTypes.Int16:
-                    return (double)value.asInt16;
-                case EnumValueTypes.Int32:
-                    return (double)value.asInt32;
-                //new casts
-                case EnumValueTypes.UInt8:
-                    return (double)value.asUInt8;
-                case EnumValueTypes.UInt16:
-                    return (double)value.asUInt16;
-                case EnumValueTypes.UInt32:
-                    return (double)value.asUInt32;
-                default:
-                    return (double)value.asUInt64;
-            }
+            sb.Append(byteArray[i].ToString("x2"));
+            return sb.ToString();
         }
     }
 }

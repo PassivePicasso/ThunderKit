@@ -14,14 +14,16 @@ namespace AssetsExporter.YAMLExporters
         public AssetsManager AssetsManager { get; }
         public AssetExternal SourceAsset { get; }
         public BaseAssetCollection Collection { get; }
+        public UnityVersion UnityVersion { get; set; }
         public Dictionary<string, object> Info { get; }
 
-        public ExportContext(YAMLExportManager exportManager, AssetsManager assetsManager, BaseAssetCollection collection, AssetExternal sourceAsset, Dictionary<string, object> info = null)
+        public ExportContext(YAMLExportManager exportManager, AssetsManager assetsManager, BaseAssetCollection collection, AssetExternal sourceAsset, UnityVersion unityVersion, Dictionary<string, object> info = null)
         {
             ExportManager = exportManager;
             AssetsManager = assetsManager;
             Collection = collection;
             SourceAsset = sourceAsset;
+            UnityVersion = unityVersion;
             Info = info ?? new Dictionary<string, object>();
         }
 
