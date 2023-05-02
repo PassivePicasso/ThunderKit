@@ -6,16 +6,20 @@
   This feature allows you to inspect Prefab objects in a SceneView style
   environment. Allowing you to look at the Transform Hierarchy of prefabs, and
   inspect their configuration. In Unity 2018 this is a custom
-  SceneView, while newer Unity versions make use of the PreviewSceneStage.
+  SceneView, while newer Unity versions make use of the PreviewSceneStage
 * Add Limited Support for SpaceDock as a PackageSource.  This will allow KSP mod 
   developers to utilize SpaceDock to download mod packages from for supporting 
   their projects, however discovering and resolving dependencies is currently 
-  not supported.
+  not supported
 * Add Log Level Filtering to Pipeline Log window
 * Add Loading indicators to loading PackageSources in the Package Manager
 * Add Log Cache details and cache clear button to ThunderKitSettings
 * Add Markdown Image Cache details and cache clear button to ThunderKitSettings
-* Add Disable Assembly Updater ImportExtension to encourage disabling it.
+* Add Disable Assembly Updater ImportExtension to encourage disabling it
+* Add Unity Version Check ImportExtension to assist in troubleshooting and 
+  complex environment configurations. **This should generally not be disabled.
+  Disabling this to specifically use a verison of Unity that does not match an
+  imported game is unsupported**
 
 ### Improvements
 
@@ -50,9 +54,9 @@
 * Fix ImportExtensions erasing serialized data in some circumstances
 * Fix issue where import could fail for certain build layouts
 * Fix an issue in the latest version of Unity 2022.2 that would cause package
-  installs to fail.
+  installs to fail
 * Fix MarkdownElement not loading all images correctly or consistently due to
-  over aggressive cancelling and object clean up.
+  over aggressive cancelling and object clean up
 * Fix a memory leak in the Markdown system tied to not releasing displayed 
   images
 
@@ -64,12 +68,12 @@ Thanks to @KingEnderbine for these improvements
 
 * Add ability to include unity meta files to the Files PipelineJob and Manifest
   This improves support for source re-distribution and asset redistribution via
-  packages.
+  packages
 
 #### Improvements
 
 * Improve ImportConfiguration system to reduce the occurrence of unnecessary 
-  work.
+  work
 
 #### Fixes 
 
@@ -79,10 +83,9 @@ Thanks to @KingEnderbine for these improvements
 * Fix ThunderKitSettings sometimes overwriting itself during domain 
   initialization 
 * Fix ImportConfiguration not saving the last ConfigurationIndex used leading
-  to the ImportSystem repeating final steps.
+  to the ImportSystem repeating final steps
 * Fix Quick Access selections not saving correctly
 * Fix Quick Access Toolbar not initializing correctly
-
 
 
 ## 7.1.2
