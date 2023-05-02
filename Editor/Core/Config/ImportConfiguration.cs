@@ -87,7 +87,11 @@ namespace ThunderKit.Core.Data
             }
 
             DeleteAsset(configInstancePath);
-            RenameAsset(clonePath, nameof(ImportConfiguration));
+            Refresh();
+            clone.name = nameof(ImportConfiguration);
+            var message = RenameAsset(clonePath, nameof(ImportConfiguration));
+            if(!string.IsNullOrEmpty(message))
+                Debug.LogError(message);
 
             Refresh();
             return clone;
