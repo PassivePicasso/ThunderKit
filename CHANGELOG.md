@@ -1,3 +1,93 @@
+## 8.0.0
+
+### New Features
+
+* Add Addressable Prefab Preview stages for all Unity Versions.
+  This feature allows you to inspect Prefab objects in a SceneView style
+  environment. Allowing you to look at the Transform Hierarchy of prefabs, and
+  inspect their configuration. In Unity 2018 this is a custom
+  SceneView, while newer Unity versions make use of the PreviewSceneStage
+* Add Limited Support for SpaceDock as a PackageSource.  This will allow KSP mod 
+  developers to utilize SpaceDock to download mod packages from for supporting 
+  their projects, however discovering and resolving dependencies is currently 
+  not supported
+* Add Log Level Filtering to Pipeline Log window
+* Add Loading indicators to loading PackageSources in the Package Manager
+* Add Log Cache details and cache clear button to ThunderKitSettings
+* Add Markdown Image Cache details and cache clear button to ThunderKitSettings
+* Add Disable Assembly Updater ImportExtension to encourage disabling it
+* Add Unity Version Check ImportExtension to assist in troubleshooting and 
+  complex environment configurations. **This should generally not be disabled.
+  Disabling this to specifically use a verison of Unity that does not match an
+  imported game is unsupported**
+
+### Improvements
+
+* Improve the way Packages are listed in the Package Manager
+* Add PackageManager resizing between the package list and view
+* Improve load times and consistency of PackageSources
+* Create LoadingSpinner, a reusable UIToolkit loading indicator
+* Improve package selection highlighting for Dark and Light themes
+* Improve Package Loading to incrementally populate as results are provided
+* Improve PackageSource re-usability by abstracting auto-loading
+* Improve PackageView to utilize MarkdownElements for the Package Header, Body, 
+  and Footer sections so that their content is more customizable per 
+  PackageSource. Additional work needs to be done here to improve the workflow 
+  and modularity of this feature
+* Improve the Browse button to open in the selected path if it is not empty
+* Improve image caching solution in MarkdownElement system
+* Improve Pipeline Log View to with log level filtering
+* Update Copy PipelineJob documentation
+* Improve logging and code design of Copy
+* Add OptionalExecutor documentation
+* Improve some documentation navigation
+* Improve addressable integration to avoid interfering with normal addressable
+  package usage
+* Change PromptRestart to an OptionalExecutor for consistency
+* Change Beep on import completion to an OptionalExecutor for consistency
+* Generally improve code quality
+
+### Fixes
+
+* Fix ImportExtensions not updating correctly when extensions are added or 
+  removed
+* Fix ImportExtensions erasing serialized data in some circumstances
+* Fix issue where import could fail for certain build layouts
+* Fix an issue in the latest version of Unity 2022.2 that would cause package
+  installs to fail
+* Fix MarkdownElement not loading all images correctly or consistently due to
+  over aggressive cancelling and object clean up
+* Fix a memory leak in the Markdown system tied to not releasing displayed 
+  images
+
+### Community Contributions
+
+Thanks to @KingEnderbine for these improvements
+
+#### Features
+
+* Add ability to include unity meta files to the Files PipelineJob and Manifest
+  This improves support for source re-distribution and asset redistribution via
+  packages
+
+#### Improvements
+
+* Improve ImportConfiguration system to reduce the occurrence of unnecessary 
+  work
+
+#### Fixes 
+
+* Fix ComposableObject not properly removing elements in some versions of Unity
+  This fixes a pesky issue that affected some users where it would cause 
+  Missing Script errors in ComposableObjects such as PipelineJobs and Manifests
+* Fix ThunderKitSettings sometimes overwriting itself during domain 
+  initialization 
+* Fix ImportConfiguration not saving the last ConfigurationIndex used leading
+  to the ImportSystem repeating final steps
+* Fix Quick Access selections not saving correctly
+* Fix Quick Access Toolbar not initializing correctly
+
+
 ## 7.1.2
 
 ### Fixes

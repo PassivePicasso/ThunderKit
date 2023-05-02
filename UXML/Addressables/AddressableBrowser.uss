@@ -43,13 +43,16 @@
 	flex-direction: row;
 	justify-content: space-between;
 	border-color: rgba(64,64,64,1);
-	border-bottom-width: 1px;
-	border-left-width: 1px;
-	border-top-width: 1px;
-	border-right-width: 1px;
+	border-bottom-width: 2px;
+	border-left-width: 2px;
+	border-top-width: 2px;
+	border-right-width: 2px;
 }
-#addressable-asset.unity-list-view__item--selected {
-	background-color: rgba(0, 0, 0, 0); 
+#directory-content TemplateContainer.unity-list-view__item--selected {
+	background-color: rgba(128, 0, 0, 0.05);
+}
+
+TemplateContainer.unity-list-view__item--selected>#addressable-asset {
 	border-color: rgba(128,0,0,1);
 }
 #directory-content #unity-content-container

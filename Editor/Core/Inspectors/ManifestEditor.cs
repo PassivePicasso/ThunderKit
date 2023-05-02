@@ -38,6 +38,7 @@ namespace ThunderKit.Core.Inspectors
             if (EditorGUI.EndChangeCheck())
             {
                 settings.SetQuickAccess(manifest, manifest.QuickAccess);
+                EditorUtility.SetDirty(manifest);
                 serializedObject.ApplyModifiedProperties();
             }
         }
