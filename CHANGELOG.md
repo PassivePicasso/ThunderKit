@@ -7,27 +7,25 @@
   environment. Allowing you to look at the Transform Hierarchy of prefabs, and
   inspect their configuration. In Unity 2018 this is a custom
   SceneView, while newer Unity versions make use of the PreviewSceneStage.
-
 * Add Limited Support for SpaceDock as a PackageSource.  This will allow KSP mod 
   developers to utilize SpaceDock to download mod packages from for supporting 
   their projects, however discovering and resolving dependencies is currently 
   not supported.
-
 * Add Log Level Filtering to Pipeline Log window
-
 * Add Loading indicators to loading PackageSources in the Package Manager
+* Add Log Cache details and cache clear button to ThunderKitSettings
+* Add Markdown Image Cache details and cache clear button to ThunderKitSettings
+* Add Disable Assembly Updater ImportExtension to encourage disabling it.
 
 ### Improvements
 
-* Rework and Improve the way Packages are listed in the Package Manager
+* Improve the way Packages are listed in the Package Manager
+* Add PackageManager resizing between the package list and view
 * Improve load times and consistency of PackageSources
-* Allow PackageManager to resize its columns
-* Create a reusable UIToolkit loading indicator, LoadingSpinner
+* Create LoadingSpinner, a reusable UIToolkit loading indicator
 * Improve package selection highlighting for Dark and Light themes
 * Improve Package Loading to incrementally populate as results are provided
 * Improve PackageSource re-usability by abstracting auto-loading
-* Add ability to clear Build Log history
-* Add ability to clear image caches for Markdown
 * Improve PackageView to utilize MarkdownElements for the Package Header, Body, 
   and Footer sections so that their content is more customizable per 
   PackageSource. Additional work needs to be done here to improve the workflow 
@@ -38,7 +36,7 @@
 * Update Copy PipelineJob documentation
 * Improve logging and code design of Copy
 * Add OptionalExecutor documentation
-* Add some tree paths to some documentation
+* Improve some documentation navigation
 * Improve addressable integration to avoid interfering with normal addressable
   package usage
 * Change PromptRestart to an OptionalExecutor for consistency
@@ -53,7 +51,8 @@
 * Fix issue where import could fail for certain build layouts
 * Fix an issue in the latest version of Unity 2022.2 that would cause package
   installs to fail.
-* Fix MarkdownElement not loading all images correctly or consistently
+* Fix MarkdownElement not loading all images correctly or consistently due to
+  over aggressive cancelling and object clean up.
 * Fix a memory leak in the Markdown system tied to not releasing displayed 
   images
 
