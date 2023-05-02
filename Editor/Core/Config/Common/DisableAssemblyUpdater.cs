@@ -5,7 +5,7 @@ namespace ThunderKit.Core.Config.Common
 {
     public class DisableAssemblyUpdater : OptionalExecutor
     {
-        public override int Priority => int.MaxValue;
+        public override int Priority => int.MaxValue - 100;
 
         public override string Description => "Prompt the user to Restart Unity to disable the Assembly. Disabling the updater is recommended and is required in some cases. If the import processes seems to never end, the fix is usually to disable the Assembly Updater.";
 

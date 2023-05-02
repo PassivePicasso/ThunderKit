@@ -6,28 +6,22 @@ using UnityEditor.Experimental.UIElements;
 using UnityEngine.Experimental.UIElements;
 #endif
 
-using AssetsTools.NET.Extra;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using ThunderKit.Common;
 using ThunderKit.Core.UIElements;
 using UnityEditor;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 using ThunderKit.Core.Config;
 using UnityEngine.Serialization;
-using ThunderKit.Core.Pipelines.Jobs;
 using System.Reflection;
 
 namespace ThunderKit.Core.Data
 {
     using static AssetDatabase;
-    using static ThunderKit.Common.PathExtensions;
 
     public class ImportConfiguration : ThunderKitSetting
     {
@@ -219,12 +213,6 @@ namespace ThunderKit.Core.Data
                 return;
             }
 
-            if (!CheckUnityVersion(thunderKitSettings))
-            {
-                ConfigurationIndex = -1;
-                return;
-            }
-
             var executor = ConfigurationExecutors[ConfigurationIndex];
             try
             {
@@ -242,7 +230,7 @@ namespace ThunderKit.Core.Data
             }
             catch (Exception e)
             {
-                ConfigurationIndex = ConfigurationExecutors.Length + 1;
+                ConfigurationIndex = -1;
                 throw new Exception("Import Failed", e);
                 //Debug.LogError(e);
                 //return;
@@ -299,46 +287,6 @@ namespace ThunderKit.Core.Data
             return true;
         }
 
-        private static bool CheckUnityVersion(ThunderKitSettings settings)
-        {
-            var versionMatch = false;
-            var regs = new Regex("(\\d{1,4}\\.\\d+\\.\\d+)(.*)");
 
-            var unityVersion = regs.Replace(Application.unityVersion, match => match.Groups[1].Value);
-            var playerVersion = string.Empty;
-
-            bool foundVersion = false;
-
-            var informationFile = Combine(settings.GameDataPath, "globalgamemanagers");
-            if (!File.Exists(informationFile)) informationFile = Combine(settings.GameDataPath, "data.unity3d");
-            if (File.Exists(informationFile))
-            {
-                try
-                {
-                    var am = new AssetsManager();
-                    var ggm = am.LoadAssetsFile(informationFile, false);
-
-                    playerVersion = regs.Replace(ggm.file.Metadata.UnityVersion, match => match.Groups[1].Value);
-
-                    am.UnloadAll(true);
-                    versionMatch = unityVersion.Equals(playerVersion);
-                    foundVersion = true;
-                }
-                catch { foundVersion = false; }
-            }
-
-            if (!foundVersion)
-            {
-                var fvi = FileVersionInfo.GetVersionInfo(Combine(settings.GamePath, settings.GameExecutable));
-                playerVersion = regs.Replace(fvi.FileVersion, match => match.Groups[1].Value);
-                if (playerVersion.Count(f => f == '.') == 2)
-                    versionMatch = unityVersion.Equals(playerVersion);
-            }
-
-            if (!versionMatch)
-                Debug.LogError($"Unity Editor version ({unityVersion}), Unity Player version ({playerVersion}), aborting setup." +
-                        $"\r\n\t Make sure you're using the same version of the Unity Editor as the Unity Player for the game.");
-            return versionMatch;
-        }
     }
 }
