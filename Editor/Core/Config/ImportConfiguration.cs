@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
@@ -22,6 +21,8 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using ThunderKit.Core.Config;
 using UnityEngine.Serialization;
+using ThunderKit.Core.Pipelines.Jobs;
+using System.Reflection;
 
 namespace ThunderKit.Core.Data
 {
@@ -62,40 +63,40 @@ namespace ThunderKit.Core.Data
                 return;
             }
 
-            EditorApplication.update -= StepImporters;
-
             var configInstance = GetOrCreateSettings<ImportConfiguration>();
-            var assetPath = GetAssetPath(configInstance);
-            var guid = AssetPathToGUID(assetPath);
-            if (configInstance.CheckForNewImportConfigs(out var executors))
+            if (configInstance.CheckForNewImportConfigs(out _))
             {
-                var executorStates = new Dictionary<Type, bool>();
-                var objs = LoadAllAssetRepresentationsAtPath(assetPath).ToArray();
-                configInstance.ConfigurationExecutors = Array.Empty<OptionalExecutor>();
-                foreach (var obj in objs)
-                {
-                    if (obj)
-                    {
-                        if (obj is OptionalExecutor executor)
-                        {
-                            executorStates[executor.GetType()] = executor.enabled;
-                        }
-                        RemoveObjectFromAsset(obj);
-                        DestroyImmediate(obj, true);
-                    }
-                }
-                ComposableObject.FixMissingScriptSubAssets(configInstance);
-                configInstance = LoadAssetAtPath<ImportConfiguration>(GUIDToAssetPath(guid));
-                configInstance.LoadImportExtensions(executors, executorStates);
+                configInstance = RecreateSelf(configInstance);
                 SaveAssets();
             }
 
-            configInstance.ConfigurationExecutors = LoadAllAssetRepresentationsAtPath(assetPath)
-                .OfType<OptionalExecutor>()
-                .OrderByDescending(executor => executor.Priority)
-                .ToArray();
-
             configInstance.ImportGame();
+        }
+
+        static ImportConfiguration RecreateSelf(ImportConfiguration configInstance)
+        {
+            var clone = CreateInstance<ImportConfiguration>();
+
+            var configInstancePath = GetAssetPath(configInstance);
+            var clonePath = configInstancePath.Replace(".asset", "CLONE.asset");
+            CreateAsset(clone, clonePath);
+            ImportAsset(clonePath);
+            clone.Initialize();
+            ImportAsset(clonePath);
+
+            foreach (var executor in configInstance.ConfigurationExecutors)
+            {
+                if (!executor) continue;
+                var friend = clone.ConfigurationExecutors.FirstOrDefault(oe => oe.GetType() == executor.GetType());
+                if (friend)
+                    EditorUtility.CopySerialized(executor, friend);
+            }
+
+            DeleteAsset(configInstancePath);
+            RenameAsset(clonePath, nameof(ImportConfiguration));
+
+            Refresh();
+            return clone;
         }
 
         public override void CreateSettingsUI(VisualElement rootElement)
@@ -146,20 +147,19 @@ namespace ThunderKit.Core.Data
 
         public override void Initialize()
         {
-            var configAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-            FilterForConfigurationAssemblies(configAssemblies);
-            var executorTypes = GetOptionalExecutors(configAssemblies);
-            totalImportExtensionCount = executorTypes.Count;
-            LoadImportExtensions(executorTypes);
-            SaveAssets();
-            EditorApplication.update += DoImport;
+            if (CheckForNewImportConfigs(out var executorTypes))
+            {
+                LoadImportExtensions(executorTypes);
+                SaveAssets();
+            }
         }
 
         private bool CheckForNewImportConfigs(out List<Type> executorTypes)
         {
-            List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-            FilterForConfigurationAssemblies(assemblies);
-            executorTypes = GetOptionalExecutors(assemblies);
+            executorTypes = TypeCache.GetTypesDerivedFrom<OptionalExecutor>()
+                .Where(t => t.Assembly.GetCustomAttribute<ImportExtensionsAttribute>() != null)
+                .Where(t => !t.IsAbstract && !t.IsInterface)
+                .ToList();
             if (executorTypes.Count == totalImportExtensionCount)
             {
                 executorTypes = null;
@@ -169,57 +169,12 @@ namespace ThunderKit.Core.Data
             return true;
         }
 
-        private void FilterForConfigurationAssemblies(List<Assembly> assemblies)
-        {
-            for (int i = assemblies.Count - 1; i >= 0; i--)
-            {
-                try
-                {
-                    var asm = assemblies[i];
-                    try
-                    {
-                        if (asm?.GetCustomAttribute<ImportExtensionsAttribute>() == null)
-                            assemblies.RemoveAt(i);
-                    }
-                    catch
-                    {
-                        Debug.LogError($"Failed to analyze {asm.Location} for ImportExtensions");
-                        assemblies.RemoveAt(i);
-                    }
-                }
-                catch (Exception ex) { Debug.LogError(ex.Message); }
-            }
-        }
-
-        private List<Type> GetOptionalExecutors(List<Assembly> assemblies)
-        {
-            return assemblies
-               .SelectMany(asm =>
-               {
-                   try
-                   {
-                       return asm.GetTypes();
-                   }
-                   catch (ReflectionTypeLoadException e)
-                   {
-                       return e.Types;
-                   }
-               })
-               .Where(t => t != null)
-               .Where(t => !t.IsAbstract && !t.IsInterface)
-               .Where(t => typeof(OptionalExecutor).IsAssignableFrom(t))
-               .ToList();
-        }
-
         private void LoadImportExtensions(List<Type> executorTypes, Dictionary<Type, bool> previousStates = null)
         {
             var settingsPath = GetAssetPath(this);
             var builder = new StringBuilder("Loaded Import Extensions");
             builder.AppendLine();
-            var objs = LoadAllAssetRepresentationsAtPath(settingsPath).Where(obj => obj).ToArray();
-            var distinctObjcs = objs.Distinct().ToArray();
-            var objectTypes = distinctObjcs.Select(obj => obj.GetType()).ToArray();
-            var existingAssetTypes = new HashSet<Type>(objectTypes);
+            var existingAssetTypes = new HashSet<Type>(ConfigurationExecutors.Select(obj => obj.GetType()));
             foreach (var t in executorTypes)
             {
                 if (existingAssetTypes.Contains(t))
@@ -237,14 +192,13 @@ namespace ThunderKit.Core.Data
                     builder.AppendLine(executor.GetType().FullName);
                 }
             }
-        }
-
-        private void DoImport()
-        {
-            var settingsPath = GetAssetPath(this);
-            if (string.IsNullOrEmpty(settingsPath)) return;
-            ImportAsset(settingsPath, ImportAssetOptions.ForceUpdate);
-            EditorApplication.update -= DoImport;
+            EditorUtility.SetDirty(this);
+            SaveAssets();
+            ImportAsset(settingsPath);
+            var assetReps = LoadAllAssetRepresentationsAtPath(settingsPath);
+            var optionalExecutors = assetReps.OfType<OptionalExecutor>().ToArray();
+            var orderedExecutors = optionalExecutors.OrderByDescending(executor => executor.Priority).ToArray();
+            ConfigurationExecutors = orderedExecutors.ToArray();
         }
 
         public void ImportGame()
@@ -280,7 +234,7 @@ namespace ThunderKit.Core.Data
                     {
                         Debug.Log($"Executed: {executor.name}");
                         ConfigurationIndex++;
-                        AssetDatabase.Refresh();
+                        Refresh();
                     }
                 }
                 else
@@ -310,10 +264,6 @@ namespace ThunderKit.Core.Data
                     }
                 }
                 AssetDatabase.SaveAssets();
-            }
-            else
-            {
-                EditorApplication.update += StepImporters;
             }
         }
 

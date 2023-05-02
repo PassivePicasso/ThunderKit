@@ -47,6 +47,9 @@
 
 ### Fixes
 
+* Fix ImportExtensions not updating correctly when extensions are added or 
+  removed
+* Fix ImportExtensions erasing serialized data in some circumstances
 * Fix issue where import could fail for certain build layouts
 * Fix an issue in the latest version of Unity 2022.2 that would cause package
   installs to fail.
