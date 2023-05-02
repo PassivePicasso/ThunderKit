@@ -28,6 +28,8 @@ namespace ThunderKit.Core.Data
         public string PackageName;
         public string Author;
         public string Description;
+        public string HeaderMarkdown;
+        public string FooterMarkdown;
         [HideInInspector]
         public string DependencyId;
         public string[] Tags;
@@ -71,7 +73,7 @@ namespace ThunderKit.Core.Data
 
         public string InstalledVersion => PackageManifest.version;
 
-        public bool Installed => PackageManifest.name?.Equals(DependencyId, StringComparison.OrdinalIgnoreCase) ?? false;
+        public bool Installed => PackageManifest.name?.Equals(PackageHelper.GetCleanPackageName(DependencyId), StringComparison.OrdinalIgnoreCase) ?? false;
 
 
         public override bool Equals(object obj)

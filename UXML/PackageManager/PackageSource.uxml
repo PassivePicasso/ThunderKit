@@ -3,6 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:engine="UnityEngine.Experimental.UIElements"
     xmlns:editor="UnityEditor.Experimental.UIElements"
+    xmlns:tk="ThunderKit.Core.UIElements"
     xmlns:upm="UnityEditor.PackageManager.UI"
 
 xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
@@ -14,6 +15,7 @@ xsi:schemaLocation="
 ">
   <engine:VisualElement name="tkpm-package-source-header" class="tkpm-toolbar">
     <engine:Label name="tkpm-package-source-label"/>
+    <tk:LoadingSpinner name="tkpm-package-source-loading-indicator"/>
   </engine:VisualElement>
   <engine:Foldout name="tkpm-package-source-foldout" >
     <engine:ListView name="tkpm-package-list"  item-height="23"  />

@@ -50,14 +50,14 @@ namespace AssetsExporter
                 return this;
             }
 
-            public RegistrationContext WhenAnyValueType(IEnumerable<EnumValueTypes> except = null)
+            public RegistrationContext WhenAnyValueType(IEnumerable<AssetValueType> except = null)
             {
                 ThisIRC.ValueType = uint.MaxValue;
                 if (except != null)
                 {
                     foreach (var exceptValue in except)
                     {
-                        if (exceptValue != EnumValueTypes.None)
+                        if (exceptValue != AssetValueType.None)
                         {
                             ThisIRC.ValueType &= ~(1u << (int)exceptValue - 1);
                         }
@@ -66,9 +66,9 @@ namespace AssetsExporter
                 return this;
             }
 
-            public RegistrationContext WhenValueType(EnumValueTypes valueType)
+            public RegistrationContext WhenValueType(AssetValueType valueType)
             {
-                if (valueType != EnumValueTypes.None)
+                if (valueType != AssetValueType.None)
                 {
                     ThisIRC.ValueType |= 1u << (int)valueType - 1;
                 }

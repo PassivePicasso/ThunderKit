@@ -11,6 +11,8 @@
 The [Files](assetlink://GUID/4b243ff405b33b94dbf5b6775dd9aa33) ManifestDatum stores references to assets inside your unity project.
 
 ## Fields
+* **Include Meta Files**
+  - Include .meta files for the specified assets
 * **Files**
   - An array of assets
 

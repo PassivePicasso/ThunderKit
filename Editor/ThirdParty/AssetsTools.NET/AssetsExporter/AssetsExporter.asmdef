@@ -1,16 +1,13 @@
 {
-    "name": "AssetsExporter",
-    "references": [
-        "AssetsTools.NET",
-        "UnityVersion"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "name": "Assets",
+    "references": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "AssetsTools.NET.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],

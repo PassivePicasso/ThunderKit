@@ -12,33 +12,34 @@ namespace AssetsExporter.YAMLExporters
     {
         public YAMLNode Export(ExportContext context, AssetTypeValueField parentField, AssetTypeValueField field, bool raw = false)
         {
-            var size = field.GetValue().value.asByteArray.size;
+            var size = (uint)field.Value.AsByteArray.Length;
             YAMLNode typelessDataNode = null;
             if (size > 0)
             {
-                typelessDataNode = field.GetValue().value.asByteArray.data.ExportYAML();
+                typelessDataNode = field.AsByteArray.ExportYAML();
             }
             else
             {
-                var streamData = context.SourceAsset.instance.GetBaseField().GetChildrenList().FirstOrDefault(el => el.templateField.type == "StreamingInfo");
-                if (streamData.IsDummy())
+                var streamData = context.SourceAsset.baseField.Children.FirstOrDefault(el => el.TypeName == "StreamingInfo");
+                if (streamData.IsDummy)
                 {
                     goto exit;
                 }
 
-                var offset = streamData.Get("offset").GetValue().value.asUInt32;
-                size = streamData.Get("size").GetValue().value.asUInt32;
+                var offset = streamData.Get("offset").AsUInt;
+                size = streamData.Get("size").AsUInt;
                 if (size == 0)
                 {
                     goto exit;
                 }
 
-                var relativePath = streamData.Get("path").GetValue().value.asString;
+                var relativePath = streamData.Get("path").AsString;
                 if (string.IsNullOrWhiteSpace(relativePath))
                 {
                     goto exit;
                 }
 
+#warning TODO: AssetBundle resources path is very different
                 var path = Path.Combine(Path.GetDirectoryName(context.SourceAsset.file.path), relativePath);
                 if (!File.Exists(path))
                 {

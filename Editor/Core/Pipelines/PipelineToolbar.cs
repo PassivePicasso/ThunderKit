@@ -75,7 +75,6 @@ namespace ThunderKit.Core.Pipelines
         {
             manifestIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(Constants.Icons.ManifestIconPath);
             pipelineIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(Constants.Icons.PipelineIconPath);
-            settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
 
             ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUI);
 
@@ -107,6 +106,11 @@ namespace ThunderKit.Core.Pipelines
 
         static void OnToolbarGUI()
         {
+            if (settings == null)
+            {
+                settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+            }
+
             GUISkin origSkin = GUI.skin;
             if (popupStyle == null)
             {

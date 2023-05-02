@@ -37,7 +37,7 @@ namespace ThunderKit.Common.Configuration
         public static void AddScriptingDefine(string define)
         {
             define = define.ToUpperInvariant();
-            define = define.Replace("-", "_");
+            define = define.Replace("-", "_").Replace(".", "_");
 
             foreach (BuildTargetGroup targetGroup in System.Enum.GetValues(typeof(BuildTargetGroup)))
             {
