@@ -68,7 +68,7 @@ namespace ThunderKit.Core.Data
         }
         private static void CopyAssemblyCSharp(string somevalue, CompilerMessage[] message)
         {
-            foreach (var file in Directory.GetFiles("Packages", "Assembly-CSharp.dll", SearchOption.AllDirectories))
+            foreach (var file in Directory.GetFiles("Packages", "Assembly-CSharp*.dll", SearchOption.AllDirectories))
             {
                 var fileName = Path.GetFileName(file);
                 var outputPath = Combine("Library", "ScriptAssemblies", fileName);
