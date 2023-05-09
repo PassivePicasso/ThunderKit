@@ -1,3 +1,11 @@
+## 8.0.1
+
+### Fixes
+
+* Fix Assembly-CSharp-firstpass.dll and other Assembly-CSharp*.dll files not
+  being managed by ThunderKit.
+* Fix AsmDef platform assignment interfering in build processes
+
 ## 8.0.0
 
 ### New Features
