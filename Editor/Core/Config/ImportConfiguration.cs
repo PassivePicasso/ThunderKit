@@ -154,7 +154,7 @@ namespace ThunderKit.Core.Data
 
         private bool CheckForNewImportConfigs(out List<Type> executorTypes)
         {
-            executorTypes = TypeCache.GetTypesDerivedFrom<OptionalExecutor>()
+            executorTypes = GetOptionalExecutors()
                 .Where(t => t.Assembly.GetCustomAttribute<ImportExtensionsAttribute>() != null)
                 .Where(t => !t.IsAbstract && !t.IsInterface)
                 .ToList();
@@ -166,6 +166,56 @@ namespace ThunderKit.Core.Data
             totalImportExtensionCount = executorTypes.Count;
             return true;
         }
+
+        private List<Type> GetOptionalExecutors()
+        {
+#if UNITY_2019_2_OR_NEWER
+            return TypeCache.GetTypesDerivedFrom<OptionalExecutor>()
+#else
+            return FilterForConfigurationAssemblies()
+               .SelectMany(asm =>
+               {
+                   try
+                   {
+                       return asm.GetTypes();
+                   }
+                   catch (ReflectionTypeLoadException e)
+                   {
+                       return e.Types;
+                   }
+               })
+               .Where(t => t != null)
+               .Where(t => !t.IsAbstract && !t.IsInterface)
+               .Where(t => typeof(OptionalExecutor).IsAssignableFrom(t))
+               .ToList();
+#endif
+        }
+#if UNITY_2019_2_OR_NEWER
+#else
+        private List<Assembly> FilterForConfigurationAssemblies()
+        {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            for (int i = assemblies.Count - 1; i >= 0; i--)
+            {
+                try
+                {
+                    var asm = assemblies[i];
+                    try
+                    {
+                        if (asm?.GetCustomAttribute<ImportExtensionsAttribute>() == null)
+                            assemblies.RemoveAt(i);
+                    }
+                    catch
+                    {
+                        Debug.LogError($"Failed to analyze {asm.Location} for ImportExtensions");
+                        assemblies.RemoveAt(i);
+                    }
+                }
+                catch (Exception ex) { Debug.LogError(ex.Message); }
+            }
+            return assemblies;
+        }
+#endif
 
         private void LoadImportExtensions(List<Type> executorTypes, Dictionary<Type, bool> previousStates = null)
         {
