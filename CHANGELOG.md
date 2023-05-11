@@ -1,3 +1,18 @@
+## 8.0.2
+
+### Fixes
+
+* Fix AssetsExporter AssemblyDefinition not being limited to the Editor 
+  platform
+* Fix ImportExtension Loading not working older Unity versions (<2019.2)
+  This was due to TypeCache not being available in older unity versions and 
+  was missed during the testing process
+* Fix QuickAccess Pipelines/Manifests throwing exceptions when there are no
+  QuickAccess Pipelines/Manifests
+* Fix PipelineLogWindow throwing exceptions when no PipelineLog has been 
+  assigned to it
+* Fix not correctly attributing community changes in prior update
+
 ## 8.0.1
 
 ### Fixes
