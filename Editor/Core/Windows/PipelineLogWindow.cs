@@ -182,7 +182,11 @@ namespace ThunderKit.Core.Windows
 
         private void RefreshListView()
         {
-            logEntryListView.itemsSource = (IList)pipelineLog.Entries.Where(entry => levelFilters.Contains(entry.logLevel)).ToList();
+            if (!pipelineLog)
+                logEntryListView.itemsSource = Array.Empty<object>();
+            else
+                logEntryListView.itemsSource = pipelineLog?.Entries.Where(entry => levelFilters.Contains(entry.logLevel)).ToList();
+
             if (logEntryListView.itemsSource.Count > 0)
                 logEntryListView.selectedIndex = 0;
         }
