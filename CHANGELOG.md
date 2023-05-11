@@ -2,9 +2,13 @@
 
 ### Fixes
 
+* Fix AsmDef platform assignment interfering in build processes
+
+### Community Contributions
+
 * Fix Assembly-CSharp-firstpass.dll and other Assembly-CSharp*.dll files not
   being managed by ThunderKit.
-* Fix AsmDef platform assignment interfering in build processes
+  Thanks to @EldritchCarMaker for this fix.
 
 ## 8.0.0
 
