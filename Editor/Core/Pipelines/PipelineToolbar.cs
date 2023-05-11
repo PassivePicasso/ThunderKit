@@ -121,13 +121,13 @@ namespace ThunderKit.Core.Pipelines
                 popupStyle.padding.left = 4;
                 GUI.skin = skin;
             }
-            var pipelineNames = settings.QuickAccessPipelines
+            var pipelineNames = settings.QuickAccessPipelines?
                                         .Where(p => p)
                                         .Select(p => p.name)
                                         .ToArray()
                              ?? System.Array.Empty<string>();
 
-            var manifestNames = settings.QuickAccessManifests
+            var manifestNames = settings.QuickAccessManifests?
                                         .Where(p => p)
                                         .Select(p => p.name)
                                         .ToArray()
