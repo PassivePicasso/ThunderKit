@@ -154,10 +154,7 @@ namespace ThunderKit.Core.Data
 
         private bool CheckForNewImportConfigs(out List<Type> executorTypes)
         {
-            executorTypes = GetOptionalExecutors()
-                .Where(t => t.Assembly.GetCustomAttribute<ImportExtensionsAttribute>() != null)
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .ToList();
+            executorTypes = GetOptionalExecutors();
             if (executorTypes.Count == totalImportExtensionCount)
             {
                 executorTypes = null;
@@ -171,6 +168,7 @@ namespace ThunderKit.Core.Data
         {
 #if UNITY_2019_2_OR_NEWER
             return TypeCache.GetTypesDerivedFrom<OptionalExecutor>()
+                .Where(t => t.Assembly.GetCustomAttribute<ImportExtensionsAttribute>() != null)
 #else
             return FilterForConfigurationAssemblies()
                .SelectMany(asm =>
@@ -184,11 +182,11 @@ namespace ThunderKit.Core.Data
                        return e.Types;
                    }
                })
-               .Where(t => t != null)
-               .Where(t => !t.IsAbstract && !t.IsInterface)
                .Where(t => typeof(OptionalExecutor).IsAssignableFrom(t))
-               .ToList();
 #endif
+               .Where(t => t != null)
+                .Where(t => !t.IsAbstract && !t.IsInterface)
+               .ToList();
         }
 #if UNITY_2019_2_OR_NEWER
 #else
