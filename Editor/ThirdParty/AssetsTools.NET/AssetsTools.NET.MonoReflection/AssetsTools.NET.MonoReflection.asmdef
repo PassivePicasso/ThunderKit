@@ -1,7 +1,10 @@
 {
     "name": "AssetsTools.NET.MonoReflection",
     "references": [],
-    "includePlatforms": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
@@ -9,7 +12,5 @@
         "AssetsTools.NET.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "defineConstraints": []
 }
