@@ -1,3 +1,10 @@
+## 8.0.3
+
+### Fixes
+
+* Fix AssetsTools.Net.MonoReflection AssemblyDefinition not being limited to
+  the editor platform
+
 ## 8.0.2
 
 ### Fixes
