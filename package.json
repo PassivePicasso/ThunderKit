@@ -1,6 +1,6 @@
 {
   "name": "com.passivepicasso.thunderkit",
-  "version": "8.0.0",
+  "version": "8.0.3",
   "displayName": "ThunderKit",
   "description": "Unity Game Mod Development extension with build, packaging and analysis tools",
   "unity": "2018.4",
