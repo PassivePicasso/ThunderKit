@@ -9,42 +9,42 @@ namespace AssetsExporter.YAMLExporters
     {
         public YAMLNode Export(ExportContext context, AssetTypeValueField parentField, AssetTypeValueField field, bool raw = false)
         {
-            switch (field.templateField.valueType)
+            switch (field.TemplateField.ValueType)
             {
-                case EnumValueTypes.Array:
+                case AssetValueType.Array:
                     return ExportHelpers.ExportArray(context, field);
-                case EnumValueTypes.ByteArray:
-                    return field.GetValue().value.asByteArray.data.ExportYAML();
-                case EnumValueTypes.None:
+                case AssetValueType.ByteArray:
+                    return field.AsByteArray.ExportYAML();
+                case AssetValueType.None:
                     break;
                 default:
                     throw new NotSupportedException("Value types are not supported for this exporter");
             }
 
-            if (field.childrenCount == 1 && field.children[0].templateField.isArray)
+            if (field.Children.Count == 1 && field.Children[0].TemplateField.IsArray)
             {
-                var arrayChild = field.children[0];
-                if (field.templateField.type == "map" && arrayChild.templateField.children[1].children[0].hasValue)
+                var arrayChild = field.Children[0];
+                if (field.TemplateField.Type == "map" && arrayChild.TemplateField.Children[1].Children[0].HasValue)
                 {
                     var node = new YAMLMappingNode();
-                    for (var i = 0; i < arrayChild.childrenCount; i++)
+                    for (var i = 0; i < arrayChild.Children.Count; i++)
                     {
-                        var elem = arrayChild.children[i];
-                        node.Add(context.Export(arrayChild, elem.children[0]), context.Export(arrayChild, elem.children[1]));
+                        var elem = arrayChild.Children[i];
+                        node.Add(context.Export(arrayChild, elem.Children[0]), context.Export(arrayChild, elem.Children[1]));
                     }
                     return node;
                 }
                 return ExportHelpers.ExportArray(context, arrayChild);
             }
 
-            if (field.childrenCount > 0)
+            if (field.Children.Count > 0)
             {
                 var node = new YAMLMappingNode();
-                node.AddSerializedVersion(field.templateField.version);
-                for (var i = 0; i < field.childrenCount; i++)
+                node.AddSerializedVersion(field.TemplateField.Version);
+                for (var i = 0; i < field.Children.Count; i++)
                 {
-                    var child = field.children[i];
-                    node.Add(child.templateField.name, context.Export(field, child));
+                    var child = field.Children[i];
+                    node.Add(child.TemplateField.Name, context.Export(field, child));
                 }
                 return node;
             }

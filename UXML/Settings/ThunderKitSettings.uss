@@ -1,9 +1,13 @@
 ﻿.standardbutton {
-	height: 21px;
-	margin-top: 2px;
+	height: 19px;
+	margin-left: 1px;
+	margin-top: 0px;
+	margin-right: 1px;
 	margin-bottom: 0px;
+	padding-left: 3px;
 	padding-top: 0px;
-	padding-bottom: 2px;
+	padding-right: 3px;
+	padding-bottom: 0px;
 }
 
 #guid-mode-field {
@@ -37,14 +41,17 @@
 }
 .thunderkit-field {
 	border-left-width: 1px;
+    margin-right: 4px;
 }
 .thunderkit-field-input, .thunderkit-field-input .unity-base-field__input {
-	padding-top: 1px;
-	padding-bottom: 3px;
 	height: 19px;
-	margin-top: 1px;
+	padding-left: 4px;
+	padding-top: 0px;
+	padding-right: 4px;
+	padding-bottom: 0px;
+	margin-top: 0px;
 	margin-bottom: 0px;
-    margin-left: 2px;
+    margin-left: 0px;
     margin-right: 0px;
     border-left-width: 0px;
     border-top-width: 0px;

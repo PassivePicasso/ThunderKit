@@ -18,4 +18,4 @@
 
 This pipeline will copy all assets from each Files ManifestDatum attached to Manifests being processed by the current pipeline.
 
-This can be used to copy any files in that are assets under the Assets folder of hte project out to locations specified in the Files ManifestDatum's Staging Paths.
+This can be used to copy any files in that are assets under the Assets folder of the project out to locations specified in the Files ManifestDatum's Staging Paths.

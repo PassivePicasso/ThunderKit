@@ -1,0 +1,16 @@
+{
+    "name": "AssetsTools.NET.MonoReflection",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "AssetsTools.NET.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

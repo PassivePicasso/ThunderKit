@@ -9,7 +9,7 @@ namespace AssetsExporter.Extensions
     {
         public static AssetTypeValueField GetLastChild(this AssetTypeValueField atvf)
         {
-            return atvf[atvf.childrenCount - 1];
+            return atvf[atvf.Children.Count - 1];
         }
     }
 }

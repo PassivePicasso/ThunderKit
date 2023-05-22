@@ -6,12 +6,14 @@ using System.Linq;
 using ThunderKit.Common;
 using ThunderKit.Core.Windows;
 using ThunderKit.Core.UIElements;
-using ThunderKit.Core.Config;
 using ThunderKit.Markdown;
 using ThunderKit.Core.Pipelines;
 using ThunderKit.Core.Manifests;
 using System.Reflection;
 using System;
+using ThunderKit.Markdown.Helpers;
+using System.Net;
+using System.Collections.Generic;
 #if UNITY_2019_1_OR_NEWER
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -40,10 +42,50 @@ namespace ThunderKit.Core.Data
             CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
             CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
 
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            if (settings.FirstLoad && settings.ShowOnStartup)
-                EditorApplication.update += ShowSettings;
+            EditorApplication.update += InitSettings;
+        }
 
+        private static void ImageElementFactory_CacheUpdated(object sender, EventArgs e)
+        {
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
+            settings.CachedImageCount = ImageElementFactory.Count;
+            var realSize = ImageElementFactory.Size / (1024f * 1024f);
+            var grownSize = realSize * 100;
+            var truncatedGrownSize = (double)(int)grownSize;
+            var truncatedSize = truncatedGrownSize / 100;
+            settings.CacheSize = truncatedSize;
+            EditorUtility.SetDirty(settings);
+        }
+
+        private static void EditorApplicationQuitting() => CopyAssemblyCSharp(null, null);
+        private static bool EditorApplication_wantsToQuit()
+        {
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
+            settings.FirstLoad = true;
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssets();
+            return true;
+        }
+        private static void CopyAssemblyCSharp(string somevalue, CompilerMessage[] message)
+        {
+            foreach (var file in Directory.GetFiles("Packages", "Assembly-CSharp*.dll", SearchOption.AllDirectories))
+            {
+                var fileName = Path.GetFileName(file);
+                var outputPath = Combine("Library", "ScriptAssemblies", fileName);
+
+                FileUtil.ReplaceFile(file, outputPath);
+            }
+        }
+        private static void InitSettings()
+        {
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                return;
+            }
+
+            EditorApplication.update -= InitSettings;
+
+            var settings = GetOrCreateSettings<ThunderKitSettings>();
             settings.QuickAccessPipelines = AssetDatabase.FindAssets($"t:{nameof(Pipeline)}", Constants.FindAllFolders)
                 .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
                 .Select(path => AssetDatabase.LoadAssetAtPath<Pipeline>(path))
@@ -56,31 +98,19 @@ namespace ThunderKit.Core.Data
                 .Where(manifest => manifest)
                 .Where(manifest => manifest.QuickAccess)
                 .ToArray();
-        }
-        private static void EditorApplicationQuitting() => CopyAssemblyCSharp(null, null);
-        private static bool EditorApplication_wantsToQuit()
-        {
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
-            settings.FirstLoad = true;
-            EditorUtility.SetDirty(settings);
-            AssetDatabase.SaveAssets();
-            return true;
-        }
-        private static void CopyAssemblyCSharp(string somevalue, CompilerMessage[] message)
-        {
-            foreach (var file in Directory.GetFiles("Packages", "Assembly-CSharp.dll", SearchOption.AllDirectories))
-            {
-                var fileName = Path.GetFileName(file);
-                var outputPath = Combine("Library", "ScriptAssemblies", fileName);
 
-                FileUtil.ReplaceFile(file, outputPath);
+            ImageElementFactory.CachePath = settings.ImageCachePath;
+
+            ImageElementFactory.CacheUpdated += ImageElementFactory_CacheUpdated;
+            ImageElementFactory_CacheUpdated(null, EventArgs.Empty);
+
+            if (!settings.FirstLoad || !settings.ShowOnStartup)
+            {
+                settings.FirstLoad = false;
+                return;
             }
-        }
-        private static void ShowSettings()
-        {
-            EditorApplication.update -= ShowSettings;
+
             SettingsWindow.ShowSettings();
-            var settings = GetOrCreateSettings<ThunderKitSettings>();
             settings.FirstLoad = false;
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
@@ -117,13 +147,16 @@ namespace ThunderKit.Core.Data
         [SerializeField]
         private bool FirstLoad = true;
         public bool ShowOnStartup = true;
-        public bool notifyWhenImportCompletes = true;
         public string GameExecutable;
         public string GamePath;
         public bool Is64Bit;
         public string DateTimeFormat = "HH:mm:ss:fff";
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
         public bool ShowLogWindow = true;
+        public bool LogPackageSourceTimings;
+        public string ImageCachePath = "Library/MarkdownImageCache";
+        public int CachedImageCount;
+        public double CacheSize;
         public MarkdownOpenMode MarkdownOpenMode = MarkdownOpenMode.UnityExternalEditor;
 
         public Pipeline SelectedPipeline;
@@ -133,12 +166,14 @@ namespace ThunderKit.Core.Data
         private MarkdownElement markdown;
         private SerializedObject thunderKitSettingsSO;
         public ImportConfiguration ImportConfiguration;
+        private Label logCountLabel;
 
         #endregion
 
         public override void Initialize()
         {
             GamePath = "";
+            ImageElementFactory.CachePath = ImageCachePath;
         }
 
 
@@ -172,17 +207,85 @@ namespace ThunderKit.Core.Data
 
 
             var browseButton = settingsElement.Q<Button>("browse-button");
-            browseButton.clickable.clicked -= BrowserForGame;
-            browseButton.clickable.clicked += BrowserForGame;
+            browseButton.clickable.clicked -= BrowseForGame;
+            browseButton.clickable.clicked += BrowseForGame;
 
             var loadButton = settingsElement.Q<Button>("load-button");
             loadButton.clickable.clicked -= LoadGame;
             loadButton.clickable.clicked += LoadGame;
 
+
+            var cacheBrowseButton = settingsElement.Q<Button>("cache-browse-button");
+            cacheBrowseButton.clickable.clicked -= BrowserForCacheFolder;
+            cacheBrowseButton.clickable.clicked += BrowserForCacheFolder;
+
+            var clearCacheButton = settingsElement.Q<Button>("clear-cache-button");
+            clearCacheButton.clickable.clicked -= ClearCache;
+            clearCacheButton.clickable.clicked += ClearCache;
+
+            logCountLabel = settingsElement.Q<Label>("log-count-label");
+            var logCount = AssetDatabase.FindAssets("t:PipelineLog").Length;
+            logCountLabel.text = $"{logCount}";
+            var clearLogsButton = settingsElement.Q<Button>("clear-logs-button");
+            clearLogsButton.clickable.clicked -= ClearLogCache;
+            clearLogsButton.clickable.clicked += ClearLogCache;
+
             if (thunderKitSettingsSO == null)
                 thunderKitSettingsSO = new SerializedObject(this);
 
             rootElement.Bind(thunderKitSettingsSO);
+        }
+
+        private void ClearLogCache()
+        {
+            var logs = AssetDatabase.FindAssets("t:PipelineLog")
+                                    .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                                    .ToArray();
+            var remaining = new List<string>();
+#if UNITY_2020_1_OR_NEWER
+            if (AssetDatabase.DeleteAssets(logs, remaining) && remaining.Count > 0)
+                Debug.Log(remaining.Aggregate("Some logs were not deleted\r\n", (a, b) => $"{a}\r\n{b}"));
+#else
+            foreach (var log in logs)
+                if (!AssetDatabase.DeleteAsset(log))
+                    remaining.Add(log);
+
+            if (remaining.Count > 0)
+                Debug.Log(remaining.Aggregate("Some logs were not deleted\r\n", (a, b) => $"{a}\r\n{b}"));
+#endif
+            logCountLabel.text = $"{0}";
+        }
+
+        private void ClearCache()
+        {
+            CachedImageCount = 0;
+            ImageElementFactory.ClearCache();
+        }
+
+        private void BrowserForCacheFolder()
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.LinuxEditor:
+                case RuntimePlatform.WindowsEditor:
+                    var path = EditorUtility.OpenFolderPanel("Select Cache Location", ImageCachePath, "MarkdownImageCahe");
+                    if (string.IsNullOrEmpty(path)) return;
+
+                    string currentDir = Directory.GetCurrentDirectory().Replace("\\", "/");
+                    if (path.StartsWith(currentDir))
+                        path = path.Substring(currentDir.Length).TrimStart('/');
+
+                    ImageCachePath = path;
+                    ImageElementFactory.CachePath = ImageCachePath;
+                    EditorUtility.SetDirty(this);
+                    break;
+                //case RuntimePlatform.OSXEditor:
+                //    path = EditorUtility.OpenFilePanel("Open Game Executable", currentDir, "app");
+                //    break;
+                default:
+                    EditorUtility.DisplayDialog("Unsupported", "Your operating system is partially or completely unsupported. Contributions to improve this are welcome", "Ok");
+                    return;
+            }
         }
 
         void OnEditorModeChanged(ChangeEvent<Enum> evt)
@@ -199,7 +302,7 @@ namespace ThunderKit.Core.Data
             ImportConfiguration.ConfigurationIndex = 0;
             ImportConfiguration.ImportGame();
         }
-        private void BrowserForGame()
+        private void BrowseForGame()
         {
             ImportConfiguration.LocateGame(this);
             if (!string.IsNullOrEmpty(GameExecutable) && !string.IsNullOrEmpty(GamePath))

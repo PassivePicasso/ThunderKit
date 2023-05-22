@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,15 +7,16 @@ using ThunderKit.Core.Attributes;
 using ThunderKit.Core.Paths;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
+using UnityEngine.Serialization;
 
 namespace ThunderKit.Core.Pipelines.Jobs
 {
     [PipelineSupport(typeof(Pipeline))]
     public class Copy : FlowPipelineJob
     {
-        [Tooltip("While enabled, Replaces the directory strictly (removes all custom made files in destination folder)")]
-        public bool StrictDictionaryReplace = true;
+        [Tooltip("While enabled, replace target directory, removing all prior files")]
+        [FormerlySerializedAs("StrictDictionaryReplace"), FormerlySerializedAs("Replace")]
+        public bool ReplaceDirectory = true;
 
         [Tooltip("While enabled, will copy entire specified directory & subdirectories. Source and destination should be folders")]
         public bool Recursive;
@@ -35,7 +37,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
         protected override Task ExecuteInternal(Pipeline pipeline)
         {
-            CopyStatement = $"``` {Source} ``` to ``` {Destination} ```\r\n";
+            CopyStatement = $"``` {Source} ``` to ``` {Destination} ```\r\n\r\n";
 
             var source = ResolveSource(pipeline);
             if (!ValidateSource(pipeline, source))
@@ -45,35 +47,37 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var destination = Destination.Resolve(pipeline, this);
 
             if (EstablishDestination)
+            {
                 Directory.CreateDirectory((isSourceFile ? Path.GetDirectoryName(destination) : destination));
+            }
 
             if (Recursive)
-                ExecuteRecursiveCopy(pipeline, isSourceFile, source, destination);
+                CopyRecursively(pipeline, isSourceFile, source, destination);
             else
             {
                 FileUtil.ReplaceFile(source, destination);
-                pipeline.Log(LogLevel.Information, $"{CopyStatement}\r\n\r\n``` {source} ``` to ``` {destination} ```");
+                pipeline.Log(LogLevel.Information, $"{CopyStatement}Copied ``` {source} ``` to ``` {destination} ```");
             }
 
 
             return Task.CompletedTask;
         }
 
-        private void ExecuteRecursiveCopy(Pipeline pipeline, bool isSourceFile, string source, string destination)
+        private void CopyRecursively(Pipeline pipeline, bool isSourceFile, string source, string destination)
         {
             if (!ValidateRecursiveSource(pipeline, isSourceFile, source))
                 return;
 
-            if (StrictDictionaryReplace)
-                ExecuteStrictDictionaryCopy(pipeline, source, destination);
+            if (ReplaceDirectory)
+                ExecuteReplaceDirectory(pipeline, source, destination);
             else
-                ExecuteDictionaryCopy(pipeline, source, destination);
+                ReplaceFiles(pipeline, source, destination);
         }
 
-        private void ExecuteDictionaryCopy(Pipeline pipeline, string source, string destination)
+        private void ReplaceFiles(Pipeline pipeline, string source, string destination)
         {
             string[] files = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
-
+            var copiedFiles = new List<string>();
             foreach (string sourceFilePath in files)
             {
                 var destinationFilePath = sourceFilePath.Replace(source, destination);
@@ -81,17 +85,20 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 if(!Directory.Exists(destinationDirectoryPath))
                     Directory.CreateDirectory(destinationDirectoryPath);
                 FileUtil.ReplaceFile(sourceFilePath, destinationFilePath);
+
+                copiedFiles.Add(destinationFilePath);
             }
+            pipeline.Log(LogLevel.Information, $"{CopyStatement}Copied ``` {source} ``` to ``` {destination} ```", copiedFiles.Aggregate("Copied Files", (a, b) => $"{a}\r\n\r\n. {b}"));
         }
 
-        private void ExecuteStrictDictionaryCopy(Pipeline pipeline, string source, string destination)
+        private void ExecuteReplaceDirectory(Pipeline pipeline, string source, string destination)
         {
             FileUtil.ReplaceDirectory(source, destination);
             int i = 1;
             var copiedFiles = Directory.EnumerateFiles(destination, "*", SearchOption.AllDirectories)
                 .Prepend("Copied Files")
                 .Aggregate((a, b) => $"{a}\r\n\r\n {i++}. {b}");
-            pipeline.Log(LogLevel.Information, $"{CopyStatement}\r\n\r\nCopied ``` {source} ``` to ``` {destination} ```", copiedFiles);
+            pipeline.Log(LogLevel.Information, $"{CopyStatement}Copied ``` {source} ``` to ``` {destination} ```", copiedFiles);
         }
 
         private bool ValidateRecursiveSource(Pipeline pipeline, bool isSourceFile, string source)

@@ -9,8 +9,10 @@ namespace AssetsExporter.YAMLExporters.Info
     public class PPtrExporterInfo
     {
         public readonly Dictionary<AssetsFileInstance, Dictionary<long, long>> fileAssetToRootAsset = new Dictionary<AssetsFileInstance, Dictionary<long, long>>();
-        public readonly Dictionary<AssetsFileInstance, Dictionary<long, KeyValuePair<long, Guid>>> scriptsCache = new Dictionary<AssetsFileInstance, Dictionary<long, KeyValuePair<long, Guid>>>();
+        public readonly Dictionary<AssetsFileInstance, Dictionary<long, (long pathID, Guid fileID, int type)>> scriptsCache = new Dictionary<AssetsFileInstance, Dictionary<long, (long, Guid, int)>>();
         public readonly Dictionary<string, Guid> unityExtensionAssebmlies = new Dictionary<string, Guid>();
+        public readonly Dictionary<string, (long pathID, Guid fileID, int type)> typeReferenceOverrides = new Dictionary<string, (long, Guid, int)>();
         public readonly List<BaseAssetCollection> foundNewCollections = new List<BaseAssetCollection>();
+        public bool storeFoundCollections;
     }
 }

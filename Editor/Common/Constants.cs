@@ -21,7 +21,7 @@ namespace ThunderKit.Common
         public static readonly string[] FindPackagesFolders = new[] { "Packages" };
 
         public const string ThunderKitRoot = "Packages/com.passivepicasso.thunderkit";
-        public const string DocumentationStylePath = ThunderKitRoot + "/USS/thunderkit_style.uss";
+        public const string ThunderKitStyle = ThunderKitRoot + "/USS/thunderkit_style.uss";
         public const string SettingsTemplatesPath = ThunderKitRoot + "/UXML/Settings";
         public const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
         public const string ThunderKitSettingsTemplatePath = SettingsTemplatesPath + "/ThunderKitSettings.uxml";

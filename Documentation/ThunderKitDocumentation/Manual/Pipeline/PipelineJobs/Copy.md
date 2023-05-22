@@ -11,6 +11,14 @@
 [Copy](assetlink://GUID/03063c7a6ec04cc4c82c75cf9bcc8db8) copy file(s) with configuration options
 
 ## Fields
+* **Per Manifest**
+  - When enabled will run copy once per manifest in manifest dependency tree.
+* **List Type**
+  - Determines how the **Manifests** array field will be used to filter the manifests in the dependency tree
+  - Blacklist will exclude any manifest listed in **Manifests**
+  - Whitelist will only include manifests listed in **Manifests**
+* **Replace**
+  - While enabled, replace target directory, removing all prior files
 * **Recursive**
   - When enabled will copy the entire contents of a specified directory including all subdirectories and files to be content of a Destination directory
   - When using Recursive the Source and Destination are expected to be directories and will error if a file is set as the value
