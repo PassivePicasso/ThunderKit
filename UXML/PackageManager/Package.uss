@@ -1,26 +1,20 @@
 ﻿#tkpm-package-version {
 	border-color: rgb(128,128,128);
-	position: absolute;
-	left: 210px;
-
-	border-left-width: 1px;
-
 	height: 22px;
+
 	margin-left: 0px;
 	margin-top: -4px;
 	margin-right: 0px;
 	margin-bottom: 0px;
+
 	padding-left: 4px;
 	padding-top: 4px;
 	padding-right: 4px;
 	padding-bottom: 0px;
-}
-ListView .selected {
-	background-color: #3E7DE7;
-	color: #fff;
+	-unity-text-align: middle-right;
 }
 #tkpm-package-name {
-	width: 190px;
+	flex-grow: 1;
 	padding-left: 4px;
 	padding-top: 0px;
 	padding-right: 4px;
@@ -44,8 +38,5 @@ ListView .selected {
 	background-image: resource("Builtin Skins/LightSkin/Images/MenuItemOn.png");
 }
 ListView :selected {
-	background-color: #888;
-}
-ListView :selected .textElement {
-	color: #eee;
+	background-color: rgba(128, 0, 0, 0.5);
 }

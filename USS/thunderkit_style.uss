@@ -35,6 +35,26 @@
     background-image: url('/Packages/com.passivepicasso.thunderkit/Graphics/Rasters/Icons/TK_Documentation_2X_Icon.png');
 }
 
+.w16h16 {
+	width: 16px;
+	height: 16px;
+}
+.w24h24 {
+	width: 24px;
+	height: 24px;
+}
+.w32h32 {
+	width: 32px;
+	height: 32px;
+}
+.w64h64 {
+	width: 64px;
+	height: 64px;
+}
+.w128h128 {
+	width: 128px;
+	height: 128px;
+}
 .horizontal {
     flex-direction: row;
 }
@@ -55,7 +75,12 @@
 .grow {
     flex-grow: 1;
 }
-
+.m0 {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
 .m2 {
     margin-left: 2px;
     margin-right: 2px;
@@ -163,7 +188,7 @@
 
 .thunderkit-field {
     margin-top: 0px;
-    margin-bottom: 2px;
+    margin-bottom: 0px;
     flex-direction: row;
     flex-grow: 1;
     align-self: stretch;
@@ -303,11 +328,11 @@
 }
 
 .warning Label {
-    color: rgba(200, 128, 0, 1);
+    color: rgba(64, 48, 0, 1);
 }
 
 .error Label {
-    color: rgba(255, 70, 0, 1);
+    color: rgba(128, 0, 0, 1);
 }
 
 Label.morality,

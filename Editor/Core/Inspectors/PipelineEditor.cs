@@ -43,6 +43,7 @@ namespace ThunderKit.Core.Inspectors
             if (EditorGUI.EndChangeCheck())
             {
                 settings.SetQuickAccess(pipeline, pipeline.QuickAccess);
+                EditorUtility.SetDirty(pipeline);
                 serializedObject.ApplyModifiedProperties();
             }
 

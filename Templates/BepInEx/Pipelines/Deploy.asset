@@ -16,7 +16,7 @@ MonoBehaviour:
   PerManifest: 1
   ListType: 0
   Manifests: []
-  StrictDictionaryReplace: 1
+  Replace: 1
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1
@@ -74,7 +74,7 @@ MonoBehaviour:
   PerManifest: 0
   ListType: 0
   Manifests: []
-  StrictDictionaryReplace: 1
+  Replace: 1
   Recursive: 0
   SourceRequired: 0
   EstablishDestination: 1
@@ -96,7 +96,7 @@ MonoBehaviour:
   PerManifest: 0
   ListType: 0
   Manifests: []
-  StrictDictionaryReplace: 1
+  Replace: 1
   Recursive: 0
   SourceRequired: 1
   EstablishDestination: 0
@@ -118,7 +118,7 @@ MonoBehaviour:
   PerManifest: 1
   ListType: 0
   Manifests: []
-  StrictDictionaryReplace: 1
+  Replace: 1
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1
@@ -140,7 +140,7 @@ MonoBehaviour:
   PerManifest: 0
   ListType: 0
   Manifests: []
-  StrictDictionaryReplace: 1
+  Replace: 1
   Recursive: 1
   SourceRequired: 1
   EstablishDestination: 1
@@ -162,7 +162,7 @@ MonoBehaviour:
   PerManifest: 1
   ListType: 0
   Manifests: []
-  StrictDictionaryReplace: 1
+  Replace: 1
   Recursive: 1
   SourceRequired: 0
   EstablishDestination: 1

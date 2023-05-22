@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+	xmlns:adtc="ThunderKit.Addressable.Tools"
+    xsi:noNamespaceSchemaLocation="F:\Projects\Unity\Modding\KerbalSpaceProgram2\ExampleProject\UIElementsSchema/UIElements.xsd"
+>
+	<ui:VisualElement name="addressable-asset">
+		<adtc:AddressablePreviewImage name="addressable-icon" class="addressable-icon" />
+		<ui:VisualElement name="addressable-labels">
+			<ui:TextField name="addressable-label"          class="addressable-label" readonly="true" />
+			<ui:TextField name="addressable-type-label"     class="addressable-label" readonly="true" />
+			<ui:TextField name="addressable-provider-label" class="addressable-label" readonly="true" />
+		</ui:VisualElement>
+		<ui:VisualElement name="addressable-button-panel">
+			<ui:Button name="addressable-load-scene-button" text="Load Scene" tooltip="Editor must be in Play mode to load Scenes"/>
+			<ui:Button name="addressable-inspect-button" text="Inspect" />
+		</ui:VisualElement>
+	</ui:VisualElement>
+</ui:UXML>

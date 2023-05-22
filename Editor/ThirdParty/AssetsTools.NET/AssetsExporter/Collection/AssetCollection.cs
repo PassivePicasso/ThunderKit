@@ -24,7 +24,7 @@ namespace AssetsExporter.Collection
         //because different collections can have the same path but different extension
         //
         //anim, animset, asset, blendtree, buildreport, colors, controller, cubemap, curves, curvesNormalized, flare, fontsettings, giparams, gradients, guiskin, ht, mask, mat, mesh, mixer, overrideController, particleCurves, particleCurvesSigned, particleDoubleCurves, particleDoubleCurvesSigned, physicMaterial, physicsMaterial2D, playable, preset, renderTexture, shadervariants, spriteatlas, state, statemachine, texture2D, transition, webCamTexture, brush, terrainlayer, signal
-        public override string ExportExtension => typeToExtension.TryGet((AssetClassID)(MainAsset?.info.curFileType ?? -1u), "asset");
+        public override string ExportExtension => typeToExtension.TryGet((AssetClassID)(MainAsset?.info.TypeId ?? -1u), "asset");
 
         public static AssetCollection CreateAssetCollection(AssetsManager assetsManager, AssetExternal asset)
         {
