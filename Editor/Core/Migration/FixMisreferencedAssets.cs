@@ -13,10 +13,9 @@ namespace ThunderKit.Migration
         [MenuItem("Tools/ThunderKit/Migration/Switch DLL references to CS references")]
         public static void Execute()
         {
-            var selection = Selection.objects;
+            var selection = Selection.assetGUIDs;
             try
             {
-
                 AssetDatabase.StartAssetEditing();
                 var scriptRefRegex = new Regex("  m_Script: \\{fileID: (\\d*?), guid: (\\w*?), type: \\d\\}");
                 var monoScripts = AssetDatabase.FindAssets("t:MonoScript")
@@ -44,7 +43,8 @@ namespace ThunderKit.Migration
                         monoScriptTable[fileId] = guid;
                 }
 
-                foreach (var file in selection.Select(AssetDatabase.GetAssetPath).Select(path => (path, lines: File.ReadLines(path))))
+                var paths = Selection.assetGUIDs.Select(guid => AssetDatabase.GUIDToAssetPath(guid));
+                foreach (var file in selection.Select(AssetDatabase.GUIDToAssetPath).Select(path => (path, lines: File.ReadLines(path))))
                 {
                     var lines = file.lines.ToArray();
                     var changes = false;
@@ -66,7 +66,6 @@ namespace ThunderKit.Migration
                         Debug.Log($"Changed {file.path}");
                         File.WriteAllLines(file.path, lines);
                     }
-
                 }
             }
             finally
@@ -74,7 +73,7 @@ namespace ThunderKit.Migration
                 AssetDatabase.StopAssetEditing();
                 AssetDatabase.Refresh();
                 Selection.objects = null;
-                Selection.objects = selection;
+                Selection.objects = selection.Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadMainAssetAtPath).ToArray();
             }
         }
     }
