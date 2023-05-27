@@ -1,3 +1,12 @@
+## 8.0.4
+
+### Community Contributions
+
+* Fix issue with DLL to CS reference migration utility that would prevent some
+  assets from correctly being converted due to not accounting for negative 
+  FileIDs.
+  Thanks to @KevinfromHP for this fix.
+
 ## 8.0.3
 
 ### Fixes
