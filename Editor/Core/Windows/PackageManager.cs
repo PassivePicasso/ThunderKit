@@ -394,27 +394,35 @@ namespace ThunderKit.Core.Windows
         {
             var installButton = packageView.Q<Button>("tkpm-package-install-button");
             installButton.userData = selection;
-            installButton.clickable.clickedWithEventInfo -= InstallVersion;
-            installButton.clickable.clickedWithEventInfo += InstallVersion;
+            installButton.clickable.clickedWithEventInfo -= UpdateInstallation;
+            installButton.clickable.clickedWithEventInfo += UpdateInstallation;
             installButton.text = selection.Installed ? "Uninstall" : "Install";
         }
 
-        async void InstallVersion(EventBase obj)
+        async void UpdateInstallation(EventBase obj)
         {
-            var installButton = obj.currentTarget as Button;
-            var selection = installButton.userData as PackageGroup;
-            var packageName = selection.PackageManifest.name;
-            if (selection.Installed)
+            try
             {
-                ScriptingSymbolManager.RemoveScriptingDefine(packageName);
-                deletePackage = CreateInstance<DeletePackage>();
-                deletePackage.directory = selection.InstallDirectory;
-                TryDelete();
+                EditorApplication.LockReloadAssemblies();
+                var installButton = obj.currentTarget as Button;
+                var selection = installButton.userData as PackageGroup;
+                var packageName = PackageHelper.GetCleanPackageName(selection.DependencyId.ToLower());
+                if (selection.Installed)
+                {
+                    ScriptingSymbolManager.RemoveScriptingDefine(packageName);
+                    deletePackage = CreateInstance<DeletePackage>();
+                    deletePackage.directory = selection.InstallDirectory;
+                    TryDelete();
+                }
+                else
+                {
+                    await selection.Source.InstallPackage(selection, targetVersion);
+                    ScriptingSymbolManager.AddScriptingDefine(packageName);
+                }
             }
-            else
+            finally
             {
-                await selection.Source.InstallPackage(selection, targetVersion);
-                ScriptingSymbolManager.AddScriptingDefine(packageName);
+                EditorApplication.UnlockReloadAssemblies();
             }
         }
 
