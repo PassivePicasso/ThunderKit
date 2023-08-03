@@ -73,8 +73,7 @@ namespace ThunderKit.Core.Data
 
         public string InstalledVersion => PackageManifest.version;
 
-        public bool Installed => PackageManifest.name?.Equals(PackageHelper.GetCleanPackageName(DependencyId), StringComparison.OrdinalIgnoreCase) ?? false;
-
+        public bool Installed => PackageManifest.name != null;
 
         public override bool Equals(object obj)
         {
