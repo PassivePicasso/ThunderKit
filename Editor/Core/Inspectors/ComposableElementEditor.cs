@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using ThunderKit.Core;
+using ThunderKit.Core.Utilities;
+using UnityEditor;
 
 namespace ThunderKit.Core.Inspectors
 {
@@ -9,7 +11,7 @@ namespace ThunderKit.Core.Inspectors
         {
             try
             {
-                DrawPropertiesExcluding(serializedObject, new string[] { "m_Script" });
+                EditorHelpers.DrawSanitizedPropertiesExcluding(serializedObject, new string[] { "m_Script" });
             }
             catch { }
         }
