@@ -62,7 +62,7 @@ namespace ThunderKit.Core.Inspectors
             //Ensure SerializedObject is up to date with latest data
             serializedObject.Update();
             var excludedProperties = ExcludedProperties().Append("m_Script").Append("Data").ToArray();
-            EditorHelpers.DrawSanitizedPropertiesExcluding(serializedObject, excludedProperties);
+            DrawPropertiesExcluding(serializedObject, excludedProperties);
             GUILayout.Space(4);
 
             dataArray = serializedObject.FindProperty(nameof(ComposableObject.Data));
