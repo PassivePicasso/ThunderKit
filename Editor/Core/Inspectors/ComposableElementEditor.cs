@@ -1,11 +1,9 @@
-﻿using ThunderKit.Core;
-using ThunderKit.Core.Utilities;
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace ThunderKit.Core.Inspectors
 {
     [CustomEditor(typeof(ComposableElement), true)]
-    public class ComposableElementEditor : UnityEditor.Editor
+    public class ComposableElementEditor : Editor
     {
         public override void OnInspectorGUI()
         {
