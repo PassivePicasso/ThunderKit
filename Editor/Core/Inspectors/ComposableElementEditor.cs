@@ -11,7 +11,7 @@ namespace ThunderKit.Core.Inspectors
         {
             try
             {
-                EditorHelpers.DrawSanitizedPropertiesExcluding(serializedObject, new string[] { "m_Script" });
+                DrawPropertiesExcluding(serializedObject, new string[] { "m_Script" });
             }
             catch { }
         }
