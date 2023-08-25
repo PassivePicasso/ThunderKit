@@ -145,8 +145,7 @@ namespace ThunderKit.Core.Windows
                     .Distinct()
                     .Select(AssetDatabase.GUIDToAssetPath)
                     .Distinct()
-                    .Select(path => (path: Path.GetDirectoryName(path), asset: AssetDatabase.LoadAssetAtPath<DocumentationRoot>(path)))
-                    .Select(p => (path: p.path.Replace("\\", "/"), asset: p.asset))
+                    .Select(path => (path: Path.GetDirectoryName(path).Replace("\\", "/"), asset: AssetDatabase.LoadAssetAtPath<DocumentationRoot>(path)))
                     .ToArray();
 
             indexScroller = rootVisualElement.Q<ScrollView>("index-scroller");
