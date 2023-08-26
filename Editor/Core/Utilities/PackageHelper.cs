@@ -129,11 +129,31 @@ namespace ThunderKit.Core.Utilities
         public static string GetFileNameHash(string assemblyPath)
         {
             string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-            string result = GetStringHashUTF8(shortName);
+            string result = GetCleanedStringHashUTF8(shortName);
             return result;
         }
 
         public static string GetStringHashUTF8(string value)
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
+                var guid = new Guid(hashBytes);
+                return guid.ToString();
+            }
+        }
+
+        public static Guid GetGuidHashUTF8(string value)
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
+                var guid = new Guid(hashBytes);
+                return guid;
+            }
+        }
+
+        public static string GetCleanedStringHashUTF8(string value)
         {
             using (var md5 = MD5.Create())
             {
