@@ -10,6 +10,7 @@ using ThunderKit.Core.Paths;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
+using UnityEngine;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 using PackageSource = UnityEditor.PackageManager.PackageSource;
 
@@ -29,6 +30,10 @@ public class SolutionPostProcessor : AssetPostprocessor
 
     static readonly Dictionary<string, (string asmDefPath, PackageInfo packageInfo)> localPackageSources = new Dictionary<string, (string asmDefPath, PackageInfo packageInfo)>();
 
+    /// <summary>
+    /// Generate a dictionary with information necessary to clean up project file
+    /// Paths
+    /// </summary>
     static SolutionPostProcessor()
     {
         ListRequest lr = null;
@@ -66,42 +71,68 @@ public class SolutionPostProcessor : AssetPostprocessor
     private static string GenerateSlnProjectEntry(string name) =>
         $"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{name}\", \"{name}.csproj\", \"{Guid.NewGuid().ToString("B")}\"\rEndProject\r";
 
-    public static string OnGeneratedSlnSolution(string path, string content)
+    /// <summary>
+    /// Creates a simple CSProj file with the most basic requirements and a single ItemGroup containing None entries for each member of <paramref name="files"/>
+    /// </summary>
+    /// <param name="files">A collection of FilePaths and their Project Display Paths (linkPath)</param>
+    /// <returns>A String with the contents for a CSProj file as described</returns>
+    public static string GenerateProjectFile(IEnumerable<(string linkPath, string filePath)> files)
     {
-        var directoryPath = Path.GetDirectoryName(path);
-
-        var documentationRoots = AssetDatabase.FindAssets($"t:{nameof(DocumentationRoot)}")
-                .Distinct()
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Distinct()
-                .Select(p => (path: Path.GetDirectoryName(p).Replace("\\", "/"), asset: AssetDatabase.LoadAssetAtPath<DocumentationRoot>(p)))
-                .ToArray();
-
         var includes = new List<string>();
-        var docProjects = new List<string>();
-        foreach (var root in documentationRoots)
-        {
-            rootArray[0] = root.path;
-            var documentguids = AssetDatabase.FindAssets($"t:TextAsset", rootArray);
-            var documentPaths = documentguids.Select(AssetDatabase.GUIDToAssetPath).Where(p => Path.GetExtension(p).Equals(".md"));
-            var distinctDocuments = documentPaths.Distinct().Select(Path.GetFullPath);
-            var fullPath = Path.GetFullPath(Path.GetDirectoryName(root.path)).Replace("\\", "/");
 
-            foreach (var docPath in distinctDocuments)
-                includes.Add($"    <None Include=\"{docPath}\">\r    " +
-                             $"      <Link>{docPath.Substring(fullPath.Length)}</Link>\r" +
-                             $"    </None>");
-        }
+        foreach (var (linkPath, filePath) in files)
+            includes.Add($"    <None Include=\"{filePath}\">\r    " +
+                         $"      <Link>{linkPath}</Link>\r" +
+                         $"    </None>");
+
         var includesString = includes.Aggregate((a, b) => $"{a}\r{b}") + "\r";
-        var documentationProjectContent =
+        return
             XML_HEADER +
             PROJECT_OPEN +
               ITEMGROUP_OPEN +
                 includesString +
               ITEMGROUP_CLOSE +
             PROJECT_CLOSE;
+    }
 
-        File.WriteAllText(Path.Combine(directoryPath, $"{DOC_PROJ_NAME}.csproj"), documentationProjectContent);
+    /// <summary>
+    /// Returns an enumeration of Markdown Documents managed by a DocumentationRoot asset.
+    /// </summary>
+    /// <param name="root">A tuple containing the path to a DocumentationRoot asset and the corresponding loaded Asset</param>
+    /// <returns>An enumeration of link and file paths where the link is relative to the DocumentationRoot path</returns>
+    public static IEnumerable<(string linkPath, string filePath)> GetDistinctMarkdownDocuments((string path, DocumentationRoot asset) root)
+    {
+        rootArray[0] = root.path;
+        var rootFullPath = Path.GetFullPath(Path.GetDirectoryName(root.path)).Replace("\\", "/");
+
+        var documentguids = AssetDatabase.FindAssets($"t:TextAsset", rootArray);
+        var documentPaths = documentguids.Select(AssetDatabase.GUIDToAssetPath).Where(p => Path.GetExtension(p).Equals(".md"));
+        var distinctDocuments = documentPaths.Distinct().Select(Path.GetFullPath)
+            .Select(filePath => (linkPath: filePath.Substring(rootFullPath.Length), filePath));
+
+        return distinctDocuments;
+    }
+
+    /// <summary>
+    /// Process Unity generation Solution files to add a project for ThunderKit
+    /// documentation to improve utility for viewing and editing Markdown
+    /// documentation for ThunderKit and ThunderKit based projects.
+    /// </summary>
+    /// <param name="path">Path to generated Solution File</param>
+    /// <param name="content">Content of solution file generated by unity</param>
+    /// <returns>Modified Solution file content</returns>
+    public static string OnGeneratedSlnSolution(string path, string content)
+    {
+        var directoryPath = Path.GetDirectoryName(path);
+
+        var docFiles = AssetDatabase.FindAssets($"t:{nameof(DocumentationRoot)}")
+                .Distinct()
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Distinct()
+                .Select(p => (path: Path.GetDirectoryName(p).Replace("\\", "/"), asset: AssetDatabase.LoadAssetAtPath<DocumentationRoot>(p)))
+                .SelectMany(GetDistinctMarkdownDocuments);
+
+        File.WriteAllText(Path.Combine(directoryPath, $"{DOC_PROJ_NAME}.csproj"), GenerateProjectFile(docFiles));
 
         var lines = content.Split('\n').ToList();
         for (int i = 0; i < lines.Count; i++)
@@ -119,6 +150,13 @@ public class SolutionPostProcessor : AssetPostprocessor
         return newContent;
     }
 
+    /// <summary>
+    /// Process CSProj files generated by Unity to fix local disk packages not
+    /// having their folder structure
+    /// </summary>
+    /// <param name="path">Path to generated CSProj File</param>
+    /// <param name="content">Content of CSProj file generated by unity</param>
+    /// <returns>Modified CSProj file content</returns>
     public static string OnGeneratedCSProject(string path, string content)
     {
         var assemblyName = Path.GetFileNameWithoutExtension(path);
@@ -137,6 +175,13 @@ public class SolutionPostProcessor : AssetPostprocessor
         return result;
     }
 
+    /// <summary>
+    /// Adjusts a CSProj file so that its Compile and None elements will use a 
+    /// link path which represents their lcoation relative to the AsmRef they
+    /// are managed by
+    /// </summary>
+    /// <param name="document">A Parsed CSProj file in XDocument format</param>
+    /// <param name="assemblyName">The name of the CSProj file / assembly</param>
     static void AdjustDocument(XDocument document, string assemblyName)
     {
         var ns = document.Root.Name.Namespace;
