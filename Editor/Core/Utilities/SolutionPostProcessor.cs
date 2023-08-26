@@ -6,11 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ThunderKit.Core.Data;
-using ThunderKit.Core.Paths;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
-using UnityEngine;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 using PackageSource = UnityEditor.PackageManager.PackageSource;
 
@@ -191,7 +189,7 @@ public class SolutionPostProcessor : AssetPostprocessor
 
         // get all Compile elements
         var firstGroup = document.Root.Descendants(ns + "PropertyGroup").First();
-        var element = new XElement(ns + "PathRoot") { Value = data.packageInfo.resolvedPath};
+        var element = new XElement(ns + "PathRoot") { Value = data.packageInfo.resolvedPath };
         firstGroup.Add(element);
 
         IEnumerable<XElement> compileElements = document.Root.Descendants(ns + "Compile");
