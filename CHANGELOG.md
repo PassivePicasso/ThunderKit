@@ -1,6 +1,23 @@
 ## 8.0.4
 
+### Improvements and Fixes
+
+* Added setting to enable processing CSProj files for local UPM Packages to fix
+  missing folder structure information
+* Added setting to generate a CSProj for ThunderKit's non-code assets. This is
+  primarily for maintainers.
+* Added documentation for BatchMode
+* Improve import extension documentation
+* Fix Packages not indicating their install state correctly
+* Fix Scripting Symbols not being reliably generated for ThunderKit installed
+  packages
+* Fixed missing PreviewStage Scene file for older versions of Unity
+* Fixed an issue where Control Characters could get added to PathReference 
+  fields on Linux. Thanks to @aldelaro5 for identifying this issue.
+
 ### Community Contributions
+
+* Fix issue with ThunderKit.Common.Constants colliding sometimes.
 
 * Fix issue with DLL to CS reference migration utility that would prevent some
   assets from correctly being converted due to not accounting for negative 
