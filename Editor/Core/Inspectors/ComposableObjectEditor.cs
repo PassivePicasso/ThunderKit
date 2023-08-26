@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using ThunderKit.Common;
 using ThunderKit.Core.Attributes;
-using ThunderKit.Core.Windows;
 using ThunderKit.Core.Manifests.Datum;
+using ThunderKit.Core.Utilities;
+using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Profiling;
 using static UnityEditor.EditorGUIUtility;
 using Debug = UnityEngine.Debug;
-using ThunderKit.Common;
-using UnityEngine.Profiling;
-using ThunderKit.Core.Utilities;
 
 namespace ThunderKit.Core.Inspectors
 {
     [CustomEditor(typeof(ComposableObject), true)]
-    public class ComposableObjectEditor : UnityEditor.Editor
+    public class ComposableObjectEditor : Editor
     {
         const string MissingScriptReference = "Missing Script Reference";
         protected static GUISkin EditorSkin;
@@ -29,7 +28,7 @@ namespace ThunderKit.Core.Inspectors
         }
 
         static ComposableElement ClipboardItem;
-        Dictionary<UnityEngine.Object, UnityEditor.Editor> Editors;
+        Dictionary<UnityEngine.Object, Editor> Editors;
         SerializedProperty dataArray;
 
         protected virtual IEnumerable<string> ExcludedProperties()
@@ -43,7 +42,7 @@ namespace ThunderKit.Core.Inspectors
             try
             {
                 var targetObject = target as ComposableObject;
-                Editors = new Dictionary<UnityEngine.Object, UnityEditor.Editor>();
+                Editors = new Dictionary<UnityEngine.Object, Editor>();
             }
             catch
             {
@@ -62,7 +61,7 @@ namespace ThunderKit.Core.Inspectors
             //Ensure SerializedObject is up to date with latest data
             serializedObject.Update();
             var excludedProperties = ExcludedProperties().Append("m_Script").Append("Data").ToArray();
-            DrawPropertiesExcluding(serializedObject, excludedProperties);
+            EditorHelpers.DrawSanitizedPropertiesExcluding(serializedObject, excludedProperties);
             GUILayout.Space(4);
 
             dataArray = serializedObject.FindProperty(nameof(ComposableObject.Data));
@@ -370,7 +369,7 @@ namespace ThunderKit.Core.Inspectors
 
                         return true;
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Debug.LogError(e);
                         return false;
