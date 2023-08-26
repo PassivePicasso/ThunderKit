@@ -387,11 +387,11 @@ namespace ThunderKit.Core.Data
                 foreach (var installable in installSet)
                 {
                     var installableGroup = installable.group;
-                    var manifestGuid = PackageHelper.GetStringHashUTF8(installable.group.DependencyId);
+                    var manifestGuid = PackageHelper.GetCleanedStringHashUTF8(installable.group.DependencyId);
                     var manifestPath = PathExtensions.Combine(installableGroup.InstallDirectory, $"{installableGroup.PackageName}.asset");
                     progressBar.Update($"Creating manifest for {installable.group.PackageName}", progress: progress += stepSize / 3f);
                     var dependenciesArray = installable.dependencies
-                                                        .Select(pv => PackageHelper.GetStringHashUTF8(pv.group.DependencyId))
+                                                        .Select(pv => PackageHelper.GetCleanedStringHashUTF8(pv.group.DependencyId))
                                                         .Select(guid => $"  - {{fileID: 11400000, guid: {guid}, type: 2}}")
                                                         .ToArray();
 

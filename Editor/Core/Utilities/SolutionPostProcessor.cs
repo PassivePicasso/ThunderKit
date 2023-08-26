@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
@@ -65,9 +66,19 @@ public class SolutionPostProcessor : AssetPostprocessor
     const string ITEMGROUP_OPEN = "  <ItemGroup>\r";
     const string ITEMGROUP_CLOSE = "  </ItemGroup>\r";
     const string DOC_PROJ_NAME = "ThunderKit.Documentation";
+    const string ASSETS_PROJ_NAME = "ThunderKit.Assets";
 
-    private static string GenerateSlnProjectEntry(string name) =>
-        $"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{name}\", \"{name}.csproj\", \"{Guid.NewGuid().ToString("B")}\"\rEndProject\r";
+    /// <summary>
+    /// Hashes a name into a GUID to identify a project and creates an Entry that can be injectred into an Sln file to represent a new project
+    /// </summary>
+    /// <param name="name">Name of assembly / project to be added</param>
+    /// <returns>A string representing a Solution Project entry</returns>
+    private static string GenerateSlnProjectEntry(string name)
+    {
+        var hash = PackageHelper.GetGuidHashUTF8(name);
+
+        return $"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{name}\", \"{name}.csproj\", \"{{{hash}}}\"\rEndProject\r";
+    }
 
     /// <summary>
     /// Creates a simple CSProj file with the most basic requirements and a single ItemGroup containing None entries for each member of <paramref name="files"/>
@@ -122,15 +133,25 @@ public class SolutionPostProcessor : AssetPostprocessor
     public static string OnGeneratedSlnSolution(string path, string content)
     {
         var directoryPath = Path.GetDirectoryName(path);
-
         var docFiles = AssetDatabase.FindAssets($"t:{nameof(DocumentationRoot)}")
-                .Distinct()
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Distinct()
                 .Select(p => (path: Path.GetDirectoryName(p).Replace("\\", "/"), asset: AssetDatabase.LoadAssetAtPath<DocumentationRoot>(p)))
                 .SelectMany(GetDistinctMarkdownDocuments);
 
         File.WriteAllText(Path.Combine(directoryPath, $"{DOC_PROJ_NAME}.csproj"), GenerateProjectFile(docFiles));
+
+
+        string[] extensions = new[] { ".cs", ".meta", ".md", ".asmref", ".asmdef", ".rsp" };
+        var fullRootPath = Path.GetFullPath(ThunderKit.Common.Constants.ThunderKitRoot);
+        var allFiles = Directory.GetFiles(fullRootPath, "*.*", SearchOption.AllDirectories).ToArray();
+        var files = allFiles
+            .Where(filePath => !filePath.StartsWith(Path.Combine(fullRootPath, "Documentation")))
+            .Where(filePath => !filePath.Contains(".git") && !filePath.Contains(".vs") && !filePath.Contains("\\."))
+            .Where(filePath => !extensions.Contains(Path.GetExtension(filePath).ToLower()))
+            .Select(filePath => (linkPath: filePath.Substring(fullRootPath.Length), filePath));
+
+        File.WriteAllText(Path.Combine(directoryPath, $"{ASSETS_PROJ_NAME}.csproj"), GenerateProjectFile(files));
 
         var lines = content.Split('\n').ToList();
         for (int i = 0; i < lines.Count; i++)
@@ -140,6 +161,7 @@ public class SolutionPostProcessor : AssetPostprocessor
             if (lines[i + 1].StartsWith("Project")) continue;
             //Add all Documentation projects
             lines.Insert(i + 1, GenerateSlnProjectEntry(DOC_PROJ_NAME));
+            lines.Insert(i + 1, GenerateSlnProjectEntry(ASSETS_PROJ_NAME));
             break;
         }
 
