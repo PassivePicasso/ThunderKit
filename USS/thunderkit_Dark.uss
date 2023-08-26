@@ -1,0 +1,8 @@
+
+.warning Label {
+    color: rgba(200, 150, 0, 1);
+}
+
+.error Label {
+    color: rgba(256, 0, 0, 1);
+}
