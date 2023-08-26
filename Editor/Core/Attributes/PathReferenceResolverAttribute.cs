@@ -1,9 +1,8 @@
-﻿using System;
+﻿using UnityEngine;
 
 namespace ThunderKit.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class PathReferenceResolverAttribute : Attribute
+    public class PathReferenceResolverAttribute : PropertyAttribute
     {
     }
 }
