@@ -28,6 +28,7 @@ public class SolutionPostProcessor : AssetPostprocessor
     static readonly string[] rootArray = new string[1];
 
     static readonly Dictionary<string, (string asmDefPath, PackageInfo packageInfo)> localPackageSources = new Dictionary<string, (string asmDefPath, PackageInfo packageInfo)>();
+    private static ThunderKitSettings settings;
 
     /// <summary>
     /// Generate a dictionary with information necessary to clean up project file
@@ -121,6 +122,14 @@ public class SolutionPostProcessor : AssetPostprocessor
         return distinctDocuments;
     }
 
+    static bool InitializeSettings()
+    {
+        if (!settings)
+            settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+
+        return settings;
+    }
+
     /// <summary>
     /// Process Unity generation Solution files to add a project for ThunderKit
     /// non-code assets
@@ -130,6 +139,8 @@ public class SolutionPostProcessor : AssetPostprocessor
     /// <returns>Modified Solution file content</returns>
     public static string OnGeneratedSlnSolution(string path, string content)
     {
+        if(!InitializeSettings() || !settings.GenerateAssetsProject) return content;
+
         var directoryPath = Path.GetDirectoryName(path);
 
         string[] extensions = new[] { ".cs", ".meta", ".asmref", ".asmdef", ".rsp" };
@@ -167,6 +178,8 @@ public class SolutionPostProcessor : AssetPostprocessor
     /// <returns>Modified CSProj file content</returns>
     public static string OnGeneratedCSProject(string path, string content)
     {
+        if (!settings.FixLocalDiskPackages) return content;
+
         var assemblyName = Path.GetFileNameWithoutExtension(path);
         if (!localPackageSources.ContainsKey(assemblyName))
             return content;

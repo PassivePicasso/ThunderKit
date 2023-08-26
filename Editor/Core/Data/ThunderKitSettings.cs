@@ -76,6 +76,7 @@ namespace ThunderKit.Core.Data
                 FileUtil.ReplaceFile(file, outputPath);
             }
         }
+
         private static void InitSettings()
         {
             if (EditorApplication.isCompiling || EditorApplication.isUpdating)
@@ -154,6 +155,8 @@ namespace ThunderKit.Core.Data
         public string CreatedDateFormat = "MMM/dd HH:mm:ss";
         public bool ShowLogWindow = true;
         public bool LogPackageSourceTimings;
+        public bool GenerateAssetsProject = false;
+        public bool FixLocalDiskPackages = false;
         public string ImageCachePath = "Library/MarkdownImageCache";
         public int CachedImageCount;
         public double CacheSize;
@@ -175,7 +178,6 @@ namespace ThunderKit.Core.Data
             GamePath = "";
             ImageElementFactory.CachePath = ImageCachePath;
         }
-
 
         public override void CreateSettingsUI(VisualElement rootElement)
         {
