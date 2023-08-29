@@ -90,7 +90,7 @@ namespace ThunderKit.Core.Data
             Refresh();
             clone.name = nameof(ImportConfiguration);
             var message = RenameAsset(clonePath, nameof(ImportConfiguration));
-            if(!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
                 Debug.LogError(message);
 
             Refresh();
