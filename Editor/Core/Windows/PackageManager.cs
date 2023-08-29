@@ -417,7 +417,6 @@ namespace ThunderKit.Core.Windows
                 else
                 {
                     await selection.Source.InstallPackage(selection, targetVersion);
-                    ScriptingSymbolManager.AddScriptingDefine(packageName);
                 }
             }
             finally

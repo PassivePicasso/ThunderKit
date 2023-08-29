@@ -310,8 +310,8 @@ namespace ThunderKit.Core.Data
             version = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
             var installSet = EnumerateDependencies(package).Where(dep => !dep.group.Installed).ToArray();
-            var progress = 0.01f;
-            var stepSize = 0.33f / installSet.Length;
+            var progress = 0.001f;
+            var stepSize = 1 / 3 / installSet.Length;
 
             //Wait till all files are put in place to load new assemblies to make installation more consistent and faster
             try
@@ -322,6 +322,7 @@ namespace ThunderKit.Core.Data
                     progress = await CreatePackages(installSet, progress, stepSize);
                     progress = await CreateManifests(installSet, progress, stepSize);
                     progress = await ExtractPackageFiles(installSet, progress, stepSize);
+                    progress = await AddScriptingSymbols(installSet, progress, stepSize);
                 }
             }
             catch (Exception e)
@@ -330,6 +331,7 @@ namespace ThunderKit.Core.Data
                 progress = 0;
                 stepSize = 1;
                 progress = await DestroyPackages(installSet, progress, stepSize);
+                progress = await RemoveScriptingSymbols(installSet, progress, stepSize);
             }
             finally
             {
@@ -343,7 +345,7 @@ namespace ThunderKit.Core.Data
         {
             using (var progressBar = new ProgressBar("Deleting Packages"))
             {
-                progressBar.Update($"{installSet.Length} packages", progress: progress);
+                progressBar.Update($"{installSet.Length} packages", progress: progress += stepSize);
                 foreach (var installable in installSet)
                 {
                     string packageDirectory = installable.group.InstallDirectory;
@@ -367,7 +369,7 @@ namespace ThunderKit.Core.Data
 
                     if (!Directory.Exists(packageDirectory)) Directory.CreateDirectory(packageDirectory);
 
-                    progressBar.Update($"Creating package.json for {installable.group.PackageName}", "Creating Packages", progress += stepSize / 2);
+                    progressBar.Update($"Creating package.json for {installable.group.PackageName}", "Creating Packages", progress += stepSize);
                     PackageHelper.GeneratePackageManifest(
                           installable.group.DependencyId.ToLower(), installable.group.InstallDirectory,
                           installable.group.PackageName, installable.group.Author,
@@ -389,7 +391,7 @@ namespace ThunderKit.Core.Data
                     var installableGroup = installable.group;
                     var manifestGuid = PackageHelper.GetStringHashUTF8(installable.group.DependencyId);
                     var manifestPath = PathExtensions.Combine(installableGroup.InstallDirectory, $"{installableGroup.PackageName}.asset");
-                    progressBar.Update($"Creating manifest for {installable.group.PackageName}", progress: progress += stepSize / 3f);
+                    progressBar.Update($"Creating manifest for {installable.group.PackageName}", progress: progress += stepSize);
                     var dependenciesArray = installable.dependencies
                                                         .Select(pv => PackageHelper.GetStringHashUTF8(pv.group.DependencyId))
                                                         .Select(guid => $"  - {{fileID: 11400000, guid: {guid}, type: 2}}")
@@ -398,6 +400,40 @@ namespace ThunderKit.Core.Data
                     var manifestYaml = Manifest.GeneratePlainTextManifest(installableGroup.Author, installableGroup.PackageName, installableGroup.Description, installable.version, dependenciesArray);
                     File.WriteAllText(manifestPath, manifestYaml);
                     PackageHelper.WriteAssetMetaData(manifestPath, manifestGuid);
+                }
+            }
+
+            return Task.FromResult(progress);
+        }
+
+        private static Task<float> AddScriptingSymbols(PackageVersion[] installSet, float progress, float stepSize)
+        {
+            using (var progressBar = new ProgressBar("Creating Package Manifests"))
+            {
+                progressBar.Update($"Creating {installSet.Length} manifests", progress: progress);
+                foreach (var installable in installSet)
+                {
+                    progressBar.Update($"Creating manifest for {installable.group.PackageName}", progress: progress += stepSize);
+                    var installableGroup = installable.group;
+                    var packageName = PackageHelper.GetCleanPackageName(installableGroup.DependencyId.ToLower());
+                    ScriptingSymbolManager.AddScriptingDefine(packageName);
+                }
+            }
+
+            return Task.FromResult(progress);
+        }
+
+        private static Task<float> RemoveScriptingSymbols(PackageVersion[] installSet, float progress, float stepSize)
+        {
+            using (var progressBar = new ProgressBar("Creating Package Manifests"))
+            {
+                progressBar.Update($"Creating {installSet.Length} manifests", progress: progress);
+                foreach (var installable in installSet)
+                {
+                    progressBar.Update($"Creating manifest for {installable.group.PackageName}", progress: progress += stepSize);
+                    var installableGroup = installable.group;
+                    var packageName = PackageHelper.GetCleanPackageName(installableGroup.DependencyId.ToLower());
+                    ScriptingSymbolManager.RemoveScriptingDefine(packageName);
                 }
             }
 
