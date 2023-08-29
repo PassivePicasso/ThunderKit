@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Common;
+using ThunderKit.Common.Configuration;
 using ThunderKit.Common.Logging;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Utilities;
