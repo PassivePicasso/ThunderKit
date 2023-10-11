@@ -8,6 +8,7 @@ namespace ThunderKit.Core.Config.Common
         public override int Priority => int.MaxValue - 100;
 
         public override string Description => "Prompt the user to Restart Unity to disable the Assembly. Disabling the updater is recommended and is required in some cases. If the import processes seems to never end, the fix is usually to disable the Assembly Updater.";
+        private bool isRestarting = false;
 
         public override bool Execute()
         {
@@ -16,6 +17,14 @@ namespace ThunderKit.Core.Config.Common
             for (int i = 0; i < args.Length; i++)
                 if (args[i] == "-disable-assembly-updater")
                     promptRestart = false;
+
+            if (isRestarting)
+            {
+                if (promptRestart)
+                    return false;
+                isRestarting = false;
+                return true;
+            }
 
             if (promptRestart)
             {
@@ -26,7 +35,11 @@ namespace ThunderKit.Core.Config.Common
                          cancel: "No Thanks");
 
                 if (restart)
+                {
+                    isRestarting = true;
                     EditorApplication.OpenProject(Directory.GetCurrentDirectory(), "-disable-assembly-updater");
+                    return false;
+                }
             }
             return true;
         }

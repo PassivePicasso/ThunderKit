@@ -18,6 +18,8 @@ using UnityEngine;
 using ThunderKit.Core.Config;
 using UnityEngine.Serialization;
 using System.Reflection;
+using ThunderKit.Core.Utilities;
+using System.CodeDom.Compiler;
 
 namespace ThunderKit.Core.Data
 {
@@ -52,11 +54,6 @@ namespace ThunderKit.Core.Data
 
         private static void StepImporters()
         {
-            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
-            {
-                return;
-            }
-
             var configInstance = GetOrCreateSettings<ImportConfiguration>();
             if (configInstance.CheckForNewImportConfigs(out _))
             {
@@ -87,13 +84,13 @@ namespace ThunderKit.Core.Data
             }
 
             DeleteAsset(configInstancePath);
-            Refresh();
+            AssetDatabase.Refresh();
             clone.name = nameof(ImportConfiguration);
             var message = RenameAsset(clonePath, nameof(ImportConfiguration));
             if (!string.IsNullOrEmpty(message))
                 Debug.LogError(message);
 
-            Refresh();
+            AssetDatabase.Refresh();
             return clone;
         }
 
@@ -256,55 +253,67 @@ namespace ThunderKit.Core.Data
 
             if (ConfigurationIndex >= (ConfigurationExecutors?.Length ?? 0) || ConfigurationIndex < 0) return;
 
-            if (string.IsNullOrEmpty(thunderKitSettings.GamePath) || string.IsNullOrEmpty(thunderKitSettings.GameExecutable))
-            {
-                if (!LocateGame(thunderKitSettings))
-                {
-                    ConfigurationIndex = -1;
-                }
-                return;
-            }
-
-            var executor = ConfigurationExecutors[ConfigurationIndex];
             try
             {
-                if (executor && executor.enabled)
+                if (string.IsNullOrEmpty(thunderKitSettings.GamePath) || string.IsNullOrEmpty(thunderKitSettings.GameExecutable))
                 {
-                    if (executor.Execute())
+                    if (!LocateGame(thunderKitSettings))
                     {
-                        Debug.Log($"Executed: {executor.name}");
-                        ConfigurationIndex++;
-                        Refresh();
+                        ConfigurationIndex = -1;
                     }
+                    return;
                 }
-                else
-                    ConfigurationIndex++;
-            }
-            catch (Exception e)
-            {
-                ConfigurationIndex = -1;
-                throw new Exception("Import Failed", e);
-                //Debug.LogError(e);
-                //return;
-            }
-            if (ConfigurationIndex >= ConfigurationExecutors.Length)
-            {
-                foreach (var ce in ConfigurationExecutors)
+
+                var executor = ConfigurationExecutors[ConfigurationIndex];
+                try
                 {
-                    try
+                    if (executor && executor.enabled)
                     {
-                        if (ce.enabled)
+                        if (executor.Execute())
                         {
-                            ce.Cleanup();
+                            Debug.Log($"Executed: {executor.name}");
+                            ConfigurationIndex++;
                         }
                     }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"Error during Cleanup: {e}");
-                    }
+                    else
+                        ConfigurationIndex++;
                 }
-                AssetDatabase.SaveAssets();
+                catch (Exception e)
+                {
+                    ConfigurationIndex = -1;
+                    throw new Exception("Import Failed", e);
+                }
             }
+            finally
+            {
+                if (ConfigurationIndex >= ConfigurationExecutors.Length || ConfigurationIndex < 0)
+                    Cleanup();
+            }
+        }
+
+        private void Cleanup()
+        {
+            foreach (var ce in ConfigurationExecutors)
+            {
+                try
+                {
+                    if (ce.enabled)
+                        ce.Cleanup();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error during Cleanup: {e}");
+                }
+            }
+            Refresh();
+        }
+
+        private static void Refresh()
+        {
+            Debug.Log($"Executing Refresh...\r\nUnlock Assemblies, Refresh Asset Database, Resolve Packages");
+            AssetDatabase.SaveAssets();
+            PackageHelper.ResolvePackages();
+            AssetDatabase.Refresh();
         }
 
         public static bool LocateGame(ThunderKitSettings tkSettings)

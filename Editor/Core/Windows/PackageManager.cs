@@ -403,6 +403,7 @@ namespace ThunderKit.Core.Windows
         {
             try
             {
+                AssetDatabase.StartAssetEditing();
                 EditorApplication.LockReloadAssemblies();
                 var installButton = obj.currentTarget as Button;
                 var selection = installButton.userData as PackageGroup;
@@ -421,7 +422,12 @@ namespace ThunderKit.Core.Windows
             }
             finally
             {
+                Debug.Log($"Executing Refresh...\r\nUnlock Assemblies, Refresh Asset Database, Resolve Packages");
+                AssetDatabase.SaveAssets();
                 EditorApplication.UnlockReloadAssemblies();
+                AssetDatabase.StopAssetEditing();
+                PackageHelper.ResolvePackages();
+                AssetDatabase.Refresh();
             }
         }
 
