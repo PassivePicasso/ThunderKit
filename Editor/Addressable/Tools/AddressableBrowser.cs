@@ -195,8 +195,21 @@ namespace ThunderKit.Addressable.Tools
             foreach (var kvp in DirectoryContents)
                 Filter(directory.itemsSource, kvp.Value, true);
 
+            ((ArrayList)directory.itemsSource).Sort(comparer);
+
             directory.Refresh();
             directoryContent.Refresh();
+        }
+        ResoourceNameSorter comparer = new ResoourceNameSorter();
+        private class ResoourceNameSorter : IComparer
+        {
+            public int Compare(object x, object y)
+            {
+                if (x == null || y == null) return 0;
+                if (x is IResourceLocation xirl && y is IResourceLocation yirl)
+                    return string.Compare(xirl.PrimaryKey, yirl.PrimaryKey);
+                return 0;
+            }
         }
         private void Directory_onSelectionChanged(IEnumerable<object> obj)
         {
@@ -209,23 +222,31 @@ namespace ThunderKit.Addressable.Tools
         }
         private string GroupLocation(IResourceLocation g)
         {
-            var lastIndexForwardslash = g.PrimaryKey.LastIndexOf("/");
-            var lastIndexBackslash = g.PrimaryKey.LastIndexOf("\\");
-            if (lastIndexForwardslash > -1 || lastIndexBackslash > -1)
+            if (g.ResourceType == typeof(SceneInstance))
             {
-                if (lastIndexBackslash > lastIndexForwardslash)
-                    return g.PrimaryKey.Substring(0, lastIndexBackslash);
-                else
-                    return g.PrimaryKey.Substring(0, lastIndexForwardslash);
+                return "Scenes";
             }
             else
-                return "Assorted";
+            {
+                var lastIndexForwardslash = g.PrimaryKey.LastIndexOf("/");
+                var lastIndexBackslash = g.PrimaryKey.LastIndexOf("\\");
+                if (lastIndexForwardslash > -1 || lastIndexBackslash > -1)
+                {
+                    if (lastIndexBackslash > lastIndexForwardslash)
+                        return g.PrimaryKey.Substring(0, lastIndexBackslash);
+                    else
+                        return g.PrimaryKey.Substring(0, lastIndexForwardslash);
+                }
+                else
+                    return "Assorted";
+            }
         }
         private void Filter(IList list, List<IResourceLocation> values, bool earlyReturn)
         {
             foreach (var location in values)
             {
-                if (!typeof(Object).IsAssignableFrom(location.ResourceType)) continue;
+                if (!typeof(Object).IsAssignableFrom(location.ResourceType) &&
+                    !typeof(SceneInstance).IsAssignableFrom(location.ResourceType)) continue;
                 if (regex != null && !regex.IsMatch(location.PrimaryKey)) continue;
                 if (!string.IsNullOrEmpty(typeFilter) && !location.ResourceType.FullName.Contains(typeFilter)) continue;
                 list.Add(location);
