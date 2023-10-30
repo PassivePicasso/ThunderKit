@@ -114,6 +114,7 @@ namespace ThunderKit.Core.Config.Common
         {
             foreach (var info in globalGameManagersFile.file.AssetInfos)
             {
+                Debug.Log($"Getting asset info from {globalGameManagersFile.path} ... {info.PathId} ({info.TypeId})");
                 var type = (AssetClassID)info.TypeId;
                 if (ignoreTypesOnExport.Contains(type))
                 {
@@ -125,9 +126,17 @@ namespace ThunderKit.Core.Config.Common
                     fileName = Enum.GetName(typeof(AssetClassID), info.TypeId);
                 }
 
-                AssetExternal assetExternal = assetsManager.GetExtAsset(globalGameManagersFile, 0, info.PathId);
-                var collection = new ProjectSettingCollection { Assets = { assetExternal } };
-                SaveCollection(collection, null, Path.Combine(outputProjectSettingsDirectory, $"{fileName}.{collection.ExportExtension}"), unityVersion);
+                try
+                {
+                    AssetExternal assetExternal = assetsManager.GetExtAsset(globalGameManagersFile, 0, info.PathId);
+                    var collection = new ProjectSettingCollection { Assets = { assetExternal } };
+                    SaveCollection(collection, null, Path.Combine(outputProjectSettingsDirectory, $"{fileName}.{collection.ExportExtension}"), unityVersion);
+                }
+                catch (OutOfMemoryException doom)
+                {
+                    Debug.LogError(doom);
+                }
+
             }
         }
 
