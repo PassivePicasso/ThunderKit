@@ -41,6 +41,7 @@ namespace ThunderKit.Core.Config.Common
         public override int Priority => Constants.Priority.ProjectSettingsImport;
         public override string Description => "Import ProjectSettings from games with globalgamemanagers";
         public long IncludedSettings;
+        public bool LogImportErrors;
         private AssetsManager assetsManager;
         private YAMLExportManager exportManager;
         private PPtrExporterInfo pptrExporterInfo;
@@ -114,7 +115,6 @@ namespace ThunderKit.Core.Config.Common
         {
             foreach (var info in globalGameManagersFile.file.AssetInfos)
             {
-                Debug.Log($"Getting asset info from {globalGameManagersFile.path} ... {info.PathId} ({info.TypeId})");
                 var type = (AssetClassID)info.TypeId;
                 if (ignoreTypesOnExport.Contains(type))
                 {
@@ -132,9 +132,10 @@ namespace ThunderKit.Core.Config.Common
                     var collection = new ProjectSettingCollection { Assets = { assetExternal } };
                     SaveCollection(collection, null, Path.Combine(outputProjectSettingsDirectory, $"{fileName}.{collection.ExportExtension}"), unityVersion);
                 }
-                catch (OutOfMemoryException doom)
+                catch (Exception exception)
                 {
-                    Debug.LogError(doom);
+                    if (LogImportErrors)
+                        Debug.LogError($"Caught an error when trying to import external asset from path ID {info.PathId} of the game managers file: {exception}");
                 }
 
             }
