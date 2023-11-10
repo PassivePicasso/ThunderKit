@@ -1,6 +1,9 @@
 {
     "name": "Assets",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "UnityVersion"
+    ],
     "includePlatforms": [
         "Editor"
     ],
