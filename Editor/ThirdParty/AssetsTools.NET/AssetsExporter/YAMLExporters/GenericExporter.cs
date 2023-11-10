@@ -40,7 +40,6 @@ namespace AssetsExporter.YAMLExporters
             if (field.Children.Count > 0)
             {
                 var node = new YAMLMappingNode();
-                node.AddSerializedVersion(field.TemplateField.Version);
                 for (var i = 0; i < field.Children.Count; i++)
                 {
                     var child = field.Children[i];
