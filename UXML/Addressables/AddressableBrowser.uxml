@@ -1,22 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ui:UXML
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ui="UnityEngine.Experimental.UIElements"
-    xmlns:uie="UnityEditor.Experimental.UIElements"
->
-    <Style src="/Packages/com.passivepicasso.thunderkit/USS/thunderkit_style.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.passivepicasso.thunderkit/USS/thunderkit_style.uss?fileID=11400000&amp;guid=86da9f326fefe10499f1209fcd25e78d&amp;type=3#thunderkit_style" />
     <ui:VisualElement class="grow">
         <ui:VisualElement class="toolbar">
-
             <ui:VisualElement class="search-toolbar">
                 <ui:Label text="Search" class="thunderkit-header" />
-                <ui:TextField name="search-input" binding-path="searchInput" class="thunderkit-field-input"/>
-                <ui:Button name="help-button" text="?"/>
-
-                <uie:EnumFlagsField binding-path="browserOptions" name="display-options" class="thunderkit-field-input enumPicker"
-                                    type="ThunderKit.Addressable.Tools.BrowserOptions, ThunderKit.Addressable.Tools, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"/>
-
-                <ui:Label text="Supporting the right for women to have bodily autonomy" class="morality"/>
+                <ui:TextField name="search-input" binding-path="searchInput" class="thunderkit-field-input" />
+                <ui:Button name="help-button" text="?" />
+                <uie:EnumFlagsField binding-path="browserOptions" name="display-options" type="ThunderKit.Addressable.Tools.BrowserOptions, ThunderKit.Addressable.Tools, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="thunderkit-field-input enumPicker" />
+                <ui:Label text="Supporting the right for women to have bodily autonomy" class="morality" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
@@ -24,8 +15,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 <ui:Label text="Collections" class="thunderkit-header" />
                 <ui:ListView name="directory" item-height="20" class="grow" />
             </ui:VisualElement>
-            <ui:ListView name="directory-content" item-height="66" class="grow" />
+            <ui:ListView name="directory-content" item-height="66" virtualization-method="FixedHeight" fixed-item-height="68" class="grow" />
         </ui:VisualElement>
     </ui:VisualElement>
-
 </ui:UXML>
