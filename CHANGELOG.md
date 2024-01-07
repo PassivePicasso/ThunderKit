@@ -1,3 +1,13 @@
+## 8.0.5
+
+### Improvements and Fixes
+
+* Update AssetsTools to V3
+* Fixed ThunderKit Addressable Browser having compressed item height in some
+  environments
+* Fix Assembly-CSharp and related files being deleted by Unity in some versions
+* Fix Scene files not showing up in Addressable browser
+
 ## 8.0.4
 
 ### Improvements and Fixes
