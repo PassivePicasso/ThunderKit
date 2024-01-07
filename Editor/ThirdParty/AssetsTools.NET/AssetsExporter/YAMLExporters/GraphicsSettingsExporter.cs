@@ -1,10 +1,6 @@
 ﻿using AssetsExporter.YAML;
-using AssetsExporter.YAML.Utils.Extensions;
 using AssetsTools.NET;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace AssetsExporter.YAMLExporters
 {
@@ -13,7 +9,6 @@ namespace AssetsExporter.YAMLExporters
         public YAMLNode Export(ExportContext context, AssetTypeValueField parentField, AssetTypeValueField field, bool raw = false)
         {
             var node = new YAMLMappingNode();
-            node.AddSerializedVersion(field.TemplateField.Version);
 
             var tierSettings = new List<AssetTypeValueField>();
             foreach (var cField in field.Children)
