@@ -6,6 +6,8 @@
 * Fixed ThunderKit Addressable Browser having compressed item height in some
   environments
 * Fix Assembly-CSharp and related files being deleted by Unity in some versions
+  Note: this was the cause of the infamous issue where scripts would be 
+  unavailable.  If you continue to encounter this problem let us know on discord.
 * Fix Scene files not showing up in Addressable browser
 
 ## 8.0.4
