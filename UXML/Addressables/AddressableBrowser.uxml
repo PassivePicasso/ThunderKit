@@ -1,5 +1,5 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" editor-extension-mode="False">
-    <Style src="project://database/Packages/com.passivepicasso.thunderkit/USS/thunderkit_style.uss?fileID=11400000&amp;guid=86da9f326fefe10499f1209fcd25e78d&amp;type=3#thunderkit_style" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+    <Style src="/Packages/com.passivepicasso.thunderkit/USS/thunderkit_style.uss" />
     <ui:VisualElement class="grow">
         <ui:VisualElement class="toolbar">
             <ui:VisualElement class="search-toolbar">

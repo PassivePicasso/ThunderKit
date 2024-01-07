@@ -132,7 +132,8 @@ namespace ThunderKit.Core.UIElements
             var foundSrc = bag.TryGetAttributeValue("src", out var src);
             if (foundSrc)
             {
-                if (src.StartsWith("Assets") || src.StartsWith("Packages") || src.StartsWith("/Assets") || src.StartsWith("/Packages"))
+                if (src.StartsWith("project://")) return fakeStyleElement;
+                else if (src.StartsWith("Assets") || src.StartsWith("Packages") || src.StartsWith("/Assets") || src.StartsWith("/Packages"))
                 {
 #if UNITY_2018
                     cc.target.AddStyleSheetPath(src.TrimStart('/'));
