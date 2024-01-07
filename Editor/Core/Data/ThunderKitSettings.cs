@@ -35,13 +35,10 @@ namespace ThunderKit.Core.Data
         [InitializeOnLoadMethod]
         static void SetupPostCompilationAssemblyCopy()
         {
-            EditorApplication.quitting -= EditorApplicationQuitting;
-            EditorApplication.quitting += EditorApplicationQuitting;
             EditorApplication.wantsToQuit -= EditorApplication_wantsToQuit;
             EditorApplication.wantsToQuit += EditorApplication_wantsToQuit;
             CompilationPipeline.assemblyCompilationFinished -= CopyAssemblyCSharp;
             CompilationPipeline.assemblyCompilationFinished += CopyAssemblyCSharp;
-
             EditorApplication.update += InitSettings;
         }
 
@@ -56,8 +53,6 @@ namespace ThunderKit.Core.Data
             settings.CacheSize = truncatedSize;
             EditorUtility.SetDirty(settings);
         }
-
-        private static void EditorApplicationQuitting() => CopyAssemblyCSharp(null, null);
         private static bool EditorApplication_wantsToQuit()
         {
             var settings = GetOrCreateSettings<ThunderKitSettings>();
@@ -66,15 +61,41 @@ namespace ThunderKit.Core.Data
             AssetDatabase.SaveAssets();
             return true;
         }
-        private static void CopyAssemblyCSharp(string somevalue, CompilerMessage[] message)
+        private static void CopyAssemblyCSharp(string somevalue = null, CompilerMessage[] message = null)
         {
-            foreach (var file in Directory.GetFiles("Packages", "Assembly-CSharp*.dll", SearchOption.AllDirectories))
+            var files = Directory.GetFiles("Packages", "Assembly-CSharp*.dll", SearchOption.AllDirectories);
+            if (files.Length == 0)
             {
-                var fileName = Path.GetFileName(file);
-                var outputPath = Combine("Library", "ScriptAssemblies", fileName);
-
-                FileUtil.ReplaceFile(file, outputPath);
+                foreach (var file in Directory.GetFiles("Library/ScriptAssemblies", "Assembly-CSharp*.dll", SearchOption.AllDirectories))
+                    try
+                    {
+                        var attributes = File.GetAttributes(file);
+                        if (attributes.HasFlag(FileAttributes.ReadOnly))
+                            File.SetAttributes(file, FileAttributes.Normal);
+                    }
+                    catch
+                    { /*We don't care about the exceptions, if it fails it fails for reasons that mean we don't need to execute the code*/ }
             }
+            else
+                foreach (var file in files)
+                {
+                    var fileName = Path.GetFileName(file).Replace("\\", "/");
+                    var outputPath = Combine("Library", "ScriptAssemblies", fileName);
+
+                    try
+                    {
+                        var attributes = File.GetAttributes(outputPath);
+                        if (attributes.HasFlag(FileAttributes.ReadOnly))
+                            File.SetAttributes(outputPath, FileAttributes.Normal);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning(ex);
+                        /*We don't care about the exceptions, if it fails it fails for reasons that mean we don't need to execute the code*/
+                    }
+                    FileUtil.ReplaceFile(file, outputPath);
+                    File.SetAttributes(outputPath, FileAttributes.ReadOnly);
+                }
         }
 
         private static void InitSettings()
