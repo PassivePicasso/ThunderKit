@@ -409,7 +409,6 @@ namespace ThunderKit.Core.Windows
                 var packageName = PackageHelper.GetCleanPackageName(selection.DependencyId.ToLower());
                 if (selection.Installed)
                 {
-                    ScriptingSymbolManager.RemoveScriptingDefine(packageName);
                     deletePackage = CreateInstance<DeletePackage>();
                     deletePackage.directory = selection.InstallDirectory;
                     TryDelete();
@@ -417,7 +416,6 @@ namespace ThunderKit.Core.Windows
                 else
                 {
                     await selection.Source.InstallPackage(selection, targetVersion);
-                    ScriptingSymbolManager.AddScriptingDefine(packageName);
                 }
             }
             finally
