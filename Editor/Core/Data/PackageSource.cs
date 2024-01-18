@@ -266,6 +266,16 @@ namespace ThunderKit.Core.Data
 
         public async Task InstallPackages(IEnumerable<(PackageGroup group, string version)> packages)
         {
+            await InstallPackagesInternal(packages, false);
+        }
+
+        public async Task InstallPackages(IEnumerable<PackageGroup> packageGroups, bool forceLatestDependencies)
+        {
+            await InstallPackagesInternal(packageGroups.Select(pGroup => (pGroup, "latest")), forceLatestDependencies);
+        }
+
+        private async Task InstallPackagesInternal(IEnumerable<(PackageGroup group, string version)> packages, bool forceLatestDependencies)
+        {
             if (EditorApplication.isCompiling) return;
             using (var progressBar = new ProgressBar("Installing Packages"))
             {
@@ -276,7 +286,7 @@ namespace ThunderKit.Core.Data
 
                     var resolvedVersion = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-                    installSet.AddRange(EnumerateDependencies(package, false).Where(dep => !dep.group.Installed));
+                    installSet.AddRange(EnumerateDependencies(package, forceLatestDependencies).Where(dep => !dep.group.Installed));
                 }
 
                 var installSetArray = installSet.ToArray();
@@ -348,50 +358,22 @@ namespace ThunderKit.Core.Data
 
         public async Task InstallPackage(PackageGroup group, string version)
         {
+            await InstallPackageInternal(group, version, false);
+        }
+
+        public async Task InstallPackage(PackageGroup group, bool forceLatestDependencies)
+        {
+            await InstallPackageInternal(group, "latest", forceLatestDependencies);
+        }
+
+        private async Task InstallPackageInternal(PackageGroup group, string version, bool forceLatestDependencies)
+        {
             if (EditorApplication.isCompiling) return;
             var package = group[version];
 
             version = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-            var installSet = EnumerateDependencies(package, false).Where(dep => !dep.group.Installed).ToArray();
-            var progress = 0.01f;
-            var stepSize = 0.33f / installSet.Length;
-
-            //Wait till all files are put in place to load new assemblies to make installation more consistent and faster
-            try
-            {
-                using (var progressBar = new ProgressBar("Installing Packages"))
-                {
-                    EditorApplication.LockReloadAssemblies();
-                    progress = await CreatePackages(installSet, progress, stepSize);
-                    progress = await CreateManifests(installSet, progress, stepSize);
-                    progress = await ExtractPackageFiles(installSet, progress, stepSize);
-                    progress = await AddScriptingSymbols(installSet, progress, stepSize);
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                progress = 0;
-                stepSize = 1;
-                progress = await DestroyPackages(installSet, progress, stepSize);
-                progress = await RemoveScriptingSymbols(installSet, progress, stepSize);
-            }
-            finally
-            {
-                EditorApplication.UnlockReloadAssemblies();
-                EditorUtility.ClearProgressBar();
-                PackageHelper.ResolvePackages();
-            }
-        }
-
-        public async Task InstallPackageLatestVersion(PackageGroup group)
-        {
-            if (EditorApplication.isCompiling) return;
-            var package = group["latest"];
-
-
-            var installSet = EnumerateDependencies(package, true).Where(dep => !dep.group.Installed).ToArray();
+            var installSet = EnumerateDependencies(package, forceLatestDependencies).Where(dep => !dep.group.Installed).ToArray();
             var progress = 0.01f;
             var stepSize = 0.33f / installSet.Length;
 
