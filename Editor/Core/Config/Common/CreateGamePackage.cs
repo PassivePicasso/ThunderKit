@@ -21,6 +21,7 @@ namespace ThunderKit.Core.Config
 
             Directory.CreateDirectory(settings.PackageFilePath);
 
+            ThunderKit.Common.Configuration.ScriptingSymbolManager.AddScriptingDefine(settings.PackageName);
             PackageHelper.GeneratePackageManifest(settings.PackageName,
                 settings.PackageFilePath, packageName,
                 PlayerSettings.companyName,
