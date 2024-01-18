@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Markdig.Helpers;
+using System;
 using System.IO;
-using System.Linq;
+#if UNITY_2020_3_OR_NEWER
+#elif UNITY_2019_3_OR_NEWER
 using System.Reflection;
+#endif
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common.Configuration;
 using ThunderKit.Common.Package;
-using ThunderKit.Core.Config;
-using ThunderKit.Core.Data;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -25,6 +26,38 @@ namespace ThunderKit.Core.Utilities
 #else
         public static void ResolvePackages() => AssetDatabase.Refresh();
 #endif
+
+        static readonly Regex NameValidator = new Regex("^(?:@[a-z0-9-*~][a-z0-9-*._~]*/)?[a-z0-9-~][a-z0-9-._~]*$");
+        public static string GetCleanPackageName(string input)
+        {
+            input = input.ToLower();
+            var validName = NameValidator.IsMatch(input);
+            if (validName) return input;
+
+            var builder = new StringBuilder();
+            for (int i = 0; i < input.Length; i++)
+            {
+                var c = input[i];
+                switch (c)
+                {
+                    case var ch when c == '+' || c == '&':
+                        builder.Append("and");
+                        break;
+                    case var ch when c.IsAlphaNumeric() || c == '-' || c == '_' || c == '.':
+                        builder.Append(c);
+                        break;
+                    case var ch when c.IsSpaceOrTab():
+                        builder.Append('_');
+                        break;
+                    default:
+                        builder.Append('_');
+                        break;
+                }
+            }
+            input = builder.ToString();
+
+            return input;
+        }
 
         static readonly Regex versionRegex = new Regex("(\\d+\\.\\d+\\.\\d+)(\\..*?)?");
         public static void GeneratePackageManifest(string packageName, string outputDir, string displayName, string authorAlias, string version, string description = null)
@@ -44,9 +77,8 @@ namespace ThunderKit.Core.Utilities
                 description = (description ?? string.Empty) + "\r\n\r\n(Version number may be inaccurate)";
             }
 
-            var packageManifest = new PackageManagerManifest(author, packageName, ObjectNames.NicifyVariableName(displayName), ver, unityVersion, description);
+            var packageManifest = new PackageManagerManifest(author, GetCleanPackageName(packageName), ObjectNames.NicifyVariableName(displayName), ver, unityVersion, description);
             var packageManifestJson = JsonUtility.ToJson(packageManifest);
-            ScriptingSymbolManager.AddScriptingDefine(packageName);
 
             string fullOutputPath = Path.Combine(outputDir, "package.json");
             if (File.Exists(fullOutputPath)) File.Delete(fullOutputPath);
@@ -97,11 +129,31 @@ namespace ThunderKit.Core.Utilities
         public static string GetFileNameHash(string assemblyPath)
         {
             string shortName = Path.GetFileNameWithoutExtension(assemblyPath);
-            string result = GetStringHashUTF8(shortName);
+            string result = GetCleanedStringHashUTF8(shortName);
             return result;
         }
 
         public static string GetStringHashUTF8(string value)
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
+                var guid = new Guid(hashBytes);
+                return guid.ToString();
+            }
+        }
+
+        public static Guid GetGuidHashUTF8(string value)
+        {
+            using (var md5 = MD5.Create())
+            {
+                byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
+                var guid = new Guid(hashBytes);
+                return guid;
+            }
+        }
+
+        public static string GetCleanedStringHashUTF8(string value)
         {
             using (var md5 = MD5.Create())
             {

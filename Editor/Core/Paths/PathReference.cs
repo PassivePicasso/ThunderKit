@@ -80,6 +80,7 @@ namespace ThunderKit.Core.Paths
             return pathReferenceGuids
                 .Select(x => AssetDatabase.GUIDToAssetPath(x))
                 .Select(x => AssetDatabase.LoadAssetAtPath<PathReference>(x))
+                .Where(x => x != null)
                 .ToDictionary(pr => pr.name);
         }
 

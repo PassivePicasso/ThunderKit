@@ -10,7 +10,7 @@
 
 The [ManifestIdentity](assetlink://GUID/f22bb7fd1d3b56a48bc52f8e407901d6) stores unique identifying information used by ThunderKit to construct dependency information for package stores and mod loaders.
 
-### Fields
+## Fields
 * **Author**
   - The name of the developer or team responsible for developing and releasing this package.
 * **Name**

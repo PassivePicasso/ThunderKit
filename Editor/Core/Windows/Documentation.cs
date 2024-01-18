@@ -81,7 +81,7 @@ namespace ThunderKit.Core.Windows
         private ScrollView indexScroller;
         private MarkdownElement markdownElement;
         private VisualElement pageList;
-
+        private EventHandler<(string, MarkdownFileWatcher.ChangeType)> documentUpdated;
         public static Documentation ShowDocumentation()
         {
             if (!IsOpen || instance == null)
@@ -135,15 +135,17 @@ namespace ThunderKit.Core.Windows
         }
         private void Initialize()
         {
-            MarkdownFileWatcher.DocumentUpdated -= MarkdownFileWatcher_DocumentUpdated;
-            MarkdownFileWatcher.DocumentUpdated += MarkdownFileWatcher_DocumentUpdated;
+            if (documentUpdated == null)
+            {
+                documentUpdated = new EventHandler<(string, MarkdownFileWatcher.ChangeType)>(MarkdownFileWatcher_DocumentUpdated);
+                MarkdownFileWatcher.DocumentUpdated += documentUpdated;
+            }
 
             var documentationRoots = AssetDatabase.FindAssets($"t:{nameof(DocumentationRoot)}")
                     .Distinct()
                     .Select(AssetDatabase.GUIDToAssetPath)
                     .Distinct()
-                    .Select(path => (path: Path.GetDirectoryName(path), asset: AssetDatabase.LoadAssetAtPath<DocumentationRoot>(path)))
-                    .Select(p => (path: p.path.Replace("\\", "/"), asset: p.asset))
+                    .Select(path => (path: Path.GetDirectoryName(path).Replace("\\", "/"), asset: AssetDatabase.LoadAssetAtPath<DocumentationRoot>(path)))
                     .ToArray();
 
             indexScroller = rootVisualElement.Q<ScrollView>("index-scroller");
