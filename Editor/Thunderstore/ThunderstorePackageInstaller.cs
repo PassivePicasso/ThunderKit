@@ -14,6 +14,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public abstract string DependencyId { get; }
         public abstract string ThunderstoreAddress { get; }
+        public virtual bool ForceLatestDependencies { get; } = false;
 
         private ThunderstoreSource transientStore;
         public sealed override bool Execute()
