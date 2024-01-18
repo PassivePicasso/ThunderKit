@@ -253,11 +253,12 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        IEnumerable<PackageVersion> EnumerateDependencies(PackageVersion package)
+        IEnumerable<PackageVersion> EnumerateDependencies(PackageVersion package, bool yieldLatestVersions)
         {
             foreach (var dependency in package.dependencies)
             {
-                foreach (var subDependency in EnumerateDependencies(dependency))
+                var dep = yieldLatestVersions ? dependency.group["latest"] : dependency;
+                foreach (var subDependency in EnumerateDependencies(dep, yieldLatestVersions))
                     yield return subDependency;
             }
             yield return package;
@@ -275,7 +276,47 @@ namespace ThunderKit.Core.Data
 
                     var resolvedVersion = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-                    installSet.AddRange(EnumerateDependencies(package).Where(dep => !dep.group.Installed));
+                    installSet.AddRange(EnumerateDependencies(package, false).Where(dep => !dep.group.Installed));
+                }
+
+                var installSetArray = installSet.ToArray();
+                var progress = 0.01f;
+                var stepSize = 0.33f / installSetArray.Length;
+
+                //Wait till all files are put in place to load new assemblies to make installation more consistent and faster
+                try
+                {
+                    EditorApplication.LockReloadAssemblies();
+                    progress = await CreatePackages(installSetArray, progress, stepSize);
+                    progress = await CreateManifests(installSetArray, progress, stepSize);
+                    progress = await ExtractPackageFiles(installSetArray, progress, stepSize);
+                    progress = await AddScriptingSymbols(installSetArray, progress, stepSize);
+                }
+                catch (Exception e)
+                {
+                    progress = await RemoveScriptingSymbols(installSetArray, progress, stepSize);
+                    Debug.LogError(e);
+                }
+                finally
+                {
+                    EditorApplication.UnlockReloadAssemblies();
+                    EditorUtility.ClearProgressBar();
+                    PackageHelper.ResolvePackages();
+                }
+            }
+        }
+
+        public async Task InstallPackagesLatestVersions(IEnumerable<PackageGroup> packages)
+        {
+            if (EditorApplication.isCompiling) return;
+            using (var progressBar = new ProgressBar("Installing Packages"))
+            {
+                var installSet = new List<PackageVersion>();
+                foreach (var group in packages)
+                {
+                    var package = group["latest"];
+
+                    installSet.AddRange(EnumerateDependencies(package, true).Where(dep => !dep.group.Installed));
                 }
 
                 var installSetArray = installSet.ToArray();
@@ -312,7 +353,45 @@ namespace ThunderKit.Core.Data
 
             version = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-            var installSet = EnumerateDependencies(package).Where(dep => !dep.group.Installed).ToArray();
+            var installSet = EnumerateDependencies(package, false).Where(dep => !dep.group.Installed).ToArray();
+            var progress = 0.01f;
+            var stepSize = 0.33f / installSet.Length;
+
+            //Wait till all files are put in place to load new assemblies to make installation more consistent and faster
+            try
+            {
+                using (var progressBar = new ProgressBar("Installing Packages"))
+                {
+                    EditorApplication.LockReloadAssemblies();
+                    progress = await CreatePackages(installSet, progress, stepSize);
+                    progress = await CreateManifests(installSet, progress, stepSize);
+                    progress = await ExtractPackageFiles(installSet, progress, stepSize);
+                    progress = await AddScriptingSymbols(installSet, progress, stepSize);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                progress = 0;
+                stepSize = 1;
+                progress = await DestroyPackages(installSet, progress, stepSize);
+                progress = await RemoveScriptingSymbols(installSet, progress, stepSize);
+            }
+            finally
+            {
+                EditorApplication.UnlockReloadAssemblies();
+                EditorUtility.ClearProgressBar();
+                PackageHelper.ResolvePackages();
+            }
+        }
+
+        public async Task InstallPackageLatestVersion(PackageGroup group)
+        {
+            if (EditorApplication.isCompiling) return;
+            var package = group["latest"];
+
+
+            var installSet = EnumerateDependencies(package, true).Where(dep => !dep.group.Installed).ToArray();
             var progress = 0.01f;
             var stepSize = 0.33f / installSet.Length;
 
