@@ -1,3 +1,190 @@
+## 8.0.5
+
+### Improvements and Fixes
+
+* Update AssetsTools to V3
+* Fixed ThunderKit Addressable Browser having compressed item height in some
+  environments
+* Fix Assembly-CSharp and related files being deleted by Unity in some versions
+  Note: this was the cause of the infamous issue where scripts would be 
+  unavailable.  If you continue to encounter this problem let us know on discord.
+* Fix Scene files not showing up in Addressable browser
+
+## 8.0.4
+
+### Improvements and Fixes
+
+* Added setting to enable processing CSProj files for local UPM Packages to fix
+  missing folder structure information
+* Added setting to generate a CSProj for ThunderKit's non-code assets. This is
+  primarily for maintainers.
+* Added documentation for BatchMode
+* Improve import extension documentation
+* Fix Packages not indicating their install state correctly
+* Fix Scripting Symbols not being reliably generated for ThunderKit installed
+  packages
+* Fixed missing PreviewStage Scene file for older versions of Unity
+* Fixed an issue where Control Characters could get added to PathReference 
+  fields on Linux. Thanks to @aldelaro5 for identifying this issue.
+
+### Community Contributions
+
+* Fix issue with ThunderKit.Common.Constants colliding sometimes.
+
+* Fix issue with DLL to CS reference migration utility that would prevent some
+  assets from correctly being converted due to not accounting for negative 
+  FileIDs.
+  Thanks to @KevinfromHP for this fix.
+
+## 8.0.3
+
+### Fixes
+
+* Fix AssetsTools.Net.MonoReflection AssemblyDefinition not being limited to
+  the editor platform
+
+## 8.0.2
+
+### Fixes
+
+* Fix AssetsExporter AssemblyDefinition not being limited to the Editor 
+  platform
+* Fix ImportExtension Loading not working older Unity versions (<2019.2)
+  This was due to TypeCache not being available in older unity versions and 
+  was missed during the testing process
+* Fix QuickAccess Pipelines/Manifests throwing exceptions when there are no
+  QuickAccess Pipelines/Manifests
+* Fix PipelineLogWindow throwing exceptions when no PipelineLog has been 
+  assigned to it
+* Fix not correctly attributing community changes in prior update
+
+## 8.0.1
+
+### Fixes
+
+* Fix AsmDef platform assignment interfering in build processes
+
+### Community Contributions
+
+* Fix Assembly-CSharp-firstpass.dll and other Assembly-CSharp*.dll files not
+  being managed by ThunderKit.
+  Thanks to @EldritchCarMaker for this fix.
+
+## 8.0.0
+
+### New Features
+
+* Add Addressable Prefab Preview stages for all Unity Versions.
+  This feature allows you to inspect Prefab objects in a SceneView style
+  environment. Allowing you to look at the Transform Hierarchy of prefabs, and
+  inspect their configuration. In Unity 2018 this is a custom
+  SceneView, while newer Unity versions make use of the PreviewSceneStage
+* Add Limited Support for SpaceDock as a PackageSource.  This will allow KSP mod 
+  developers to utilize SpaceDock to download mod packages from for supporting 
+  their projects, however discovering and resolving dependencies is currently 
+  not supported
+* Add Log Level Filtering to Pipeline Log window
+* Add Loading indicators to loading PackageSources in the Package Manager
+* Add Log Cache details and cache clear button to ThunderKitSettings
+* Add Markdown Image Cache details and cache clear button to ThunderKitSettings
+* Add Disable Assembly Updater ImportExtension to encourage disabling it
+* Add Unity Version Check ImportExtension to assist in troubleshooting and 
+  complex environment configurations. **This should generally not be disabled.
+  Disabling this to specifically use a verison of Unity that does not match an
+  imported game is unsupported**
+
+### Improvements
+
+* Improve the way Packages are listed in the Package Manager
+* Add PackageManager resizing between the package list and view
+* Improve load times and consistency of PackageSources
+* Create LoadingSpinner, a reusable UIToolkit loading indicator
+* Improve package selection highlighting for Dark and Light themes
+* Improve Package Loading to incrementally populate as results are provided
+* Improve PackageSource re-usability by abstracting auto-loading
+* Improve PackageView to utilize MarkdownElements for the Package Header, Body, 
+  and Footer sections so that their content is more customizable per 
+  PackageSource. Additional work needs to be done here to improve the workflow 
+  and modularity of this feature
+* Improve the Browse button to open in the selected path if it is not empty
+* Improve image caching solution in MarkdownElement system
+* Improve Pipeline Log View to with log level filtering
+* Update Copy PipelineJob documentation
+* Improve logging and code design of Copy
+* Add OptionalExecutor documentation
+* Improve some documentation navigation
+* Improve addressable integration to avoid interfering with normal addressable
+  package usage
+* Change PromptRestart to an OptionalExecutor for consistency
+* Change Beep on import completion to an OptionalExecutor for consistency
+* Generally improve code quality
+
+### Fixes
+
+* Fix ImportExtensions not updating correctly when extensions are added or 
+  removed
+* Fix ImportExtensions erasing serialized data in some circumstances
+* Fix issue where import could fail for certain build layouts
+* Fix an issue in the latest version of Unity 2022.2 that would cause package
+  installs to fail
+* Fix MarkdownElement not loading all images correctly or consistently due to
+  over aggressive cancelling and object clean up
+* Fix a memory leak in the Markdown system tied to not releasing displayed 
+  images
+
+### Community Contributions
+
+Thanks to @KingEnderbine for these improvements
+
+#### Features
+
+* Add ability to include unity meta files to the Files PipelineJob and Manifest
+  This improves support for source re-distribution and asset redistribution via
+  packages
+
+#### Improvements
+
+* Improve ImportConfiguration system to reduce the occurrence of unnecessary 
+  work
+
+#### Fixes 
+
+* Fix ComposableObject not properly removing elements in some versions of Unity
+  This fixes a pesky issue that affected some users where it would cause 
+  Missing Script errors in ComposableObjects such as PipelineJobs and Manifests
+* Fix ThunderKitSettings sometimes overwriting itself during domain 
+  initialization 
+* Fix ImportConfiguration not saving the last ConfigurationIndex used leading
+  to the ImportSystem repeating final steps
+* Fix Quick Access selections not saving correctly
+* Fix Quick Access Toolbar not initializing correctly
+
+
+## 7.1.2
+
+### Fixes
+
+* Fix StageAssemblies failing builds in some cases for non-Unity 2020 editors
+
+## 7.1.1
+
+### Fixes
+
+* Fix StageAssemblies using facilities not available in Unity 2019
+
+## 7.1.0
+
+### Improvements
+
+* Improve StageAssemblies error reporting to provide build errors with a 
+  context for each build error in the log entry
+* Improve formatting of StageAssembly error reports to include source file
+  links for errors
+
+### Fixes
+
+* Fix Assemblies not building correctly on Unity 2020.x
+
 ## 7.0.0
 
 Big thanks to @Nebby1999 for this building the majority of this update

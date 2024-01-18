@@ -14,7 +14,7 @@ namespace AssetsExporter.YAMLExporters
     {
         public YAMLNode Export(ExportContext context, AssetTypeValueField parentField, AssetTypeValueField field, bool raw = false)
         {
-            return context.Export(parentField, ValueBuilder.DefaultValueFieldFromTemplate(field.templateField), false, typeof(StreamingInfoExporter));
+            return context.Export(parentField, ValueBuilder.DefaultValueFieldFromTemplate(field.TemplateField), false, typeof(StreamingInfoExporter));
         }
     }
 }

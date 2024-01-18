@@ -55,7 +55,7 @@ namespace AssetsExporter.Meta
             {
                 return Guid.Empty;
             }
-            return HashUtils.GetMD5HashGuid($"{mainAsset.Value.info.index}_{mainAsset.Value.file.name}");
+            return HashUtils.GetMD5HashGuid($"{mainAsset.Value.info.PathId}_{mainAsset.Value.file.name}");
         }
     }
 }

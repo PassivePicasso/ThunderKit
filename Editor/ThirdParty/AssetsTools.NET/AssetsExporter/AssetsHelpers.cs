@@ -11,14 +11,14 @@ namespace AssetsExporter
     {
         public static AssetExternal GetRootAsset(AssetsManager assetsManager, AssetExternal asset)
         {
-            var baseField = asset.instance.GetBaseField();
+            var baseField = asset.baseField;
 
-            if (baseField.templateField.type == "GameObject")
+            if (baseField.TypeName == "GameObject")
             {
                 return GetRootGameObject(assetsManager, asset);
             }
             
-            if (baseField.templateField.type == "Sprite")
+            if (baseField.TypeName == "Sprite")
             {
                 var firstExt = assetsManager.GetExtAsset(asset.file, baseField.Get("m_RD").Get("texture"));
                 if (firstExt.info != null)
@@ -28,7 +28,7 @@ namespace AssetsExporter
                 return asset;
             }
 
-            if (baseField.templateField.children.Any(f => f.name == "m_GameObject"))
+            if (baseField.TemplateField.Children.Any(f => f.Name == "m_GameObject"))
             {
                 var firstExt = assetsManager.GetExtAsset(asset.file, baseField.Get("m_GameObject"));
                 if (firstExt.info != null)
@@ -43,13 +43,13 @@ namespace AssetsExporter
 
         private static AssetExternal GetRootGameObject(AssetsManager assetsManager, AssetExternal ext)
         {
-            var transformExt = assetsManager.GetExtAsset(ext.file, ext.instance.GetBaseField().Get("m_Component").Get("Array")[0].GetLastChild());
+            var transformExt = assetsManager.GetExtAsset(ext.file, ext.baseField.Get("m_Component").Get("Array")[0].GetLastChild());
             while (true)
             {
-                var parentExt = assetsManager.GetExtAsset(ext.file, transformExt.instance.GetBaseField().Get("m_Father"));
-                if (parentExt.instance == null)
+                var parentExt = assetsManager.GetExtAsset(ext.file, transformExt.baseField.Get("m_Father"));
+                if (parentExt.baseField == null)
                 {
-                    var gameObjectExt = assetsManager.GetExtAsset(ext.file, transformExt.instance.GetBaseField().Get("m_GameObject"));
+                    var gameObjectExt = assetsManager.GetExtAsset(ext.file, transformExt.baseField.Get("m_GameObject"));
                     return gameObjectExt;
                 }
                 transformExt = parentExt;
@@ -58,12 +58,12 @@ namespace AssetsExporter
 
         public static IEnumerable<AssetExternal> GetAssetWithSubAssets(AssetsManager assetsManager, AssetExternal rootAsset)
         {
-            var baseField = rootAsset.instance.GetBaseField();
-            if (baseField.templateField.type == "GameObject")
+            var baseField = rootAsset.baseField;
+            if (baseField.TypeName == "GameObject")
             {
                 return GatherAllGameObjectsAssets(assetsManager, rootAsset);
             }
-            if (baseField.templateField.type.StartsWith("Texture"))
+            if (baseField.TypeName.StartsWith("Texture"))
             {
                 return GatherAllTextureAssets(assetsManager, rootAsset);
             }
@@ -76,11 +76,11 @@ namespace AssetsExporter
 
             yield return rootAsset;
 
-            foreach (var spriteAsset in file.table.GetAssetsOfType((int)AssetClassID.Sprite))
+            foreach (var spriteAsset in file.file.GetAssetsOfType(AssetClassID.Sprite))
             {
-                var spriteExt = assetsManager.GetExtAsset(file, 0, spriteAsset.index);
+                var spriteExt = assetsManager.GetExtAsset(file, 0, spriteAsset.PathId);
                 var textureExt = GetRootAsset(assetsManager, spriteExt);
-                if (rootAsset.info.index == textureExt.info.index)
+                if (rootAsset.info.PathId == textureExt.info.PathId)
                 {
                     yield return spriteExt;
                 }
@@ -89,14 +89,14 @@ namespace AssetsExporter
 
         private static IEnumerable<AssetExternal> GatherAllGameObjectsAssets(AssetsManager assetsManager, AssetExternal rootAsset)
         {
-            var baseField = rootAsset.instance.GetBaseField();
+            var baseField = rootAsset.baseField;
             var file = rootAsset.file;
 
             yield return rootAsset;
 
             var components = baseField.Get("m_Component").Get("Array");
 
-            foreach (var component in components.children)
+            foreach (var component in components.Children)
             {
                 var componentExternal = assetsManager.GetExtAsset(file, component.GetLastChild());
                 yield return componentExternal;
@@ -104,16 +104,15 @@ namespace AssetsExporter
 
             var children = assetsManager
                 .GetExtAsset(file, baseField.Get("m_Component").Get("Array")[0].GetLastChild())
-                .instance
-                .GetBaseField()
+                .baseField
                 .Get("m_Children")
                 .Get("Array");
 
 
-            for (int i = 0; i < children.childrenCount; i++)
+            for (int i = 0; i < children.Children.Count; i++)
             {
                 var childExternal = assetsManager.GetExtAsset(file, children[i]);
-                var gameObjExt = assetsManager.GetExtAsset(file, childExternal.instance.GetBaseField().Get("m_GameObject"));
+                var gameObjExt = assetsManager.GetExtAsset(file, childExternal.baseField.Get("m_GameObject"));
 
                 foreach (var subAsset in GatherAllGameObjectsAssets(assetsManager, gameObjExt))
                 {

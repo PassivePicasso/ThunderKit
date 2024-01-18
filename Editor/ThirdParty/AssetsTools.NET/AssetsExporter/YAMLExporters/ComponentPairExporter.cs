@@ -11,8 +11,8 @@ namespace AssetsExporter.YAMLExporters
         public YAMLNode Export(ExportContext context, AssetTypeValueField parentField, AssetTypeValueField field, bool raw = false)
         {
             var node = new YAMLMappingNode();
-            var pair = field.children[0];
-            node.Add(pair.GetName(), context.Export(field, pair, raw));
+            var pair = field.Children[0];
+            node.Add(pair.FieldName, context.Export(field, pair, raw));
 
             return node;
         }

@@ -1,85 +1,127 @@
 <ui:UXML xmlns:ui="UnityEngine.Experimental.UIElements" xmlns:uie="UnityEditor.Experimental.UIElements" editor-extension-mode="True">
-        
-    <ui:VisualElement name="game-configuration-section" class="section">
-        <ui:VisualElement class="setting-section">
-            <ui:Label text="Locate and Load game files for project" class="thunderkit-header"/>
-        </ui:VisualElement>
-                
-        <ui:VisualElement class="thunderkit-field" >
-            <ui:Label text="Game Path" class="thunderkit-field-label"/>
-            <ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
-        </ui:VisualElement>
-        <ui:VisualElement class="thunderkit-field">
-            <ui:Label text="Game Executable" class="thunderkit-field-label"/>
-            <ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
-        </ui:VisualElement>
-        
-        <ui:VisualElement style="flex-direction: row;">
-            <ui:VisualElement class="field-section">
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Notify when import is complete" class="thunderkit-field-label"/>
-                    <ui:Toggle name="asset-name-field" binding-path="notifyWhenImportCompletes" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-            </ui:VisualElement>
-        </ui:VisualElement>
+	<ui:VisualElement name="game-configuration-section" class="section">
+		<ui:VisualElement class="setting-section">
+			<ui:Label text="Locate and Load game files for project" class="thunderkit-header"/>
+		</ui:VisualElement>
 
-        <ui:VisualElement name="game-config-button-container">
-            <ui:Button name="browse-button" text="Browse" class="standardbutton"/>
-            <ui:Button name="load-button" text="Import" class="standardbutton"/>
-        </ui:VisualElement>
+		<ui:VisualElement class="thunderkit-field" >
+			<ui:Label text="Game Path" class="thunderkit-field-label"/>
+			<ui:TextField name="asset-name-field" binding-path="GamePath" class="thunderkit-field-input"/>
+		</ui:VisualElement>
 
-    </ui:VisualElement>
-    <ui:VisualElement name="log-configuration-section" class="section">
-        <ui:VisualElement class="setting-section">
-            <ui:Label text="General" class="thunderkit-header"/>
-        </ui:VisualElement>
-    <ui:VisualElement class="thunderkit-field">
-        <ui:Label text="Markdown Editor" tooltip="The algorithm used to generate GUIDs for Assemblies in the project" class="thunderkit-field-label"/>
-        <uie:EnumField name="editor-mode-field" class="thunderkit-field-input" value="UnityExternalEditor" type="ThunderKit.Core.Windows.MarkdownOpenMode, ThunderKit.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"/>
-    </ui:VisualElement>
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Game Executable" class="thunderkit-field-label"/>
+			<ui:TextField name="asset-name-field" binding-path="GameExecutable" class="thunderkit-field-input"/>
+		</ui:VisualElement>
 
-    </ui:VisualElement>
+		<ui:VisualElement name="game-config-button-container">
+			<ui:Button name="browse-button" text="Browse" class="standardbutton"/>
+			<ui:Button name="load-button" text="Import" class="standardbutton"/>
+		</ui:VisualElement>
+	</ui:VisualElement>
 
-    <ui:VisualElement name="log-configuration-section" class="section">
-        <ui:VisualElement class="setting-section">
-            <ui:Label text="Logging" class="thunderkit-header"/>
-        </ui:VisualElement>
-        <ui:VisualElement style="flex-direction: row;">
-                
-            <ui:VisualElement class="field-section">
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="DateTime Format" class="thunderkit-field-label"/>
-                    <ui:TextField name="asset-name-field" binding-path="DateTimeFormat" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Created Date Format" class="thunderkit-field-label"/>
-                    <ui:TextField name="asset-name-field" binding-path="CreatedDateFormat" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Display pipeline log during execution" tooltip="Show log window when executing a pipeline" class="thunderkit-field-label"/>
-                    <ui:Toggle name="asset-name-field" binding-path="ShowLogWindow" class="thunderkit-field-input"/>
-                </ui:VisualElement>
+	<ui:VisualElement class="section configuration-section">
+		<ui:VisualElement class="setting-section">
+			<ui:Label text="Markdown" class="thunderkit-header"/>
+		</ui:VisualElement>
 
-            </ui:VisualElement>
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Markdown Editor" tooltip="The application used to open markdown files from unity" class="thunderkit-field-label"/>
+			<uie:EnumField name="editor-mode-field" class="thunderkit-field-input" value="UnityExternalEditor" type="ThunderKit.Core.Windows.MarkdownOpenMode, ThunderKit.Core, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+		</ui:VisualElement>
+	</ui:VisualElement>
 
-        </ui:VisualElement>
-    </ui:VisualElement>
+	<ui:VisualElement class="section configuration-section">
+		<ui:VisualElement class="setting-section">
+			<ui:Label text="Image Cache" class="thunderkit-header"/>
+		</ui:VisualElement>
 
-    <ui:VisualElement name="settings-window-section" class="section">
-        <ui:VisualElement class="setting-section">
-            <ui:Label text="Settings Window" class="thunderkit-header"/>
-        </ui:VisualElement>
-        <ui:VisualElement style="flex-direction: row;">
-                
-            <ui:VisualElement class="field-section">
-                <ui:VisualElement class="thunderkit-field">
-                    <ui:Label text="Show at Startup" class="thunderkit-field-label"/>
-                    <ui:Toggle name="asset-name-field" binding-path="ShowOnStartup" class="thunderkit-field-input"/>
-                </ui:VisualElement>
-            </ui:VisualElement>
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Image Cache Path" tooltip="The path that the Markdown engine uses to save images for loading" class="thunderkit-field-label"/>
+			<ui:VisualElement class="horizontal grow thunderkit-field-input m0">
+				<ui:TextField name="asset-name-field" binding-path="ImageCachePath" class="grow m0" style="max-width: 340px;"/>
+				<ui:Button name="cache-browse-button" text="Browse" class="standardbutton"/>
+			</ui:VisualElement>
+		</ui:VisualElement>
 
-        </ui:VisualElement>
-    </ui:VisualElement>
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Cache Details" class="thunderkit-field-label"/>
+			<ui:VisualElement class="horizontal thunderkit-field-input m0">
+				<ui:Label text="486" tooltip="Cached Images" binding-path="CachedImageCount" />
+				<ui:Label text="files" tooltip="Files" />
+				<ui:Label text="   "/>
+				<ui:Label text="0" tooltip="Cached Bytes" binding-path="CacheSize" />
+				<ui:Label text="mb" tooltip="Cached Bytes" />
+				<ui:Button name="clear-cache-button" text="Clear" class="standardbutton" style="position: absolute; right:4px;"/>
+			</ui:VisualElement>
+		</ui:VisualElement>
+	</ui:VisualElement>
 
+	<ui:VisualElement class="section configuration-section">
+		<ui:VisualElement class="setting-section">
+			<ui:Label text="Project Generation" class="thunderkit-header"/>
+		</ui:VisualElement>
+
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Generate ThunderKit Assets Project" tooltip="Toggles the creation of a CSProj file for non-code ThunderKit assets." class="thunderkit-field-label"/>
+			<ui:Toggle name="asset-name-field" binding-path="GenerateAssetsProject" class="thunderkit-field-input"/>
+		</ui:VisualElement>
+
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Fix Local Disk Packages" tooltip="Fixes CSProj generation to include folders for Unity Packages installed from the local disk." class="thunderkit-field-label"/>
+			<ui:Toggle name="asset-name-field" binding-path="FixLocalDiskPackages" class="thunderkit-field-input"/>
+		</ui:VisualElement>
+
+	</ui:VisualElement>
+
+	<ui:VisualElement class="section configuration-section">
+		<ui:VisualElement class="setting-section">
+			<ui:Label text="Logging" class="thunderkit-header"/>
+		</ui:VisualElement>
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="DateTime Format" class="thunderkit-field-label"/>
+			<ui:TextField name="asset-name-field" binding-path="DateTimeFormat" class="thunderkit-field-input"/>
+		</ui:VisualElement>
+
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Created Date Format" class="thunderkit-field-label"/>
+			<ui:TextField name="asset-name-field" binding-path="CreatedDateFormat" class="thunderkit-field-input"/>
+		</ui:VisualElement>
+
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Display pipeline log during execution" tooltip="Show log window when executing a pipeline" class="thunderkit-field-label"/>
+			<ui:Toggle name="asset-name-field" binding-path="ShowLogWindow" class="thunderkit-field-input"/>
+		</ui:VisualElement>
+
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Cache Details" class="thunderkit-field-label"/>
+			<ui:VisualElement class="horizontal thunderkit-field-input m0">
+				<ui:Label name="log-count-label" text="486" tooltip="Logs" />
+				<ui:Label text="files" tooltip="Log Files" />
+				<ui:Button name="clear-logs-button" text="Clear" class="standardbutton" style="position: absolute; right:4px;"/>
+			</ui:VisualElement>
+		</ui:VisualElement>
+	</ui:VisualElement>
+
+	<ui:VisualElement class="section configuration-section">
+		<ui:VisualElement class="setting-section">
+			<ui:Label text="Package Manager" class="thunderkit-header"/>
+		</ui:VisualElement>
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Show PackageSource refresh times" class="thunderkit-field-label"/>
+			<ui:Toggle name="asset-name-field" binding-path="LogPackageSourceTimings" class="thunderkit-field-input"/>
+		</ui:VisualElement>
+	</ui:VisualElement>
+
+	<ui:VisualElement name="settings-window-section" class="section configuration-section">
+		<ui:VisualElement class="setting-section">
+			<ui:Label text="Settings Window" class="thunderkit-header"/>
+		</ui:VisualElement>
+
+		<ui:VisualElement class="thunderkit-field">
+			<ui:Label text="Show at Startup" class="thunderkit-field-label"/>
+			<ui:Toggle name="asset-name-field" binding-path="ShowOnStartup" class="thunderkit-field-input"/>
+		</ui:VisualElement>
+	</ui:VisualElement>
 </ui:UXML>
 

@@ -2,6 +2,7 @@
 using SharpCompress.Readers;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ThunderKit.Core.Data;
 using UnityEngine;
 
@@ -32,9 +33,11 @@ namespace ThunderKit.Integrations.Thunderstore
 
         public override string Name => "Local Thunderstore";
         public override string SourceGroup => "Thunderstore";
+
         protected override string VersionIdToGroupId(string dependencyId) => dependencyId.Substring(0, dependencyId.LastIndexOf("-"));
         protected override void OnLoadPackages()
         {
+            if (string.IsNullOrEmpty(LocalRepositoryPath)) return;
             var potentialPackages = Directory.GetFiles(LocalRepositoryPath, "*.zip", SearchOption.TopDirectoryOnly);
             foreach (var filePath in potentialPackages)
             {
@@ -51,10 +54,17 @@ namespace ThunderKit.Integrations.Thunderstore
 
                         var versionId = Path.GetFileNameWithoutExtension(filePath);
                         var author = versionId.Split('-')[0];
-                        var groupId = $"{author}-{tsp.name}";
-                        var versions = new PackageVersionInfo[] { new PackageVersionInfo(tsp.version_number, versionId, tsp.dependencies) };
-                        AddPackageGroup(author, tsp.name, tsp.description, groupId, EmptyStringArray, versions);
-                        //don't process additional manifest files
+
+                        AddPackageGroup(new PackageGroupInfo
+                        {
+                            Author = author,
+                            Name = tsp.name,
+                            Description = tsp.description,
+                            DependencyId = $"{author}-{tsp.name}",
+                            Versions = new PackageVersionInfo[] {
+                                new PackageVersionInfo(tsp.version_number, versionId, tsp.dependencies, string.Empty)
+                            }
+                        });
                         break;
                     }
             }
@@ -88,5 +98,9 @@ namespace ThunderKit.Integrations.Thunderstore
             }
         }
 
+        protected override Task ReloadPagesAsyncInternal()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

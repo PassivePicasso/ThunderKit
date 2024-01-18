@@ -17,6 +17,10 @@ namespace ThunderKit.Core.Data
         public static event EventHandler SourcesInitialized;
         public static event EventHandler InitializeSources;
 
+        public bool IsLoadingPages { get; private set; }
+        public event Action OnLoadingStarted;
+        public event Action OnLoadingStopped;
+
         public static void LoadAllSources()
         {
             InitializeSources?.Invoke(null, EventArgs.Empty);
@@ -28,16 +32,30 @@ namespace ThunderKit.Core.Data
         [Serializable]
         public class PackageVersionInfo
         {
-            public string version;
-            public string versionDependencyId;
-            public string[] dependencies;
+            public string Version;
+            public string VersionDependencyId;
+            public string Markdown;
+            public string[] Dependencies;
 
-            public PackageVersionInfo(string version, string dependencyId, string[] dependencies)
+            public PackageVersionInfo(string version, string dependencyId, string[] dependencies, string markdown)
             {
-                this.version = version;
-                this.versionDependencyId = dependencyId;
-                this.dependencies = dependencies;
+                this.Version = version;
+                this.VersionDependencyId = dependencyId;
+                this.Dependencies = dependencies;
+                Markdown = markdown;
             }
+        }
+        [Serializable]
+        public class PackageGroupInfo
+        {
+            public string Author;
+            public string Name;
+            public string Description;
+            public string DependencyId;
+            public string HeaderMarkdown;
+            public string FooterMarkdown;
+            public string[] Tags;
+            public IEnumerable<PackageVersionInfo> Versions;
         }
 
         static Dictionary<string, List<PackageSource>> sourceGroups;
@@ -82,6 +100,58 @@ namespace ThunderKit.Core.Data
         private Dictionary<string, HashSet<string>> dependencyMap;
         private Dictionary<string, PackageGroup> groupMap;
         private List<PackageGroup> packages;
+        private ThunderKitSettings settings;
+
+        private void OnEnable()
+        {
+            InitializeSources -= Initialize;
+            InitializeSources += Initialize;
+            settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+        }
+
+        private void OnDisable()
+        {
+            InitializeSources -= Initialize;
+        }
+
+        private void OnDestroy()
+        {
+            InitializeSources -= Initialize;
+        }
+
+        private void Initialize(object sender, EventArgs e)
+        {
+            ReloadPages(true);
+        }
+
+        public void ReloadPages(bool force = false)
+        {
+            if (force) IsLoadingPages = false;
+            _ = ReloadPagesAsync();
+        }
+
+        public async Task ReloadPagesAsync()
+        {
+            if (IsLoadingPages) return;
+            IsLoadingPages = true;
+            var stopWatch = new System.Diagnostics.Stopwatch();
+            stopWatch.Start();
+            try
+            {
+                OnLoadingStarted?.Invoke();
+                await ReloadPagesAsyncInternal();
+            }
+            finally
+            {
+                stopWatch.Stop();
+                if (settings.LogPackageSourceTimings)
+                    Debug.Log($"PackageSource {name} took {stopWatch.Elapsed.TotalSeconds} seconds to update.");
+                IsLoadingPages = false;
+                OnLoadingStopped?.Invoke();
+            }
+        }
+
+        protected abstract Task ReloadPagesAsyncInternal();
 
         /// <summary>
         /// Generates a new PackageGroup for this PackageSource
@@ -92,34 +162,38 @@ namespace ThunderKit.Core.Data
         /// <param name="dependencyId">DependencyId for PackageGroup, this is used for mapping dependencies</param>
         /// <param name="tags"></param>
         /// <param name="versions">Collection of version numbers, DependencyIds and dependencies as an array of versioned DependencyIds</param>
-        protected void AddPackageGroup(string author, string name, string description, string dependencyId, string[] tags, IEnumerable<PackageVersionInfo> versions)
+        protected void AddPackageGroup(PackageGroupInfo groupInfo)
         {
             if (groupMap == null) groupMap = new Dictionary<string, PackageGroup>();
             if (dependencyMap == null) dependencyMap = new Dictionary<string, HashSet<string>>();
             var group = CreateInstance<PackageGroup>();
 
-            group.Author = author;
-            group.name = group.PackageName = name;
-            group.Description = description;
-            group.DependencyId = dependencyId;
-            group.Tags = tags;
+            group.Author = groupInfo.Author;
+            group.name = group.PackageName = groupInfo.Name;
+            group.Description = groupInfo.Description;
+            group.DependencyId = groupInfo.DependencyId;
+            group.Tags = groupInfo.Tags;
             group.Source = this;
-            groupMap[dependencyId] = group;
+            group.HeaderMarkdown = groupInfo.HeaderMarkdown;
+            group.FooterMarkdown = groupInfo.FooterMarkdown;
+            groupMap[groupInfo.DependencyId] = group;
 
             group.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
 
-            var versionData = versions.ToArray();
+            var versionData = groupInfo.Versions.ToArray();
             group.Versions = new PackageVersion[versionData.Length];
             for (int i = 0; i < versionData.Length; i++)
             {
-                var version = versionData[i].version;
-                var versionDependencyId = versionData[i].versionDependencyId;
-                var dependencies = versionData[i].dependencies;
+                var versionInfo = versionData[i];
+                var versionNumber = versionInfo.Version;
+                var versionDependencyId = versionInfo.VersionDependencyId;
+                var dependencies = versionInfo.Dependencies;
 
                 var packageVersion = CreateInstance<PackageVersion>();
                 packageVersion.name = packageVersion.dependencyId = versionDependencyId;
                 packageVersion.group = group;
-                packageVersion.version = version;
+                packageVersion.version = versionNumber;
+                packageVersion.VersionMarkdown = versionInfo.Markdown;
                 packageVersion.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
                 group.Versions[i] = packageVersion;
 
@@ -253,6 +327,9 @@ namespace ThunderKit.Core.Data
             catch (Exception e)
             {
                 Debug.LogError(e);
+                progress = 0;
+                stepSize = 1;
+                progress = await DestroyPackages(installSet, progress, stepSize);
             }
             finally
             {
@@ -260,6 +337,22 @@ namespace ThunderKit.Core.Data
                 EditorUtility.ClearProgressBar();
                 PackageHelper.ResolvePackages();
             }
+        }
+
+        private static Task<float> DestroyPackages(PackageVersion[] installSet, float progress, float stepSize)
+        {
+            using (var progressBar = new ProgressBar("Deleting Packages"))
+            {
+                progressBar.Update($"{installSet.Length} packages", progress: progress);
+                foreach (var installable in installSet)
+                {
+                    string packageDirectory = installable.group.InstallDirectory;
+                    if (Directory.Exists(packageDirectory))
+                        Directory.Delete(packageDirectory, true);
+                }
+            }
+
+            return Task.FromResult(progress);
         }
 
         private static Task<float> CreatePackages(PackageVersion[] installSet, float progress, float stepSize)
@@ -294,11 +387,11 @@ namespace ThunderKit.Core.Data
                 foreach (var installable in installSet)
                 {
                     var installableGroup = installable.group;
-                    var manifestGuid = PackageHelper.GetStringHashUTF8(installable.group.DependencyId);
+                    var manifestGuid = PackageHelper.GetCleanedStringHashUTF8(installable.group.DependencyId);
                     var manifestPath = PathExtensions.Combine(installableGroup.InstallDirectory, $"{installableGroup.PackageName}.asset");
                     progressBar.Update($"Creating manifest for {installable.group.PackageName}", progress: progress += stepSize / 3f);
                     var dependenciesArray = installable.dependencies
-                                                        .Select(pv => PackageHelper.GetStringHashUTF8(pv.group.DependencyId))
+                                                        .Select(pv => PackageHelper.GetCleanedStringHashUTF8(pv.group.DependencyId))
                                                         .Select(guid => $"  - {{fileID: 11400000, guid: {guid}, type: 2}}")
                                                         .ToArray();
 
@@ -326,6 +419,7 @@ namespace ThunderKit.Core.Data
 
                     foreach (var assemblyPath in Directory.GetFiles(packageDirectory, "*.dll", SearchOption.AllDirectories))
                         PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
+
                 }
             }
 

@@ -13,6 +13,7 @@ namespace ThunderKit.Core.Pipelines
     {
         public static List<PipelineLog> PipelineLogs { get; } = new List<PipelineLog>();
 
+        private const string Icon = "TextAsset Icon";
         public Pipeline pipeline;
 
         [SerializeField, HideInInspector]
@@ -26,6 +27,8 @@ namespace ThunderKit.Core.Pipelines
         private void Awake()
         {
             PipelineLogs.Add(this);
+            var content = EditorGUIUtility.IconContent(Icon);
+            ScriptableHelper.AssignIcon(this, content.image as Texture2D);
         }
 
 
@@ -47,7 +50,7 @@ namespace ThunderKit.Core.Pipelines
             log.pipeline = pipeline;
             log.creationDate = new SDateTime(DateTime.Now.Ticks);
             log.entries = new List<LogEntry>();
-            var content = EditorGUIUtility.IconContent("d_UnityEditor.ConsoleWindow");
+            var content = EditorGUIUtility.IconContent(Icon);
             ScriptableHelper.AssignIcon(log, content.image as Texture2D);
 
             AssetDatabase.CreateAsset(log, logPath);
