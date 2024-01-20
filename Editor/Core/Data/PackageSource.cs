@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ThunderKit.Common;
+using ThunderKit.Common.Configuration;
 using ThunderKit.Common.Logging;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Utilities;
@@ -252,17 +253,28 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        IEnumerable<PackageVersion> EnumerateDependencies(PackageVersion package)
+        IEnumerable<PackageVersion> EnumerateDependencies(PackageVersion package, bool yieldLatestVersions)
         {
             foreach (var dependency in package.dependencies)
             {
-                foreach (var subDependency in EnumerateDependencies(dependency))
+                var dep = yieldLatestVersions ? dependency.group["latest"] : dependency;
+                foreach (var subDependency in EnumerateDependencies(dep, yieldLatestVersions))
                     yield return subDependency;
             }
             yield return package;
         }
 
         public async Task InstallPackages(IEnumerable<(PackageGroup group, string version)> packages)
+        {
+            await InstallPackagesInternal(packages, false);
+        }
+
+        public async Task InstallPackages(IEnumerable<PackageGroup> packageGroups, bool forceLatestDependencies)
+        {
+            await InstallPackagesInternal(packageGroups.Select(pGroup => (pGroup, "latest")), forceLatestDependencies);
+        }
+
+        private async Task InstallPackagesInternal(IEnumerable<(PackageGroup group, string version)> packages, bool forceLatestDependencies)
         {
             if (EditorApplication.isCompiling) return;
             using (var progressBar = new ProgressBar("Installing Packages"))
@@ -274,7 +286,7 @@ namespace ThunderKit.Core.Data
 
                     var resolvedVersion = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-                    installSet.AddRange(EnumerateDependencies(package).Where(dep => !dep.group.Installed));
+                    installSet.AddRange(EnumerateDependencies(package, forceLatestDependencies).Where(dep => !dep.group.Installed));
                 }
 
                 var installSetArray = installSet.ToArray();
@@ -288,9 +300,11 @@ namespace ThunderKit.Core.Data
                     progress = await CreatePackages(installSetArray, progress, stepSize);
                     progress = await CreateManifests(installSetArray, progress, stepSize);
                     progress = await ExtractPackageFiles(installSetArray, progress, stepSize);
+                    progress = await AddScriptingSymbols(installSetArray, progress, stepSize);
                 }
                 catch (Exception e)
                 {
+                    progress = await RemoveScriptingSymbols(installSetArray, progress, stepSize);
                     Debug.LogError(e);
                 }
                 finally
@@ -304,12 +318,22 @@ namespace ThunderKit.Core.Data
 
         public async Task InstallPackage(PackageGroup group, string version)
         {
+            await InstallPackageInternal(group, version, false);
+        }
+
+        public async Task InstallPackage(PackageGroup group, bool forceLatestDependencies)
+        {
+            await InstallPackageInternal(group, "latest", forceLatestDependencies);
+        }
+
+        private async Task InstallPackageInternal(PackageGroup group, string version, bool forceLatestDependencies)
+        {
             if (EditorApplication.isCompiling) return;
             var package = group[version];
 
             version = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-            var installSet = EnumerateDependencies(package).Where(dep => !dep.group.Installed).ToArray();
+            var installSet = EnumerateDependencies(package, forceLatestDependencies).Where(dep => !dep.group.Installed).ToArray();
             var progress = 0.01f;
             var stepSize = 0.33f / installSet.Length;
 
@@ -322,6 +346,7 @@ namespace ThunderKit.Core.Data
                     progress = await CreatePackages(installSet, progress, stepSize);
                     progress = await CreateManifests(installSet, progress, stepSize);
                     progress = await ExtractPackageFiles(installSet, progress, stepSize);
+                    progress = await AddScriptingSymbols(installSet, progress, stepSize);
                 }
             }
             catch (Exception e)
@@ -330,6 +355,7 @@ namespace ThunderKit.Core.Data
                 progress = 0;
                 stepSize = 1;
                 progress = await DestroyPackages(installSet, progress, stepSize);
+                progress = await RemoveScriptingSymbols(installSet, progress, stepSize);
             }
             finally
             {
@@ -426,6 +452,39 @@ namespace ThunderKit.Core.Data
             return Task.FromResult(progress);
         }
 
+        private static Task<float> AddScriptingSymbols(PackageVersion[] installSet, float progress, float stepSize)
+        {
+            using (var progressBar = new ProgressBar("Adding scripting symbols"))
+            {
+                progressBar.Update($"Adding {installSet.Length} scripting symbols", progress: progress);
+                foreach (var installable in installSet)
+                {
+                    progressBar.Update($"Adding scripting symbol for {installable.group.PackageName}", progress: progress += stepSize);
+                    var installableGroup = installable.group;
+                    var packageName = PackageHelper.GetCleanPackageName(installableGroup.DependencyId.ToLower());
+                    ScriptingSymbolManager.AddScriptingDefine(packageName);
+                }
+            }
+
+            return Task.FromResult(progress);
+        }
+
+        private static Task<float> RemoveScriptingSymbols(PackageVersion[] installSet, float progress, float stepSize)
+        {
+            using (var progressBar = new ProgressBar("Removing scripting symbols"))
+            {
+                progressBar.Update($"Removing {installSet.Length} scripting symbols", progress: progress);
+                foreach (var installable in installSet)
+                {
+                    progressBar.Update($"Removing scripting symbol for {installable.group.PackageName}", progress: progress += stepSize);
+                    var installableGroup = installable.group;
+                    var packageName = PackageHelper.GetCleanPackageName(installableGroup.DependencyId.ToLower());
+                    ScriptingSymbolManager.RemoveScriptingDefine(packageName);
+                }
+            }
+
+            return Task.FromResult(progress);
+        }
 
         /// <summary>
         /// Executes the downloading, unpacking, and placing of package files.

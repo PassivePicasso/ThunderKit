@@ -227,11 +227,12 @@ namespace ThunderKit.Core.Pipelines.Jobs
                 foreach (var outputPath in resolvedPaths)
                 {
                     Directory.CreateDirectory(outputPath);
+                    
                     if (stageDebugDatabases)
                         CopyFiles(pipeline, resolvedArtifactPath, outputPath, $"{targetName}*.pdb", $"{targetName}*.mdb", assemblyName);
                     else
                         CopyFiles(pipeline, resolvedArtifactPath, outputPath, assemblyName);
-
+                    
                     TryUNetWeave(definition.asm, assemblyName, outputPath);
                 }
                 pipeline.ManifestIndex = prevIndex;
