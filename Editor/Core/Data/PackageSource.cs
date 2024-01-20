@@ -316,46 +316,6 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        public async Task InstallPackagesLatestVersions(IEnumerable<PackageGroup> packages)
-        {
-            if (EditorApplication.isCompiling) return;
-            using (var progressBar = new ProgressBar("Installing Packages"))
-            {
-                var installSet = new List<PackageVersion>();
-                foreach (var group in packages)
-                {
-                    var package = group["latest"];
-
-                    installSet.AddRange(EnumerateDependencies(package, true).Where(dep => !dep.group.Installed));
-                }
-
-                var installSetArray = installSet.ToArray();
-                var progress = 0.01f;
-                var stepSize = 0.33f / installSetArray.Length;
-
-                //Wait till all files are put in place to load new assemblies to make installation more consistent and faster
-                try
-                {
-                    EditorApplication.LockReloadAssemblies();
-                    progress = await CreatePackages(installSetArray, progress, stepSize);
-                    progress = await CreateManifests(installSetArray, progress, stepSize);
-                    progress = await ExtractPackageFiles(installSetArray, progress, stepSize);
-                    progress = await AddScriptingSymbols(installSetArray, progress, stepSize);
-                }
-                catch (Exception e)
-                {
-                    progress = await RemoveScriptingSymbols(installSetArray, progress, stepSize);
-                    Debug.LogError(e);
-                }
-                finally
-                {
-                    EditorApplication.UnlockReloadAssemblies();
-                    EditorUtility.ClearProgressBar();
-                    PackageHelper.ResolvePackages();
-                }
-            }
-        }
-
         public async Task InstallPackage(PackageGroup group, string version)
         {
             await InstallPackageInternal(group, version, false);
