@@ -1,3 +1,14 @@
+### 8.0.6
+
+#### Fixes and Improvements
+
+* Fix Packages not always creating Scripting Defines when installed
+* Fix CreateGamePackage not adding a ScriptingDefine for the game
+* Add new method to PackageSource which allows forcing latest on all dependencies for an installed package
+* Add support for force latest to ThunderstorePackageInstaller
+
+Thanks to @nebby1999 for both creating and organizing these fixes into a PR
+
 ## 8.0.5
 
 ### Improvements and Fixes
