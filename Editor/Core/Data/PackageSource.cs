@@ -167,10 +167,10 @@ namespace ThunderKit.Core.Data
         {
             if (groupMap == null) groupMap = new Dictionary<string, PackageGroup>();
             if (dependencyMap == null) dependencyMap = new Dictionary<string, HashSet<string>>();
-            var group = CreateInstance<PackageGroup>();
+            var group = new PackageGroup();
 
             group.Author = groupInfo.Author;
-            group.name = group.PackageName = groupInfo.Name;
+            group.PackageName = groupInfo.Name;
             group.Description = groupInfo.Description;
             group.DependencyId = groupInfo.DependencyId;
             group.Tags = groupInfo.Tags;
@@ -178,8 +178,6 @@ namespace ThunderKit.Core.Data
             group.HeaderMarkdown = groupInfo.HeaderMarkdown;
             group.FooterMarkdown = groupInfo.FooterMarkdown;
             groupMap[groupInfo.DependencyId] = group;
-
-            group.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
 
             var versionData = groupInfo.Versions.ToArray();
             group.Versions = new PackageVersion[versionData.Length];
@@ -190,12 +188,11 @@ namespace ThunderKit.Core.Data
                 var versionDependencyId = versionInfo.VersionDependencyId;
                 var dependencies = versionInfo.Dependencies;
 
-                var packageVersion = CreateInstance<PackageVersion>();
+                var packageVersion = new PackageVersion();
                 packageVersion.name = packageVersion.dependencyId = versionDependencyId;
                 packageVersion.group = group;
                 packageVersion.version = versionNumber;
                 packageVersion.VersionMarkdown = versionInfo.Markdown;
-                packageVersion.hideFlags = HideFlags.HideInHierarchy | HideFlags.NotEditable;
                 group.Versions[i] = packageVersion;
 
                 if (!dependencyMap.TryGetValue(packageVersion.dependencyId, out var packageDeps))
@@ -225,7 +222,7 @@ namespace ThunderKit.Core.Data
             OnLoadPackages();
             if (Packages.Any())
             {
-                var validVersions = Packages.Where(pkgGrp => pkgGrp).Where(pkgGrp => pkgGrp.Versions != null);
+                var validVersions = Packages.Where(pkgGrp => pkgGrp?.Versions != null);
                 var versionGroupMaps = validVersions.SelectMany(pkgGrp => pkgGrp.Versions.Select(pkgVer => new KeyValuePair<PackageGroup, PackageVersion>(pkgGrp, pkgVer)));
                 var versionMap = versionGroupMaps.Distinct().ToDictionary(ver => ver.Value.dependencyId);
 

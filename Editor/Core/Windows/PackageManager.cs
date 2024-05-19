@@ -212,7 +212,7 @@ namespace ThunderKit.Core.Windows
                     BindPackageView(packageList.selectedItem as PackageGroup);
                 }
 
-                var pkgs = source.Packages.Where(pkg => pkg);
+                var pkgs = source.Packages.Where(pkg => pkg != null);
                 var allTags = pkgs?.Where(pkg => pkg.Tags != null).SelectMany(pkg => pkg.Tags);
                 var distinctTags = allTags?.Distinct();
                 var pathedTags = distinctTags?.Select(tag => $"{source?.Name}/{tag}");
@@ -237,7 +237,7 @@ namespace ThunderKit.Core.Windows
                 .Select(kvp => kvp.Key.Substring(kvp.Key.LastIndexOf('/') + 1))
                 .ToArray();
 
-            packages = packages.Where(pkg => pkg).ToList();
+            packages = packages.Where(pkg => pkg != null).ToList();
 
             var hasTags = enabledTags.Any() ? packages.Where(pkg => pkg.Tags != null).Where(pkg => enabledTags.All(tag => ArrayUtility.Contains(pkg.Tags, tag))) : packages;
             if (!hasTags.Any())
