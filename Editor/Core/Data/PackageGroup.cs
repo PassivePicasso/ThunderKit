@@ -25,6 +25,7 @@ namespace ThunderKit.Core.Data
             }
         }
 
+        public string name => PackageName;
         public string PackageName;
         public string Author;
         public string Description;
