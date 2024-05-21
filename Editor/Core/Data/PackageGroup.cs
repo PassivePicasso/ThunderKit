@@ -10,7 +10,7 @@ using UnityEngine;
 namespace ThunderKit.Core.Data
 {
     [Serializable]
-    public class PackageGroup : ScriptableObject, IEquatable<PackageGroup>
+    public class PackageGroup : IEquatable<PackageGroup>
     {
         public PackageVersion this[string version]
         {
@@ -25,6 +25,7 @@ namespace ThunderKit.Core.Data
             }
         }
 
+        public string name => PackageName;
         public string PackageName;
         public string Author;
         public string Description;
