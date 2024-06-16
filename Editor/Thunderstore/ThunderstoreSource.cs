@@ -115,7 +115,7 @@ namespace ThunderKit.Integrations.Thunderstore
         }
         protected override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
-            var tsPackage = LookupPackage(version.group.DependencyId).First();
+            var tsPackage = LookupPackage(version.groupDependencyId).First();
             var tsPackageVersion = tsPackage.versions.First(tspv => tspv.version_number.Equals(version.version));
             var filePath = Path.Combine(packageDirectory, $"{tsPackageVersion.full_name}.zip");
 

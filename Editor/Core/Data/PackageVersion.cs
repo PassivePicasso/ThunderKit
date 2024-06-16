@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace ThunderKit.Core.Data
 {
     [Serializable]
-    public class PackageVersion 
+    public class PackageVersion
     {
         public string version;
         public string dependencyId;
         public string VersionMarkdown;
-        public PackageGroup group;
+        public string groupDependencyId;
         public PackageVersion[] dependencies;
         internal string name;
 
