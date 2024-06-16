@@ -1,3 +1,18 @@
+### 9.0.0
+
+#### Breaking Changes
+
+To improve the performance of PackageSource initialization PackageGroup and
+PackageVersion have been changed to no longer derive from ScriptableObject.
+This change necessitated modifying PackageVersion by removing the PackageGroup
+group field and replacing it with a string, groupDependencyId, which can be 
+used to look up the PackageGroup object instead of using a reference.
+
+#### Fixes and Improvements
+
+* Fixed the import of ProjectSettings which had been broken during the update
+  to AssetsTools v3.
+
 ### 8.0.6
 
 #### Fixes and Improvements
