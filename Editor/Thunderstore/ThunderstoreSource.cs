@@ -40,7 +40,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 source = ScriptableHelper.EnsureAsset(basePath, typeof(ThunderstoreSource), asset =>
                 {
                     var src = asset as ThunderstoreSource;
-                    src.Url = "https://thunderkit.thunderstore.io";
+                    src.Url = "https://thunderstore.io/c/thunderkit";
                     EditorUtility.SetDirty(src);
                 }) as ThunderstoreSource;
             }
@@ -71,7 +71,7 @@ namespace ThunderKit.Integrations.Thunderstore
 
         private PackageListing[] packageListings;
 
-        public string Url = "https://thunderstore.io";
+        public string Url = "https://thunderstore.io/c/riskofrain2";
 
         public override string Name => "Thunderstore Source";
         public string PackageListApi => Url + "/api/v1/package/";
