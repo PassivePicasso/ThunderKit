@@ -1,3 +1,9 @@
+### 9.0.1
+
+#### Fixes and Improvements
+
+* Fixed the Thunderstore Package Installer extension not forcing latest dependencies when "ForceLatestDependencies" was overriden to "true"
+
 ### 9.0.0
 
 #### Breaking Changes

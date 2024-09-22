@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using ThunderKit.Core.Config;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Utilities;
@@ -61,7 +62,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 }
 
                 Debug.Log($"Installing latest version of package \"{DependencyId}\"");
-                var task = packageSource.InstallPackage(package, "latest");
+                var task = packageSource.InstallPackage(package, ForceLatestDependencies); //This is not a breaking change
                 while (!task.IsCompleted)
                 {
                     Debug.Log("Waiting for completion");
