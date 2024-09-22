@@ -190,7 +190,7 @@ namespace ThunderKit.Core.Data
 
                 var packageVersion = new PackageVersion();
                 packageVersion.name = packageVersion.dependencyId = versionDependencyId;
-                packageVersion.group = group;
+                packageVersion.groupDependencyId = group.DependencyId;
                 packageVersion.version = versionNumber;
                 packageVersion.VersionMarkdown = versionInfo.Markdown;
                 group.Versions[i] = packageVersion;
@@ -254,7 +254,7 @@ namespace ThunderKit.Core.Data
         {
             foreach (var dependency in package.dependencies)
             {
-                var dep = yieldLatestVersions ? dependency.group["latest"] : dependency;
+                var dep = yieldLatestVersions ? groupMap[dependency.groupDependencyId]["latest"] : dependency;
                 foreach (var subDependency in EnumerateDependencies(dep, yieldLatestVersions))
                     yield return subDependency;
             }
@@ -283,7 +283,7 @@ namespace ThunderKit.Core.Data
 
                     var resolvedVersion = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-                    installSet.AddRange(EnumerateDependencies(package, forceLatestDependencies).Where(dep => !dep.group.Installed));
+                    installSet.AddRange(EnumerateDependencies(package, forceLatestDependencies).Where(dep => !groupMap[dep.groupDependencyId].Installed));
                 }
 
                 var installSetArray = installSet.ToArray();
@@ -330,7 +330,7 @@ namespace ThunderKit.Core.Data
 
             version = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-            var installSet = EnumerateDependencies(package, forceLatestDependencies).Where(dep => !dep.group.Installed).ToArray();
+            var installSet = EnumerateDependencies(package, forceLatestDependencies).Where(dep => !groupMap[dep.groupDependencyId].Installed).ToArray();
             var progress = 0.01f;
             var stepSize = 0.33f / installSet.Length;
 
@@ -362,14 +362,14 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        private static Task<float> DestroyPackages(PackageVersion[] installSet, float progress, float stepSize)
+        private Task<float> DestroyPackages(PackageVersion[] installSet, float progress, float stepSize)
         {
             using (var progressBar = new ProgressBar("Deleting Packages"))
             {
                 progressBar.Update($"{installSet.Length} packages", progress: progress);
                 foreach (var installable in installSet)
                 {
-                    string packageDirectory = installable.group.InstallDirectory;
+                    string packageDirectory = groupMap[installable.groupDependencyId].InstallDirectory;
                     if (Directory.Exists(packageDirectory))
                         Directory.Delete(packageDirectory, true);
                 }
@@ -378,7 +378,7 @@ namespace ThunderKit.Core.Data
             return Task.FromResult(progress);
         }
 
-        private static Task<float> CreatePackages(PackageVersion[] installSet, float progress, float stepSize)
+        private Task<float> CreatePackages(PackageVersion[] installSet, float progress, float stepSize)
         {
             using (var progressBar = new ProgressBar("Creating Packages"))
             {
@@ -386,35 +386,36 @@ namespace ThunderKit.Core.Data
                 foreach (var installable in installSet)
                 {
                     //This will cause repeated installation of dependencies
-                    string packageDirectory = installable.group.InstallDirectory;
+                    PackageGroup group = groupMap[installable.groupDependencyId];
+                    string packageDirectory = group.InstallDirectory;
 
                     if (!Directory.Exists(packageDirectory)) Directory.CreateDirectory(packageDirectory);
 
-                    progressBar.Update($"Creating package.json for {installable.group.PackageName}", "Creating Packages", progress += stepSize / 2);
+                    progressBar.Update($"Creating package.json for {group.PackageName}", "Creating Packages", progress += stepSize / 2);
                     PackageHelper.GeneratePackageManifest(
-                          installable.group.DependencyId.ToLower(), installable.group.InstallDirectory,
-                          installable.group.PackageName, installable.group.Author,
+                          group.DependencyId.ToLower(), group.InstallDirectory,
+                          group.PackageName, group.Author,
                           installable.version,
-                          installable.group.Description);
+                          group.Description);
                 }
             }
 
             return Task.FromResult(progress);
         }
 
-        private static Task<float> CreateManifests(PackageVersion[] installSet, float progress, float stepSize)
+        private Task<float> CreateManifests(PackageVersion[] installSet, float progress, float stepSize)
         {
             using (var progressBar = new ProgressBar("Creating Package Manifests"))
             {
                 progressBar.Update($"Creating {installSet.Length} manifests", progress: progress);
                 foreach (var installable in installSet)
                 {
-                    var installableGroup = installable.group;
-                    var manifestGuid = PackageHelper.GetCleanedStringHashUTF8(installable.group.DependencyId);
+                    var installableGroup = groupMap[installable.groupDependencyId];
+                    var manifestGuid = PackageHelper.GetCleanedStringHashUTF8(installable.groupDependencyId);
                     var manifestPath = PathExtensions.Combine(installableGroup.InstallDirectory, $"{installableGroup.PackageName}.asset");
-                    progressBar.Update($"Creating manifest for {installable.group.PackageName}", progress: progress += stepSize / 3f);
+                    progressBar.Update($"Creating manifest for {groupMap[installable.groupDependencyId].PackageName}", progress: progress += stepSize / 3f);
                     var dependenciesArray = installable.dependencies
-                                                        .Select(pv => PackageHelper.GetCleanedStringHashUTF8(pv.group.DependencyId))
+                                                        .Select(pv => PackageHelper.GetCleanedStringHashUTF8(pv.groupDependencyId))
                                                         .Select(guid => $"  - {{fileID: 11400000, guid: {guid}, type: 2}}")
                                                         .ToArray();
 
@@ -427,37 +428,37 @@ namespace ThunderKit.Core.Data
             return Task.FromResult(progress);
         }
 
-        private static Task<float> ExtractPackageFiles(PackageVersion[] installSet, float progress, float stepSize)
+        private Task<float> ExtractPackageFiles(PackageVersion[] installSet, float progress, float stepSize)
         {
             using (var progressBar = new ProgressBar("Installing Package Files"))
             {
                 progressBar.Update($"{installSet.Length} packages", progress: progress);
                 foreach (var installable in installSet)
                 {
-                    string packageDirectory = installable.group.InstallDirectory;
+                    PackageGroup group = groupMap[installable.groupDependencyId];
+                    string packageDirectory = group.InstallDirectory;
 
-                    progressBar.Update($"Downloading {installable.group.PackageName}", progress: progress += stepSize / 2);
+                    progressBar.Update($"Downloading {group.PackageName}", progress: progress += stepSize / 2);
 
-                    installable.group.Source.OnInstallPackageFiles(installable, packageDirectory);
+                    group.Source.OnInstallPackageFiles(installable, packageDirectory);
 
                     foreach (var assemblyPath in Directory.GetFiles(packageDirectory, "*.dll", SearchOption.AllDirectories))
                         PackageHelper.WriteAssemblyMetaData(assemblyPath, $"{assemblyPath}.meta");
-
                 }
             }
 
             return Task.FromResult(progress);
         }
 
-        private static Task<float> AddScriptingSymbols(PackageVersion[] installSet, float progress, float stepSize)
+        private Task<float> AddScriptingSymbols(PackageVersion[] installSet, float progress, float stepSize)
         {
             using (var progressBar = new ProgressBar("Adding scripting symbols"))
             {
                 progressBar.Update($"Adding {installSet.Length} scripting symbols", progress: progress);
                 foreach (var installable in installSet)
                 {
-                    progressBar.Update($"Adding scripting symbol for {installable.group.PackageName}", progress: progress += stepSize);
-                    var installableGroup = installable.group;
+                    var installableGroup = groupMap[installable.groupDependencyId];
+                    progressBar.Update($"Adding scripting symbol for {installableGroup.PackageName}", progress: progress += stepSize);
                     var packageName = PackageHelper.GetCleanPackageName(installableGroup.DependencyId.ToLower());
                     ScriptingSymbolManager.AddScriptingDefine(packageName);
                 }
@@ -466,15 +467,15 @@ namespace ThunderKit.Core.Data
             return Task.FromResult(progress);
         }
 
-        private static Task<float> RemoveScriptingSymbols(PackageVersion[] installSet, float progress, float stepSize)
+        private Task<float> RemoveScriptingSymbols(PackageVersion[] installSet, float progress, float stepSize)
         {
             using (var progressBar = new ProgressBar("Removing scripting symbols"))
             {
                 progressBar.Update($"Removing {installSet.Length} scripting symbols", progress: progress);
                 foreach (var installable in installSet)
                 {
-                    progressBar.Update($"Removing scripting symbol for {installable.group.PackageName}", progress: progress += stepSize);
-                    var installableGroup = installable.group;
+                    var installableGroup = groupMap[installable.groupDependencyId];
+                    progressBar.Update($"Removing scripting symbol for {installableGroup.PackageName}", progress: progress += stepSize);
                     var packageName = PackageHelper.GetCleanPackageName(installableGroup.DependencyId.ToLower());
                     ScriptingSymbolManager.RemoveScriptingDefine(packageName);
                 }
