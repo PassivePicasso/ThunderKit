@@ -86,7 +86,7 @@ namespace ThunderKit.Integrations.SpaceDock
 
         protected override void OnInstallPackageFiles(PV version, string packageDirectory)
         {
-            var package = LookupPackage(version.group.DependencyId).FirstOrDefault();
+            var package = LookupPackage(version.groupDependencyId).FirstOrDefault();
 
             var packageVersion = package.versions.First(tspv => tspv.friendly_version.Equals(version.version));
             var filePath = Path.Combine(packageDirectory, $"{package.name}-{packageVersion.friendly_version}.zip");
