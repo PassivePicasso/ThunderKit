@@ -62,7 +62,7 @@ namespace ThunderKit.Integrations.Thunderstore
                 }
 
                 Debug.Log($"Installing latest version of package \"{DependencyId}\"");
-                var task = packageSource.InstallPackage(package, ForceLatestDependencies); //This is not a breaking change
+                var task = packageSource.InstallPackage(package, ForceLatestDependencies);
                 while (!task.IsCompleted)
                 {
                     Debug.Log("Waiting for completion");
