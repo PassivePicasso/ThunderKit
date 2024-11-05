@@ -154,12 +154,15 @@ namespace ThunderKit.Core.Pipelines.Jobs
 
 #if UNITY_2020_1_OR_NEWER
                 referencesOptions = ReferencesOptions.None,
+#endif
                 compilerOptions = new ScriptCompilerOptions()
                 {
+#if UNITY_2020_1_OR_NEWER
                     CodeOptimization = releaseBuild ? CodeOptimization.Release : CodeOptimization.Debug,
-
-                },
+                    AdditionalCompilerArguments = definition.asm.compilerOptions.AdditionalCompilerArguments,
 #endif
+                    AllowUnsafeCode = definition.asm.compilerOptions.AllowUnsafeCode,
+                },
                 flags = releaseBuild ? AssemblyBuilderFlags.None : AssemblyBuilderFlags.DevelopmentBuild,
                 buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget),
                 buildTarget = buildTarget
