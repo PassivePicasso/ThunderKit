@@ -80,7 +80,7 @@ namespace ThunderKit.Core.UIElements
             this.target = target;
             resizeTarget = target.parent;
         }
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2019_3_OR_NEWER
         protected override void RegisterCallbacksOnTarget()
         {
             target.RegisterCallback<PointerDownEvent>(PointerDownHandler);
