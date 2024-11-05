@@ -1,8 +1,30 @@
+## 9.1.0
+
+### Fixes and Improvements
+
+* Fixed compatibility of DragThumb with Unity 2019.1 and Unity 2019.2
+
+### Community Contributions
+
+* Enhanced StageAssemblies PipelineJob with AssemblyDefinition asset support:
+  * Implemented AllowUnsafeCode setting support
+  * Added AdditionalCompilerArguments passthrough
+  * Thanks to @Scheshi for this improvement.
+
+### Important Notes
+While not a breaking change, this update may affect project behavior:
+* AssemblyDefinition settings that were previously ignored will now be respected:
+  * Additional compiler arguments
+  * Unsafe code settings
+* Review your assembly definitions if you notice any compilation changes
+
+
 ### 9.0.1
 
 #### Fixes and Improvements
 
-* Fixed the Thunderstore Package Installer extension not forcing latest dependencies when "ForceLatestDependencies" was overriden to "true"
+* Fixed the Thunderstore Package Installer extension not forcing latest 
+  dependencies when "ForceLatestDependencies" was overriden to "true"
 
 ### 9.0.0
 
@@ -27,7 +49,8 @@ reference, preventing a serialization loop.
 
 * Fix Packages not always creating Scripting Defines when installed
 * Fix CreateGamePackage not adding a ScriptingDefine for the game
-* Add new method to PackageSource which allows forcing latest on all dependencies for an installed package
+* Add new method to PackageSource which allows forcing latest on all dependencies 
+  for an installed package
 * Add support for force latest to ThunderstorePackageInstaller
 
 Thanks to @nebby1999 for both creating and organizing these fixes into a PR
