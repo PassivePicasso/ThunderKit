@@ -7,10 +7,6 @@ So now this is bigger.
 ```
 # ThunderKit supports the right for women to have bodily automony.
 
-
-If you like ThunderKit consider donating through
-[GitHub Sponsors](https://github.com/sponsors/PassivePicasso)
-
 Join the [ThunderKit Discord Server](https://discord.gg/Xzf9qFj6WA) 
 to get help and interact with other ThunderKit users.
 
