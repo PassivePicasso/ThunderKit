@@ -1,6 +1,12 @@
 ## _**ThunderKit Crash Course**_
 
-ThunderKit supports the right for women to have bodily automony.
+```
+Note: 
+some people like to comment on this repository and call me Evil or hateful
+So now this is bigger.
+```
+# ThunderKit supports the right for women to have bodily automony.
+
 
 If you like ThunderKit consider donating through
 [GitHub Sponsors](https://github.com/sponsors/PassivePicasso)
