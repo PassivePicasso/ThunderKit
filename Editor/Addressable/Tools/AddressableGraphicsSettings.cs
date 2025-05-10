@@ -37,7 +37,6 @@ namespace ThunderKit.Addressable.Tools
         {
             switch (location.ResourceType)
             {
-                
                 case var _ when location.InternalId.Equals("Library/com.unity.addressables/aa/Windows/settings.json"):
                     return "Assets/StreamingAssets/aa/settings.json";
                 case var _ when location.InternalId.Equals("Library/com.unity.addressables/aa/Windows/catalog.json"):
@@ -51,9 +50,13 @@ namespace ThunderKit.Addressable.Tools
                 case var f when f == typeof(IAssetBundleResource):
                     {
                         var iid = location.InternalId;
-                        var path = iid.Substring(iid.IndexOf("/aa") + 4);
-                        path = Path.Combine(ThunderKitSettings.EditTimePath, path);
-                        return path;
+                        var aaIndex = iid.IndexOf("/aa");
+                        if (aaIndex >= 0)
+                        {
+                            var path = iid[(aaIndex + 4)..];
+                            return Path.Combine(ThunderKitSettings.EditTimePath, path);
+                        }
+                        return iid;
                     }
                 default:
                     var result = location.InternalId;
