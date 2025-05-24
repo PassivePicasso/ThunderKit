@@ -53,7 +53,8 @@ namespace ThunderKit.Addressable.Tools
                         var aaIndex = iid.IndexOf("/aa");
                         if (aaIndex >= 0)
                         {
-                            var path = iid[(aaIndex + 4)..];
+                            var start = aaIndex + 4;
+                            var path = iid.Substring(4);
                             return Path.Combine(ThunderKitSettings.EditTimePath, path);
                         }
                         return iid;
