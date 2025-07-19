@@ -1,3 +1,25 @@
+## 9.1.2
+
+### Fixes and Improvements
+
+* Fixed Documentation fold arrows rendering and positioning issues
+  
+### Community Contributions
+
+* Fixed Documentation section title foldout arrow styling and layout
+  * Thanks to @VetleNeumann for this improvement.
+
+## 9.1.1
+
+### Fixes and Improvements
+
+* Fixed bundle path handling to avoid corruption when path does not contain `/aa`
+
+### Community Contributions  
+
+* Fixed bundle path garbling issue in StageAssetBundles
+  * Thanks to @foonix for this fix.
+
 ## 9.1.0
 
 ### Fixes and Improvements
