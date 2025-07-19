@@ -385,6 +385,7 @@ namespace ThunderKit.Core.Windows
                 var header = new VisualElement();
                 header.AddToClassList("header");
                 ArrowIcon = new VisualElement();
+                ArrowIcon.name = "arrow-icon";
 
                 header.Add(ArrowIcon);
                 ArrowIcon.AddToClassList("in-foldout");
