@@ -47,31 +47,36 @@ PageEntry>#page-entry-children
 {
     flex-direction: column;
 }
+
 Chapter>.header,
 PageEntry>.header
 {
-    padding-left: 14px;
     flex-direction: row;
+    align-items: center;
+}
+
+#arrow-icon
+{
+    align-self: center;
+    width: 16px;
+    height: 15px;
+    -unity-slice-top: 15;
+    -unity-slice-left: 16;
 }
 Chapter>.header>.in-foldout,
 PageEntry>.header>.in-foldout 
 {
-    position: absolute;
-    align-self: center;
-    width: 16px;
-    height: 15px;
 	background-image: resource("Builtin Skins/LightSkin/Images/IN foldout.png");
-    -unity-slice-top: 15;
-    -unity-slice-left: 16;
 }
 Chapter>.header>.in-foldout-on,
 PageEntry>.header>.in-foldout-on 
 {
-    position: absolute;
-    align-self: center;
-    width: 14px;
-    height: 12px;
 	background-image: resource("Builtin Skins/LightSkin/Images/IN foldout on.png");
+}
+
+Chapter>.header>Label
+{
+    flex-grow: 1;
 }
 Chapter>.header>Label:hover,
 PageEntry>.header>Label:hover
