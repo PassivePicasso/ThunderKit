@@ -23,10 +23,11 @@ jobs:
         git clone --depth=1 https://github.com/game-ci/unity-actions.git temp-unity-actions
         mkdir -p UnityTestProject
         cp -r temp-unity-actions/test-projects/test-project/. UnityTestProject/
+        rm -rf temp-unity-actions
         
         # Copy ThunderKit package into the test project's Packages folder
         mkdir -p UnityTestProject/Packages/ThunderKit
-        rsync -a ThunderKit/ UnityTestProject/Packages/ThunderKit/
+        rsync -a --exclude 'UnityTestProject' ./ UnityTestProject/Packages/ThunderKit/
 
     - name: Run tests
       uses: game-ci/unity-test-runner@v4
