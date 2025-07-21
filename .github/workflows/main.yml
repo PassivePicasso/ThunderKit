@@ -37,6 +37,9 @@ jobs:
         fi
         rm -rf temp-unity-actions
         
+        # Remove the sample tests from the GameCI template
+        rm -rf UnityTestProject/Assets/Scripts/Tests
+
         # Copy ThunderKit package into the test project's Packages folder
         mkdir -p UnityTestProject/Packages/com.passivepicasso.thunderkit
         rsync -a --exclude 'UnityTestProject' ./ UnityTestProject/Packages/com.passivepicasso.thunderkit/
