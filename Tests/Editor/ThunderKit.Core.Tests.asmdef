@@ -1,0 +1,12 @@
+{
+  "name": "ThunderKit.Core.Tests",
+  "references": [
+    "ThunderKit.Core"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}
