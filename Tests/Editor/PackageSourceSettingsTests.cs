@@ -1,6 +1,5 @@
 namespace ThunderKitTests
 {
-    using Boo.Lang.Runtime;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
@@ -16,28 +15,6 @@ namespace ThunderKitTests
 #else
     using UnityEngine.Experimental.UIElements;
 #endif
-
-    [TestFixture]
-    public class SanityTests
-    {
-        [SetUp]
-        public void Init()
-        {
-            Debug.Log("testing");
-        }
-
-        [TearDown]
-        public void Cleanup()
-        {
-            Debug.Log("cleaning up");
-        }
-
-        [Test]
-        public void SanityTest()
-        {
-            Assert.AreEqual(1, 1);
-        }
-    }
 
     [TestFixture]
     public class PackageSourceSettingsTests
@@ -61,12 +38,6 @@ namespace ThunderKitTests
             numSourcesInitially = sourcesList.itemsSource.Count;
         }
 
-        [Test]
-        public void SanityTest()
-        {
-            Assert.AreEqual(1, 1);
-        }
-
         [TearDown]
         public void Cleanup()
         {
@@ -85,10 +56,10 @@ namespace ThunderKitTests
 
         private void Utility_EditorApplicationUpdate()
         {
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_2021_0_OR_NEWER
             EditorApplication.update();
 #else
-            // In Unity 2018 and prior, EditorApplication is paused during tests,
+            // In Unity 2021 and prior, EditorApplication is paused during tests,
             // so EditorApplication.update() does not run. Invoke methods directly to refresh the package sources.
             var type = typeof(PackageSourceSettings);
             var methodDeferredRefresh = type.GetMethod("DeferredRefresh", BindingFlags.NonPublic | BindingFlags.Static);
