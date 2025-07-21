@@ -26,7 +26,7 @@ namespace ThunderKit.Core.Data
         private Button addSourceButton;
         private Button removeSourceButton;
         private Button refreshButton;
-        private ScrollView selectedSourcesSettings;
+        private ScrollView selectedSourceSettings;
 
         private static readonly string ThunderKitSettingsFolder = "Assets/ThunderKitSettings";
         private static string[] PackageSourceFolder = new string[] { ThunderKitSettingsFolder };
@@ -102,7 +102,7 @@ namespace ThunderKit.Core.Data
         public override void CreateSettingsUI(VisualElement rootElement)
         {
             var settingsElement = TemplateHelpers.LoadTemplateInstance(Constants.PackageSourceSettingsTemplatePath);
-            selectedSourcesSettings = settingsElement.Q<ScrollView>("selected-source-settings");
+            selectedSourceSettings = settingsElement.Q<ScrollView>("selected-source-settings");
             sourceList = settingsElement.Q<ListView>("sources-list");
             addSourceButton = settingsElement.Q<Button>("add-source-button");
             removeSourceButton = settingsElement.Q<Button>("remove-source-button");
@@ -116,7 +116,6 @@ namespace ThunderKit.Core.Data
 
             addSourceButton.clickable.clicked += OpenAddSourceMenu;
 
-            sourceList.selectionType = SelectionType.Multiple;
             sourceList.makeItem = () => new Label() { name = "source-name-item" };
             sourceList.bindItem = (ve, i) =>
             {
@@ -152,14 +151,14 @@ namespace ThunderKit.Core.Data
         {
             if (removeSourceButton == null || sources == null)
                 return;
-            selectedSourcesSettings.Clear();
+            selectedSourceSettings.Clear();
             var selectedSources = sources.OfType<PackageSource>().ToList();
             foreach (var source in selectedSources)
             {
                 try
                 {
                     var settingsInstance = TemplateHelpers.LoadTemplateInstance($"{Constants.SettingsTemplatesPath}/{source.GetType().Name}.uxml");
-                    selectedSourcesSettings.Add(settingsInstance);
+                    selectedSourceSettings.Add(settingsInstance);
                     var nameField = settingsInstance.Q<TextField>("asset-name-field");
                     if (nameField != null)
                     {
@@ -175,7 +174,7 @@ namespace ThunderKit.Core.Data
                 }
             }
 #if UNITY_2019_1_OR_NEWER
-            selectedSourcesSettings.contentContainer.StretchToParentWidth();
+            selectedSourceSettings.contentContainer.StretchToParentWidth();
 #elif UNITY_2018_1_OR_NEWER
             selectedSourceSettings.stretchContentWidth = true;
 #endif
@@ -190,21 +189,20 @@ namespace ThunderKit.Core.Data
 
         public void RemoveSourceClicked()
         {
-            if (sourceList.selectedItems.Count() == 0)
+            if (sourceList.selectedItem == null)
                 return;
 
-            var sourcesToDelete = PackageSources.Where(s => sourceList.selectedItems.Contains(s)).ToList();
-            if (sourcesToDelete.Count == 0)
+            PackageSource sourceToDelete = (PackageSource)sourceList.selectedItem;
+            if (PackageSources.Contains(sourceList.selectedItem) == false)
+            {
+                Debug.LogWarning($"Selected item {sourceList.selectedItem} is not a valid PackageSource.");
                 return;
-
-            sourcesToDelete.ForEach(PackageSourceSettings.RemoveSource);
+            }
+            PackageSourceSettings.RemoveSource(sourceToDelete);
 
             Refresh();
             EditorApplication.update -= RefreshList;
             EditorApplication.update += RefreshList;
-            //RefreshSources();
-            //EditorApplication.update -= RefreshList;
-            //EditorApplication.update += RefreshList;
         }
 
         private void OnNameChanged(ChangeEvent<string> evt)
@@ -259,9 +257,9 @@ namespace ThunderKit.Core.Data
             EditorApplication.update -= RefreshList;
             if (sourceList != null)
             {
-                sourceList.ClearSelection();
                 sourceList.itemsSource = PackageSources.ToList();
 #if UNITY_2021_2_OR_NEWER
+                sourceList.ClearSelection();
                 sourceList.Rebuild();
 #else
                 sourceList.Refresh();
