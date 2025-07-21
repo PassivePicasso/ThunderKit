@@ -17,12 +17,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Copy dir to new dir
+    - name: Setup Unity test project
       run: |
-        pwd
-        folderName=$(echo "${PWD##*/}")
-        rsync -r "$GITHUB_WORKSPACE" "copiedProject" 
-        ls -F "copiedProject/$folderName"
+        # Clone the official GameCI test project
+        git clone --depth=1 https://github.com/game-ci/unity-actions.git temp-unity-actions
+        mkdir -p UnityTestProject
+        cp -r temp-unity-actions/test-projects/test-project/. UnityTestProject/
+        
+        # Copy ThunderKit package into the test project's Packages folder
+        mkdir -p UnityTestProject/Packages/ThunderKit
+        rsync -a ./ UnityTestProject/Packages/ThunderKit/
 
     - name: Run tests
       uses: game-ci/unity-test-runner@v4
@@ -35,7 +39,7 @@ jobs:
         testMode: EditMode
         packageMode: true
         unityVersion: "6000.0.53f1"
-        projectPath: "copiedProject/ThunderKit"
+        projectPath: "UnityTestProject"
 
     - name: Report Test Results
       uses: dorny/test-reporter@v2
