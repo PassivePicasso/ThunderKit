@@ -26,7 +26,7 @@ namespace ThunderKit.Core.Data
         private Button addSourceButton;
         private Button removeSourceButton;
         private Button refreshButton;
-        private ScrollView selectedSourceSettings;
+        private ScrollView selectedSourcesSettings;
 
         private static readonly string ThunderKitSettingsFolder = "Assets/ThunderKitSettings";
         private static string[] PackageSourceFolder = new string[] { ThunderKitSettingsFolder };
@@ -102,7 +102,7 @@ namespace ThunderKit.Core.Data
         public override void CreateSettingsUI(VisualElement rootElement)
         {
             var settingsElement = TemplateHelpers.LoadTemplateInstance(Constants.PackageSourceSettingsTemplatePath);
-            selectedSourceSettings = settingsElement.Q<ScrollView>("selected-source-settings");
+            selectedSourcesSettings = settingsElement.Q<ScrollView>("selected-source-settings");
             sourceList = settingsElement.Q<ListView>("sources-list");
             addSourceButton = settingsElement.Q<Button>("add-source-button");
             removeSourceButton = settingsElement.Q<Button>("remove-source-button");
@@ -147,17 +147,19 @@ namespace ThunderKit.Core.Data
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
+
         private void OnSelectionChanged(IEnumerable<object> sources)
         {
-            if (removeSourceButton == null || sources == null) return;
-            removeSourceButton.userData = sources;
-            selectedSourceSettings.Clear();
-            foreach (var source in sources.OfType<PackageSource>())
+            if (removeSourceButton == null || sources == null)
+                return;
+            selectedSourcesSettings.Clear();
+            var selectedSources = sources.OfType<PackageSource>().ToList();
+            foreach (var source in selectedSources)
             {
                 try
                 {
                     var settingsInstance = TemplateHelpers.LoadTemplateInstance($"{Constants.SettingsTemplatesPath}/{source.GetType().Name}.uxml");
-                    selectedSourceSettings.Add(settingsInstance);
+                    selectedSourcesSettings.Add(settingsInstance);
                     var nameField = settingsInstance.Q<TextField>("asset-name-field");
                     if (nameField != null)
                     {
@@ -173,29 +175,36 @@ namespace ThunderKit.Core.Data
                 }
             }
 #if UNITY_2019_1_OR_NEWER
-            selectedSourceSettings.contentContainer.StretchToParentWidth();
+            selectedSourcesSettings.contentContainer.StretchToParentWidth();
 #elif UNITY_2018_1_OR_NEWER
             selectedSourceSettings.stretchContentWidth = true;
 #endif
         }
 
-        private void RemoveSourceClicked()
+        public static void RemoveSource(PackageSource source)
         {
-            var source = removeSourceButton.userData as List<object>;
-            if (source == null) return;
-            var updatedPackageSources = PackageSources.Where(s => !source.Contains(s)).ToArray();
-            bool refresh = false;
-            for (int i = 0; i < PackageSources.Count; i++)
-                if (source.Contains(PackageSources[i]))
-                {
-                    refresh = true;
-                    string path = AssetDatabase.GetAssetPath(PackageSources[i]);
-                    DestroyImmediate(PackageSources[i], true);
-                    AssetDatabase.DeleteAsset(path);
-                }
-            if (refresh)
-                RefreshList();
-            removeSourceButton.userData = null;
+            string path = AssetDatabase.GetAssetPath(source);
+            DestroyImmediate(source, true);
+            AssetDatabase.DeleteAsset(path);
+        }
+
+        public void RemoveSourceClicked()
+        {
+            if (sourceList.selectedItems.Count() == 0)
+                return;
+
+            var sourcesToDelete = PackageSources.Where(s => sourceList.selectedItems.Contains(s)).ToList();
+            if (sourcesToDelete.Count == 0)
+                return;
+
+            sourcesToDelete.ForEach(PackageSourceSettings.RemoveSource);
+
+            Refresh();
+            EditorApplication.update -= RefreshList;
+            EditorApplication.update += RefreshList;
+            //RefreshSources();
+            //EditorApplication.update -= RefreshList;
+            //EditorApplication.update += RefreshList;
         }
 
         private void OnNameChanged(ChangeEvent<string> evt)
@@ -205,30 +214,36 @@ namespace ThunderKit.Core.Data
             source.name = evt.newValue;
         }
 
+        public static Type[] GetAvailablePackageSourceTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(asm =>
+            {
+                try { return asm.GetTypes(); }
+                catch { return Array.Empty<Type>(); }
+            })
+            .Where(t => typeof(PackageSource).IsAssignableFrom(t) && t != typeof(PackageSource) && !t.IsAbstract)
+            .ToArray();
+        }
+
+        public void AddSource(Type packageSourceType)
+        {
+            var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{ThunderKitSettingsFolder}/{packageSourceType.Name}.asset");
+            ScriptableHelper.EnsureAsset(assetPath, packageSourceType);
+            EditorApplication.update -= RefreshList;
+            EditorApplication.update += RefreshList;
+        }
+
         private void OpenAddSourceMenu()
         {
-            var sourceTypes = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(asm =>
-                    {
-                        try { return asm.GetTypes(); }
-                        catch { return Array.Empty<Type>(); }
-                    })
-                    .Where(t => typeof(PackageSource).IsAssignableFrom(t) && t != typeof(PackageSource) && !t.IsAbstract)
-                    .ToArray();
-
             var menu = new GenericMenu();
-
-            foreach (var type in sourceTypes)
+            var packageSourceTypes = PackageSourceSettings.GetAvailablePackageSourceTypes();
+            foreach (var type in packageSourceTypes)
                 menu.AddItem(
                     new GUIContent($"{type.Name}"),
                     false,
                     () =>
-                    {
-                        var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{ThunderKitSettingsFolder}/{type.Name}.asset");
-                        ScriptableHelper.EnsureAsset(assetPath, type);
-                        EditorApplication.update -= RefreshList;
-                        EditorApplication.update += RefreshList;
-                    }
+                    AddSource(type)
                 );
 
             menu.ShowAsContext();
@@ -244,7 +259,8 @@ namespace ThunderKit.Core.Data
             EditorApplication.update -= RefreshList;
             if (sourceList != null)
             {
-                sourceList.itemsSource = PackageSources.Where(pkg => pkg).ToList();
+                sourceList.ClearSelection();
+                sourceList.itemsSource = PackageSources.ToList();
 #if UNITY_2021_2_OR_NEWER
                 sourceList.Rebuild();
 #else
