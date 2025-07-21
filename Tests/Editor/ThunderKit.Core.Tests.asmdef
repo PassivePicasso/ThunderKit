@@ -1,12 +1,12 @@
 {
   "name": "ThunderKit.Core.Tests",
   "references": [
-    "ThunderKit.Core"
-  ],
-  "optionalUnityReferences": [
-    "TestAssemblies"
+    "ThunderKit.Core",
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner"
   ],
   "includePlatforms": [
     "Editor"
-  ]
+  ],
+  "testAssembly": true
 }
