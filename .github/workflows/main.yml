@@ -39,7 +39,7 @@ jobs:
         
         # Copy ThunderKit package into the test project's Packages folder
         mkdir -p UnityTestProject/Packages/com.passivepicasso.thunderkit
-        rsync -a --exclude 'UnityTestProject' ./ UnityTestProject/Packages/com.passivepicasso.thunderkit/
+        rsync -a ./ThunderKit/ UnityTestProject/Packages/com.passivepicasso.thunderkit/
 
     - name: Run Tests (Unity ${{ matrix.unity-version }})
       uses: game-ci/unity-test-runner@v4
@@ -59,7 +59,7 @@ jobs:
       with:
         name: Unity ${{ matrix.unity-version }}
         path: artifacts/*.xml
-        reporter: nunit
+        reporter: dotnet-nunit
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
