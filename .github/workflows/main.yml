@@ -37,7 +37,6 @@ jobs:
       with:
         githubToken: ${{ secrets.GITHUB_TOKEN }}
         testMode: EditMode
-        packageMode: true
         unityVersion: "6000.0.53f1"
         projectPath: "UnityTestProject"
 
