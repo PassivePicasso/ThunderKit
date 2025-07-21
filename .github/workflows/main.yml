@@ -30,8 +30,11 @@ jobs:
       run: |
         # Clone the official GameCI test project
         git clone --depth=1 https://github.com/game-ci/unity-actions.git temp-unity-actions
-        mkdir -p UnityTestProject
-        cp -r temp-unity-actions/test-projects/test-project/. UnityTestProject/
+        if [[ "${{ matrix.unity-version }}" == 2018.* ]]; then
+          cp -r temp-unity-actions/test-projects/2018.3-legacy-render-pipeline/. UnityTestProject/
+        else
+          cp -r temp-unity-actions/test-projects/test-project/. UnityTestProject/
+        fi
         rm -rf temp-unity-actions
         
         # Copy ThunderKit package into the test project's Packages folder
