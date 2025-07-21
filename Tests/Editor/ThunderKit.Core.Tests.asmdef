@@ -2,8 +2,6 @@
     "name": "ThunderKit.Core.Tests",
     "references": [
         "ThunderKit.Core",
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
         "nunit.framework"
     ],
     "optionalUnityReferences": [
