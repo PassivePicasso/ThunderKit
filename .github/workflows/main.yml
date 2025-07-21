@@ -28,6 +28,12 @@ jobs:
 
     - name: Setup Unity test project
       run: |
+        # Since ThunderKit is a package, we need to create a Unity project structure
+        # so that we may import ThunderKit as a package, to build/run tests.
+        #
+        # For that, we clone in the official GameCI test project template, and move 
+        # ThunderKit package into the test project's Packages folder.
+
         # Clone the official GameCI test project
         git clone --depth=1 https://github.com/game-ci/unity-actions.git temp-unity-actions
         if [[ "${{ matrix.unity-version }}" == 2018.* ]]; then
@@ -38,7 +44,7 @@ jobs:
         rm -rf temp-unity-actions
         
         # Remove the sample tests from the GameCI template
-        rm -rf UnityTestProject/Assets/Scripts/Tests
+        rm -rf UnityTestProject/Assets/Tests*
 
         # Copy ThunderKit package into the test project's Packages folder
         mkdir -p UnityTestProject/Packages/com.passivepicasso.thunderkit
