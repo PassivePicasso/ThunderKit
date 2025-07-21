@@ -10,7 +10,7 @@ on:
       - "*"
 
 jobs:
-  run-tests :
+  build-and-test :
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -44,7 +44,7 @@ jobs:
         mkdir -p UnityTestProject/Packages/com.passivepicasso.thunderkit
         rsync -a --exclude 'UnityTestProject' ./ UnityTestProject/Packages/com.passivepicasso.thunderkit/
 
-    - name: Run Tests (Unity ${{ matrix.unity-version }})
+    - name: Build & Run Tests (Unity ${{ matrix.unity-version }})
       uses: game-ci/unity-test-runner@v4
       env:
         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
