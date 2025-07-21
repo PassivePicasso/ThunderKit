@@ -1,12 +1,21 @@
 {
-  "name": "ThunderKit.Core.Tests",
-  "references": [
-    "ThunderKit.Core",
-    "UnityEngine.TestRunner",
-    "UnityEditor.TestRunner"
-  ],
-  "includePlatforms": [
-    "Editor"
-  ],
-  "testAssembly": true
+    "name": "ThunderKit.Core.Tests",
+    "references": [
+        "ThunderKit.Core",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "nunit.framework"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }
