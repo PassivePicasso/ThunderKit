@@ -26,8 +26,8 @@ jobs:
         rm -rf temp-unity-actions
         
         # Copy ThunderKit package into the test project's Packages folder
-        mkdir -p UnityTestProject/Packages/ThunderKit
-        rsync -a --exclude 'UnityTestProject' ./ UnityTestProject/Packages/ThunderKit/
+        mkdir -p UnityTestProject/Packages/com.passivepicasso.thunderkit
+        rsync -a --exclude 'UnityTestProject' ./ UnityTestProject/Packages/com.passivepicasso.thunderkit/
 
     - name: Run tests
       uses: game-ci/unity-test-runner@v4
@@ -46,5 +46,5 @@ jobs:
       if: always()
       with:
         name: Unity Tests
-        path: TestResults/*.xml
+        path: artifacts/*.xml
         reporter: java-junit
