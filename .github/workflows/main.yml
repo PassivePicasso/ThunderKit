@@ -1,0 +1,45 @@
+name: CI pipeline
+
+on:
+  workflow_dispatch: # Allow running the workflow manually from the GitHub UI
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  run-tests :
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Copy dir to new dir
+      run: |
+        pwd
+        folderName=$(echo "${PWD##*/}")
+        rsync -r "$GITHUB_WORKSPACE" "copiedProject" 
+        ls -F "copiedProject/$folderName"
+
+    - name: Run tests
+      uses: game-ci/unity-test-runner@v4
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      with:
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
+        packageMode: true
+        unityVersion: "6000.0.53f1"
+        projectPath: "copiedProject/ThunderKit"
+
+    - name: Report Test Results
+      uses: dorny/test-reporter@v2
+      if: always()
+      with:
+        name: Unity Tests
+        path: TestResults/*.xml
+        reporter: java-junit
