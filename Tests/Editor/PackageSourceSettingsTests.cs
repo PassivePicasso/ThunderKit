@@ -1,111 +1,89 @@
 namespace ThunderKitTests
 {
     using NUnit.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Configuration;
-    using System.Linq;
-    using System.Reflection;
     using ThunderKit.Core.Data;
-    using UnityEditor;
     using UnityEngine;
-#if UNITY_2019_1_OR_NEWER
     using UnityEngine.UIElements;
-    using UnityEditor.UIElements;
-#else
-    using UnityEngine.Experimental.UIElements;
-#endif
+    using ThunderKit.Core.Windows;
+    using System.Linq;
 
     [TestFixture]
     public class PackageSourceSettingsTests
     {
-        private List<PackageSource> initialPackageSources;
-        private VisualElement root;
-        private PackageSourceSettings packageSourceSettings;
-        private ListView sourcesList;
-        private int numSourcesInitially;
-
-        [SetUp]
-        public void Init()
+        private void AssertMenusListSameSources(PackageManagerFixture packageManager, PackageSourceSettingsFixture sourceSettings)
         {
-            packageSourceSettings = ScriptableObject.CreateInstance<PackageSourceSettings>();
-            root = new VisualElement();
-            packageSourceSettings.CreateSettingsUI(root);
-            sourcesList = root.Q<ListView>("sources-list");
-
-            Utility_EditorApplicationUpdate();
-            initialPackageSources = PackageSourceSettings.PackageSources.ToList();
-            numSourcesInitially = sourcesList.itemsSource.Count;
-        }
-
-        [TearDown]
-        public void Cleanup()
-        {
-            // Delete all sources that were added during the test
-            Utility_EditorApplicationUpdate();
-            var introducedSources = PackageSourceSettings.PackageSources
-                                        .Except(initialPackageSources)
-                                        .ToList();
-            foreach (var source in introducedSources)
-            {
-                PackageSourceSettings.RemoveSource(source);
-            }
-            Utility_EditorApplicationUpdate();
-            Assert.That(PackageSourceSettings.PackageSources, Is.EqualTo(initialPackageSources));
-        }
-
-        private void Utility_EditorApplicationUpdate()
-        {
-#if UNITY_2021_0_OR_NEWER
-            EditorApplication.update();
-#else
-            // In Unity 2021 and prior, EditorApplication is paused during tests,
-            // so EditorApplication.update() does not run. Invoke methods directly to refresh the package sources.
-            var type = typeof(PackageSourceSettings);
-            var methodDeferredRefresh = type.GetMethod("DeferredRefresh", BindingFlags.NonPublic | BindingFlags.Static);
-            var methodRefreshList = type.GetMethod("RefreshList", BindingFlags.NonPublic | BindingFlags.Instance);
-            methodDeferredRefresh.Invoke(null, null);
-            methodRefreshList.Invoke(packageSourceSettings, null);
-#endif
-        }
-
-        private PackageSource Utility_AddThunderStoreSource()
-        {
-            var priorPackageSources = PackageSourceSettings.PackageSources.ToList();
-
-            // Press Add->ThunderStoreSource
-            Type[] packageSourceTypes = PackageSourceSettings.GetAvailablePackageSourceTypes();
-            var thunderstoreSourceType = packageSourceTypes.First(x => x.Name == "ThunderstoreSource");
-            packageSourceSettings.AddSource(thunderstoreSourceType);
-            Utility_EditorApplicationUpdate();
-
-            return PackageSourceSettings.PackageSources
-                .Except(priorPackageSources)
-                .FirstOrDefault(); // return the newly added source
+            var listedSources_packageSourceSettings = sourceSettings.GetListedSources();
+            var listedSources_packageManager = packageManager.GetListedSources();
+            Assert.That(listedSources_packageSourceSettings, Is.EquivalentTo(listedSources_packageManager),
+                "PackageManager and PackageSourceSettings do not list the same package sources.");
         }
 
         [Test]
         public void AddSource_ThunderStore()
         {
-            Utility_AddThunderStoreSource();
-            Assert.That(sourcesList.itemsSource.Count, Is.EqualTo(numSourcesInitially + 1));
-            Assert.That(PackageSourceSettings.PackageSources.Count, Is.EqualTo(numSourcesInitially + 1));
+            using var sourceSettings = new PackageSourceSettingsFixture();
+            sourceSettings.AddThunderStoreSource();
+
+            int numSourcesDisplayed = sourceSettings.GetListedSources().Count;
+            int numSourcesRegistered = PackageSourceSettings.PackageSources.Count;
+            Assert.That(numSourcesDisplayed, Is.EqualTo(sourceSettings.NumSourcesInitially + 1));
+            Assert.That(numSourcesRegistered, Is.EqualTo(sourceSettings.NumSourcesInitially + 1));
         }
 
         [Test]
         public void RemoveSource()
         {
-            var addedSource = Utility_AddThunderStoreSource();
-            
+            using var sourceSettings = new PackageSourceSettingsFixture();
+            var addedSource = sourceSettings.AddThunderStoreSource();
+
             // Select the added source, and press remove
-            sourcesList.selectedIndex = sourcesList.itemsSource.IndexOf(addedSource);
-            packageSourceSettings.RemoveSourceClicked();
-            Utility_EditorApplicationUpdate();
+            sourceSettings.RemoveSource(addedSource);
 
             // List of sources should be same as initially
-            Assert.That(sourcesList.itemsSource.Count, Is.EqualTo(numSourcesInitially));
-            Assert.That(PackageSourceSettings.PackageSources.Count, Is.EqualTo(numSourcesInitially));
-            Assert.That(PackageSourceSettings.PackageSources, Is.EqualTo(initialPackageSources));
+            Assert.That(sourceSettings.GetListedSources(), Is.EquivalentTo(sourceSettings.InitialPackageSources));
+            Assert.That(PackageSourceSettings.PackageSources, Is.EquivalentTo(sourceSettings.InitialPackageSources));
+        }
+
+        [Test, Description("PackageManager lists same sources as PackageSourceSettings")]
+        public void PackageManagerMatchesSourceSettings()
+        {
+            using var sourceSettings = new PackageSourceSettingsFixture();
+            using var packageManager = new PackageManagerFixture();
+            Assert.IsNotNull(packageManager.PackageSourceList, "Could not find #tkpm-package-source-list");
+
+            AssertMenusListSameSources(packageManager, sourceSettings);
+        }
+
+        [Test]
+        public void Refresh_AddSource()
+        {
+            using var sourceSettings = new PackageSourceSettingsFixture();
+            using var packageManager = new PackageManagerFixture();
+
+            sourceSettings.AddThunderStoreSource();
+            sourceSettings.Settings.Refresh();
+            Assert.That(packageManager.GetListedSources().Count, Is.EqualTo(sourceSettings.NumSourcesInitially + 1));
+            AssertMenusListSameSources(packageManager, sourceSettings);
+        }
+
+        [Test]
+        public void Refresh_RemoveSource()
+        {
+            // Setup, add a source and make sure package manager lists it
+            using var sourceSettings = new PackageSourceSettingsFixture();
+            using var packageManager = new PackageManagerFixture();
+            var addedSource = sourceSettings.AddThunderStoreSource();
+            sourceSettings.Settings.Refresh();
+
+            // Remove this source, refresh, and make sure package manager does not list it anymore
+            sourceSettings.RemoveSource(addedSource);
+            sourceSettings.Settings.Refresh();
+
+            // Verify both lists are same as initially
+            AssertMenusListSameSources(packageManager, sourceSettings);
+            Assert.That(sourceSettings.GetListedSources(), Is.EquivalentTo(sourceSettings.InitialPackageSources));
+            Assert.That(PackageSourceSettings.PackageSources, Is.EquivalentTo(sourceSettings.InitialPackageSources));
+            Assert.That(packageManager.GetListedSources(), Is.EquivalentTo(sourceSettings.InitialPackageSources));
         }
     }
 }
