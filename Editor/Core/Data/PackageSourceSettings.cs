@@ -247,7 +247,7 @@ namespace ThunderKit.Core.Data
             menu.ShowAsContext();
         }
 
-        private void Refresh()
+        public void Refresh()
         {
             PackageSource.LoadAllSources();
         }
