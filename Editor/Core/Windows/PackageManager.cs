@@ -35,6 +35,7 @@ namespace ThunderKit.Core.Windows
         [SerializeField] private DeletePackage deletePackage;
         [SerializeField] private string SearchString;
 
+        public VisualElement Root => rootVisualElement;
         public bool InProject;
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Packages")]
