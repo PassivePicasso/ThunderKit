@@ -56,7 +56,6 @@ jobs:
         key: Library-${{ matrix.unity-version }}-${{ hashFiles('UnityTestProject/Assets/**', 'UnityTestProject/Packages/**', 'UnityTestProject/ProjectSettings/**') }}
         restore-keys: |
           Library-${{ matrix.unity-version }}-
-          Library-
 
     - name: Build & Run Tests (Unity ${{ matrix.unity-version }})
       uses: game-ci/unity-test-runner@v4
