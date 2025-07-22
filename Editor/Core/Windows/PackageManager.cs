@@ -193,7 +193,7 @@ namespace ThunderKit.Core.Windows
             UpdatePackageList();
         }
 
-        public static string NormalizeName(string name) => name.Replace(" ", "-").ToLower();
+        private static string NormalizeName(string name) => name.Replace(" ", "-").ToLower();
 
         void UpdatePackageList()
         {
