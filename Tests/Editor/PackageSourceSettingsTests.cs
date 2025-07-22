@@ -2,26 +2,29 @@ namespace ThunderKitTests
 {
     using NUnit.Framework;
     using ThunderKit.Core.Data;
-    using UnityEngine;
-    using UnityEngine.UIElements;
     using ThunderKit.Core.Windows;
     using System.Linq;
 
     [TestFixture]
     public class PackageSourceSettingsTests
     {
-        private void AssertMenusListSameSources(PackageManagerFixture packageManager, PackageSourceSettingsFixture sourceSettings)
+        private PackageSourceSettingsFixture sourceSettings;
+
+        [SetUp]
+        public void SetUp()
         {
-            var listedSources_packageSourceSettings = sourceSettings.GetListedSources();
-            var listedSources_packageManager = packageManager.GetListedSources();
-            Assert.That(listedSources_packageSourceSettings, Is.EquivalentTo(listedSources_packageManager),
-                "PackageManager and PackageSourceSettings do not list the same package sources.");
+            sourceSettings = new PackageSourceSettingsFixture();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            sourceSettings.Dispose();
         }
 
         [Test]
         public void AddSource_ThunderStore()
         {
-            using var sourceSettings = new PackageSourceSettingsFixture();
             sourceSettings.AddThunderStoreSource();
 
             int numSourcesDisplayed = sourceSettings.GetListedSources().Count;
@@ -33,7 +36,6 @@ namespace ThunderKitTests
         [Test]
         public void RemoveSource()
         {
-            using var sourceSettings = new PackageSourceSettingsFixture();
             var addedSource = sourceSettings.AddThunderStoreSource();
 
             // Select the added source, and press remove
@@ -43,35 +45,57 @@ namespace ThunderKitTests
             Assert.That(sourceSettings.GetListedSources(), Is.EquivalentTo(sourceSettings.InitialPackageSources));
             Assert.That(PackageSourceSettings.PackageSources, Is.EquivalentTo(sourceSettings.InitialPackageSources));
         }
+    }
+
+    [TestFixture]
+    public class PackageManagerTests
+    {
+        private PackageSourceSettingsFixture sourceSettings;
+        private PackageManagerFixture packageManager;
+
+        [SetUp]
+        public void SetUp()
+        {
+            sourceSettings = new PackageSourceSettingsFixture();
+            packageManager = new PackageManagerFixture();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            sourceSettings.Dispose();
+            packageManager.Dispose();
+        }
+
+
+        private void AssertMenusListSameSources()
+        {
+            var listedSources_packageSourceSettings = sourceSettings.GetListedSources();
+            var listedSources_packageManager = packageManager.GetListedSources();
+            Assert.That(listedSources_packageSourceSettings, Is.EquivalentTo(listedSources_packageManager),
+                "PackageManager and PackageSourceSettings do not list the same package sources.");
+        }
 
         [Test, Description("PackageManager lists same sources as PackageSourceSettings")]
         public void PackageManagerMatchesSourceSettings()
         {
-            using var sourceSettings = new PackageSourceSettingsFixture();
-            using var packageManager = new PackageManagerFixture();
             Assert.IsNotNull(packageManager.PackageSourceList, "Could not find #tkpm-package-source-list");
-
-            AssertMenusListSameSources(packageManager, sourceSettings);
+            AssertMenusListSameSources();
         }
 
-        [Test]
+        [Test, Description("Add a Source in settings, and check that it shows up in Package Manager")]
         public void Refresh_AddSource()
         {
-            using var sourceSettings = new PackageSourceSettingsFixture();
-            using var packageManager = new PackageManagerFixture();
-
             sourceSettings.AddThunderStoreSource();
             sourceSettings.Settings.Refresh();
             Assert.That(packageManager.GetListedSources().Count, Is.EqualTo(sourceSettings.NumSourcesInitially + 1));
-            AssertMenusListSameSources(packageManager, sourceSettings);
+            AssertMenusListSameSources();
         }
 
-        [Test]
+        [Test, Description("Remove a Source in settings, and check that it disappears from Package Manager")]
         public void Refresh_RemoveSource()
         {
             // Setup, add a source and make sure package manager lists it
-            using var sourceSettings = new PackageSourceSettingsFixture();
-            using var packageManager = new PackageManagerFixture();
             var addedSource = sourceSettings.AddThunderStoreSource();
             sourceSettings.Settings.Refresh();
 
@@ -80,7 +104,7 @@ namespace ThunderKitTests
             sourceSettings.Settings.Refresh();
 
             // Verify both lists are same as initially
-            AssertMenusListSameSources(packageManager, sourceSettings);
+            AssertMenusListSameSources();
             Assert.That(sourceSettings.GetListedSources(), Is.EquivalentTo(sourceSettings.InitialPackageSources));
             Assert.That(PackageSourceSettings.PackageSources, Is.EquivalentTo(sourceSettings.InitialPackageSources));
             Assert.That(packageManager.GetListedSources(), Is.EquivalentTo(sourceSettings.InitialPackageSources));
