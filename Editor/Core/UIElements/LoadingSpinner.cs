@@ -30,7 +30,7 @@ namespace ThunderKit.Core.UIElements
 
         private void UpdateProgress()
         {
-            transform.rotation = Quaternion.Euler(0, 0, m_Rotation);
+            innerElement.transform.rotation = Quaternion.Euler(0, 0, m_Rotation);
             m_Rotation += 3;
             if (m_Rotation > 360)
                 m_Rotation -= 360;
