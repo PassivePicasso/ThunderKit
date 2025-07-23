@@ -1,3 +1,18 @@
+## 9.1.3
+
+### Fixes and Improvements
+
+### Community Contributions
+
+* Thanks to @VetleNeumann for these improvements
+  * Fixed PackageManager Remove button not working in Unity 6000.*
+  * Changed Package Source Settings to single-select instead of multi-select
+    for improved reliability
+  * Added comprehensive unit test coverage for Package Source management
+  * Added CI/CD pipeline supporting Unity versions 2018.4 through 6000.0
+  * Updated .gitignore to latest Unity standards
+
+
 ## 9.1.2
 
 ### Fixes and Improvements
@@ -6,8 +21,8 @@
   
 ### Community Contributions
 
-* Fixed Documentation section title foldout arrow styling and layout
-  * Thanks to @VetleNeumann for this improvement.
+* Thanks to @VetleNeumann for this improvement.
+  * Fixed Documentation section title foldout arrow styling and layout
 
 ## 9.1.1
 
@@ -17,8 +32,8 @@
 
 ### Community Contributions  
 
-* Fixed bundle path garbling issue in StageAssetBundles
-  * Thanks to @foonix for this fix.
+* Thanks to @foonix for this fix.
+  * Fixed bundle path garbling issue in StageAssetBundles
 
 ## 9.1.0
 
