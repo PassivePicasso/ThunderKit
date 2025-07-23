@@ -1,0 +1,86 @@
+name: CI pipeline
+
+on:
+  workflow_dispatch: # Allow running the workflow manually from the GitHub UI
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build-and-test :
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        unity-version: [
+          "6000.0.53f1",
+          "2022.1.24f1",
+          "2020.3.48f1",
+          "2019.4.40f1",
+          "2018.4.36f1"
+        ]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Unity test project
+      run: |
+        # Since ThunderKit is a package, we need to create a Unity project structure
+        # so that we may import ThunderKit as a package, to build/run tests.
+        #
+        # For that, we clone in the official GameCI test project template, and move 
+        # ThunderKit package into the test project's Packages folder.
+
+        # Clone the official GameCI test project
+        git clone --depth=1 https://github.com/game-ci/unity-actions.git temp-unity-actions
+        if [[ "${{ matrix.unity-version }}" == 2018.* ]]; then
+          cp -r temp-unity-actions/test-projects/2018.3-legacy-render-pipeline/. UnityTestProject/
+        else
+          cp -r temp-unity-actions/test-projects/test-project/. UnityTestProject/
+        fi
+        rm -rf temp-unity-actions
+        
+        # Remove the sample tests from the GameCI template
+        rm -rf UnityTestProject/Assets/Tests*
+
+        # Copy ThunderKit package into the test project's Packages folder
+        mkdir -p UnityTestProject/Packages/com.passivepicasso.thunderkit
+        rsync -a --exclude 'UnityTestProject' ./ UnityTestProject/Packages/com.passivepicasso.thunderkit/
+
+    - uses: actions/cache@v3
+      with:
+        path: UnityTestProject/Library
+        key: Library-${{ matrix.unity-version }}-${{ hashFiles('UnityTestProject/Assets/**', 'UnityTestProject/Packages/**', 'UnityTestProject/ProjectSettings/**') }}
+        restore-keys: |
+          Library-${{ matrix.unity-version }}-
+
+    - name: Build & Run Tests (Unity ${{ matrix.unity-version }})
+      uses: game-ci/unity-test-runner@v4
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      with:
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
+        testMode: EditMode
+        unityVersion: ${{ matrix.unity-version }}
+        projectPath: "UnityTestProject"
+
+    - name: Report Test Results
+      uses: dorny/test-reporter@v2
+      if: always()
+      with:
+        name: Unity ${{ matrix.unity-version }}
+        path: artifacts/*.xml
+        reporter: dotnet-nunit
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: Unity ${{ matrix.unity-version }}
+        path: artifacts
+        retention-days: 5

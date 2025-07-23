@@ -116,7 +116,6 @@ namespace ThunderKit.Core.Data
 
             addSourceButton.clickable.clicked += OpenAddSourceMenu;
 
-            sourceList.selectionType = SelectionType.Multiple;
             sourceList.makeItem = () => new Label() { name = "source-name-item" };
             sourceList.bindItem = (ve, i) =>
             {
@@ -147,12 +146,14 @@ namespace ThunderKit.Core.Data
             if (!string.IsNullOrEmpty(result))
                 Debug.LogError(result);
         }
+
         private void OnSelectionChanged(IEnumerable<object> sources)
         {
-            if (removeSourceButton == null || sources == null) return;
-            removeSourceButton.userData = sources;
+            if (removeSourceButton == null || sources == null)
+                return;
             selectedSourceSettings.Clear();
-            foreach (var source in sources.OfType<PackageSource>())
+            var selectedSources = sources.OfType<PackageSource>().ToList();
+            foreach (var source in selectedSources)
             {
                 try
                 {
@@ -179,23 +180,29 @@ namespace ThunderKit.Core.Data
 #endif
         }
 
-        private void RemoveSourceClicked()
+        public static void RemoveSource(PackageSource source)
         {
-            var source = removeSourceButton.userData as List<object>;
-            if (source == null) return;
-            var updatedPackageSources = PackageSources.Where(s => !source.Contains(s)).ToArray();
-            bool refresh = false;
-            for (int i = 0; i < PackageSources.Count; i++)
-                if (source.Contains(PackageSources[i]))
-                {
-                    refresh = true;
-                    string path = AssetDatabase.GetAssetPath(PackageSources[i]);
-                    DestroyImmediate(PackageSources[i], true);
-                    AssetDatabase.DeleteAsset(path);
-                }
-            if (refresh)
-                RefreshList();
-            removeSourceButton.userData = null;
+            string path = AssetDatabase.GetAssetPath(source);
+            DestroyImmediate(source, true);
+            AssetDatabase.DeleteAsset(path);
+        }
+
+        public void RemoveSourceClicked()
+        {
+            if (sourceList.selectedItem == null)
+                return;
+
+            PackageSource sourceToDelete = (PackageSource)sourceList.selectedItem;
+            if (PackageSources.Contains(sourceList.selectedItem) == false)
+            {
+                Debug.LogWarning($"Selected item {sourceList.selectedItem} is not a valid PackageSource.");
+                return;
+            }
+            PackageSourceSettings.RemoveSource(sourceToDelete);
+
+            Refresh();
+            EditorApplication.update -= RefreshList;
+            EditorApplication.update += RefreshList;
         }
 
         private void OnNameChanged(ChangeEvent<string> evt)
@@ -205,36 +212,42 @@ namespace ThunderKit.Core.Data
             source.name = evt.newValue;
         }
 
+        public static Type[] GetAvailablePackageSourceTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(asm =>
+            {
+                try { return asm.GetTypes(); }
+                catch { return Array.Empty<Type>(); }
+            })
+            .Where(t => typeof(PackageSource).IsAssignableFrom(t) && t != typeof(PackageSource) && !t.IsAbstract)
+            .ToArray();
+        }
+
+        public void AddSource(Type packageSourceType)
+        {
+            var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{ThunderKitSettingsFolder}/{packageSourceType.Name}.asset");
+            ScriptableHelper.EnsureAsset(assetPath, packageSourceType);
+            EditorApplication.update -= RefreshList;
+            EditorApplication.update += RefreshList;
+        }
+
         private void OpenAddSourceMenu()
         {
-            var sourceTypes = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(asm =>
-                    {
-                        try { return asm.GetTypes(); }
-                        catch { return Array.Empty<Type>(); }
-                    })
-                    .Where(t => typeof(PackageSource).IsAssignableFrom(t) && t != typeof(PackageSource) && !t.IsAbstract)
-                    .ToArray();
-
             var menu = new GenericMenu();
-
-            foreach (var type in sourceTypes)
+            var packageSourceTypes = PackageSourceSettings.GetAvailablePackageSourceTypes();
+            foreach (var type in packageSourceTypes)
                 menu.AddItem(
                     new GUIContent($"{type.Name}"),
                     false,
                     () =>
-                    {
-                        var assetPath = AssetDatabase.GenerateUniqueAssetPath($"{ThunderKitSettingsFolder}/{type.Name}.asset");
-                        ScriptableHelper.EnsureAsset(assetPath, type);
-                        EditorApplication.update -= RefreshList;
-                        EditorApplication.update += RefreshList;
-                    }
+                    AddSource(type)
                 );
 
             menu.ShowAsContext();
         }
 
-        private void Refresh()
+        public void Refresh()
         {
             PackageSource.LoadAllSources();
         }
@@ -244,8 +257,9 @@ namespace ThunderKit.Core.Data
             EditorApplication.update -= RefreshList;
             if (sourceList != null)
             {
-                sourceList.itemsSource = PackageSources.Where(pkg => pkg).ToList();
+                sourceList.itemsSource = PackageSources.ToList();
 #if UNITY_2021_2_OR_NEWER
+                sourceList.ClearSelection();
                 sourceList.Rebuild();
 #else
                 sourceList.Refresh();

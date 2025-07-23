@@ -1,0 +1,19 @@
+{
+    "name": "ThunderKit.Core.Tests",
+    "references": [
+        "ThunderKit.Core",
+        "nunit.framework"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

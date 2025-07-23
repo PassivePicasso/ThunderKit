@@ -35,6 +35,7 @@ namespace ThunderKit.Core.Windows
         [SerializeField] private DeletePackage deletePackage;
         [SerializeField] private string SearchString;
 
+        public VisualElement Root => rootVisualElement;
         public bool InProject;
 
         [MenuItem(Constants.ThunderKitMenuRoot + "Packages")]
@@ -109,6 +110,11 @@ namespace ThunderKit.Core.Windows
             foreach (var child in packageSourceList.Children().ToArray())
             {
                 var source = child.userData as PackageSource;
+                if (!source)
+                {
+                    child.RemoveFromHierarchy();
+                    continue;
+                }
                 if (!packageSources.Contains(source))
                     child.RemoveFromHierarchy();
                 existingSources.Add(source);
@@ -187,7 +193,7 @@ namespace ThunderKit.Core.Windows
             UpdatePackageList();
         }
 
-        string NormalizeName(string name) => name.Replace(" ", "-").ToLower();
+        private static string NormalizeName(string name) => name.Replace(" ", "-").ToLower();
 
         void UpdatePackageList()
         {
