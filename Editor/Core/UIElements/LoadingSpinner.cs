@@ -25,6 +25,13 @@ namespace ThunderKit.Core.UIElements
             innerElement = new VisualElement();
             innerElement.AddToClassList("loading-spinner");
             innerElement.AddToClassList("hidden");
+#if UNITY_2021_2_OR_NEWER
+            // In Unity 2021.2 and later, transform origin of elements changed from
+            // top-left to center by default.
+            // https://discussions.unity.com/t/introducing-transform-styles/861646
+            // To maintain the same behavior as before, we set the transform origin to top-left.
+            style.transformOrigin = new TransformOrigin(Length.Percent(0), Length.Percent(0), 0);
+#endif
             SetLoadingSpinnerBackground();
 
             Add(innerElement);
@@ -32,12 +39,7 @@ namespace ThunderKit.Core.UIElements
 
         private void UpdateProgress()
         {
-            var rotation = Quaternion.Euler(0, 0, m_Rotation);
-#if UNITY_2019_1_OR_NEWER
-            innerElement.transform.rotation = rotation;
-#else
-            this.transform.rotation = rotation;
-#endif
+            transform.rotation = Quaternion.Euler(0, 0, m_Rotation);
 
             m_Rotation += 3;
             if (m_Rotation > 360)
