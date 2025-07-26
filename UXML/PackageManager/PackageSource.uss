@@ -10,7 +10,6 @@ LoadingSpinner{
 
 }
 .loading-spinner {
-    background-image: resource("icons/packagemanager/dark/loading.png");
 	top: -8px;
 	left: -8px;
 	width: 16px;
