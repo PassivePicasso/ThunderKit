@@ -1,3 +1,11 @@
+## 9.1.4
+
+### Fixes and Improvements
+
+* Updated AssetsTools.NET classdata.tpk to support newer Unity versions and improved asset compatibility
+  * Enhances project settings import functionality
+  * Improves asset database handling for various Unity versions
+
 ## 9.1.3
 
 ### Fixes and Improvements
