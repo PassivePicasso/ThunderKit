@@ -1,3 +1,10 @@
+## 9.1.5
+
+### Fixes and Improvements
+
+* Fixed IndexOutOfRangeException in path components when ManifestIndex is -1
+* ManifestName and ManifestVersion path components now fall back to root manifest for path resolution
+
 ## 9.1.4
 
 ### Fixes and Improvements
