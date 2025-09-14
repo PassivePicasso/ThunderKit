@@ -11,25 +11,30 @@ namespace ThunderKit.Core.Paths.Components
         {
             try
             {
-                return pipeline.Manifest.Identity.Name;
+                // Use root manifest when no specific manifest context (ManifestIndex = -1)
+                var targetManifest = (pipeline.ManifestIndex >= 0 && pipeline.ManifestIndex < pipeline.Manifests?.Length)
+                    ? pipeline.Manifest
+                    : pipeline.manifest;
+
+                return targetManifest?.Identity?.Name;
             }
-            catch (NullReferenceException nre)
+            catch (Exception ex) when (!(ex is IndexOutOfRangeException))
             {
                 var pathReferencePath = UnityWebRequest.EscapeURL(AssetDatabase.GetAssetPath(output));
                 var pathReferenceLink = $"[{output.name}.{name}](assetlink://{pathReferencePath})";
 
-                if (pipeline.Manifest == null)
+                var targetManifest = (pipeline.ManifestIndex >= 0 && pipeline.ManifestIndex < pipeline.Manifests?.Length)
+                    ? pipeline.Manifest
+                    : pipeline.manifest;
+
+                if (targetManifest == null)
                 {
-                    throw new NullReferenceException($"Error Invoking PathComponent: {pathReferenceLink}, Manifest not found", nre);
+                    throw new NullReferenceException($"Error Invoking PathComponent: {pathReferenceLink}, Manifest not found", ex);
                 }
-                else if (pipeline.Manifest.Identity == null)
+                else if (targetManifest.Identity == null)
                 {
-                    throw new NullReferenceException($"Error Invoking PathComponent: {pathReferenceLink}, ManifestIdentity not found", nre);
+                    throw new NullReferenceException($"Error Invoking PathComponent: {pathReferenceLink}, ManifestIdentity not found", ex);
                 }
-                throw;
-            }
-            catch
-            {
                 throw;
             }
         }
