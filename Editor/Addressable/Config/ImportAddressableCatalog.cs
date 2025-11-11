@@ -45,7 +45,7 @@ namespace ThunderKit.Addressable.Config
 
                 if (isBin)
                 {
-                    var catalogHashFullPath = Path.Combine(catalogHash);
+                    var catalogHashFullPath = Path.Combine(Path.GetDirectoryName(catalogFullPath), catalogHash);
                     var destinationCatalogHash = Combine(destinationFolder, catalogHash);
                     if (File.Exists(destinationCatalogHash)) File.Delete(destinationCatalogHash);
                     File.Copy(catalogHashFullPath, destinationCatalogHash);
