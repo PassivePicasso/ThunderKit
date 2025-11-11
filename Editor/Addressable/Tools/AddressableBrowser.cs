@@ -74,19 +74,19 @@ namespace ThunderKit.Addressable.Tools
         private List<IResourceLocation> LoadIndex()
         {
             var set = new HashSet<IResourceLocation>();
-            if (!Addressables.ResourceLocators.Any()) return set.ToList();
+            var resourceLocations = Addressables.ResourceLocators;
+            var locatorIds = resourceLocations.Select(loc => loc.LocatorId).Aggregate((a, b) => $"{a}\n{b}");
+            Debug.Log($"Loaded Locators\n{locatorIds}");
+            if (!resourceLocations.Any()) return set.ToList();
 
-            foreach (var locator in Addressables.ResourceLocators)
+            foreach (var locator in resourceLocations)
             {
-                switch (locator)
-                {
-                    case ResourceLocationMap rlm:
-                        foreach (var location in rlm.Locations.SelectMany(loc => loc.Value).Where(val => val.ResourceType != typeof(IAssetBundleResource)))
-                            set.Add(location);
-                        break;
-                }
+                Debug.Log($"Processing Locator\n{locator.LocatorId}");
+                foreach (var location in locator.AllLocations)
+                    set.Add(location);
             }
-            return set.ToList();
+            
+            return set.Where(val => val.ResourceType != typeof(IAssetBundleResource)).ToList();
         }
 
         public void OnDisable() => AddressableGraphicsSettings.AddressablesInitialized -= InitializeBrowser;
@@ -197,8 +197,8 @@ namespace ThunderKit.Addressable.Tools
 
             ((ArrayList)directory.itemsSource).Sort(comparer);
 
-            directory.Refresh();
-            directoryContent.Refresh();
+            directory.Rebuild();
+            directoryContent.Rebuild();
         }
         ResoourceNameSorter comparer = new ResoourceNameSorter();
         private class ResoourceNameSorter : IComparer
@@ -218,7 +218,7 @@ namespace ThunderKit.Addressable.Tools
 
             directoryContent.itemsSource.Clear();
             Filter(directoryContent.itemsSource, locations, false);
-            directoryContent.Refresh();
+            directoryContent.Rebuild();
         }
         private string GroupLocation(IResourceLocation g)
         {

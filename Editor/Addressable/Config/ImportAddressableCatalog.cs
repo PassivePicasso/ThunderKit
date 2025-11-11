@@ -24,20 +24,35 @@ namespace ThunderKit.Addressable.Config
 
         private static bool ImportAddressableData(ThunderKitSettings settings)
         {
-            if (!File.Exists(settings.AddressableAssetsCatalog)) return false;
+            if (!File.Exists(settings.AddressableAssetsCatalog)
+            && !File.Exists(settings.AddressableAssetsCatalog.Replace("json", "bin"))) return false;
             if (!File.Exists(settings.AddressableAssetsSettings)) return false;
 
             try
             {
+                var catalogFullPath = settings.AddressableAssetsCatalog;
+                var isBin = File.Exists(catalogFullPath.Replace("json", "bin"));
+                var catalogFileName = isBin ? "catalog.bin" : "catalog.json";
+                var catalogHash = "catalog.hash";
+                catalogFullPath = isBin ? catalogFullPath.Replace("json", "bin") : catalogFullPath;
+
                 string destinationFolder = Combine("Assets", "StreamingAssets", "aa");
                 Directory.CreateDirectory(destinationFolder);
 
-                var destinationCatalog = Combine(destinationFolder, "catalog.json");
-                var destinationSettings = Combine(destinationFolder, "settings.json");
+                var destinationCatalog = Combine(destinationFolder, catalogFileName);
                 if (File.Exists(destinationCatalog)) File.Delete(destinationCatalog);
-                if (File.Exists(destinationSettings)) File.Delete(destinationSettings);
+                File.Copy(catalogFullPath, destinationCatalog);
 
-                File.Copy(settings.AddressableAssetsCatalog, destinationCatalog);
+                if (isBin)
+                {
+                    var catalogHashFullPath = Path.Combine(catalogHash);
+                    var destinationCatalogHash = Combine(destinationFolder, catalogHash);
+                    if (File.Exists(destinationCatalogHash)) File.Delete(destinationCatalogHash);
+                    File.Copy(catalogHashFullPath, destinationCatalogHash);
+                }
+
+                var destinationSettings = Combine(destinationFolder, "settings.json");
+                if (File.Exists(destinationSettings)) File.Delete(destinationSettings);
                 File.Copy(settings.AddressableAssetsSettings, destinationSettings);
 
                 return true;
