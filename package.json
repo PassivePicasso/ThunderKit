@@ -11,5 +11,6 @@
   },
   "dependencies": {
     "com.unity.scriptablebuildpipeline": "1.16.1"
-  }
+  },
+  "hideInEditor": false
 }
