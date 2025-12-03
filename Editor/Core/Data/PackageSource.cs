@@ -250,13 +250,26 @@ namespace ThunderKit.Core.Data
             }
         }
 
-        IEnumerable<PackageVersion> EnumerateDependencies(PackageVersion package, bool yieldLatestVersions)
+        IEnumerable<PackageVersion> EnumerateDependencies(PackageVersion package, HashSet<PackageGroup> foundPackages, bool yieldLatestVersions)
         {
+            //Add ourselves immediatly, as the final yield return will yield ourselves.
+            foundPackages.Add(groupMap[package.groupDependencyId]);
             foreach (var dependency in package.dependencies)
             {
-                var dep = yieldLatestVersions ? groupMap[dependency.groupDependencyId]["latest"] : dependency;
-                foreach (var subDependency in EnumerateDependencies(dep, yieldLatestVersions))
+                PackageGroup packageGroup = groupMap[dependency.groupDependencyId];
+                var dep = yieldLatestVersions ? packageGroup["latest"] : dependency;
+
+                if(foundPackages.Contains(packageGroup))
+                {
+                    continue;
+                }
+
+                foreach (var subDependency in EnumerateDependencies(dep, foundPackages, yieldLatestVersions))
+                {
+                    var subDependencyPackageGroup = groupMap[subDependency.groupDependencyId];
+                    foundPackages.Add(subDependencyPackageGroup);
                     yield return subDependency;
+                }
             }
             yield return package;
         }
@@ -276,6 +289,7 @@ namespace ThunderKit.Core.Data
             if (EditorApplication.isCompiling) return;
             using (var progressBar = new ProgressBar("Installing Packages"))
             {
+                var foundPackagesSet = new HashSet<PackageGroup>();
                 var installSet = new List<PackageVersion>();
                 foreach (var (group, version) in packages)
                 {
@@ -283,7 +297,7 @@ namespace ThunderKit.Core.Data
 
                     var resolvedVersion = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-                    installSet.AddRange(EnumerateDependencies(package, forceLatestDependencies).Where(dep => !groupMap[dep.groupDependencyId].Installed));
+                    installSet.AddRange(EnumerateDependencies(package, foundPackagesSet, forceLatestDependencies).Where(dep => !groupMap[dep.groupDependencyId].Installed));
                 }
 
                 var installSetArray = installSet.ToArray();
@@ -326,11 +340,13 @@ namespace ThunderKit.Core.Data
         private async Task InstallPackageInternal(PackageGroup group, string version, bool forceLatestDependencies)
         {
             if (EditorApplication.isCompiling) return;
+
+            var foundPackagesSet = new HashSet<PackageGroup>();
             var package = group[version];
 
             version = string.Equals(version, "latest", StringComparison.Ordinal) ? package.version : version;
 
-            var installSet = EnumerateDependencies(package, forceLatestDependencies).Where(dep => !groupMap[dep.groupDependencyId].Installed).ToArray();
+            var installSet = EnumerateDependencies(package, foundPackagesSet, forceLatestDependencies).Where(dep => !groupMap[dep.groupDependencyId].Installed).ToArray();
             var progress = 0.01f;
             var stepSize = 0.33f / installSet.Length;
 
