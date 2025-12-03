@@ -1,3 +1,13 @@
+## 9.1.6
+
+### Fixes and Improvements
+
+* Fixed ThunderKit package getting hidden when packages are hidden in Package Manager
+* Removed unreliable auto-tests from CI pipeline
+
+* Thanks to @nebby1999 for these improvements
+  * Fixed cyclical dependency crash when resolving manifest dependencies (#113)
+
 ## 9.1.5
 
 ### Fixes and Improvements
