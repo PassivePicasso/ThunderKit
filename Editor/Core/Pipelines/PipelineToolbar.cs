@@ -1,17 +1,21 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
 using ThunderKit.Core.Manifests;
 using ThunderKit.Core.Windows;
 using UnityEditor;
 using UnityEngine;
+#if !UNITY_6000_3_OR_NEWER
 using UnityToolbarExtender;
+#else
+using UnityEditor.Toolbars;
+#endif
 using static UnityEditor.EditorGUI;
 using static UnityEditor.EditorGUILayout;
 
 namespace ThunderKit.Core.Pipelines
 {
+#if !UNITY_6000_3_OR_NEWER
     [InitializeOnLoad]
     public class PipelineToolbar
     {
@@ -209,4 +213,264 @@ namespace ThunderKit.Core.Pipelines
             return selectedPipelineIndex;
         }
     }
+#else
+    /// <summary>
+    /// Unity 6.3+ implementation using the native Extensible Toolbar API
+    /// </summary>
+    [InitializeOnLoad]
+    public static class PipelineToolbar
+    {
+        private const int MinDisplayWidth = 20;
+
+        private static ThunderKitSettings _settings;
+        private static Texture2D _pipelineIcon;
+        private static Texture2D _manifestIcon;
+
+        private static Pipeline _lastPipeline;
+        private static Manifest _lastManifest;
+        private static int _lastPipelineCount;
+        private static int _lastManifestCount;
+        private static bool _initialized;
+
+        static PipelineToolbar()
+        {
+            _initialized = false;
+            EditorApplication.delayCall += OnDelayedInit;
+            EditorApplication.update += OnEditorUpdate;
+        }
+
+        private static void OnDelayedInit()
+        {
+            // Defer initialization until Unity has fully loaded assets after domain reload
+            _initialized = true;
+            _settings = null; // Force re-fetch of settings
+            _lastPipeline = Settings.SelectedPipeline;
+            _lastManifest = Settings.SelectedManifest;
+            _lastPipelineCount = Settings.QuickAccessPipelines?.Length ?? 0;
+            _lastManifestCount = Settings.QuickAccessManifests?.Length ?? 0;
+            RefreshAllElements();
+        }
+
+        private static ThunderKitSettings Settings
+        {
+            get
+            {
+                if (_settings == null)
+                    _settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+                return _settings;
+            }
+        }
+
+        private static Texture2D PipelineIcon
+        {
+            get
+            {
+                if (_pipelineIcon == null)
+                    _pipelineIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(Constants.Icons.PipelineIconPath);
+                return _pipelineIcon;
+            }
+        }
+
+        private static Texture2D ManifestIcon
+        {
+            get
+            {
+                if (_manifestIcon == null)
+                    _manifestIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(Constants.Icons.ManifestIconPath);
+                return _manifestIcon;
+            }
+        }
+
+        private static void OnEditorUpdate()
+        {
+            // Don't run update checks until delayed init has completed
+            if (!_initialized) return;
+
+            var currentPipeline = Settings.SelectedPipeline;
+            var currentManifest = Settings.SelectedManifest;
+            var currentPipelineCount = Settings.QuickAccessPipelines?.Length ?? 0;
+            var currentManifestCount = Settings.QuickAccessManifests?.Length ?? 0;
+
+            bool needsRefresh = false;
+
+            if (_lastPipeline != currentPipeline)
+            {
+                _lastPipeline = currentPipeline;
+                needsRefresh = true;
+            }
+
+            if (_lastManifest != currentManifest)
+            {
+                _lastManifest = currentManifest;
+                needsRefresh = true;
+            }
+
+            if (_lastPipelineCount != currentPipelineCount)
+            {
+                _lastPipelineCount = currentPipelineCount;
+                needsRefresh = true;
+            }
+
+            if (_lastManifestCount != currentManifestCount)
+            {
+                _lastManifestCount = currentManifestCount;
+                needsRefresh = true;
+            }
+
+            if (needsRefresh)
+            {
+                RefreshAllElements();
+            }
+        }
+
+        private static string PadToMinWidth(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return new string(' ', MinDisplayWidth);
+            if (text.Length >= MinDisplayWidth)
+                return text;
+            return text.PadRight(MinDisplayWidth);
+        }
+
+        [MainToolbarElement("ThunderKit/Pipeline", defaultDockPosition = MainToolbarDockPosition.Right, defaultDockIndex = 100)]
+        public static MainToolbarElement PipelineDropdown()
+        {
+            var pipelineName = Settings.SelectedPipeline != null ? Settings.SelectedPipeline.name : "None";
+            var content = new MainToolbarContent(PadToMinWidth(pipelineName), PipelineIcon, "Select a pipeline from Quick Access");
+
+            return new MainToolbarDropdown(content, ShowPipelineMenu);
+        }
+
+        [MainToolbarElement("ThunderKit/Manifest", defaultDockPosition = MainToolbarDockPosition.Right, defaultDockIndex = 101)]
+        public static MainToolbarElement ManifestDropdown()
+        {
+            var manifestName = Settings.SelectedManifest != null ? Settings.SelectedManifest.name : "None";
+            var content = new MainToolbarContent(PadToMinWidth(manifestName), ManifestIcon, "Select a manifest from Quick Access");
+
+            return new MainToolbarDropdown(content, ShowManifestMenu);
+        }
+
+        [MainToolbarElement("ThunderKit/Execute", defaultDockPosition = MainToolbarDockPosition.Right, defaultDockIndex = 102)]
+        public static MainToolbarElement ExecuteButton()
+        {
+            var content = new MainToolbarContent("Execute", "Execute the selected pipeline with the selected manifest");
+
+            return new MainToolbarButton(content, ExecutePipeline)
+            {
+                enabled = Settings.SelectedPipeline != null
+            };
+        }
+
+        [MainToolbarElement("ThunderKit/Log", defaultDockPosition = MainToolbarDockPosition.Right, defaultDockIndex = 103)]
+        public static MainToolbarElement LogButton()
+        {
+            var content = new MainToolbarContent("Log", "View the most recent log for the selected pipeline");
+
+            var hasLog = Settings.SelectedPipeline != null &&
+                         PipelineLog.PipelineLogs.Any(pl => pl.pipeline == Settings.SelectedPipeline);
+
+            return new MainToolbarButton(content, ShowPipelineLog)
+            {
+                enabled = hasLog
+            };
+        }
+
+        private static void ShowPipelineMenu(Rect buttonRect)
+        {
+            var menu = new GenericMenu();
+            var pipelines = Settings.QuickAccessPipelines?.Where(p => p).ToArray() ?? System.Array.Empty<Pipeline>();
+
+            // Add None option
+            var noneSelected = Settings.SelectedPipeline == null;
+            menu.AddItem(new GUIContent("None"), noneSelected, () =>
+            {
+                Settings.SelectedPipeline = null;
+                RefreshAllElements();
+            });
+
+            if (pipelines.Length > 0)
+            {
+                menu.AddSeparator("");
+            }
+
+            foreach (var pipeline in pipelines)
+            {
+                var isSelected = Settings.SelectedPipeline == pipeline;
+                menu.AddItem(new GUIContent(pipeline.name), isSelected, () =>
+                {
+                    Settings.SelectedPipeline = pipeline;
+                    RefreshAllElements();
+                });
+            }
+
+            menu.DropDown(buttonRect);
+        }
+
+        private static void ShowManifestMenu(Rect buttonRect)
+        {
+            var menu = new GenericMenu();
+            var manifests = Settings.QuickAccessManifests?.Where(m => m).ToArray() ?? System.Array.Empty<Manifest>();
+
+            // Add None option
+            var noneSelected = Settings.SelectedManifest == null;
+            menu.AddItem(new GUIContent("None"), noneSelected, () =>
+            {
+                Settings.SelectedManifest = null;
+                MainToolbar.Refresh("ThunderKit/Manifest");
+            });
+
+            if (manifests.Length > 0)
+            {
+                menu.AddSeparator("");
+            }
+
+            foreach (var manifest in manifests)
+            {
+                var isSelected = Settings.SelectedManifest == manifest;
+                menu.AddItem(new GUIContent(manifest.name), isSelected, () =>
+                {
+                    Settings.SelectedManifest = manifest;
+                    MainToolbar.Refresh("ThunderKit/Manifest");
+                });
+            }
+
+            menu.DropDown(buttonRect);
+        }
+
+        private static void RefreshAllElements()
+        {
+            MainToolbar.Refresh("ThunderKit/Pipeline");
+            MainToolbar.Refresh("ThunderKit/Manifest");
+            MainToolbar.Refresh("ThunderKit/Execute");
+            MainToolbar.Refresh("ThunderKit/Log");
+        }
+
+        private static void ExecutePipeline()
+        {
+            var pipeline = Settings.SelectedPipeline;
+            var manifest = Settings.SelectedManifest;
+
+            if (pipeline != null)
+            {
+                _ = Pipeline.RunPipelineWithManifest(pipeline, manifest);
+            }
+        }
+
+        private static void ShowPipelineLog()
+        {
+            var pipeline = Settings.SelectedPipeline;
+            if (pipeline == null) return;
+
+            var pipelineLog = PipelineLog.PipelineLogs
+                .Where(pl => pl.pipeline == pipeline)
+                .OrderByDescending(log => log.CreatedDate)
+                .FirstOrDefault();
+
+            if (pipelineLog != null)
+            {
+                PipelineLogWindow.ShowLog(pipelineLog);
+            }
+        }
+    }
+#endif
 }
