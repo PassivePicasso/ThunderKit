@@ -1,3 +1,19 @@
+## 9.2.0
+
+### New Features
+
+* Added support for Unity 6.3's native Extensible Toolbar API
+  * Pipeline Toolbar now uses UnityEditor.Toolbars on Unity 6000.3+
+  * Maintains backwards compatibility with UnityToolbarExtender for older versions
+
+### Improvements
+
+* Pipeline and Manifest dropdowns now include a "None" option to clear selection
+* Execute and Log buttons dynamically update enabled state when selections change
+* Toolbar automatically refreshes when Quick Access lists are modified
+* Fixed Quick Access lists not populating correctly after domain reload
+* Increased minimum width for dropdown elements
+
 ## 9.1.6
 
 ### Fixes and Improvements
