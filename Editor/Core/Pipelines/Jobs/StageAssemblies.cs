@@ -172,7 +172,7 @@ namespace ThunderKit.Core.Pipelines.Jobs
             var lastPath = string.Empty;
             List<string> errorDatas = new List<string>();
 
-            builder.excludeReferences = builder.defaultReferences.Where(rf => rf.Contains(assemblyName)).ToArray();
+            builder.excludeReferences = builder.defaultReferences.Except(definition.asm.allReferences).ToArray();
             builder.buildFinished += OnBuildFinished;
             builder.buildStarted += OnBuildStarted;
 
