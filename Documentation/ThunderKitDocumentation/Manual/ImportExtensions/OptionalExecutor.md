@@ -46,6 +46,9 @@ enabled and disabled by users and code.
  - { .cfw200 }[GetBitness](documentation://GUID/087669654ec3c5445ac7bb8e79b56a3f)
 [Source](assetlink://GUID/8840720793112784295b7c9b06af7493) 
 
+ - { .cfw200 }[EnsureAssemblyDefinitions](documentation://GUID/c4d83e2fa1b7609857e4f82b3d6c0f15)
+[Source](assetlink://GUID/b7f32e9d1a0c584763d21af8c5b9e049) 
+
 
 ## Fields
 

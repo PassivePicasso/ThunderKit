@@ -1,3 +1,13 @@
+## 9.3.0
+
+### New Features
+
+* Added `EnsureAssemblyDefinitions` import executor
+  * Runs before game import and scans `Assets/` for C# files not covered by any `.asmdef`
+  * Fails the import with a clear error listing every orphaned file if any are found
+  * Prevents the read-only Assembly-CSharp conflict that blocks ThunderKit from importing game assemblies
+  * Includes documentation with step-by-step resolution guidance
+
 ## 9.2.0
 
 ### New Features
