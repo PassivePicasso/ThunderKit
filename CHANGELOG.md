@@ -9,6 +9,8 @@
 
 ### Fixes
 
+* Fixed compiler warnings in Unity 6000+ by excluding `UnityToolbarExtender` (`ToolbarCallback`, `ToolbarExtender`) via `#if !UNITY_6000_0_OR_NEWER` — the reflection-based extender is incompatible with Unity 6000 and is no longer needed there
+* Corrected `PipelineToolbar` preprocessor guard from `UNITY_6000_3_OR_NEWER` to `UNITY_6000_0_OR_NEWER` so the legacy toolbar path is excluded from all Unity 6000+ builds, not just 6000.3+
 * Fixed serialization depth limit warning on `PackageVersion.dependencies` by marking the field `[NonSerialized]`
 
 ### Documentation
