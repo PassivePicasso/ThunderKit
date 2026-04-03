@@ -19,6 +19,18 @@ enabled and disabled by users and code.
 
 
 ## Derived 
+
+### Core
+
+ - { .cfw200 }[CheckUnityVersion](documentation://GUID/cbec789a5a4890b41844efe9f2069e31)
+[Source](assetlink://GUID/8dcb1359c6da7c049b1063e3561a1ecf) 
+
+ - { .cfw200 }[DisableAssemblyUpdater](documentation://GUID/d8fd47d44859b0d4d9b38ca56a15980f)
+[Source](assetlink://GUID/208b77589c09e314aa3dbfae9117393a) 
+
+ - { .cfw200 }[EnsureAssemblyDefinitions](documentation://GUID/c4d83e2fa1b7609857e4f82b3d6c0f15)
+[Source](assetlink://GUID/b7f32e9d1a0c584763d21af8c5b9e049) 
+
  - { .cfw200 }[ImportAssemblies](documentation://GUID/b216ba4bf77cd2b4eacfed464cc6540e)
 [Source](assetlink://GUID/a87a9f1780c348d4080afaf9971d3a7e)
 
@@ -28,26 +40,36 @@ enabled and disabled by users and code.
  - { .cfw200 }[CreateGamePackage](documentation://GUID/c72319cdfed39d34caab9a31e63e23ad)
 [Source](assetlink://GUID/a4e66fd1b2f0a6b4e951af502eba5a2b) 
 
+ - { .cfw200 }[GetBitness](documentation://GUID/087669654ec3c5445ac7bb8e79b56a3f)
+[Source](assetlink://GUID/8840720793112784295b7c9b06af7493) 
+
+ - { .cfw200 }[Beep](documentation://GUID/9b2e0ee349f56304b8d636039c4a8451)
+[Source](assetlink://GUID/0cf0398e0ff60b641a1c9a78c649cbae) 
+
+ - { .cfw200 }[PromptRestart](documentation://GUID/82266e1ea1d3dbe44bf55f96c4d240ea)
+[Source](assetlink://GUID/52610fcf3c7c01e43ad95185897e1eb5) 
+
+### Abstract Base Classes
+
+ - { .cfw200 }[ManagedAssemblyPatcher](documentation://GUID/ce92779cb49e6bb448fd6987a24d4296)
+[Source](assetlink://GUID/c0960d561d36deb4aac684c83e4f0e74) 
+
  - { .cfw200 }[UnityPackageInstaller](documentation://GUID/03891ed5d95f7ab48886fac5c76769b2)
 [Source](assetlink://GUID/213e13d5b2469964d921c60eadde042c) 
 
  - { .cfw200 }[UnityPackageUninstaller](documentation://GUID/741f8e5d5c63e5640bbf7c9334a597a9)
 [Source](assetlink://GUID/469f8ad306016a44e877a98c0db1d815) 
 
- - { .cfw200 }[ManagedAssemblyPatcher](documentation://GUID/ce92779cb49e6bb448fd6987a24d4296)
-[Source](assetlink://GUID/c0960d561d36deb4aac684c83e4f0e74) 
+### Addressable & Thunderstore
 
- - { .cfw200 }[PromptRestart](documentation://GUID/82266e1ea1d3dbe44bf55f96c4d240ea)
-[Source](assetlink://GUID/52610fcf3c7c01e43ad95185897e1eb5) 
+ - { .cfw200 }[ImportAddressableCatalog](documentation://GUID/84c7a73e402727b41ac40b5245504aad)
+[Source](assetlink://GUID/3bb24ae4d588a7b4fbc1757e2fb5fd78) 
 
- - { .cfw200 }[Beep](documentation://GUID/9b2e0ee349f56304b8d636039c4a8451)
-[Source](assetlink://GUID/0cf0398e0ff60b641a1c9a78c649cbae) 
+ - { .cfw200 }[AddressableGraphicsImport](documentation://GUID/5e4b823bc1bc5954cb1e3fd52663a61f)
+[Source](assetlink://GUID/de95f17b2fc0cb74cba1e1af10e1d4f4) 
 
- - { .cfw200 }[GetBitness](documentation://GUID/087669654ec3c5445ac7bb8e79b56a3f)
-[Source](assetlink://GUID/8840720793112784295b7c9b06af7493) 
-
- - { .cfw200 }[EnsureAssemblyDefinitions](documentation://GUID/c4d83e2fa1b7609857e4f82b3d6c0f15)
-[Source](assetlink://GUID/b7f32e9d1a0c584763d21af8c5b9e049) 
+ - { .cfw200 }[ThunderstorePackageInstaller](documentation://GUID/ca5cdbe1c4ee63646b3515f5995776b0)
+[Source](assetlink://GUID/f1e1d03284e715444951e6ec9eb21e73) 
 
 
 ## Fields
