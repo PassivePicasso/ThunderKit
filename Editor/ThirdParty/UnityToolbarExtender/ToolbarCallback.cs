@@ -1,3 +1,5 @@
+#if UNITY_6000_0_OR_NEWER
+#else
 using System;
 using UnityEngine;
 using UnityEditor;
@@ -108,3 +110,4 @@ namespace UnityToolbarExtender
 		}
 	}
 }
+#endif
