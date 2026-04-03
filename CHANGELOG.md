@@ -2,11 +2,19 @@
 
 ### New Features
 
-* Added `EnsureAssemblyDefinitions` import executor
+* Added `EnsureAssemblyDefinitions` import extension
   * Runs before game import and scans `Assets/` for C# files not covered by any `.asmdef`
   * Fails the import with a clear error listing every orphaned file if any are found
   * Prevents the read-only Assembly-CSharp conflict that blocks ThunderKit from importing game assemblies
-  * Includes documentation with step-by-step resolution guidance
+
+### Documentation
+
+* Added documentation for all import extensions
+  * Filled content for ImportAssemblies, ImportProjectSettings, CreateGamePackage, GetBitness, ManagedAssemblyPatcher, UnityPackageInstaller, UnityPackageUninstaller, AssemblyProcessor, BlacklistProcessor, and WhitelistProcessor
+  * Added new documentation pages for CheckUnityVersion, DisableAssemblyUpdater, ImportAddressableCatalog, AddressableGraphicsImport, and ThunderstorePackageInstaller
+  * Updated OptionalExecutor derived list with all import extensions organized by category
+  * Added step-by-step resolution guidance for EnsureAssemblyDefinitions
+  * Fixed ImportProjectSettings documentation having wrong title and wrong source link
 
 ## 9.2.0
 
