@@ -10,6 +10,7 @@ namespace ThunderKit.Core.Data
         public string dependencyId;
         public string VersionMarkdown;
         public string groupDependencyId;
+        [NonSerialized]
         public PackageVersion[] dependencies;
         internal string name;
 

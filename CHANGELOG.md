@@ -7,6 +7,10 @@
   * Fails the import with a clear error listing every orphaned file if any are found
   * Prevents the read-only Assembly-CSharp conflict that blocks ThunderKit from importing game assemblies
 
+### Fixes
+
+* Fixed serialization depth limit warning on `PackageVersion.dependencies` by marking the field `[NonSerialized]`
+
 ### Documentation
 
 * Added documentation for all import extensions
