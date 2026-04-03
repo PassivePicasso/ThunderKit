@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 
 namespace ThunderKit.Core.Config.Common
 {
@@ -29,13 +30,26 @@ namespace ThunderKit.Core.Config.Common
             if (orphaned.Count == 0)
                 return true;
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"Import aborted: {orphaned.Count} C# file(s) found in Assets/ that are not managed by any Assembly Definition (.asmdef).");
-            sb.AppendLine("Add or extend an .asmdef to cover these files before importing:");
-            foreach (var path in orphaned)
-                sb.AppendLine($"  {path}");
+            const int maxListed = 10;
+            var dialog = new StringBuilder();
+            dialog.AppendLine($"{orphaned.Count} C# file(s) in Assets/ are not covered by an Assembly Definition (.asmdef).");
+            dialog.AppendLine();
+            for (int i = 0; i < Math.Min(orphaned.Count, maxListed); i++)
+                dialog.AppendLine(orphaned[i]);
+            if (orphaned.Count > maxListed)
+                dialog.AppendLine($"... and {orphaned.Count - maxListed} more (see Console for full list)");
+            dialog.AppendLine();
+            dialog.Append("Create an .asmdef in the same folder or a parent folder of each file, or move the files under an existing .asmdef.");
 
-            throw new Exception(sb.ToString());
+            EditorUtility.DisplayDialog("Orphaned C# Scripts Detected", dialog.ToString(), "OK");
+
+            var console = new StringBuilder();
+            console.AppendLine($"Import aborted: {orphaned.Count} C# file(s) found in Assets/ that are not managed by any Assembly Definition (.asmdef).");
+            console.AppendLine("Add or extend an .asmdef to cover these files before importing:");
+            foreach (var path in orphaned)
+                console.AppendLine($"  {path}");
+
+            throw new Exception(console.ToString());
         }
 
         private static bool IsUnderAsmdef(string csFullPath, HashSet<string> asmdefDirs)
