@@ -21,13 +21,21 @@ namespace ThunderKit.Markdown
     using static Helpers.UnityPathUtility;
 
     public enum MarkdownDataType { Implicit, Source, Text }
+    
+    #if UNITY_6000_3_OR_NEWER
+    [UxmlElement] public partial class MarkdownElement : VisualElement
+    #else
     public class MarkdownElement : VisualElement
+    #endif
     {
         const string MarkdownStylePath = "Packages/com.passivepicasso.thunderkit/USS/markdown.uss";
         private readonly UIElementRenderer renderer;
         private readonly MarkdownPipelineBuilder mpb;
         private readonly MarkdownPipeline pipeline;
         private string data;
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("data")]
+#endif
         public string Data
         {
             get => data;
@@ -36,15 +44,42 @@ namespace ThunderKit.Markdown
                 data = value;
             }
         }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("content-height")]
+#endif
         public float ContentHeight { get; private set; }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("markdown")]
+#endif
         public string Markdown { get; private set; }
         private string NormalizedMarkdown { get; set; }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("markdown-data-type")]
+#endif
         public MarkdownDataType MarkdownDataType { get; set; }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("space-after-quote-block")]
+#endif
         public bool SpaceAfterQuoteBlock { get; set; }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("empty-line-after-code-block")]
+#endif
         public bool EmptyLineAfterCodeBlock { get; set; }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("empty-line-after-heading")]
+#endif
         public bool EmptyLineAfterHeading { get; set; }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("empty-line-after-thematic-break")]
+#endif
         public bool EmptyLineAfterThematicBreak { get; set; }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("list-item-character")]
+#endif
         public string ListItemCharacter { get; set; } = "*";
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("expand-auto-links")]
+#endif
         public bool ExpandAutoLinks { get; set; }
         public MarkdownElement()
         {
@@ -161,6 +196,8 @@ namespace ThunderKit.Markdown
             renderer.Render(document);
         }
 
+        #if UNITY_6000_3_OR_NEWER
+        #else
         public new class UxmlFactory : UxmlFactory<MarkdownElement, UxmlTraits> { }
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
@@ -215,5 +252,6 @@ namespace ThunderKit.Markdown
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
                 Enumerable.Empty<UxmlChildElementDescription>();
         }
+        #endif
     }
 }
