@@ -1,3 +1,28 @@
+## 9.3.1
+
+### Fixes
+
+* Fixed `ListView` selection/choice event deprecation warnings on Unity
+  2022.2+ by switching to `selectionChanged` / `itemsChosen` in
+  `PackageSourceSettings`, `AddComposableElementWindow`, `PackageManager`,
+  `PipelineLogWindow`, and `SettingsWindow` (older Unity versions keep
+  their existing event paths)
+* Fixed `UxmlFactory` / `UxmlTraits` deprecation warnings on Unity
+  6000.3+ by adopting the `[UxmlElement]` / `[UxmlAttribute]` attribute
+  system for `AssetLink`, `DragThumb`, `LoadingSpinner`, and
+  `StringPopupField`
+* Fixed `LoadingSpinner` using deprecated `transform.rotation` on Unity
+  2021.2+ — now uses `style.rotate` with `Rotate` / `Angle`
+* Fixed `CodeBlockRenderer.OnKeyDown` calling the unavailable
+  `KeyDownEvent.PreventDefault()` — now uses `StopPropagation()`
+
+### Community Contributions
+
+* Thanks to @cheese3660 for these improvements
+  * Converted `MarkdownElement` to the UXML attribute system on Unity
+    6000.3+ so it continues to work without the deprecated `UxmlFactory`
+    / `UxmlTraits` pattern (#115)
+
 ## 9.3.0
 
 ### New Features
