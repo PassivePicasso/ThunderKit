@@ -12,9 +12,20 @@ using UnityEditor.Experimental.UIElements;
 
 namespace ThunderKit.Core.UIElements
 {
+#if UNITY_6000_3_OR_NEWER
+    [UxmlElement]
+    public partial class AssetLink : Label
+#else
     public class AssetLink : Label
+#endif
     {
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("select-asset")]
+#endif
         public bool SelectAsset { get; set; } = true;
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("asset-path")]
+#endif
         public string AssetPath { get; set; }
 
         public AssetLink()
@@ -34,6 +45,7 @@ namespace ThunderKit.Core.UIElements
                 Selection.activeObject = asset;
         }
 
+#if !UNITY_6000_3_OR_NEWER
         public new class UxmlFactory : UxmlFactory<AssetLink, UxmlTraits> { }
 
         public new class UxmlTraits : Label.UxmlTraits
@@ -52,6 +64,7 @@ namespace ThunderKit.Core.UIElements
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
                 Enumerable.Empty<UxmlChildElementDescription>();
         }
+#endif
 
     }
 }

@@ -35,7 +35,7 @@ namespace ThunderKit.Markdown.ObjectRenderers
 
         private void OnKeyDown(KeyDownEvent evt)
         {
-            evt.PreventDefault();
+            evt.StopPropagation();
         }
     }
 }

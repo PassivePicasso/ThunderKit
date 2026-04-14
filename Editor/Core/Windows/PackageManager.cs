@@ -146,7 +146,10 @@ namespace ThunderKit.Core.Windows
 
                 packageList.selectionType = SelectionType.Single;
 
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
+                packageList.selectionChanged -= PackageList_onSelectionChanged;
+                packageList.selectionChanged += PackageList_onSelectionChanged;
+#elif UNITY_2020_1_OR_NEWER
                 packageList.onSelectionChange -= PackageList_onSelectionChanged;
                 packageList.onSelectionChange += PackageList_onSelectionChanged;
 #else

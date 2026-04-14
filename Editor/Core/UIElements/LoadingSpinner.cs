@@ -8,9 +8,16 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Core.UIElements
 {
+#if UNITY_6000_3_OR_NEWER
+    [UxmlElement]
+    public partial class LoadingSpinner : VisualElement
+#else
     public class LoadingSpinner : VisualElement
+#endif
     {
+#if !UNITY_6000_3_OR_NEWER
         public new class UxmlFactory : UxmlFactory<LoadingSpinner> { }
+#endif
 
         public bool started { get; private set; }
 
@@ -39,7 +46,11 @@ namespace ThunderKit.Core.UIElements
 
         private void UpdateProgress()
         {
+#if UNITY_2021_2_OR_NEWER
+            style.rotate = new Rotate(new Angle(m_Rotation, AngleUnit.Degree));
+#else
             transform.rotation = Quaternion.Euler(0, 0, m_Rotation);
+#endif
 
             m_Rotation += 3;
             if (m_Rotation > 360)

@@ -110,7 +110,10 @@ namespace ThunderKit.Core.Windows
                 logEntryListView = rootVisualElement.Q<ListView>("logentry-list-view");
                 logEntryListView.bindItem = OnBind;
                 logEntryListView.makeItem = OnMake;
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
+                logEntryListView.selectionChanged += UpdateContextWindowSelect;
+                logEntryListView.itemsChosen += UpdateContextWindow;
+#elif UNITY_2020_1_OR_NEWER
                 logEntryListView.onSelectionChange += UpdateContextWindowSelect;
                 logEntryListView.onItemsChosen += UpdateContextWindow;
 #else

@@ -111,7 +111,9 @@ namespace ThunderKit.Core.Windows
             scriptList.makeItem = MakeComponentView;
             scriptList.bindItem = BindComponentView;
 
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
+            scriptList.itemsChosen += OnChoose;
+#elif UNITY_2020_1_OR_NEWER
             scriptList.onItemsChosen += OnChoose;
 #elif UNITY_2018_1_OR_NEWER
             scriptList.onItemChosen += OnChoose;

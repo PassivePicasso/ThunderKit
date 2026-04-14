@@ -48,7 +48,9 @@ namespace ThunderKit.Core.Windows
 
             settingsList.selectionType = SelectionType.Multiple;
 
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
+            settingsList.selectionChanged += OnSettingsSelected;
+#elif UNITY_2020_1_OR_NEWER
             settingsList.onSelectionChange += OnSettingsSelected;
 #else
             settingsList.onSelectionChanged += OnSettingsSelected;

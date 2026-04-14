@@ -13,8 +13,14 @@ using UnityEngine.Experimental.UIElements;
 namespace ThunderKit.Core.UIElements
 {
     public enum RelativePosition { Left, Right };
+#if UNITY_6000_3_OR_NEWER
+    [UxmlElement]
+    public partial class DragThumb : VisualElement
+#else
     public class DragThumb : VisualElement
+#endif
     {
+#if !UNITY_6000_3_OR_NEWER
         public new class UxmlFactory : UxmlFactory<DragThumb, UxmlTraits>
         {
         }
@@ -35,6 +41,10 @@ namespace ThunderKit.Core.UIElements
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription =>
                 Enumerable.Empty<UxmlChildElementDescription>();
         }
+#endif
+#if UNITY_6000_3_OR_NEWER
+        [SerializeField, UxmlAttribute("target-name")]
+#endif
         private string targetName;
         public VisualElement Target
         {
@@ -47,6 +57,9 @@ namespace ThunderKit.Core.UIElements
                 dragManipulator.resizeTarget = value;
             }
         }
+#if UNITY_6000_3_OR_NEWER
+        [UxmlAttribute("target-relation")]
+#endif
         public RelativePosition TargetRelation
         {
             get => targetRelation;

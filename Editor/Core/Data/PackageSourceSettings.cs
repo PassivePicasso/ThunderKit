@@ -126,7 +126,9 @@ namespace ThunderKit.Core.Data
                     //label.tooltip = $"Type: {PackageSources[i].Name}\r\nGroup: {PackageSources[i].SourceGroup}";
                 }
             };
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
+            sourceList.selectionChanged += OnSelectionChanged;
+#elif UNITY_2020_1_OR_NEWER
             sourceList.onSelectionChange += OnSelectionChanged;
 #else
             sourceList.onSelectionChanged += OnSelectionChanged;
