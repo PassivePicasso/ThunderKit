@@ -82,7 +82,7 @@ namespace ThunderKit.Addressable.Tools
         }
         
         protected override void SingleClickedItem(
-            #if UNITY_6000_5_OR_LATER
+            #if UNITY_6000_5_OR_NEWER
             EntityId id
             #else
             int id
@@ -94,7 +94,7 @@ namespace ThunderKit.Addressable.Tools
         }
 
         protected override void DoubleClickedItem(
-            #if UNITY_6000_5_OR_LATER
+            #if UNITY_6000_5_OR_NEWER
             EntityId id
             #else
             int id
