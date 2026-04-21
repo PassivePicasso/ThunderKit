@@ -20,7 +20,7 @@ namespace ThunderKit.Addressable.Tools
     public class TransformHierarchyTreeView : TreeViewT
     {
         private readonly Transform root;
-        private readonly TreeViewItem<EntityId> localRootItem;
+        private readonly TreeViewItemT localRootItem;
         #if UNITY_6000_5_OR_NEWER
         private readonly Dictionary<EntityId, Transform> transformLookup = new Dictionary<EntityId, Transform>();
         #else
@@ -29,7 +29,7 @@ namespace ThunderKit.Addressable.Tools
         public TransformHierarchyTreeView(TreeViewStateT state, Transform root) : base(state)
         {
             this.root = root;
-            localRootItem = new TreeViewItemT { id = default, depth = -1, displayName = "root", children = new List<TreeViewItem>() };
+            localRootItem = new TreeViewItemT { id = default, depth = -1, displayName = "root", children = new List<TreeViewItemT>() };
         }
         protected override TreeViewItemT BuildRoot()
         {
@@ -61,10 +61,16 @@ namespace ThunderKit.Addressable.Tools
 
         private void ConstructTree(int depth, TreeViewItemT parentItem, Transform parent)
         {
-            if (parentItem.children == null) parentItem.children = new List<TreeViewItem>();
+            if (parentItem.children == null) parentItem.children = new List<TreeViewItemT>();
             foreach (Transform child in parent)
             {
-                transformLookup[child.GetInstanceID()] = child;
+                transformLookup[
+                    #if UNITY_6005_OR_NEWER
+                    child.GetEntityId()
+                    #else
+                    child.GetInstanceID()
+                    #endif
+                ] = child;
                 var childItem = new TreeViewItemT
                 {
                     #if UNITY_6000_5_OR_NEWER
