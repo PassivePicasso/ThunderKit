@@ -71,9 +71,17 @@ namespace ThunderKit.Core.Windows
 
 
         [OnOpenAsset]
+        #if UNITY_6000_5_OR_NEWER
+        public static bool OnOpen(EnityId entityId, int line)
+        #else
         public static bool OnOpen(int instanceId, int line)
+        #endif
         {
+            #if UNITY_6000_5_OR_NEWER
+            var asset = EditorUtility.EntityIdToObject(entityId);
+            #else
             var asset = EditorUtility.InstanceIDToObject(instanceId);
+            #endif
             if (asset is PipelineLog log)
             {
                 ShowLog(log);
