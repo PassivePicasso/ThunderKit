@@ -5,23 +5,33 @@ using UnityEditor.Graphs;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+#if UNITY_6000_5_OR_NEWER
+using TreeViewT = TreeView<EntityId>;
+using TreeViewStateT = TreeViewState<EntityId>;
+using TreeViewItemT = TreeViewItem<EntityId>;
+#else
+using TreeViewT = TreeView;
+using TreeViewStateT = TreeViewState;
+using TreeViewItemT = TreeViewItem;
+#endif
+
 namespace ThunderKit.Addressable.Tools
 {
-    public class TransformHierarchyTreeView : TreeView
+    public class TransformHierarchyTreeView : TreeViewT
     {
         private readonly Transform root;
-        private readonly TreeViewItem localRootItem;
+        private readonly TreeViewItem<EntityId> localRootItem;
         #if UNITY_6000_5_OR_NEWER
         private readonly Dictionary<EntityId, Transform> transformLookup = new Dictionary<EntityId, Transform>();
         #else
         private readonly Dictionary<int, Transform> transformLookup = new Dictionary<int, Transform>();
         #endif
-        public TransformHierarchyTreeView(TreeViewState state, Transform root) : base(state)
+        public TransformHierarchyTreeView(TreeViewStateT state, Transform root) : base(state)
         {
             this.root = root;
-            localRootItem = new TreeViewItem { id = 0, depth = -1, displayName = "root", children = new List<TreeViewItem>() };
+            localRootItem = new TreeViewItemT { id = default, depth = -1, displayName = "root", children = new List<TreeViewItem>() };
         }
-        protected override TreeViewItem BuildRoot()
+        protected override TreeViewItemT BuildRoot()
         {
             int depth = 0;
             transformLookup.Clear();
@@ -32,7 +42,7 @@ namespace ThunderKit.Addressable.Tools
                 root.GetInstanceID()
                 #endif
             ] = root;
-            var firstItem = new TreeViewItem {
+            var firstItem = new TreeViewItemT {
                 #if UNITY_6000_5_OR_NEWER
                 id = root.GetEntityId(),
                 #else
@@ -40,7 +50,7 @@ namespace ThunderKit.Addressable.Tools
                 #endif
                 depth = depth++,
                 displayName = root.name,
-                children = new List<TreeViewItem>() 
+                children = new List<TreeViewItemT>() 
             };
             localRootItem.children.Add(firstItem);
 
@@ -49,13 +59,13 @@ namespace ThunderKit.Addressable.Tools
             return localRootItem;
         }
 
-        private void ConstructTree(int depth, TreeViewItem parentItem, Transform parent)
+        private void ConstructTree(int depth, TreeViewItemT parentItem, Transform parent)
         {
             if (parentItem.children == null) parentItem.children = new List<TreeViewItem>();
             foreach (Transform child in parent)
             {
                 transformLookup[child.GetInstanceID()] = child;
-                var childItem = new TreeViewItem
+                var childItem = new TreeViewItemT
                 {
                     #if UNITY_6000_5_OR_NEWER
                     id = child.GetEntityId(),
@@ -70,13 +80,26 @@ namespace ThunderKit.Addressable.Tools
                 parentItem.children.Add(childItem);
             }
         }
-        protected override void SingleClickedItem(int id)
+        
+        protected override void SingleClickedItem(
+            #if UNITY_6000_5_OR_LATER
+            EntityId id
+            #else
+            int id
+            #endif
+        )
         {
             base.SingleClickedItem(id);
             Selection.activeGameObject = transformLookup[id].gameObject;
         }
 
-        protected override void DoubleClickedItem(int id)
+        protected override void DoubleClickedItem(
+            #if UNITY_6000_5_OR_LATER
+            EntityId id
+            #else
+            int id
+            #endif
+        )
         {
             base.DoubleClickedItem(id);
             Selection.activeGameObject = transformLookup[id].gameObject;
