@@ -65,7 +65,7 @@ namespace ThunderKit.Addressable.Tools
             foreach (Transform child in parent)
             {
                 transformLookup[
-                    #if UNITY_6005_OR_NEWER
+                    #if UNITY_6000_5_OR_NEWER
                     child.GetEntityId()
                     #else
                     child.GetInstanceID()
