@@ -6,13 +6,13 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 #if UNITY_6000_5_OR_NEWER
-using TreeViewT = TreeView<EntityId>;
-using TreeViewStateT = TreeViewState<EntityId>;
-using TreeViewItemT = TreeViewItem<EntityId>;
+using TreeViewT = UnityEditor.IMGUI.Controls.TreeView<UnityEngine.EntityId>;
+using TreeViewStateT = UnityEditor.IMGUI.Controls.TreeViewState<UnityEngine.EntityId>;
+using TreeViewItemT = UnityEditor.IMGUI.Controls.TreeViewItem<UnityEngine.EntityId>;
 #else
-using TreeViewT = TreeView;
-using TreeViewStateT = TreeViewState;
-using TreeViewItemT = TreeViewItem;
+using TreeViewT = UnityEditor.IMGUI.Controls.TreeView;
+using TreeViewStateT = UnityEditor.IMGUI.Controls.TreeViewState;
+using TreeViewItemT = UnityEditor.IMGUI.Controls.TreeViewItem;
 #endif
 
 namespace ThunderKit.Addressable.Tools
