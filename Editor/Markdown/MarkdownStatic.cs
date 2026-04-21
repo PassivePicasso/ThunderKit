@@ -9,7 +9,7 @@ namespace ThunderKit.Markdown
     public static class MarkdownStatic
     {
         readonly static object[] findTextureParams = new object[1];
-        #if UNITY_6000_5_OR_LATER
+        #if UNITY_6000_5_OR_NEWER
         class SelfDestructingActionAsset : AssetCreationEndAction
         {
             public Action<EntityId, string, string> action;
@@ -51,7 +51,7 @@ namespace ThunderKit.Markdown
 
             Action<int, string, string> action =
                 (
-                    #if UNITY_6000_5_OR_LATER
+                    #if UNITY_6000_5_OR_NEWER
                     EntityId instanceId,
                     #else
                     int instanceId,
