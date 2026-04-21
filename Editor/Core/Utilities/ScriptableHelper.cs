@@ -62,7 +62,7 @@ namespace ThunderKit.Core.Utilities
             var icon = (Texture2D)findTexture.Invoke(null, findTextureParams);
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
                 #if UNITY_6000_5_OR_NEWER
-                asset.GetEntityID(),
+                asset.GetEntityId(),
                 #else
                 asset.GetInstanceID(),
                 #endif
