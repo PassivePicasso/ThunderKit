@@ -3,7 +3,19 @@ using UnityEditor.ProjectWindowCallback;
 
 namespace ThunderKit.Core.Actions
 {
-    public class SelfDestructingActionAsset : EndNameEditAction
+    #if UNITY_6000_5_OR_NEWER
+    class SelfDestructingActionAsset : AssetCreationEndAction
+    {
+        public Action<EntityId, string, string> action;
+
+        public override void Action(EntityId instanceId, string pathName, string resourceFile)
+        {
+            action(instanceId, pathName, resourceFile);
+            CleanUp();
+        }
+    }
+    #else
+    class SelfDestructingActionAsset : EndNameEditAction
     {
         public Action<int, string, string> action;
 
@@ -13,4 +25,5 @@ namespace ThunderKit.Core.Actions
             CleanUp();
         }
     }
+    #endif
 }
