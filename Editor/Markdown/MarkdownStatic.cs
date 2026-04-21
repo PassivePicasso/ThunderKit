@@ -78,7 +78,7 @@ namespace ThunderKit.Markdown
             var findTexture = typeof(EditorGUIUtility).GetMethod(nameof(EditorGUIUtility.FindTexture), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
             findTextureParams[0] = typeof(TextAsset);
             var icon = (Texture2D)findTexture.Invoke(null, findTextureParams);
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, endAction, assetPathAndName, icon, null);
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(default, endAction, assetPathAndName, icon, null);
         }
     }
 }
