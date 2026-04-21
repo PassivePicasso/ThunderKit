@@ -72,7 +72,7 @@ namespace ThunderKit.Core.Windows
 
         [OnOpenAsset]
         #if UNITY_6000_5_OR_NEWER
-        public static bool OnOpen(EnityId entityId, int line)
+        public static bool OnOpen(EntityId entityId, int line)
         #else
         public static bool OnOpen(int instanceId, int line)
         #endif
