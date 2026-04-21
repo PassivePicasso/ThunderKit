@@ -9,6 +9,18 @@ namespace ThunderKit.Markdown
     public static class MarkdownStatic
     {
         readonly static object[] findTextureParams = new object[1];
+        #if UNITY_6000_5_OR_LATER
+        class SelfDestructingActionAsset : AssetCreationEndAction
+        {
+            public Action<EntityId, string, string> action;
+
+            public override void Action(EntityId instanceId, string pathName, string resourceFile)
+            {
+                action(instanceId, pathName, resourceFile);
+                CleanUp();
+            }
+        }
+        #else
         class SelfDestructingActionAsset : EndNameEditAction
         {
             public Action<int, string, string> action;
@@ -19,6 +31,7 @@ namespace ThunderKit.Markdown
                 CleanUp();
             }
         }
+        #endif
 
         [MenuItem("Assets/Create/Markdown File")]
         public static void Create()
@@ -37,7 +50,15 @@ namespace ThunderKit.Markdown
             AssetDatabase.Refresh();
 
             Action<int, string, string> action =
-                (int instanceId, string pathname, string resourceFile) =>
+                (
+                    #if UNITY_6000_5_OR_LATER
+                    EntityId instanceId,
+                    #else
+                    int instanceId,
+                    #endif
+                    string pathname, 
+                    string resourceFile
+                ) =>
                 {
                     File.WriteAllText(pathname, "# Markdown File");
                     AssetDatabase.Refresh();
