@@ -11,8 +11,11 @@ namespace ThunderKit.Addressable.Tools
     {
         private readonly Transform root;
         private readonly TreeViewItem localRootItem;
+        #if UNITY_6000_5_OR_NEWER
+        private readonly Dictionary<EntityId, Transform> transformLookup = new Dictionary<EntityId, Transform>();
+        #else
         private readonly Dictionary<int, Transform> transformLookup = new Dictionary<int, Transform>();
-
+        #endif
         public TransformHierarchyTreeView(TreeViewState state, Transform root) : base(state)
         {
             this.root = root;
@@ -22,8 +25,23 @@ namespace ThunderKit.Addressable.Tools
         {
             int depth = 0;
             transformLookup.Clear();
-            transformLookup[root.GetInstanceID()] = root;
-            var firstItem = new TreeViewItem { id = root.GetInstanceID(), depth = depth++, displayName = root.name, children = new List<TreeViewItem>() };
+            transformLookup[
+                #if UNITY_6000_5_OR_NEWER
+                root.GetEntityId()
+                #else
+                root.GetInstanceID()
+                #endif
+            ] = root;
+            var firstItem = new TreeViewItem {
+                #if UNITY_6000_5_OR_NEWER
+                id = root.GetEntityId(),
+                #else
+                id = root.GetInstanceID(),
+                #endif
+                depth = depth++,
+                displayName = root.name,
+                children = new List<TreeViewItem>() 
+            };
             localRootItem.children.Add(firstItem);
 
             ConstructTree(depth, firstItem, root);
@@ -39,7 +57,11 @@ namespace ThunderKit.Addressable.Tools
                 transformLookup[child.GetInstanceID()] = child;
                 var childItem = new TreeViewItem
                 {
+                    #if UNITY_6000_5_OR_NEWER
+                    id = child.GetEntityId(),
+                    #else
                     id = child.GetInstanceID(),
+                    #endif
                     depth = depth,
                     parent = parentItem,
                     displayName = child.name
