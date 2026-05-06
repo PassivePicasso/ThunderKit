@@ -1,3 +1,9 @@
+## 9.3.2
+
+### Fixes
+
+* Restored Pipeline Toolbar on Unity 6000.0–6000.2 by reverting the 9.3.0 preprocessor guard change — the `UnityEditor.Toolbars` API used by the new toolbar path is only available on Unity 6000.3+, so `PipelineToolbar`, `ToolbarCallback`, and `ToolbarExtender` now use `UNITY_6000_3_OR_NEWER` again to keep the legacy `UnityToolbarExtender` path active on 6000.0–6000.2
+
 ## 9.3.1
 
 ### Fixes

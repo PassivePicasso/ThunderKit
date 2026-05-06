@@ -15,7 +15,7 @@ using static UnityEditor.EditorGUILayout;
 
 namespace ThunderKit.Core.Pipelines
 {
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
     [InitializeOnLoad]
     public class PipelineToolbar
     {
