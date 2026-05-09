@@ -27,8 +27,18 @@ namespace ThunderKit.Core.Documentation
 
             AssetDatabase.Refresh();
 
+            #if UNITY_6000_5_OR_NEWER
+            Action<EntityId, string, string> action =
+            #else
             Action<int, string, string> action =
-                (int instanceId, string markPath, string resourceFile) =>
+            #endif
+                (
+                    #if UNITY_6000_5_OR_NEWER
+                    EntityId instanceId,
+                    #else
+                    int instanceId,
+                    #endif
+                    string markPath, string resourceFile) =>
                 {
                     var name = Path.GetFileNameWithoutExtension(markPath);
                     var rootPath = Path.GetDirectoryName(markPath);
@@ -47,7 +57,7 @@ namespace ThunderKit.Core.Documentation
             var findTexture = typeof(EditorGUIUtility).GetMethod(nameof(EditorGUIUtility.FindTexture), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
             findTextureParams[0] = typeof(DefaultAsset);
             var icon = (Texture2D)findTexture.Invoke(null, findTextureParams);
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, endAction, assetPathAndName, icon, null);
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(default, endAction, assetPathAndName, icon, null);
         }
     }
 }

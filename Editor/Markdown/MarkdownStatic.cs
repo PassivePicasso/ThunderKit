@@ -9,6 +9,18 @@ namespace ThunderKit.Markdown
     public static class MarkdownStatic
     {
         readonly static object[] findTextureParams = new object[1];
+        #if UNITY_6000_5_OR_NEWER
+        class SelfDestructingActionAsset : AssetCreationEndAction
+        {
+            public Action<EntityId, string, string> action;
+
+            public override void Action(EntityId instanceId, string pathName, string resourceFile)
+            {
+                action(instanceId, pathName, resourceFile);
+                CleanUp();
+            }
+        }
+        #else
         class SelfDestructingActionAsset : EndNameEditAction
         {
             public Action<int, string, string> action;
@@ -19,6 +31,7 @@ namespace ThunderKit.Markdown
                 CleanUp();
             }
         }
+        #endif
 
         [MenuItem("Assets/Create/Markdown File")]
         public static void Create()
@@ -36,8 +49,20 @@ namespace ThunderKit.Markdown
 
             AssetDatabase.Refresh();
 
+            #if UNITY_6000_5_OR_NEWER
+            Action<EntityId, string, string> action =
+            #else
             Action<int, string, string> action =
-                (int instanceId, string pathname, string resourceFile) =>
+            #endif
+                (
+                    #if UNITY_6000_5_OR_NEWER
+                    EntityId instanceId,
+                    #else
+                    int instanceId,
+                    #endif
+                    string pathname, 
+                    string resourceFile
+                ) =>
                 {
                     File.WriteAllText(pathname, "# Markdown File");
                     AssetDatabase.Refresh();
@@ -53,7 +78,7 @@ namespace ThunderKit.Markdown
             var findTexture = typeof(EditorGUIUtility).GetMethod(nameof(EditorGUIUtility.FindTexture), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
             findTextureParams[0] = typeof(TextAsset);
             var icon = (Texture2D)findTexture.Invoke(null, findTextureParams);
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, endAction, assetPathAndName, icon, null);
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(default, endAction, assetPathAndName, icon, null);
         }
     }
 }
