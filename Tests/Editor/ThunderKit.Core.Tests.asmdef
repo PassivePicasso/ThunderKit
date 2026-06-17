@@ -2,6 +2,8 @@
     "name": "ThunderKit.Core.Tests",
     "references": [
         "ThunderKit.Core",
+        "ThunderKit.Common",
+        "ThunderKit.Markdown",
         "nunit.framework"
     ],
     "optionalUnityReferences": [
