@@ -10,6 +10,9 @@ on:
       - "*"
 
 jobs:
+  # Modern path: GameCI packageMode handles project setup internally.
+  # Requires the Unity Test Framework UPM package, which exists from 2019.2+,
+  # so 2018.4 is handled by the separate legacy job below.
   test:
     name: Test (Unity ${{ matrix.unity-version }})
     runs-on: ubuntu-latest
@@ -17,11 +20,18 @@ jobs:
       fail-fast: false # one Unity version failing must not cancel the others
       matrix:
         unity-version: [
+          # 6000.4 (beta) and 6000.5 (alpha) have no final (f1) release yet, so
+          # GameCI has no editor image for them. Re-add the lines below once Unity
+          # ships their finals AND GameCI publishes images:
+          #   "6000.5.xf1",
+          #   "6000.4.xf1",
+          "6000.3.11f1",
+          "6000.2.15f1",
+          "6000.1.9f1",
           "6000.0.53f1",
           "2022.1.24f1",
           "2020.3.48f1",
-          "2019.4.40f1",
-          "2018.4.36f1"
+          "2019.4.40f1"
         ]
 
     steps:
@@ -30,10 +40,9 @@ jobs:
         with:
           lfs: true
 
-      # GameCI's packageMode requires the package being tested to live in a
-      # subdirectory, NOT at the repository root. Our repo root *is* the package,
-      # so copy it into a subfolder for the test runner to point at. We copy
-      # (rather than move) to leave .git intact at the root.
+      # packageMode requires the package being tested to live in a subdirectory,
+      # NOT at the repository root. Our repo root *is* the package, so copy it
+      # into a subfolder. We copy (rather than move) to leave .git intact.
       - name: Stage package into subdirectory
         run: |
           mkdir -p ci-package
@@ -77,4 +86,71 @@ jobs:
         with:
           name: Unity ${{ matrix.unity-version }}
           path: artifacts-${{ matrix.unity-version }}
+          retention-days: 5
+
+  # Legacy path: Unity 2018.4 predates the Unity Test Framework UPM package, so
+  # packageMode cannot resolve a test runner for it. Instead build a real host
+  # project from the GameCI legacy template and import ThunderKit as a package.
+  test-legacy-2018:
+    name: Test (Unity 2018.4.36f1)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Unity test project from legacy template
+        run: |
+          # ThunderKit is a package; build a host project to import it into.
+          # Clone the GameCI test project template and move ThunderKit package
+          # into the test project's Packages folder.
+          git clone --depth=1 https://github.com/game-ci/unity-actions.git temp-unity-actions
+          cp -r temp-unity-actions/test-projects/2018.3-legacy-render-pipeline/. UnityTestProject/
+          rm -rf temp-unity-actions
+
+          # Remove the sample tests from the GameCI template
+          rm -rf UnityTestProject/Assets/Tests*
+
+          # Copy ThunderKit package into the test project's Packages folder
+          mkdir -p UnityTestProject/Packages/com.passivepicasso.thunderkit
+          rsync -a --exclude 'UnityTestProject' ./ UnityTestProject/Packages/com.passivepicasso.thunderkit/
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: UnityTestProject/Library
+          key: Library-2018.4.36f1-${{ hashFiles('UnityTestProject/Packages/**/*.cs', 'UnityTestProject/Packages/**/package.json') }}
+          restore-keys: |
+            Library-2018.4.36f1-
+
+      - name: Run EditMode tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          testMode: EditMode
+          unityVersion: 2018.4.36f1
+          projectPath: UnityTestProject
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          artifactsPath: artifacts-2018.4.36f1
+          checkName: Unity 2018.4.36f1 Test Results
+
+      - name: Report test results
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: Unity 2018.4.36f1
+          path: artifacts-2018.4.36f1/*.xml
+          reporter: dotnet-nunit
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Unity 2018.4.36f1
+          path: artifacts-2018.4.36f1
           retention-days: 5
