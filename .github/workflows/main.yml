@@ -20,11 +20,8 @@ jobs:
       fail-fast: false # one Unity version failing must not cancel the others
       matrix:
         unity-version: [
-          # 6000.4 (beta) and 6000.5 (alpha) have no final (f1) release yet, so
-          # GameCI has no editor image for them. Re-add the lines below once Unity
-          # ships their finals AND GameCI publishes images:
-          #   "6000.5.xf1",
-          #   "6000.4.xf1",
+          "6000.5.0f1",
+          "6000.4.5f1",
           "6000.3.11f1",
           "6000.2.15f1",
           "6000.1.9f1",
