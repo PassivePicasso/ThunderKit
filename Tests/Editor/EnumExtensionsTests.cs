@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using NUnit.Framework;
 using ThunderKit.Common;
 
@@ -9,7 +8,9 @@ namespace ThunderKitTests
     {
         enum SampleEnum
         {
-            [Description("A friendly description")]
+            // Fully qualified: NUnit also defines a DescriptionAttribute, and
+            // EnumExtensions.GetDescription reads the System.ComponentModel one.
+            [System.ComponentModel.Description("A friendly description")]
             Described,
             Undescribed
         }
