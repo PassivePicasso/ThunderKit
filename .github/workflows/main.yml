@@ -1,0 +1,80 @@
+name: CI pipeline
+
+on:
+  workflow_dispatch: # Allow running the workflow manually from the GitHub UI
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  test:
+    name: Test (Unity ${{ matrix.unity-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # one Unity version failing must not cancel the others
+      matrix:
+        unity-version: [
+          "6000.0.53f1",
+          "2022.1.24f1",
+          "2020.3.48f1",
+          "2019.4.40f1",
+          "2018.4.36f1"
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # GameCI's packageMode requires the package being tested to live in a
+      # subdirectory, NOT at the repository root. Our repo root *is* the package,
+      # so copy it into a subfolder for the test runner to point at. We copy
+      # (rather than move) to leave .git intact at the root.
+      - name: Stage package into subdirectory
+        run: |
+          mkdir -p ci-package
+          rsync -a --exclude 'ci-package' --exclude '.git' ./ ci-package/
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: ci-package/Library
+          key: Library-${{ matrix.unity-version }}-${{ hashFiles('ci-package/**/*.cs', 'ci-package/package.json') }}
+          restore-keys: |
+            Library-${{ matrix.unity-version }}-
+
+      - name: Run EditMode tests
+        id: tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          packageMode: true
+          projectPath: ci-package
+          unityVersion: ${{ matrix.unity-version }}
+          testMode: EditMode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          artifactsPath: artifacts-${{ matrix.unity-version }}
+          checkName: Unity ${{ matrix.unity-version }} Test Results
+
+      - name: Report test results
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: Unity ${{ matrix.unity-version }}
+          path: artifacts-${{ matrix.unity-version }}/*.xml
+          reporter: dotnet-nunit
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Unity ${{ matrix.unity-version }}
+          path: artifacts-${{ matrix.unity-version }}
+          retention-days: 5
