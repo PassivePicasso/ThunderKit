@@ -68,6 +68,14 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           artifactsPath: artifacts-${{ matrix.unity-version }}
           checkName: Unity ${{ matrix.unity-version }} Test Results
+          # Disable code coverage. This workflow never consumes coverage output
+          # (only the NUnit XML is reported), and GameCI's pinned codecoverage
+          # package uses the non-generic TreeView API, which Unity 6000.5.0f1 made
+          # an error-level obsolete (CS0619) -> the coverage assembly fails to
+          # compile and no tests run. Empty coverageOptions stops GameCI enabling
+          # coverage and injecting that package. Removes the same latent break from
+          # every matrix entry, since newer Unity patches will flip the same obsolete.
+          coverageOptions: ''
 
       - name: Report test results
         uses: dorny/test-reporter@v2
@@ -135,6 +143,10 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           artifactsPath: artifacts-2018.4.36f1
           checkName: Unity 2018.4.36f1 Test Results
+          # Disable code coverage for the same reasons as the modern job above:
+          # the coverage output is never consumed, and disabling avoids injecting
+          # the codecoverage package at all.
+          coverageOptions: ''
 
       - name: Report test results
         uses: dorny/test-reporter@v2
