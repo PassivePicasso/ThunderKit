@@ -1,3 +1,46 @@
+## 9.3.3
+
+### Fixes
+
+* Added Unity 6000.5 (Unity 6.5 beta) compatibility for the `EntityId`
+  API that replaces `int` instance IDs in several Editor APIs
+  * `SelfDestructingActionAsset` now derives from `AssetCreationEndAction`
+    with an `EntityId`-based `Action` on Unity 6000.5+ (and keeps the
+    `EndNameEditAction` / `int` path on older versions); the class is now
+    `public`
+  * Asset-creation callbacks in `ScriptableHelper`, `TemplatedWindow`,
+    `MarkdownStatic`, and `DocumentationHelpers` use `EntityId` and pass
+    `default` / `GetEntityId()` to
+    `ProjectWindowUtil.StartNameEditingIfProjectWindowExists`
+  * `PipelineLogWindow.OnOpen` adds an `EntityId` overload backed by
+    `EditorUtility.EntityIdToObject`
+  * `TransformHierarchyTreeView` switches to the generic
+    `TreeView<EntityId>` / `TreeViewState<EntityId>` /
+    `TreeViewItem<EntityId>` types on Unity 6000.5+
+* Fixed an invalid `#` selector in `AddressableBrowser.uss` by replacing
+  it with the intended `VisualElement` selector
+
+### Continuous Integration
+
+* Restored the automated GitHub Actions CI pipeline that runs the EditMode
+  test suite on every push and pull request
+  * Tests run across a Unity version matrix covering 2018.4.36f1 (legacy
+    job), 2022.1.24f1, and the 6000 line (6000.0.53f1, 6000.1.9f1,
+    6000.2.15f1, 6000.3.11f1, 6000.4.5f1, and 6000.5.0f1)
+  * Unity 6000.5.0f1 runs in a dedicated job with pinned code coverage to
+    avoid the compilation errors seen with the default package
+* Expanded the EditMode unit test suite covering `ComposableObject`,
+  `Constant`, `ManifestName`, `StageThunderstoreManifest`, `PackageGroup`,
+  `PackageHelper`, `PackageVersion`, `PathExtensions`, `PathReference`,
+  `EnumExtensions`, `FileIdUtil`, `SelfDestructingActionAsset`, and
+  `UnityPathUtility`
+
+### Community Contributions
+
+* Thanks to @cheese3660 for the Unity 6.5 beta `EntityId` compatibility
+  work (#116)
+* Thanks to @VetleNeumann for the original setup of the unit-tests that lead to this expansion and reimplementation
+
 ## 9.3.2
 
 ### Fixes
