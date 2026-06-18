@@ -1,4 +1,4 @@
-# {
+VisualElement {
     -unity-font: url('/Packages/com.passivepicasso.thunderkit/Editor/ThirdParty/CascadiaCode/otf/static/CascadiaMono-Regular.otf');
 }
 

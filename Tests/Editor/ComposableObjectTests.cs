@@ -4,6 +4,7 @@ using ThunderKit.Core;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace ThunderKitTests
 {
