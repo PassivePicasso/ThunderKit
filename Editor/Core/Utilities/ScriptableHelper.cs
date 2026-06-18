@@ -33,8 +33,20 @@ namespace ThunderKit.Core.Utilities
             }
             var name = typeof(T).Name;
             string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath($"{path}/{name}.asset");
+            #if UNITY_6000_5_OR_NEWER
+            Action<EntityId, string, string> action =
+            #else
             Action<int, string, string> action =
-                (int instanceId, string pathname, string resourceFile) =>
+            #endif
+                (
+                    #if UNITY_6000_5_OR_NEWER
+                    EntityId instanceId,
+                    #else
+                    int instanceId,
+                    #endif
+                    string pathname, 
+                    string resourceFile
+                ) =>
                   {
                       AssetDatabase.CreateAsset(asset, pathname);
                       AssetDatabase.SaveAssets();
@@ -48,7 +60,13 @@ namespace ThunderKit.Core.Utilities
             var findTexture = typeof(EditorGUIUtility).GetMethod(nameof(EditorGUIUtility.FindTexture), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
             findTextureParams[0] = typeof(T);
             var icon = (Texture2D)findTexture.Invoke(null, findTextureParams);
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(asset.GetInstanceID(), endAction, assetPathAndName, icon, null);
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
+                #if UNITY_6000_5_OR_NEWER
+                asset.GetEntityId(),
+                #else
+                asset.GetInstanceID(),
+                #endif
+                endAction, assetPathAndName, icon, null);
         }
 
         /// <summary>
