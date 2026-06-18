@@ -4,6 +4,7 @@
         "ThunderKit.Core",
         "ThunderKit.Common",
         "ThunderKit.Markdown",
+        "ThunderKit.Thunderstore",
         "nunit.framework"
     ],
     "optionalUnityReferences": [
