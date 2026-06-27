@@ -15,8 +15,10 @@
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "AssetsTools.NET.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": []
 }

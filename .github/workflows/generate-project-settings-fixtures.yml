@@ -1,0 +1,133 @@
+name: Generate ProjectSettings fixtures
+
+# Manually-triggered, one-time (or occasional) generation of the per-Unity-version
+# globalgamemanagers fixtures consumed by ImportProjectSettingsTests. Each matrix
+# version builds a throwaway empty player, extracts the globalgamemanagers it
+# produced, and a final job commits them all (via Git LFS) under
+# Tests/Editor/Fixtures/GlobalGameManagers/<version>/.
+#
+# The regular test matrix (main.yml) never builds anything — it only consumes the
+# fixtures committed here.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build globalgamemanagers (Unity ${{ matrix.unity-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # one version failing must not cancel the others
+      # Keep in sync with the test matrix in main.yml.
+      matrix:
+        unity-version: [
+          "6000.5.0f1",
+          "6000.4.5f1",
+          "6000.3.11f1",
+          "6000.2.15f1",
+          "6000.1.9f1",
+          "6000.0.53f1",
+          "2022.1.24f1",
+          "2020.3.48f1",
+          "2019.4.40f1",
+          "2018.4.36f1"
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Minimal empty project: just enough to build a player. ThunderKit is NOT
+      # embedded — globalgamemanagers is engine/project settings, independent of any
+      # installed package, so an empty project yields a clean, representative file
+      # and avoids depending on ThunderKit compiling on every matrix version.
+      - name: Scaffold empty build project
+        run: |
+          mkdir -p BuildProject/Assets/Editor
+          mkdir -p BuildProject/ProjectSettings
+          mkdir -p BuildProject/Packages
+
+          cp .github/fixtures/FixtureBuilder.cs BuildProject/Assets/Editor/FixtureBuilder.cs
+          printf 'm_EditorVersion: ${{ matrix.unity-version }}\n' > BuildProject/ProjectSettings/ProjectVersion.txt
+          printf '{\n  "dependencies": {}\n}\n' > BuildProject/Packages/manifest.json
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: BuildProject/Library
+          key: GenLibrary-${{ matrix.unity-version }}-${{ hashFiles('.github/fixtures/FixtureBuilder.cs') }}
+          restore-keys: |
+            GenLibrary-${{ matrix.unity-version }}-
+
+      - name: Build empty player and extract globalgamemanagers
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: ${{ matrix.unity-version }}
+          targetPlatform: StandaloneLinux64
+          projectPath: BuildProject
+          # FixtureBuilder does its own BuildPlayer + extraction, then EditorApplication.Exit.
+          buildMethod: FixtureBuilder.Build
+          # The project is mutated at build time (temporary scene), so allow it.
+          allowDirtyBuild: true
+
+      - name: Stage fixture for upload
+        run: |
+          test -f BuildProject/Fixture/globalgamemanagers || { echo "No globalgamemanagers produced"; exit 1; }
+          mkdir -p staged
+          cp -r BuildProject/Fixture staged/${{ matrix.unity-version }}
+          ls -la staged/${{ matrix.unity-version }}
+
+      - name: Upload fixture artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fixture-${{ matrix.unity-version }}
+          path: staged/${{ matrix.unity-version }}
+          if-no-files-found: error
+          retention-days: 5
+
+  commit:
+    name: Commit generated fixtures
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download all fixture artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: incoming
+          pattern: fixture-*
+
+      - name: Place fixtures
+        run: |
+          dest="Tests/Editor/Fixtures/GlobalGameManagers"
+          mkdir -p "$dest"
+          # download-artifact lays each artifact down as incoming/fixture-<version>/...
+          for d in incoming/fixture-*; do
+            version="${d#incoming/fixture-}"
+            mkdir -p "$dest/$version"
+            cp "$d/globalgamemanagers" "$dest/$version/globalgamemanagers"
+            cp "$d/fixture.json" "$dest/$version/fixture.json"
+          done
+          find "$dest" -type f | sort
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git lfs install --local
+          git add Tests/Editor/Fixtures/GlobalGameManagers
+          if git diff --cached --quiet; then
+            echo "No fixture changes to commit."
+            exit 0
+          fi
+          git commit -m "test: regenerate ProjectSettings import fixtures (globalgamemanagers per Unity version)"
+          git push origin HEAD:${{ github.ref_name }}

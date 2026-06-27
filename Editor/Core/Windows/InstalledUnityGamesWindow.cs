@@ -21,16 +21,25 @@ namespace ThunderKit.Core.Windows
     /// </summary>
     public class InstalledUnityGamesWindow : EditorWindow
     {
+        enum Backend { Unknown, Mono, Il2Cpp }
+        // None: no Addressables. Json: catalog.json (importable). Binary: catalog.bin (not yet supported).
+        enum Catalog { None, Json, Binary }
+
         class GameInfo
         {
             public string Name;
             public string Version;     // full player version, e.g. "2021.3.33f1", or "unknown"
             public string Path;
             public bool Matches;       // major.minor.patch matches the running Editor
-            public bool Supported;     // built with Unity 2018.4 or newer
+            public Backend Backend;
+            public Catalog Catalog;
+            public bool Supported;     // no blocking caveats (see BuildCaveats)
+            public string Caveats;     // newline-joined reasons it isn't fully supported, or null
         }
 
-        const string UnsupportedTooltip = "Unity version not supported by ThunderKit.";
+        const string UnsupportedVersionCaveat = "Unity version not supported by ThunderKit.";
+        const string Il2CppCaveat = "IL2CPP scripting backend is not supported by ThunderKit.";
+        const string BinaryCatalogCaveat = "Binary Addressables catalog is not supported by ThunderKit (JSON only).";
 
         // Trims a Unity version down to major.minor.patch (drops the fXX suffix).
         static readonly Regex VersionTrim = new Regex(@"(\d{1,4}\.\d+\.\d+)(.*)");
@@ -48,7 +57,7 @@ namespace ThunderKit.Core.Windows
         {
             var window = GetWindow<InstalledUnityGamesWindow>();
             window.titleContent = new GUIContent("Unity Games");
-            window.minSize = new Vector2(520, 300);
+            window.minSize = new Vector2(660, 300);
             window.Scan();
             window.Show();
         }
@@ -100,13 +109,19 @@ namespace ThunderKit.Core.Windows
 
                         var name = MatchGroup(text, "\"name\"\\s+\"([^\"]+)\"");
                         var trimmed = VersionTrim.Replace(version, m => m.Groups[1].Value);
+                        var backend = DetectBackend(gameDir);
+                        var catalog = DetectCatalog(gameDir);
+                        var caveats = BuildCaveats(version, backend, catalog);
                         found.Add(new GameInfo
                         {
                             Name = string.IsNullOrEmpty(name) ? installdir : name,
                             Version = version,
                             Path = gameDir,
                             Matches = version != "unknown" && trimmed == editorVersion,
-                            Supported = IsSupported(version),
+                            Backend = backend,
+                            Catalog = catalog,
+                            Supported = string.IsNullOrEmpty(caveats),
+                            Caveats = caveats,
                         });
                     }
                 }
@@ -116,8 +131,11 @@ namespace ThunderKit.Core.Windows
                     .OrderByDescending(g => g.Matches)
                     .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
                     .ToList();
-                status = string.Format("{0} Unity game(s) found ({1} matching this Editor, {2} unsupported).",
-                    games.Count, games.Count(g => g.Matches), games.Count(g => !g.Supported));
+                status = string.Format("{0} Unity game(s) found ({1} matching this Editor, {2} IL2CPP, {3} unsupported).",
+                    games.Count,
+                    games.Count(g => g.Matches),
+                    games.Count(g => g.Backend == Backend.Il2Cpp),
+                    games.Count(g => !g.Supported));
             }
             catch (Exception e)
             {
@@ -151,6 +169,8 @@ namespace ThunderKit.Core.Windows
                 GUILayout.Label("Game", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
                 GUILayout.Label("Unity Version", EditorStyles.boldLabel, GUILayout.Width(110));
+                GUILayout.Label("Backend", EditorStyles.boldLabel, GUILayout.Width(60));
+                GUILayout.Label("Addressables", EditorStyles.boldLabel, GUILayout.Width(90));
                 GUILayout.Label("", GUILayout.Width(60));
             }
 
@@ -174,11 +194,20 @@ namespace ThunderKit.Core.Windows
                         EditorGUI.DrawRect(row, matchTint);
                 }
 
-                var tooltip = game.Supported ? null : UnsupportedTooltip;
+                var tooltip = game.Caveats;
                 var nameStyle = game.Matches ? EditorStyles.boldLabel : EditorStyles.label;
                 GUILayout.Label(new GUIContent(game.Name, tooltip), nameStyle);
                 GUILayout.FlexibleSpace();
                 GUILayout.Label(new GUIContent(game.Version, tooltip), nameStyle, GUILayout.Width(110));
+
+                var backendText = BackendLabel(game.Backend);
+                var backendTip = game.Backend == Backend.Il2Cpp ? Il2CppCaveat : null;
+                GUILayout.Label(new GUIContent(backendText, backendTip), nameStyle, GUILayout.Width(60));
+
+                var catalogText = CatalogLabel(game.Catalog);
+                var catalogTip = game.Catalog == Catalog.Binary ? BinaryCatalogCaveat : null;
+                GUILayout.Label(new GUIContent(catalogText, catalogTip), nameStyle, GUILayout.Width(90));
+
                 if (GUILayout.Button("Open", EditorStyles.miniButton, GUILayout.Width(60)))
                     EditorUtility.RevealInFinder(game.Path);
 
@@ -383,6 +412,92 @@ namespace ThunderKit.Core.Windows
         {
             var m = Regex.Match(input, pattern);
             return m.Success ? m.Groups[1].Value : null;
+        }
+
+        // IL2CPP games ship a GameAssembly native module at the game root and an
+        // il2cpp_data folder inside *_Data. Mono games keep their managed assemblies
+        // in *_Data/Managed. When neither signature is present we report Unknown
+        // rather than guessing.
+        static Backend DetectBackend(string gameDir)
+        {
+            if (File.Exists(Path.Combine(gameDir, "GameAssembly.dll"))
+             || File.Exists(Path.Combine(gameDir, "GameAssembly.so"))
+             || File.Exists(Path.Combine(gameDir, "GameAssembly.dylib")))
+                return Backend.Il2Cpp;
+
+            string[] dataDirs = SafeGetDirectories(gameDir, "*_Data");
+            foreach (var data in dataDirs)
+                if (Directory.Exists(Path.Combine(data, "il2cpp_data")))
+                    return Backend.Il2Cpp;
+
+            foreach (var data in dataDirs)
+            {
+                var managed = Path.Combine(data, "Managed");
+                if (Directory.Exists(managed) && SafeGetFiles(managed, "*.dll").Length > 0)
+                    return Backend.Mono;
+            }
+
+            return Backend.Unknown;
+        }
+
+        // Addressables content lives in *_Data/StreamingAssets/aa. A catalog.bin is
+        // produced by the newer binary catalog format; catalog.json by the classic
+        // (and only currently importable) JSON format. Hash-suffixed names such as
+        // catalog_1234.json are also matched.
+        static Catalog DetectCatalog(string gameDir)
+        {
+            foreach (var data in SafeGetDirectories(gameDir, "*_Data"))
+            {
+                var aa = Path.Combine(Path.Combine(data, "StreamingAssets"), "aa");
+                if (!Directory.Exists(aa))
+                    continue;
+                if (SafeGetFiles(aa, "catalog*.json").Length > 0)
+                    return Catalog.Json;
+                if (SafeGetFiles(aa, "catalog*.bin").Length > 0)
+                    return Catalog.Binary;
+            }
+            return Catalog.None;
+        }
+
+        static string BackendLabel(Backend backend)
+        {
+            switch (backend)
+            {
+                case Backend.Mono: return "Mono";
+                case Backend.Il2Cpp: return "IL2CPP";
+                default: return "?";
+            }
+        }
+
+        static string CatalogLabel(Catalog catalog)
+        {
+            switch (catalog)
+            {
+                case Catalog.Json: return "JSON";
+                case Catalog.Binary: return "Binary";
+                default: return "—";
+            }
+        }
+
+        // Collects every reason the game isn't fully supported by ThunderKit, one
+        // per line, for use as both the row tooltip and the Supported flag. Returns
+        // null when there are no caveats.
+        static string BuildCaveats(string version, Backend backend, Catalog catalog)
+        {
+            var caveats = new List<string>();
+            if (!IsSupported(version))
+                caveats.Add(UnsupportedVersionCaveat);
+            if (backend == Backend.Il2Cpp)
+                caveats.Add(Il2CppCaveat);
+            if (catalog == Catalog.Binary)
+                caveats.Add(BinaryCatalogCaveat);
+            return caveats.Count == 0 ? null : string.Join("\n", caveats);
+        }
+
+        static string[] SafeGetDirectories(string dir, string pattern)
+        {
+            try { return Directory.GetDirectories(dir, pattern); }
+            catch { return new string[0]; }
         }
 
         // True unless the version is demonstrably older than Unity 2018.4.

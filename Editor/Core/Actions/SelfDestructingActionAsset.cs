@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ThunderKit.Core.Actions
 {
-    #if UNITY_6000_5_OR_NEWER
+    #if UNITY_6000_4_OR_NEWER
     public class SelfDestructingActionAsset : AssetCreationEndAction
     {
         public Action<EntityId, string, string> action;

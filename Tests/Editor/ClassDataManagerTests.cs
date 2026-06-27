@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using AssetsTools.NET.Extra;
 using NUnit.Framework;
 using ThunderKit.Core.Utilities;
 
@@ -136,6 +138,63 @@ namespace ThunderKitTests
         public void TryParseUnityVersion_InvalidStrings_ReturnFalse(string version)
         {
             Assert.That(ClassDataManager.TryParseUnityVersion(version, out _, out _, out _), Is.False);
+        }
+
+        // --- Closest-version selection within the tpk ---
+
+        static List<UnityVersion> Versions(params string[] versions)
+        {
+            var list = new List<UnityVersion>();
+            foreach (var v in versions)
+                list.Add(new UnityVersion(v));
+            return list;
+        }
+
+        static string Format(UnityVersion v) => v == null ? "<null>" : $"{v.major}.{v.minor}.{v.patch}";
+
+        [Test]
+        public void SelectBestVersion_ExactMatch_ReturnsExact()
+        {
+            var best = ClassDataManager.SelectBestVersion(
+                Versions("2019.4.40f1", "2021.3.16f1", "6000.0.42f1"), 2021, 3, 16);
+
+            Assert.That(Format(best), Is.EqualTo("2021.3.16"));
+        }
+
+        [Test]
+        public void SelectBestVersion_NoExact_PrefersNewestAtOrBelow()
+        {
+            // 2021.3.5 is not present; the additive type tree means the schema as of the
+            // newest entry at or before it (2021.3.0) is the correct choice.
+            var best = ClassDataManager.SelectBestVersion(
+                Versions("2021.3.0f1", "2021.3.16f1"), 2021, 3, 5);
+
+            Assert.That(Format(best), Is.EqualTo("2021.3.0"));
+        }
+
+        [Test]
+        public void SelectBestVersion_TargetNewerThanAll_ReturnsNewestAvailable()
+        {
+            var best = ClassDataManager.SelectBestVersion(
+                Versions("2019.4.40f1", "2021.3.16f1"), 6000, 0, 42);
+
+            Assert.That(Format(best), Is.EqualTo("2021.3.16"));
+        }
+
+        [Test]
+        public void SelectBestVersion_TargetOlderThanAll_FallsBackToOldest()
+        {
+            var best = ClassDataManager.SelectBestVersion(
+                Versions("2021.3.16f1", "6000.0.42f1"), 2018, 4, 0);
+
+            Assert.That(Format(best), Is.EqualTo("2021.3.16"));
+        }
+
+        [Test]
+        public void SelectBestVersion_EmptyOrNull_ReturnsNull()
+        {
+            Assert.That(ClassDataManager.SelectBestVersion(new List<UnityVersion>(), 2021, 3, 16), Is.Null);
+            Assert.That(ClassDataManager.SelectBestVersion(null, 2021, 3, 16), Is.Null);
         }
 
         // --- Attempt-marker parsing ---

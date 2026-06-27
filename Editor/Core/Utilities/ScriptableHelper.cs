@@ -33,13 +33,13 @@ namespace ThunderKit.Core.Utilities
             }
             var name = typeof(T).Name;
             string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath($"{path}/{name}.asset");
-            #if UNITY_6000_5_OR_NEWER
+            #if UNITY_6000_4_OR_NEWER
             Action<EntityId, string, string> action =
             #else
             Action<int, string, string> action =
             #endif
                 (
-                    #if UNITY_6000_5_OR_NEWER
+                    #if UNITY_6000_4_OR_NEWER
                     EntityId instanceId,
                     #else
                     int instanceId,
@@ -61,7 +61,7 @@ namespace ThunderKit.Core.Utilities
             findTextureParams[0] = typeof(T);
             var icon = (Texture2D)findTexture.Invoke(null, findTextureParams);
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
-                #if UNITY_6000_5_OR_NEWER
+                #if UNITY_6000_4_OR_NEWER
                 asset.GetEntityId(),
                 #else
                 asset.GetInstanceID(),
