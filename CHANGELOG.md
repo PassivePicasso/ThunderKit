@@ -1,3 +1,13 @@
+## 9.4.2
+
+### Fixes
+
+* `ImportProjectSettings` now resolves class data against the Unity version that
+  built the game read from `globalgamemanagers` metadata — rather than the
+  running Editor version, so a mismatched Editor patch release no longer corrupts
+  version-sensitive settings such as `PlayerSettings`
+  it should be noted that using mismatched editor and game versions is still unsupported and resolving a mismatch is the first step in trying to fix problems. Mismatched imports can reuslt in data loss for PlayerSettings.
+
 ## 9.4.1
 
 ### New Features
