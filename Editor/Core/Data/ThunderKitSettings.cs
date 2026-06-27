@@ -82,16 +82,22 @@ namespace ThunderKit.Core.Data
                     var fileName = Path.GetFileName(file).Replace("\\", "/");
                     var outputPath = Combine("Library", "ScriptAssemblies", fileName);
 
-                    try
+                    // Clear the read-only flag so ReplaceFile can overwrite. Only when
+                    // the target already exists - GetAttributes throws on a missing path,
+                    // which is the normal case the first time a package assembly is copied.
+                    if (File.Exists(outputPath))
                     {
-                        var attributes = File.GetAttributes(outputPath);
-                        if (attributes.HasFlag(FileAttributes.ReadOnly))
-                            File.SetAttributes(outputPath, FileAttributes.Normal);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning(ex);
-                        /*We don't care about the exceptions, if it fails it fails for reasons that mean we don't need to execute the code*/
+                        try
+                        {
+                            var attributes = File.GetAttributes(outputPath);
+                            if (attributes.HasFlag(FileAttributes.ReadOnly))
+                                File.SetAttributes(outputPath, FileAttributes.Normal);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogWarning(ex);
+                            /*We don't care about the exceptions, if it fails it fails for reasons that mean we don't need to execute the code*/
+                        }
                     }
                     FileUtil.ReplaceFile(file, outputPath);
                     File.SetAttributes(outputPath, FileAttributes.ReadOnly);

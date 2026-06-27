@@ -76,6 +76,15 @@ namespace ThunderKit.Core.Config
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var packageName = Path.GetFileNameWithoutExtension(settings.GameExecutable);
 
+            // No managed assemblies to import - e.g. an IL2CPP game, whose types are
+            // recovered as stubs by ImportIl2CppStubs instead. Skip rather than throw
+            // (a missing Managed folder would otherwise abort the whole import).
+            if (!Directory.Exists(settings.ManagedAssembliesPath))
+            {
+                Debug.Log($"No managed assemblies found at {settings.ManagedAssembliesPath}; skipping {nameof(ImportAssemblies)}.");
+                return true;
+            }
+
             AssertDestinations(packageName);
 
             try

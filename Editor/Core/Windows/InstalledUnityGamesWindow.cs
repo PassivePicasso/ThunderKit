@@ -24,6 +24,14 @@ namespace ThunderKit.Core.Windows
         enum Backend { Unknown, Mono, Il2Cpp }
         // None: no Addressables. Json: catalog.json (importable). Binary: catalog.bin (not yet supported).
         enum Catalog { None, Json, Binary }
+        // NotApplicable: not an IL2CPP game. Missing: global-metadata.dat absent.
+        // Unreadable: present but encrypted/obfuscated/unrecognised header. Readable:
+        // valid header, so the game's types can be recovered into editor stub assemblies.
+        enum Il2CppMetadata { NotApplicable, Missing, Unreadable, Readable }
+        // Supported: ThunderKit's standard Mono path. Experimental: an IL2CPP game whose
+        // types are recoverable, so authoring against them is possible but unproven.
+        // Unsupported: a blocking caveat prevents targeting it at all.
+        enum Compatibility { Supported, Experimental, Unsupported }
 
         class GameInfo
         {
@@ -33,13 +41,19 @@ namespace ThunderKit.Core.Windows
             public bool Matches;       // major.minor.patch matches the running Editor
             public Backend Backend;
             public Catalog Catalog;
-            public bool Supported;     // no blocking caveats (see BuildCaveats)
-            public string Caveats;     // newline-joined reasons it isn't fully supported, or null
+            public Il2CppMetadata Metadata;
+            public Compatibility Compatibility;
+            public string Caveats;     // newline-joined notes (tooltip), or null
         }
 
         const string UnsupportedVersionCaveat = "Unity version not supported by ThunderKit.";
-        const string Il2CppCaveat = "IL2CPP scripting backend is not supported by ThunderKit.";
+        const string Il2CppExperimentalCaveat = "IL2CPP backend (experimental): the game's types are recovered from readable IL2CPP metadata for authoring.";
+        const string Il2CppMetadataMissingCaveat = "IL2CPP metadata (global-metadata.dat) not found; the game's types cannot be recovered.";
+        const string Il2CppMetadataObfuscatedCaveat = "IL2CPP metadata is encrypted or obfuscated; the game's types cannot be recovered.";
         const string BinaryCatalogCaveat = "Binary Addressables catalog is not supported by ThunderKit (JSON only).";
+
+        // global-metadata.dat begins with this magic when it is neither encrypted nor obfuscated.
+        const uint Il2CppMetadataMagic = 0xFAB11BAF;
 
         // Trims a Unity version down to major.minor.patch (drops the fXX suffix).
         static readonly Regex VersionTrim = new Regex(@"(\d{1,4}\.\d+\.\d+)(.*)");
@@ -57,7 +71,7 @@ namespace ThunderKit.Core.Windows
         {
             var window = GetWindow<InstalledUnityGamesWindow>();
             window.titleContent = new GUIContent("Unity Games");
-            window.minSize = new Vector2(660, 300);
+            window.minSize = new Vector2(760, 300);
             window.Scan();
             window.Show();
         }
@@ -111,7 +125,9 @@ namespace ThunderKit.Core.Windows
                         var trimmed = VersionTrim.Replace(version, m => m.Groups[1].Value);
                         var backend = DetectBackend(gameDir);
                         var catalog = DetectCatalog(gameDir);
-                        var caveats = BuildCaveats(version, backend, catalog);
+                        var metadata = DetectIl2CppMetadata(gameDir, backend);
+                        string caveats;
+                        var compatibility = Classify(version, backend, catalog, metadata, out caveats);
                         found.Add(new GameInfo
                         {
                             Name = string.IsNullOrEmpty(name) ? installdir : name,
@@ -120,22 +136,26 @@ namespace ThunderKit.Core.Windows
                             Matches = version != "unknown" && trimmed == editorVersion,
                             Backend = backend,
                             Catalog = catalog,
-                            Supported = string.IsNullOrEmpty(caveats),
+                            Metadata = metadata,
+                            Compatibility = compatibility,
                             Caveats = caveats,
                         });
                     }
                 }
 
-                // Matches first, then alphabetical.
+                // Targetable games (supported/experimental) first, then Editor matches,
+                // then alphabetical. Unsupported games sink to the bottom.
                 games = found
-                    .OrderByDescending(g => g.Matches)
+                    .OrderBy(g => g.Compatibility == Compatibility.Unsupported ? 1 : 0)
+                    .ThenByDescending(g => g.Matches)
                     .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
                     .ToList();
-                status = string.Format("{0} Unity game(s) found ({1} matching this Editor, {2} IL2CPP, {3} unsupported).",
+                status = string.Format("{0} Unity game(s): {1} match this Editor, {2} supported, {3} experimental IL2CPP target(s), {4} unsupported.",
                     games.Count,
                     games.Count(g => g.Matches),
-                    games.Count(g => g.Backend == Backend.Il2Cpp),
-                    games.Count(g => !g.Supported));
+                    games.Count(g => g.Compatibility == Compatibility.Supported),
+                    games.Count(g => g.Compatibility == Compatibility.Experimental),
+                    games.Count(g => g.Compatibility == Compatibility.Unsupported));
             }
             catch (Exception e)
             {
@@ -171,12 +191,16 @@ namespace ThunderKit.Core.Windows
                 GUILayout.Label("Unity Version", EditorStyles.boldLabel, GUILayout.Width(110));
                 GUILayout.Label("Backend", EditorStyles.boldLabel, GUILayout.Width(60));
                 GUILayout.Label("Addressables", EditorStyles.boldLabel, GUILayout.Width(90));
+                GUILayout.Label("Target", EditorStyles.boldLabel, GUILayout.Width(95));
                 GUILayout.Label("", GUILayout.Width(60));
             }
 
             var matchTint = EditorGUIUtility.isProSkin
                 ? new Color(0.22f, 0.40f, 0.22f)
                 : new Color(0.74f, 0.92f, 0.74f);
+            var experimentalTint = EditorGUIUtility.isProSkin
+                ? new Color(0.45f, 0.38f, 0.16f)
+                : new Color(0.97f, 0.90f, 0.66f);
             var unsupportedTint = EditorGUIUtility.isProSkin
                 ? new Color(0.45f, 0.20f, 0.20f)
                 : new Color(0.95f, 0.78f, 0.78f);
@@ -187,9 +211,13 @@ namespace ThunderKit.Core.Windows
                 var row = EditorGUILayout.BeginHorizontal();
                 if (Event.current.type == EventType.Repaint)
                 {
-                    // Unsupported (red) takes precedence over an Editor match (green).
-                    if (!game.Supported)
+                    // Unsupported (red) takes precedence over an experimental IL2CPP
+                    // target (amber), which in turn takes precedence over an Editor
+                    // version match (green).
+                    if (game.Compatibility == Compatibility.Unsupported)
                         EditorGUI.DrawRect(row, unsupportedTint);
+                    else if (game.Compatibility == Compatibility.Experimental)
+                        EditorGUI.DrawRect(row, experimentalTint);
                     else if (game.Matches)
                         EditorGUI.DrawRect(row, matchTint);
                 }
@@ -201,12 +229,13 @@ namespace ThunderKit.Core.Windows
                 GUILayout.Label(new GUIContent(game.Version, tooltip), nameStyle, GUILayout.Width(110));
 
                 var backendText = BackendLabel(game.Backend);
-                var backendTip = game.Backend == Backend.Il2Cpp ? Il2CppCaveat : null;
-                GUILayout.Label(new GUIContent(backendText, backendTip), nameStyle, GUILayout.Width(60));
+                GUILayout.Label(new GUIContent(backendText, tooltip), nameStyle, GUILayout.Width(60));
 
                 var catalogText = CatalogLabel(game.Catalog);
                 var catalogTip = game.Catalog == Catalog.Binary ? BinaryCatalogCaveat : null;
                 GUILayout.Label(new GUIContent(catalogText, catalogTip), nameStyle, GUILayout.Width(90));
+
+                GUILayout.Label(new GUIContent(CompatibilityLabel(game.Compatibility), tooltip), nameStyle, GUILayout.Width(95));
 
                 if (GUILayout.Button("Open", EditorStyles.miniButton, GUILayout.Width(60)))
                     EditorUtility.RevealInFinder(game.Path);
@@ -479,19 +508,104 @@ namespace ThunderKit.Core.Windows
             }
         }
 
-        // Collects every reason the game isn't fully supported by ThunderKit, one
-        // per line, for use as both the row tooltip and the Supported flag. Returns
-        // null when there are no caveats.
-        static string BuildCaveats(string version, Backend backend, Catalog catalog)
+        static string CompatibilityLabel(Compatibility compatibility)
         {
-            var caveats = new List<string>();
+            switch (compatibility)
+            {
+                case Compatibility.Supported: return "Supported";
+                case Compatibility.Experimental: return "Experimental";
+                default: return "Unsupported";
+            }
+        }
+
+        // Determines whether an IL2CPP game's type metadata can be recovered into
+        // editor stub assemblies. global-metadata.dat lives under il2cpp_data/Metadata;
+        // a valid magic plus a plausible sanity version means it is unencrypted and
+        // dumpable. A mismatched header indicates XOR/obfuscated or decoy metadata.
+        static Il2CppMetadata DetectIl2CppMetadata(string gameDir, Backend backend)
+        {
+            if (backend != Backend.Il2Cpp)
+                return Il2CppMetadata.NotApplicable;
+
+            string metadataPath = null;
+            foreach (var data in SafeGetDirectories(gameDir, "*_Data"))
+            {
+                var candidate = Path.Combine(Path.Combine(Path.Combine(data, "il2cpp_data"), "Metadata"), "global-metadata.dat");
+                if (File.Exists(candidate))
+                {
+                    metadataPath = candidate;
+                    break;
+                }
+            }
+            if (metadataPath == null)
+                return Il2CppMetadata.Missing;
+
+            try
+            {
+                using (var fs = File.OpenRead(metadataPath))
+                {
+                    var header = new byte[8];
+                    if (fs.Read(header, 0, header.Length) < header.Length)
+                        return Il2CppMetadata.Unreadable;
+                    var magic = BitConverter.ToUInt32(header, 0);
+                    var sanityVersion = BitConverter.ToInt32(header, 4);
+                    // Known IL2CPP metadata versions span roughly 16..31 across the
+                    // Unity 5.x -> 6000 eras; a correct magic with a version outside
+                    // that range is treated as suspect rather than recoverable.
+                    if (magic == Il2CppMetadataMagic && sanityVersion >= 16 && sanityVersion <= 31)
+                        return Il2CppMetadata.Readable;
+                    return Il2CppMetadata.Unreadable;
+                }
+            }
+            catch
+            {
+                return Il2CppMetadata.Unreadable;
+            }
+        }
+
+        // Classifies a game into a single compatibility tier and collects the notes
+        // (used as the row tooltip). A blocking caveat forces Unsupported; a recoverable
+        // IL2CPP game is Experimental; everything else is Supported. caveats receives the
+        // newline-joined notes, or null when there are none.
+        static Compatibility Classify(string version, Backend backend, Catalog catalog, Il2CppMetadata metadata, out string caveats)
+        {
+            var notes = new List<string>();
+            var blocking = false;
+            var experimental = false;
+
             if (!IsSupported(version))
-                caveats.Add(UnsupportedVersionCaveat);
-            if (backend == Backend.Il2Cpp)
-                caveats.Add(Il2CppCaveat);
+            {
+                notes.Add(UnsupportedVersionCaveat);
+                blocking = true;
+            }
             if (catalog == Catalog.Binary)
-                caveats.Add(BinaryCatalogCaveat);
-            return caveats.Count == 0 ? null : string.Join("\n", caveats);
+            {
+                notes.Add(BinaryCatalogCaveat);
+                blocking = true;
+            }
+            if (backend == Backend.Il2Cpp)
+            {
+                switch (metadata)
+                {
+                    case Il2CppMetadata.Readable:
+                        notes.Add(Il2CppExperimentalCaveat);
+                        experimental = true;
+                        break;
+                    case Il2CppMetadata.Missing:
+                        notes.Add(Il2CppMetadataMissingCaveat);
+                        blocking = true;
+                        break;
+                    default:
+                        notes.Add(Il2CppMetadataObfuscatedCaveat);
+                        blocking = true;
+                        break;
+                }
+            }
+
+            caveats = notes.Count == 0 ? null : string.Join("\n", notes);
+            if (blocking)
+                return Compatibility.Unsupported;
+            return experimental ? Compatibility.Experimental : Compatibility.Supported;
         }
 
         static string[] SafeGetDirectories(string dir, string pattern)

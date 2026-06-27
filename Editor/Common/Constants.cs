@@ -29,6 +29,7 @@ namespace ThunderKit.Common
         public static class Priority
         {
             public const int AssemblyImport = 3_000_000;
+            public const int Il2CppStubImport = 2_900_000;
             public const int ProjectSettingsImport = 2_000_000;
             public const int CreateGamePackage = 1_000_000;
             public const int AddressableCatalog = 0;

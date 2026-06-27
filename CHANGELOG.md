@@ -1,3 +1,33 @@
+## 9.5.0
+
+### New Features
+
+* Added an experimental IL2CPP import path — recovers a game's own types into
+  managed stub assemblies so they can be authored onto prefabs and scenes
+  * New `ImportIl2CppStubs` [OptionalExecutor](Editor/Core/Config/Common/ImportIl2CppStubs.cs)
+    runs alongside `ImportAssemblies` and is a no-op for Mono games
+  * Stub generation is delegated to a pluggable `Il2CppStubGenerator`
+    [extension point](Editor/Core/Config/ExtensionPoints/Il2CppStubGenerator.cs),
+    with a bundled `Cpp2IlStubGenerator` driving
+    [Cpp2IL](https://github.com/SamboyCoding/Cpp2IL)
+  * Cpp2IL is auto-acquired and cached under `Library/ThunderKit/Cpp2IL`,
+    overridable via EditorPrefs
+* The **Installed Unity Games** window adds a **Target** column that marks IL2CPP
+  games with a recoverable `global-metadata.dat` as `Experimental` rather than
+  `Unsupported`
+
+### Fixes
+
+* `ImportAssemblies` now skips rather than throwing when a game has no
+  `*_Data/Managed` folder, so IL2CPP games no longer abort the import
+* `CopyAssemblyCSharp` no longer logs a `FileNotFoundException` when a package
+  `Assembly-CSharp` is copied into `Library/ScriptAssemblies` for the first time
+  (guards the read-only check on the not-yet-existing destination)
+* `ImportProjectSettings` now resolves class data against the Unity version that
+  built the game — read from the `globalgamemanagers` metadata — rather than the
+  running Editor's version, so a game on a different patch release no longer fails
+  to import version-sensitive settings like `PlayerSettings`
+
 ## 9.4.2
 
 ### Fixes
