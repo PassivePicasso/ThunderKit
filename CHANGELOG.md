@@ -1,3 +1,45 @@
+## 9.4.0
+
+### New Features
+
+* Added an **Installed Unity Games** window (`Tools/ThunderKit/Installed Unity
+  Games`)
+  * Scans installed Steam libraries for Unity games and reads the Unity
+    version each was built with
+  * Highlights games whose `major.minor.patch` matches the running Editor and
+    flags games older than Unity 2018.4 as unsupported
+
+* Class data (`classdata.tpk`) resolution is now driven by version coverage
+  instead of a fixed cache age
+  * `ClassDataManager` validates whether the cached tpk actually contains a
+    class database for the current Unity version; a tpk that covers the
+    version is reused indefinitely and never re-downloaded on age alone
+  * When the current version is not covered, it attempts a download and
+    re-checks coverage; if the freshly downloaded tpk still lacks the
+    version, it deletes the local copy, records the attempt date to throttle
+    further downloads, and reports that no published tpk yet supports this
+    Unity version
+  * The class data is now fetched on demand from the AssetRipper Tpk release
+    rather than shipped with the package; the bundled `classdata.tpk` (~1.3 MB)
+    and its license file were removed
+  * Removed the dead `Constants.BundledClassDataPath` / `Constants.ClassDataPath`
+    fallbacks, which pointed at the removed bundled `classdata.tpk`;
+    `ImportProjectSettings` now skips gracefully (with a clear error) when no
+    class data is available rather than failing on a missing file
+
+### Tests
+
+* Added EditMode unit coverage for the class data acquisition policy
+  ([ClassDataManagerTests](Tests/Editor/ClassDataManagerTests.cs)): the
+  `PlanAcquisition` coverage/throttle/download decision branches, Unity-version
+  parsing, the re-download throttle, and attempt-marker parsing — all pure and
+  offline
+* Added an opt-in (`[Explicit]`) integration test
+  ([ClassDataVersionCoverageTests](Tests/Editor/ClassDataVersionCoverageTests.cs))
+  that downloads the tpk and verifies it covers the Unity version under test
+* Added `[assembly: InternalsVisibleTo("ThunderKit.Core.Tests")]` to
+  `ThunderKit.Core`, exposing internal seams to the test assembly
+
 ## 9.3.3
 
 ### Fixes

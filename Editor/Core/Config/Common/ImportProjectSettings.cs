@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -52,7 +53,12 @@ namespace ThunderKit.Core.Config.Common
             if (IncludedSettings == 0) return true;
 
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
-            var classDataPath = Path.GetFullPath(Path.Combine(Constants.ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
+            var classDataPath = ClassDataManager.GetClassDataPath();
+            if (string.IsNullOrEmpty(classDataPath) || !File.Exists(classDataPath))
+            {
+                Debug.LogError("[ThunderKit] Skipping ProjectSettings import: no class data (classdata.tpk) is available for this Unity version.");
+                return true;
+            }
 
             var unityVersion = Application.unityVersion;
             var editorDirectory = Path.GetDirectoryName(EditorApplication.applicationPath);
