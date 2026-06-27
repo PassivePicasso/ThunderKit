@@ -54,6 +54,11 @@ namespace ThunderKit.Core.Config.Common
 
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
             var classDataPath = ClassDataManager.GetClassDataPath();
+            if (string.IsNullOrEmpty(classDataPath) || !File.Exists(classDataPath))
+            {
+                Debug.LogError("[ThunderKit] Skipping ProjectSettings import: no class data (classdata.tpk) is available for this Unity version.");
+                return true;
+            }
 
             var unityVersion = Application.unityVersion;
             var editorDirectory = Path.GetDirectoryName(EditorApplication.applicationPath);

@@ -43,6 +43,8 @@ Status legend: ✅ done · 🟡 partial · ⬜ not started
 | [ManifestNameTests](Tests/Editor/ManifestNameTests.cs) | `ManifestName` path component + null fallback | ✅ |
 | [SelfDestructingActionAssetTests](Tests/Editor/SelfDestructingActionAssetTests.cs) | Delegate invocation + self-destruct | ✅ |
 | [StageThunderstoreManifestTests](Tests/Editor/StageThunderstoreManifestTests.cs) | `RenderJson` round-trip + dependency formatting | ✅ |
+| [ClassDataManagerTests](Tests/Editor/ClassDataManagerTests.cs) | TPK acquisition policy: `PlanAcquisition` coverage/throttle/download branches, `TryParseUnityVersion`, `IsThrottled`, marker parse | ✅ |
+| [ClassDataVersionCoverageTests](Tests/Editor/ClassDataVersionCoverageTests.cs) | Acquired tpk covers the running Unity version (`[Explicit]`, network) | 🟡 |
 
 ---
 
@@ -93,6 +95,10 @@ handlers). HARD to isolate; only worth it as integration tests later.
 
 1. **One `InternalsVisibleTo` seam** unlocks all of Tier 3 *and* cleans up the
    existing fixture's reflection — highest-leverage single change.
+   *Done:* `[assembly: InternalsVisibleTo("ThunderKit.Core.Tests")]` is now in
+   [Editor/Core/AssemblyInfo.cs](Editor/Core/AssemblyInfo.cs) (added for the
+   `ClassDataManager` tests); the Tier 3 items below and the fixture reflection
+   cleanup can now reuse it.
 2. **A "compile-everything" test assembly** referencing
    `ThunderKit.Addressable.*`, `ThunderKit.Thunderstore`, and
    `ThunderKit.SpaceDock` (even with one trivial `[Test]`) turns CI into a full
