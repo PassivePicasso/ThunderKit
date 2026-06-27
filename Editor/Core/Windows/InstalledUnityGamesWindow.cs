@@ -194,11 +194,20 @@ namespace ThunderKit.Core.Windows
                         EditorGUI.DrawRect(row, matchTint);
                 }
 
-                var tooltip = game.Supported ? null : UnsupportedTooltip;
+                var tooltip = game.Caveats;
                 var nameStyle = game.Matches ? EditorStyles.boldLabel : EditorStyles.label;
                 GUILayout.Label(new GUIContent(game.Name, tooltip), nameStyle);
                 GUILayout.FlexibleSpace();
                 GUILayout.Label(new GUIContent(game.Version, tooltip), nameStyle, GUILayout.Width(110));
+
+                var backendText = BackendLabel(game.Backend);
+                var backendTip = game.Backend == Backend.Il2Cpp ? Il2CppCaveat : null;
+                GUILayout.Label(new GUIContent(backendText, backendTip), nameStyle, GUILayout.Width(60));
+
+                var catalogText = CatalogLabel(game.Catalog);
+                var catalogTip = game.Catalog == Catalog.Binary ? BinaryCatalogCaveat : null;
+                GUILayout.Label(new GUIContent(catalogText, catalogTip), nameStyle, GUILayout.Width(90));
+
                 if (GUILayout.Button("Open", EditorStyles.miniButton, GUILayout.Width(60)))
                     EditorUtility.RevealInFinder(game.Path);
 
@@ -403,6 +412,92 @@ namespace ThunderKit.Core.Windows
         {
             var m = Regex.Match(input, pattern);
             return m.Success ? m.Groups[1].Value : null;
+        }
+
+        // IL2CPP games ship a GameAssembly native module at the game root and an
+        // il2cpp_data folder inside *_Data. Mono games keep their managed assemblies
+        // in *_Data/Managed. When neither signature is present we report Unknown
+        // rather than guessing.
+        static Backend DetectBackend(string gameDir)
+        {
+            if (File.Exists(Path.Combine(gameDir, "GameAssembly.dll"))
+             || File.Exists(Path.Combine(gameDir, "GameAssembly.so"))
+             || File.Exists(Path.Combine(gameDir, "GameAssembly.dylib")))
+                return Backend.Il2Cpp;
+
+            string[] dataDirs = SafeGetDirectories(gameDir, "*_Data");
+            foreach (var data in dataDirs)
+                if (Directory.Exists(Path.Combine(data, "il2cpp_data")))
+                    return Backend.Il2Cpp;
+
+            foreach (var data in dataDirs)
+            {
+                var managed = Path.Combine(data, "Managed");
+                if (Directory.Exists(managed) && SafeGetFiles(managed, "*.dll").Length > 0)
+                    return Backend.Mono;
+            }
+
+            return Backend.Unknown;
+        }
+
+        // Addressables content lives in *_Data/StreamingAssets/aa. A catalog.bin is
+        // produced by the newer binary catalog format; catalog.json by the classic
+        // (and only currently importable) JSON format. Hash-suffixed names such as
+        // catalog_1234.json are also matched.
+        static Catalog DetectCatalog(string gameDir)
+        {
+            foreach (var data in SafeGetDirectories(gameDir, "*_Data"))
+            {
+                var aa = Path.Combine(Path.Combine(data, "StreamingAssets"), "aa");
+                if (!Directory.Exists(aa))
+                    continue;
+                if (SafeGetFiles(aa, "catalog*.json").Length > 0)
+                    return Catalog.Json;
+                if (SafeGetFiles(aa, "catalog*.bin").Length > 0)
+                    return Catalog.Binary;
+            }
+            return Catalog.None;
+        }
+
+        static string BackendLabel(Backend backend)
+        {
+            switch (backend)
+            {
+                case Backend.Mono: return "Mono";
+                case Backend.Il2Cpp: return "IL2CPP";
+                default: return "?";
+            }
+        }
+
+        static string CatalogLabel(Catalog catalog)
+        {
+            switch (catalog)
+            {
+                case Catalog.Json: return "JSON";
+                case Catalog.Binary: return "Binary";
+                default: return "—";
+            }
+        }
+
+        // Collects every reason the game isn't fully supported by ThunderKit, one
+        // per line, for use as both the row tooltip and the Supported flag. Returns
+        // null when there are no caveats.
+        static string BuildCaveats(string version, Backend backend, Catalog catalog)
+        {
+            var caveats = new List<string>();
+            if (!IsSupported(version))
+                caveats.Add(UnsupportedVersionCaveat);
+            if (backend == Backend.Il2Cpp)
+                caveats.Add(Il2CppCaveat);
+            if (catalog == Catalog.Binary)
+                caveats.Add(BinaryCatalogCaveat);
+            return caveats.Count == 0 ? null : string.Join("\n", caveats);
+        }
+
+        static string[] SafeGetDirectories(string dir, string pattern)
+        {
+            try { return Directory.GetDirectories(dir, pattern); }
+            catch { return new string[0]; }
         }
 
         // True unless the version is demonstrably older than Unity 2018.4.

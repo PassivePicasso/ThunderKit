@@ -1,5 +1,19 @@
 ## 9.4.1
 
+### New Features
+
+* The **Installed Unity Games** window now reports each game's scripting backend
+  and Addressables usage so support status is clear at a glance
+  * A **Backend** column shows `Mono`, `IL2CPP`, or `?`. ThunderKit cannot mod
+    IL2CPP games, so those rows are flagged unsupported (with a tooltip and the
+    summary now counts them)
+  * An **Addressables** column shows the catalog format: `JSON`, `Binary`, or
+    `—` (none). Binary catalogs are not yet importable, so those rows are
+    flagged unsupported as well
+  * Each row's tooltip now lists every reason a game isn't fully supported
+    (unsupported Unity version, IL2CPP backend, binary catalog) rather than the
+    single version caveat
+
 ### Changes
 
 * `TransformHierarchyTreeView` now selects its `TreeView`/`TreeViewItem`/
