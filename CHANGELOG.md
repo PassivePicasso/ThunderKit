@@ -3,93 +3,55 @@
 ### New Features
 
 * The **Installed Unity Games** window now reports each game's scripting backend
-  and Addressables usage so support status is clear at a glance
-  * A **Backend** column shows `Mono`, `IL2CPP`, or `?`. ThunderKit cannot mod
-    IL2CPP games, so those rows are flagged unsupported (with a tooltip and the
-    summary now counts them)
-  * An **Addressables** column shows the catalog format: `JSON`, `Binary`, or
-    `—` (none). Binary catalogs are not yet importable, so those rows are
-    flagged unsupported as well
-  * Each row's tooltip now lists every reason a game isn't fully supported
-    (unsupported Unity version, IL2CPP backend, binary catalog) rather than the
-    single version caveat
+  and Addressables catalog format so support status is clear at a glance
+  * A **Backend** column shows `Mono`, `IL2CPP`, or `?`; IL2CPP games are flagged
+    unsupported since ThunderKit cannot mod them
+  * An **Addressables** column shows the catalog format (`JSON`, `Binary`, or
+    `—`); binary catalogs are flagged unsupported as not yet importable
+  * Each row's tooltip now lists every reason a game isn't fully supported rather
+    than just the version caveat
 
 ### Changes
 
-* `TransformHierarchyTreeView` now selects its `TreeView`/`TreeViewItem`/
-  `TreeViewState` and object-identifier APIs per the Unity version that actually
-  deprecated each one, eliminating the obsolescence warnings on Unity 6000.2–6000.4.
-  The generic `TreeView<T>` types are used from 6000.2 (where the non-generic forms
-  became obsolete) and `EntityId`/`GetEntityId` from 6000.4 (where `GetInstanceID`
-  became obsolete and `Object.GetEntityId` first exists); 6000.2–6000.3 uses
-  `TreeView<int>` + `GetInstanceID`, neither of which is deprecated in that window.
-  Previously a single `UNITY_6000_5_OR_NEWER` guard compiled the deprecated path on
-  every 6000.2–6000.4 editor.
+* `TransformHierarchyTreeView` now selects its `TreeView` and object-identifier
+  APIs per the Unity version that deprecated each one, eliminating the obsolescence
+  warnings on Unity 6000.2–6000.4 (previously a single `UNITY_6000_5_OR_NEWER` guard
+  compiled the deprecated path on every 6000.2–6000.4 editor)
 * Lowered the `EntityId` migration guards in `SelfDestructingActionAsset`,
   `MarkdownStatic`, `TemplatedWindow`, `DocumentationHelpers`, `ScriptableHelper`,
   and `PipelineLogWindow` from `UNITY_6000_5_OR_NEWER` to `UNITY_6000_4_OR_NEWER`,
-  matching the `TransformHierarchyTreeView` change above. `EntityId`,
-  `Object.GetEntityId`, `EditorUtility.EntityIdToObject`, and
-  `AssetCreationEndAction` all exist as of 6000.4 — where `EndNameEditAction`,
-  `GetInstanceID`, `InstanceIDToObject`, and the `int`-based
-  `StartNameEditingIfProjectWindowExists` overload first become obsolete — so the
-  previous guard left those warnings firing on 6000.4. The
-  `SelfDestructingActionAssetTests` `int`-signature guard moves to
-  `!UNITY_6000_4_OR_NEWER` to match.
-* Class data (`classdata.tpk`) coverage is now decided on `major.minor` instead
-  of `major.minor.patch`. Patch releases rarely change type trees, and our use
-  (ProjectSettings) touches a small, stable set of types, so requiring an exact
-  patch match would reject otherwise usable tpks.
-* When no tpk fully covers the running Unity version, `ClassDataManager` now
-  keeps the latest available tpk and **warns** (rather than deleting it and
-  failing) that the closest available type data will be used. A missing type is
-  only ever a problem for the specific setting types that are actually absent.
-* `ImportProjectSettings` now discovers the versions actually present in the tpk
-  and builds its class database from the closest one — the newest entry at or
-  before the running Unity version, falling back to the oldest available when the
-  editor predates every entry — instead of requiring an exact version match. The
-  resolved version is logged when it differs from the running version.
-* `ImportProjectSettings` now imports each project setting independently and
-  warns per-setting when a type cannot be exported, so one unavailable type no
-  longer aborts the entire import. It still skips gracefully (with a clear
-  error) only when no class data is available at all.
+  matching where those APIs first exist and the older ones become obsolete
+* Class data (`classdata.tpk`) coverage is now decided on `major.minor` instead of
+  `major.minor.patch`, since patch releases rarely change the type trees we use
+* When no tpk fully covers the running Unity version, `ClassDataManager` now keeps
+  the latest available tpk and warns rather than deleting it and failing
+* `ImportProjectSettings` now builds its class database from the closest version
+  present in the tpk — newest at or before the running version, falling back to the
+  oldest — instead of requiring an exact match, logging the resolved version when it
+  differs
+* `ImportProjectSettings` now imports each project setting independently and warns
+  per-setting when a type cannot be exported, so one unavailable type no longer
+  aborts the entire import
 
 ### Tests
 
 * Added [ImportProjectSettingsTests](Tests/Editor/ImportProjectSettingsTests.cs):
-  a real, offline ProjectSettings export test that drives
+  an offline ProjectSettings export test driving
   `ImportProjectSettings.ExportProjectSettings` against per-version
-  `globalgamemanagers` fixtures and the committed AssetRipper `classdata.tpk`,
-  exercising the full tpk version-resolution + YAML export path. It runs in CI
-  across the whole Unity editor matrix: on every editor it asserts the class
-  database resolves and the export completes without an unrecoverable failure; on
-  an editor whose `major.minor` matches a fixture it asserts the core settings
-  actually export. Fixtures are auto-discovered under
-  `Tests/Editor/Fixtures/GlobalGameManagers/<unity-version>/` and stored via Git
-  LFS (see `.gitattributes`).
+  `globalgamemanagers` fixtures and the committed `classdata.tpk`. Runs across the
+  CI Unity matrix and asserts a full export on editors whose `major.minor` matches a
+  fixture; fixtures are stored via Git LFS
 * Added the [generate-project-settings-fixtures](.github/workflows/generate-project-settings-fixtures.yml)
-  workflow (manual `workflow_dispatch`) which, for each Unity version in the test
-  matrix, builds a throwaway empty player, extracts the `globalgamemanagers` it
-  produced, and commits it as the per-version fixture. This gives every matrix
-  editor a `globalgamemanagers` built by that exact editor — an exact class-data
-  match — without anyone hand-creating projects or running builds. The build
-  project embeds no game content (an empty project's `globalgamemanagers` is pure
-  engine/project settings).
-* `ImportProjectSettings.ExportProjectSettings` was extracted from `Execute()` as
-  an `internal` seam (class-data resolution + globalgamemanagers export, decoupled
-  from `ThunderKitSettings`/`AssetDatabase`) so it can be driven directly by tests.
-  Production behavior is unchanged.
+  workflow (manual `workflow_dispatch`) that builds a throwaway empty player per
+  Unity version and commits its `globalgamemanagers` as the per-version fixture
+* Extracted `ImportProjectSettings.ExportProjectSettings` as an `internal` seam so
+  tests can drive class-data resolution and export directly; production behavior is
+  unchanged
 * The test assembly (`ThunderKit.Core.Tests`) now references `AssetsTools.NET.dll`
-  directly. The precompiled reference is not transitive through `ThunderKit.Core`,
-  so without it the suite failed to compile in the Unity Test Runner (the tests
-  use `AssetsTools.NET.Extra.UnityVersion`).
-* The tpk coverage integration test
-  ([ClassDataVersionCoverageTests](Tests/Editor/ClassDataVersionCoverageTests.cs))
-  is no longer `[Explicit]`. It is tagged `[Category("Integration")]` and now runs
-  by default in the local Unity Test Runner (where it downloads the AssetRipper tpk
-  and verifies coverage for the running Unity version), and is excluded from CI via
-  `-testCategory "!Integration"`. Previously `[Explicit]` meant it ran in no
-  automated context — neither local "Run All" nor CI.
+  directly, since the reference is not transitive through `ThunderKit.Core`
+* [ClassDataVersionCoverageTests](Tests/Editor/ClassDataVersionCoverageTests.cs) is
+  no longer `[Explicit]` — it is now `[Category("Integration")]`, running by default
+  in the local Test Runner and excluded from CI via `-testCategory "!Integration"`
 
 ## 9.4.0
 
