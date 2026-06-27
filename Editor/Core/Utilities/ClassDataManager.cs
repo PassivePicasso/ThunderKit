@@ -2,6 +2,7 @@ using AssetsTools.NET.Extra;
 using SharpCompress.Archives;
 using SharpCompress.Readers;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace ThunderKit.Core.Utilities
     internal static class ClassDataManager
     {
         const string TpkDownloadUrl =
-            "https://nightly.link/AssetRipper/Tpk/workflows/type_tree_tpk/master/uncompressed_file.zip";
+            "https://nightly.link/AssetRipper/Tpk/workflows/type_tree_tpk/master/lz4_file.zip";
 
         static readonly string CacheDir = Path.Combine("Library", "ThunderKit");
         static readonly string CachedTpkPath = Path.Combine("Library", "ThunderKit", "classdata.tpk");
@@ -58,23 +59,30 @@ namespace ThunderKit.Core.Utilities
                     return CachedTpkPath;
 
                 case ClassDataStatus.UnsupportedAfterDownload:
-                    SafeDelete(CachedTpkPath);
-                    WriteAttemptMarker(DateTime.UtcNow);
-                    ReportUnsupported(unityVersion);
-                    return null;
-
-                case ClassDataStatus.Throttled:
-                    ReportUnsupported(unityVersion);
-                    return null;
-
                 case ClassDataStatus.DownloadFailed:
                     WriteAttemptMarker(DateTime.UtcNow);
-                    Debug.LogError($"[ThunderKit] Could not download class data and no cached classdata.tpk supports Unity {unityVersion}.");
-                    return null;
+                    return BestAvailableOrNull(unityVersion);
+
+                case ClassDataStatus.Throttled:
+                    return BestAvailableOrNull(unityVersion);
 
                 default:
                     return null;
             }
+        }
+
+        // Returns the cached tpk (with a warning that it may not fully cover the running
+        // Unity version) when one exists, or null with an error when none is available.
+        static string BestAvailableOrNull(string unityVersion)
+        {
+            if (File.Exists(CachedTpkPath))
+            {
+                WarnVersionNotCovered(unityVersion);
+                return CachedTpkPath;
+            }
+
+            Debug.LogError($"[ThunderKit] No classdata.tpk is available and one could not be downloaded for Unity {unityVersion}. ProjectSettings import will be skipped.");
+            return null;
         }
 
         internal static ClassDataStatus PlanAcquisition(bool cacheSupports, bool throttled,
@@ -98,7 +106,10 @@ namespace ThunderKit.Core.Utilities
         {
             if (!File.Exists(tpkPath))
                 return false;
-            if (!TryParseUnityVersion(unityVersion, out var major, out var minor, out var patch))
+            // Coverage is decided on major.minor only. Type trees rarely change in a
+            // patch release, and our use (ProjectSettings) touches a small, stable set
+            // of types, so requiring an exact patch match would reject usable tpks.
+            if (!TryParseUnityVersion(unityVersion, out var major, out var minor, out _))
                 return false;
 
             try
@@ -109,13 +120,56 @@ namespace ThunderKit.Core.Utilities
                 if (versions == null)
                     return false;
 
-                return versions.Any(v => v.major == major && v.minor == minor && v.patch == patch);
+                return versions.Any(v => v.major == major && v.minor == minor);
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"[ThunderKit] Failed to inspect classdata.tpk versions: {e.Message}");
                 return false;
             }
+        }
+
+        // Picks the tpk version to build a class database from for the running Unity
+        // version. Type trees are additive, so the correct choice is the newest entry
+        // at or before the target; if the target predates every entry, fall back to the
+        // oldest available so we still produce a best-effort database rather than an
+        // empty one. Returns null only when no versions are available.
+        internal static UnityVersion SelectBestVersion(List<UnityVersion> versions, int major, int minor, int patch)
+        {
+            if (versions == null || versions.Count == 0)
+                return null;
+
+            var target = VersionKey(major, minor, patch);
+
+            UnityVersion bestAtOrBelow = null;
+            var bestAtOrBelowKey = long.MinValue;
+            UnityVersion oldest = null;
+            var oldestKey = long.MaxValue;
+
+            foreach (var v in versions)
+            {
+                if (v == null)
+                    continue;
+
+                var key = VersionKey(v.major, v.minor, v.patch);
+                if (key <= target && key > bestAtOrBelowKey)
+                {
+                    bestAtOrBelowKey = key;
+                    bestAtOrBelow = v;
+                }
+                if (key < oldestKey)
+                {
+                    oldestKey = key;
+                    oldest = v;
+                }
+            }
+
+            return bestAtOrBelow ?? oldest;
+        }
+
+        static long VersionKey(int major, int minor, int patch)
+        {
+            return ((long)major << 40) | ((long)minor << 20) | (uint)patch;
         }
 
         internal static bool TryParseUnityVersion(string unityVersion, out int major, out int minor, out int patch)
@@ -245,10 +299,12 @@ namespace ThunderKit.Core.Utilities
             }
         }
 
-        static void ReportUnsupported(string unityVersion)
+        static void WarnVersionNotCovered(string unityVersion)
         {
-            Debug.LogError($"[ThunderKit] The available class data (tpk) does not yet support the current version of Unity ({unityVersion}). " +
-                "ProjectSettings import that relies on class data will be unavailable until AssetRipper publishes type data for this version.");
+            Debug.LogWarning($"[ThunderKit] The available class data (tpk) does not list Unity {unityVersion}. " +
+                "ProjectSettings import will proceed using the closest available type data. " +
+                "Individual settings may fail to import if their type information is unavailable for this version; " +
+                "such failures will be reported per-setting.");
         }
 
         static void WriteAttemptMarker(DateTime nowUtc)

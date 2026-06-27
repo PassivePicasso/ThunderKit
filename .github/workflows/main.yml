@@ -66,6 +66,9 @@ jobs:
           projectPath: ci-package
           unityVersion: ${{ matrix.unity-version }}
           testMode: EditMode
+          # Integration tests (e.g. the AssetRipper tpk download) hit the network
+          # and are run locally in the Unity Test Runner, not in CI.
+          customParameters: -testCategory "!Integration"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           artifactsPath: artifacts-${{ matrix.unity-version }}
           checkName: Unity ${{ matrix.unity-version }} Test Results
@@ -133,6 +136,9 @@ jobs:
           testMode: EditMode
           unityVersion: 2018.4.36f1
           projectPath: UnityTestProject
+          # Integration tests (e.g. the AssetRipper tpk download) hit the network
+          # and are run locally in the Unity Test Runner, not in CI.
+          customParameters: -testCategory "!Integration"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           artifactsPath: artifacts-2018.4.36f1
           checkName: Unity 2018.4.36f1 Test Results
@@ -214,6 +220,9 @@ jobs:
           testMode: EditMode
           unityVersion: 6000.5.0f1
           projectPath: UnityTestProject
+          # Integration tests (e.g. the AssetRipper tpk download) hit the network
+          # and are run locally in the Unity Test Runner, not in CI.
+          customParameters: -testCategory "!Integration"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           artifactsPath: artifacts-6000.5.0f1
           checkName: Unity 6000.5.0f1 Test Results

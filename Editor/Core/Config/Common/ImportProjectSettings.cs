@@ -76,7 +76,32 @@ namespace ThunderKit.Core.Config.Common
 
             assetsManager = new AssetsManager();
             assetsManager.LoadClassPackage(classDataPath);
-            assetsManager.LoadClassDatabaseFromPackage(unityVersion);
+
+            if (!ClassDataManager.TryParseUnityVersion(unityVersion, out var major, out var minor, out var patch))
+            {
+                Debug.LogError($"[ThunderKit] Skipping ProjectSettings import: could not parse Unity version '{unityVersion}'.");
+                return true;
+            }
+
+            // The tpk rarely lists every Unity version. Discover the versions it does
+            // contain and load the class database for the closest one (newest at or
+            // before the running version) rather than requiring an exact match.
+            var availableVersions = assetsManager.ClassPackage?.TpkTypeTree?.Versions;
+            var resolvedVersion = ClassDataManager.SelectBestVersion(availableVersions, major, minor, patch);
+            if (resolvedVersion == null)
+            {
+                Debug.LogError("[ThunderKit] Skipping ProjectSettings import: class data (classdata.tpk) contains no type versions.");
+                return true;
+            }
+
+            if (resolvedVersion.major != major || resolvedVersion.minor != minor || resolvedVersion.patch != patch)
+            {
+                Debug.LogWarning($"[ThunderKit] No exact class data for Unity {unityVersion}; using the closest available type data " +
+                    $"({resolvedVersion.major}.{resolvedVersion.minor}.{resolvedVersion.patch}). " +
+                    "Individual settings may fail to import if their type information changed between these versions.");
+            }
+
+            assetsManager.LoadClassDatabaseFromPackage(resolvedVersion);
             exportManager = YAMLExportManager.CreateDefault();
 
             var globalGameManagersFile = assetsManager.LoadAssetsFile(Path.Combine(settings.GameDataPath, "globalgamemanagers"), true);
@@ -131,9 +156,21 @@ namespace ThunderKit.Core.Config.Common
                     fileName = Enum.GetName(typeof(AssetClassID), info.TypeId);
                 }
 
-                AssetExternal assetExternal = assetsManager.GetExtAsset(globalGameManagersFile, 0, info.PathId);
-                var collection = new ProjectSettingCollection { Assets = { assetExternal } };
-                SaveCollection(collection, null, Path.Combine(outputProjectSettingsDirectory, $"{fileName}.{collection.ExportExtension}"), unityVersion);
+                // A given setting type may be absent from the class data when the tpk
+                // does not fully cover the running Unity version (see ClassDataManager).
+                // Treat that as a per-setting warning rather than aborting the whole
+                // import so the remaining settings still come through.
+                try
+                {
+                    AssetExternal assetExternal = assetsManager.GetExtAsset(globalGameManagersFile, 0, info.PathId);
+                    var collection = new ProjectSettingCollection { Assets = { assetExternal } };
+                    SaveCollection(collection, null, Path.Combine(outputProjectSettingsDirectory, $"{fileName}.{collection.ExportExtension}"), unityVersion);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[ThunderKit] Skipped importing project setting '{fileName}' ({type}): {e.Message}. " +
+                        "This usually means type information for this setting is unavailable in the current class data (tpk).");
+                }
             }
         }
 

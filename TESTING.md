@@ -43,7 +43,7 @@ Status legend: ✅ done · 🟡 partial · ⬜ not started
 | [ManifestNameTests](Tests/Editor/ManifestNameTests.cs) | `ManifestName` path component + null fallback | ✅ |
 | [SelfDestructingActionAssetTests](Tests/Editor/SelfDestructingActionAssetTests.cs) | Delegate invocation + self-destruct | ✅ |
 | [StageThunderstoreManifestTests](Tests/Editor/StageThunderstoreManifestTests.cs) | `RenderJson` round-trip + dependency formatting | ✅ |
-| [ClassDataManagerTests](Tests/Editor/ClassDataManagerTests.cs) | TPK acquisition policy: `PlanAcquisition` coverage/throttle/download branches, `TryParseUnityVersion`, `IsThrottled`, marker parse | ✅ |
+| [ClassDataManagerTests](Tests/Editor/ClassDataManagerTests.cs) | TPK acquisition policy: `PlanAcquisition` coverage/throttle/download branches, `SelectBestVersion` closest-match selection, `TryParseUnityVersion`, `IsThrottled`, marker parse | ✅ |
 | [ClassDataVersionCoverageTests](Tests/Editor/ClassDataVersionCoverageTests.cs) | Acquired tpk covers the running Unity version (`[Explicit]`, network) | 🟡 |
 
 ---

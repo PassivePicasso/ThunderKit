@@ -1,3 +1,39 @@
+## 9.4.1
+
+### Changes
+
+* Class data (`classdata.tpk`) coverage is now decided on `major.minor` instead
+  of `major.minor.patch`. Patch releases rarely change type trees, and our use
+  (ProjectSettings) touches a small, stable set of types, so requiring an exact
+  patch match would reject otherwise usable tpks.
+* When no tpk fully covers the running Unity version, `ClassDataManager` now
+  keeps the latest available tpk and **warns** (rather than deleting it and
+  failing) that the closest available type data will be used. A missing type is
+  only ever a problem for the specific setting types that are actually absent.
+* `ImportProjectSettings` now discovers the versions actually present in the tpk
+  and builds its class database from the closest one — the newest entry at or
+  before the running Unity version, falling back to the oldest available when the
+  editor predates every entry — instead of requiring an exact version match. The
+  resolved version is logged when it differs from the running version.
+* `ImportProjectSettings` now imports each project setting independently and
+  warns per-setting when a type cannot be exported, so one unavailable type no
+  longer aborts the entire import. It still skips gracefully (with a clear
+  error) only when no class data is available at all.
+
+### Tests
+
+* The test assembly (`ThunderKit.Core.Tests`) now references `AssetsTools.NET.dll`
+  directly. The precompiled reference is not transitive through `ThunderKit.Core`,
+  so without it the suite failed to compile in the Unity Test Runner (the tests
+  use `AssetsTools.NET.Extra.UnityVersion`).
+* The tpk coverage integration test
+  ([ClassDataVersionCoverageTests](Tests/Editor/ClassDataVersionCoverageTests.cs))
+  is no longer `[Explicit]`. It is tagged `[Category("Integration")]` and now runs
+  by default in the local Unity Test Runner (where it downloads the AssetRipper tpk
+  and verifies coverage for the running Unity version), and is excluded from CI via
+  `-testCategory "!Integration"`. Previously `[Explicit]` meant it ran in no
+  automated context — neither local "Run All" nor CI.
+
 ## 9.4.0
 
 ### New Features

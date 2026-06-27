@@ -5,16 +5,16 @@ using UnityEngine;
 
 namespace ThunderKitTests
 {
-    // Tier B — TPK version coverage (integration). Marked [Explicit] because it
-    // reaches the network (downloads the AssetRipper tpk) and is not deterministic
-    // offline. Run on demand from the Unity Test Runner to verify the acquired tpk
-    // actually contains a class database for the Unity version under test. In CI the
-    // per-version test matrix is what provides multi-version coverage.
+    // Tier B — TPK version coverage (integration). Reaches the network (downloads
+    // the AssetRipper tpk) and is not deterministic offline, so it is tagged
+    // [Category("Integration")] and excluded from CI via -testCategory "!Integration"
+    // (see .github/workflows/main.yml). It runs by default in the local Unity Test
+    // Runner, where it verifies the acquired tpk actually contains a class database
+    // for the Unity version under test.
     [TestFixture]
     public class ClassDataVersionCoverageTests
     {
         [Test]
-        [Explicit("Downloads the AssetRipper tpk over the network; run manually.")]
         [Category("Integration")]
         public void AcquiredTpk_CoversRunningUnityVersion()
         {
