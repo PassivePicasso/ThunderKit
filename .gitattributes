@@ -1,0 +1,4 @@
+# Binary test fixtures are stored via Git LFS to keep the repo history lean.
+# CI checks these out with `lfs: true` (see .github/workflows/main.yml).
+*.tpk filter=lfs diff=lfs merge=lfs -text
+Tests/Editor/Fixtures/GlobalGameManagers/**/globalgamemanagers filter=lfs diff=lfs merge=lfs -text

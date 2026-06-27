@@ -22,6 +22,29 @@
 
 ### Tests
 
+* Added [ImportProjectSettingsTests](Tests/Editor/ImportProjectSettingsTests.cs):
+  a real, offline ProjectSettings export test that drives
+  `ImportProjectSettings.ExportProjectSettings` against per-version
+  `globalgamemanagers` fixtures and the committed AssetRipper `classdata.tpk`,
+  exercising the full tpk version-resolution + YAML export path. It runs in CI
+  across the whole Unity editor matrix: on every editor it asserts the class
+  database resolves and the export completes without an unrecoverable failure; on
+  an editor whose `major.minor` matches a fixture it asserts the core settings
+  actually export. Fixtures are auto-discovered under
+  `Tests/Editor/Fixtures/GlobalGameManagers/<unity-version>/` and stored via Git
+  LFS (see `.gitattributes`).
+* Added the [generate-project-settings-fixtures](.github/workflows/generate-project-settings-fixtures.yml)
+  workflow (manual `workflow_dispatch`) which, for each Unity version in the test
+  matrix, builds a throwaway empty player, extracts the `globalgamemanagers` it
+  produced, and commits it as the per-version fixture. This gives every matrix
+  editor a `globalgamemanagers` built by that exact editor — an exact class-data
+  match — without anyone hand-creating projects or running builds. The build
+  project embeds no game content (an empty project's `globalgamemanagers` is pure
+  engine/project settings).
+* `ImportProjectSettings.ExportProjectSettings` was extracted from `Execute()` as
+  an `internal` seam (class-data resolution + globalgamemanagers export, decoupled
+  from `ThunderKitSettings`/`AssetDatabase`) so it can be driven directly by tests.
+  Production behavior is unchanged.
 * The test assembly (`ThunderKit.Core.Tests`) now references `AssetsTools.NET.dll`
   directly. The precompiled reference is not transitive through `ThunderKit.Core`,
   so without it the suite failed to compile in the Unity Test Runner (the tests
