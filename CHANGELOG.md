@@ -2,6 +2,15 @@
 
 ### Changes
 
+* `TransformHierarchyTreeView` now selects its `TreeView`/`TreeViewItem`/
+  `TreeViewState` and object-identifier APIs per the Unity version that actually
+  deprecated each one, eliminating the obsolescence warnings on Unity 6000.2–6000.4.
+  The generic `TreeView<T>` types are used from 6000.2 (where the non-generic forms
+  became obsolete) and `EntityId`/`GetEntityId` from 6000.4 (where `GetInstanceID`
+  became obsolete and `Object.GetEntityId` first exists); 6000.2–6000.3 uses
+  `TreeView<int>` + `GetInstanceID`, neither of which is deprecated in that window.
+  Previously a single `UNITY_6000_5_OR_NEWER` guard compiled the deprecated path on
+  every 6000.2–6000.4 editor.
 * Class data (`classdata.tpk`) coverage is now decided on `major.minor` instead
   of `major.minor.patch`. Patch releases rarely change type trees, and our use
   (ProjectSettings) touches a small, stable set of types, so requiring an exact
