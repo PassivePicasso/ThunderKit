@@ -9,8 +9,6 @@
   * Highlights games whose `major.minor.patch` matches the running Editor and
     flags games older than Unity 2018.4 as unsupported
 
-### Fixes
-
 * Class data (`classdata.tpk`) resolution is now driven by version coverage
   instead of a fixed cache age
   * `ClassDataManager` validates whether the cached tpk actually contains a
