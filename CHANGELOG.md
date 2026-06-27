@@ -11,6 +11,17 @@
   `TreeView<int>` + `GetInstanceID`, neither of which is deprecated in that window.
   Previously a single `UNITY_6000_5_OR_NEWER` guard compiled the deprecated path on
   every 6000.2–6000.4 editor.
+* Lowered the `EntityId` migration guards in `SelfDestructingActionAsset`,
+  `MarkdownStatic`, `TemplatedWindow`, `DocumentationHelpers`, `ScriptableHelper`,
+  and `PipelineLogWindow` from `UNITY_6000_5_OR_NEWER` to `UNITY_6000_4_OR_NEWER`,
+  matching the `TransformHierarchyTreeView` change above. `EntityId`,
+  `Object.GetEntityId`, `EditorUtility.EntityIdToObject`, and
+  `AssetCreationEndAction` all exist as of 6000.4 — where `EndNameEditAction`,
+  `GetInstanceID`, `InstanceIDToObject`, and the `int`-based
+  `StartNameEditingIfProjectWindowExists` overload first become obsolete — so the
+  previous guard left those warnings firing on 6000.4. The
+  `SelfDestructingActionAssetTests` `int`-signature guard moves to
+  `!UNITY_6000_4_OR_NEWER` to match.
 * Class data (`classdata.tpk`) coverage is now decided on `major.minor` instead
   of `major.minor.patch`. Patch releases rarely change type trees, and our use
   (ProjectSettings) touches a small, stable set of types, so requiring an exact

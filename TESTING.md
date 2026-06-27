@@ -12,7 +12,7 @@ Tests live in [`Tests/Editor/`](Tests/Editor/) and run via the Unity Test Runner
 >    every assembly in the test assembly's dependency graph
 >    (`ThunderKit.Common`, `ThunderKit.Markdown`, `ThunderKit.Core`) on every
 >    Unity version. This catches version-specific compile breaks (e.g. the
->    `#if UNITY_6000_5_OR_NEWER` `EndNameEditAction` → `AssetCreationEndAction`
+>    `#if UNITY_6000_4_OR_NEWER` `EndNameEditAction` → `AssetCreationEndAction`
 >    split). It does **not** compile assemblies outside that graph — notably
 >    `ThunderKit.Addressable.*`, `ThunderKit.Thunderstore`, `ThunderKit.SpaceDock`.
 > 2. **Behavioral validation** — only the fixtures below.

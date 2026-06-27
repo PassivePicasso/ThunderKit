@@ -21,16 +21,25 @@ namespace ThunderKit.Core.Windows
     /// </summary>
     public class InstalledUnityGamesWindow : EditorWindow
     {
+        enum Backend { Unknown, Mono, Il2Cpp }
+        // None: no Addressables. Json: catalog.json (importable). Binary: catalog.bin (not yet supported).
+        enum Catalog { None, Json, Binary }
+
         class GameInfo
         {
             public string Name;
             public string Version;     // full player version, e.g. "2021.3.33f1", or "unknown"
             public string Path;
             public bool Matches;       // major.minor.patch matches the running Editor
-            public bool Supported;     // built with Unity 2018.4 or newer
+            public Backend Backend;
+            public Catalog Catalog;
+            public bool Supported;     // no blocking caveats (see BuildCaveats)
+            public string Caveats;     // newline-joined reasons it isn't fully supported, or null
         }
 
-        const string UnsupportedTooltip = "Unity version not supported by ThunderKit.";
+        const string UnsupportedVersionCaveat = "Unity version not supported by ThunderKit.";
+        const string Il2CppCaveat = "IL2CPP scripting backend is not supported by ThunderKit.";
+        const string BinaryCatalogCaveat = "Binary Addressables catalog is not supported by ThunderKit (JSON only).";
 
         // Trims a Unity version down to major.minor.patch (drops the fXX suffix).
         static readonly Regex VersionTrim = new Regex(@"(\d{1,4}\.\d+\.\d+)(.*)");
@@ -48,7 +57,7 @@ namespace ThunderKit.Core.Windows
         {
             var window = GetWindow<InstalledUnityGamesWindow>();
             window.titleContent = new GUIContent("Unity Games");
-            window.minSize = new Vector2(520, 300);
+            window.minSize = new Vector2(660, 300);
             window.Scan();
             window.Show();
         }
@@ -100,13 +109,19 @@ namespace ThunderKit.Core.Windows
 
                         var name = MatchGroup(text, "\"name\"\\s+\"([^\"]+)\"");
                         var trimmed = VersionTrim.Replace(version, m => m.Groups[1].Value);
+                        var backend = DetectBackend(gameDir);
+                        var catalog = DetectCatalog(gameDir);
+                        var caveats = BuildCaveats(version, backend, catalog);
                         found.Add(new GameInfo
                         {
                             Name = string.IsNullOrEmpty(name) ? installdir : name,
                             Version = version,
                             Path = gameDir,
                             Matches = version != "unknown" && trimmed == editorVersion,
-                            Supported = IsSupported(version),
+                            Backend = backend,
+                            Catalog = catalog,
+                            Supported = string.IsNullOrEmpty(caveats),
+                            Caveats = caveats,
                         });
                     }
                 }
@@ -116,8 +131,11 @@ namespace ThunderKit.Core.Windows
                     .OrderByDescending(g => g.Matches)
                     .ThenBy(g => g.Name, StringComparer.OrdinalIgnoreCase)
                     .ToList();
-                status = string.Format("{0} Unity game(s) found ({1} matching this Editor, {2} unsupported).",
-                    games.Count, games.Count(g => g.Matches), games.Count(g => !g.Supported));
+                status = string.Format("{0} Unity game(s) found ({1} matching this Editor, {2} IL2CPP, {3} unsupported).",
+                    games.Count,
+                    games.Count(g => g.Matches),
+                    games.Count(g => g.Backend == Backend.Il2Cpp),
+                    games.Count(g => !g.Supported));
             }
             catch (Exception e)
             {
@@ -151,6 +169,8 @@ namespace ThunderKit.Core.Windows
                 GUILayout.Label("Game", EditorStyles.boldLabel);
                 GUILayout.FlexibleSpace();
                 GUILayout.Label("Unity Version", EditorStyles.boldLabel, GUILayout.Width(110));
+                GUILayout.Label("Backend", EditorStyles.boldLabel, GUILayout.Width(60));
+                GUILayout.Label("Addressables", EditorStyles.boldLabel, GUILayout.Width(90));
                 GUILayout.Label("", GUILayout.Width(60));
             }
 
