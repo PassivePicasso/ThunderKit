@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using ThunderKit.Common;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 
@@ -52,6 +53,7 @@ namespace ThunderKit.Core.Config.Common
             if (IncludedSettings == 0) return true;
 
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
+            var classDataPath = ClassDataManager.GetClassDataPath();
 
             var unityVersion = Application.unityVersion;
             var editorDirectory = Path.GetDirectoryName(EditorApplication.applicationPath);
@@ -68,7 +70,7 @@ namespace ThunderKit.Core.Config.Common
             };
 
             assetsManager = new AssetsManager();
-            assetsManager.LoadClassPackage(ThunderKit.Common.Constants.ClassDataPath);
+            assetsManager.LoadClassPackage(classDataPath);
             assetsManager.LoadClassDatabaseFromPackage(unityVersion);
             exportManager = YAMLExportManager.CreateDefault();
 

@@ -28,6 +28,7 @@ namespace ThunderKit.Common
 
         public static readonly string ClassDataPath = Path.Combine("Packages", "com.passivepicasso.thunderkit", 
                 "Editor", "ThirdParty", "AssetsTools.NET", "uncompressed.tpk");
+        public static readonly string BundledClassDataPath = Path.GetFullPath(Path.Combine(ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
 
         public static class Priority
         {
