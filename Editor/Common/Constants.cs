@@ -26,7 +26,8 @@ namespace ThunderKit.Common
         public const string PackageSourceSettingsTemplatePath = SettingsTemplatesPath + "/PackageSourceSettings.uxml";
         public const string ThunderKitSettingsTemplatePath = SettingsTemplatesPath + "/ThunderKitSettings.uxml";
 
-        public static readonly string ClassDataPath = Path.Combine("Packages", "com.passivepicasso.thunderkit", "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk");
+        public static readonly string ClassDataPath = Path.Combine("Packages", "com.passivepicasso.thunderkit", 
+                "Editor", "ThirdParty", "AssetsTools.NET", "uncompressed.tpk");
 
         public static class Priority
         {

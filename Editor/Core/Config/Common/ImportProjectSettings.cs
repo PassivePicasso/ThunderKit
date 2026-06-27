@@ -52,7 +52,6 @@ namespace ThunderKit.Core.Config.Common
             if (IncludedSettings == 0) return true;
 
             var settings = ThunderKitSetting.GetOrCreateSettings<ThunderKitSettings>();
-            var classDataPath = Path.GetFullPath(Path.Combine(Constants.ThunderKitRoot, "Editor", "ThirdParty", "AssetsTools.NET", "classdata.tpk"));
 
             var unityVersion = Application.unityVersion;
             var editorDirectory = Path.GetDirectoryName(EditorApplication.applicationPath);
@@ -69,7 +68,7 @@ namespace ThunderKit.Core.Config.Common
             };
 
             assetsManager = new AssetsManager();
-            assetsManager.LoadClassPackage(classDataPath);
+            assetsManager.LoadClassPackage(ThunderKit.Common.Constants.ClassDataPath);
             assetsManager.LoadClassDatabaseFromPackage(unityVersion);
             exportManager = YAMLExportManager.CreateDefault();
 
