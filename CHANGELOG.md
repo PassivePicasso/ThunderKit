@@ -17,6 +17,13 @@
   `#search-input` now absorbs the flex/shrink so the `EnumFlagsField` and help
   button keep their natural size instead of colliding
 
+### Tests
+
+* [ThunderKit.Core.Tests](Tests/Editor/ThunderKit.Core.Tests.asmdef) now declares
+  `nunit.framework.dll` as a precompiled reference instead of an assembly definition
+  reference, so the test assembly resolves on Unity 2018.4.12 — the minimum editor
+  version declared in `package.json`
+
 ### Community Contributions
 
 * Thanks to @jan-bures for adding conditional compilation for Unity version
