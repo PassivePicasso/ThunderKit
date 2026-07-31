@@ -251,13 +251,15 @@ namespace ThunderKit.Core.Data
             RelinkExecutors();
         }
 
-        // Sub-assets outlive the references to them, so the list is rebuilt from the
-        // asset itself and only written when it actually changed.
+        // Rebuilt from the asset because sub-assets outlive the references to them.
+        // The type name tiebreak keeps equal-priority executors ordered identically
+        // across editor versions, so the write below happens only on a real change.
         private void RelinkExecutors()
         {
             var executors = LoadAllAssetRepresentationsAtPath(GetAssetPath(this))
                 .OfType<OptionalExecutor>()
                 .OrderByDescending(executor => executor.Priority)
+                .ThenBy(executor => executor.GetType().FullName, StringComparer.Ordinal)
                 .ToArray();
 
             if (ConfigurationExecutors != null && ConfigurationExecutors.SequenceEqual(executors))
