@@ -16,6 +16,14 @@ Uses AssetsTools.NET to parse the binary asset format and export settings as
 YAML files that Unity can read. The exported files are copied into the project's
 `ProjectSettings/` folder.
 
+## Player Layouts
+
+Players built with chunk based compression pack their serialized files into a
+single `data.unity3d` bundle rather than shipping them loose in `<Game>_Data`.
+Both layouts are supported: `globalgamemanagers` is read from the bundle when it
+is not present as a loose file. The import is skipped with a logged error when
+neither is found.
+
 This extension executes at `2,000,000` priority (`Constants.Priority.ProjectSettingsImport`).
 
 ## Included Settings

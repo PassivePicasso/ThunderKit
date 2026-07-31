@@ -20,10 +20,12 @@ default import extensions -- runs first).
 
 ## How It Works
 
-1. Reads the game's Unity version from the `globalgamemanagers` file (or
-   `data.unity3d`) using AssetsTools.NET.
+1. Reads the game's Unity version using AssetsTools.NET, from the loose
+   `globalgamemanagers` file or, for players built with chunk based compression,
+   the `data.unity3d` bundle header.
 2. If that file cannot be parsed, falls back to reading the `FileVersionInfo`
-   from the game executable.
+   from the game executable. Non-Windows executables carry no version resource,
+   so this fallback yields nothing on Linux and macOS.
 3. Compares the `major.minor.patch` portion of each version string against
    `Application.unityVersion`.
 

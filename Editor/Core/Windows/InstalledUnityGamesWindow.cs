@@ -1,4 +1,3 @@
-using AssetsTools.NET.Extra;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ThunderKit.Common;
+using ThunderKit.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -323,25 +323,15 @@ namespace ThunderKit.Core.Windows
             // the same approach ThunderKit uses in CheckUnityVersion.
             foreach (var data in dataDirs)
             {
-                foreach (var file in new[] { "globalgamemanagers", "data.unity3d" })
-                {
-                    var path = Path.Combine(data, file);
-                    if (!File.Exists(path))
-                        continue;
-                    try
-                    {
-                        var am = new AssetsManager();
-                        var asset = am.LoadAssetsFile(path, false);
-                        var v = asset != null ? asset.file.Metadata.UnityVersion : null;
-                        am.UnloadAll(true);
-                        if (!string.IsNullOrEmpty(v) && VersionScan.IsMatch(v))
-                        {
-                            version = v;
-                            return true;
-                        }
-                    }
-                    catch { }
-                }
+                if (!PlayerDataResolver.TryGetPlayerDataPath(data, out var playerDataPath))
+                    continue;
+                if (!PlayerDataResolver.TryGetPlayerUnityVersion(playerDataPath, out var v))
+                    continue;
+                if (!VersionScan.IsMatch(v))
+                    continue;
+
+                version = v;
+                return true;
             }
 
             // Fallback: scan asset headers for the version string. Covers old

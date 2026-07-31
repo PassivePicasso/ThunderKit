@@ -1,4 +1,19 @@
-## 9.4.4
+## 9.5.0
+
+### New Features
+
+* Games built with chunk based compression are now supported — new
+  [PlayerDataResolver](Editor/Core/Utilities/PlayerDataResolver.cs) reads
+  `globalgamemanagers` out of the `data.unity3d` bundle when it is not present as a loose
+  file in `<Game>_Data`
+  * [ImportProjectSettings](Editor/Core/Config/Common/ImportProjectSettings.cs) imports
+    these games instead of failing with a `FileNotFoundException`, and skips with a logged
+    error when neither layout is found
+  * [CheckUnityVersion](Editor/Core/Config/Common/CheckUnityVersion.cs) reads the version
+    from the bundle header rather than silently falling through to the game executable,
+    which carries no version resource outside Windows
+  * The **Installed Unity Games** window reports these games' Unity version instead of
+    falling back to scanning file headers
 
 ### Fixes
 
@@ -29,6 +44,9 @@
 * Added [ImportConfigurationTests](Tests/Editor/ImportConfigurationTests.cs) covering
   executor references surviving a reload, deterministic ordering, and relinking an
   unchanged list without rewriting it
+* Added [PlayerDataResolverTests](Tests/Editor/PlayerDataResolverTests.cs) covering player
+  layout selection and the bundle branch against a synthesized UnityFS bundle, so the
+  compressed layout is exercised without a multi-megabyte fixture
 
 ## 9.4.3
 

@@ -1,9 +1,9 @@
-using AssetsTools.NET.Extra;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ThunderKit.Core.Data;
+using ThunderKit.Core.Utilities;
 using UnityEngine;
 
 namespace ThunderKit.Core.Config.Common
@@ -26,28 +26,19 @@ namespace ThunderKit.Core.Config.Common
 
             bool foundVersion = false;
 
-            var informationFile = Path.Combine(settings.GameDataPath, "globalgamemanagers");
-            if (!File.Exists(informationFile)) informationFile = Path.Combine(settings.GameDataPath, "data.unity3d");
-            if (File.Exists(informationFile))
+            if (PlayerDataResolver.TryGetPlayerDataPath(settings.GameDataPath, out var informationFile)
+                && PlayerDataResolver.TryGetPlayerUnityVersion(informationFile, out var serializedVersion))
             {
-                try
-                {
-                    var am = new AssetsManager();
-                    var ggm = am.LoadAssetsFile(informationFile, false);
-
-                    playerVersion = regs.Replace(ggm.file.Metadata.UnityVersion, match => match.Groups[1].Value);
-
-                    am.UnloadAll(true);
-                    versionMatch = unityVersion.Equals(playerVersion);
-                    foundVersion = true;
-                }
-                catch { foundVersion = false; }
+                playerVersion = regs.Replace(serializedVersion, match => match.Groups[1].Value);
+                versionMatch = unityVersion.Equals(playerVersion);
+                foundVersion = true;
             }
 
             if (!foundVersion)
             {
+                // Non-Windows executables carry no version resource, so FileVersion is null there.
                 var fvi = FileVersionInfo.GetVersionInfo(Path.Combine(settings.GamePath, settings.GameExecutable));
-                playerVersion = regs.Replace(fvi.FileVersion, match => match.Groups[1].Value);
+                playerVersion = regs.Replace(fvi.FileVersion ?? string.Empty, match => match.Groups[1].Value);
                 if (playerVersion.Count(f => f == '.') == 2)
                     versionMatch = unityVersion.Equals(playerVersion);
             }
