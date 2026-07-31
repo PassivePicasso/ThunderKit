@@ -24,6 +24,8 @@ namespace ThunderKit.Core.Windows
         enum Backend { Unknown, Mono, Il2Cpp }
         // None: no Addressables. Json: catalog.json (importable). Binary: catalog.bin (not yet supported).
         enum Catalog { None, Json, Binary }
+        // Unknown: couldn't tell (e.g. IL2CPP games strip the Managed dlls this is detected from).
+        enum Pipeline { Unknown, BiRP, URP, HDRP, Custom }
 
         class GameInfo
         {
@@ -33,6 +35,7 @@ namespace ThunderKit.Core.Windows
             public bool Matches;       // major.minor.patch matches the running Editor
             public Backend Backend;
             public Catalog Catalog;
+            public Pipeline Pipeline;
             public bool Supported;     // no blocking caveats (see BuildCaveats)
             public string Caveats;     // newline-joined reasons it isn't fully supported, or null
         }
@@ -57,7 +60,7 @@ namespace ThunderKit.Core.Windows
         {
             var window = GetWindow<InstalledUnityGamesWindow>();
             window.titleContent = new GUIContent("Unity Games");
-            window.minSize = new Vector2(660, 300);
+            window.minSize = new Vector2(720, 300);
             window.Scan();
             window.Show();
         }
@@ -111,6 +114,7 @@ namespace ThunderKit.Core.Windows
                         var trimmed = VersionTrim.Replace(version, m => m.Groups[1].Value);
                         var backend = DetectBackend(gameDir);
                         var catalog = DetectCatalog(gameDir);
+                        var pipeline = DetectPipeline(gameDir);
                         var caveats = BuildCaveats(version, backend, catalog);
                         found.Add(new GameInfo
                         {
@@ -120,6 +124,7 @@ namespace ThunderKit.Core.Windows
                             Matches = version != "unknown" && trimmed == editorVersion,
                             Backend = backend,
                             Catalog = catalog,
+                            Pipeline = pipeline,
                             Supported = string.IsNullOrEmpty(caveats),
                             Caveats = caveats,
                         });
@@ -170,6 +175,7 @@ namespace ThunderKit.Core.Windows
                 GUILayout.FlexibleSpace();
                 GUILayout.Label("Unity Version", EditorStyles.boldLabel, GUILayout.Width(110));
                 GUILayout.Label("Backend", EditorStyles.boldLabel, GUILayout.Width(60));
+                GUILayout.Label("Pipeline", EditorStyles.boldLabel, GUILayout.Width(60));
                 GUILayout.Label("Addressables", EditorStyles.boldLabel, GUILayout.Width(90));
                 GUILayout.Label("", GUILayout.Width(60));
             }
@@ -203,6 +209,8 @@ namespace ThunderKit.Core.Windows
                 var backendText = BackendLabel(game.Backend);
                 var backendTip = game.Backend == Backend.Il2Cpp ? Il2CppCaveat : null;
                 GUILayout.Label(new GUIContent(backendText, backendTip), nameStyle, GUILayout.Width(60));
+
+                GUILayout.Label(new GUIContent(PipelineLabel(game.Pipeline)), nameStyle, GUILayout.Width(60));
 
                 var catalogText = CatalogLabel(game.Catalog);
                 var catalogTip = game.Catalog == Catalog.Binary ? BinaryCatalogCaveat : null;
@@ -440,6 +448,40 @@ namespace ThunderKit.Core.Windows
             return Backend.Unknown;
         }
 
+        // Render pipeline is inferred from which SRP runtime assembly ships in
+        // *_Data/Managed: Unity.RenderPipelines.Universal.Runtime.dll for URP,
+        // HighDefinition.Runtime.dll for HDRP, and any other assembly built on
+        // Unity.RenderPipelines.Core.Runtime.dll (without those two) for a
+        // custom SRP. No SRP core assembly present means the built-in pipeline.
+        // IL2CPP games strip managed dlls to metadata-only stubs, so this only
+        // resolves for Mono games; others report Unknown rather than guessing.
+        static Pipeline DetectPipeline(string gameDir)
+        {
+            bool hasCore = false, hasUrp = false, hasHdrp = false, sawManaged = false;
+            foreach (var data in SafeGetDirectories(gameDir, "*_Data"))
+            {
+                var managed = Path.Combine(data, "Managed");
+                if (!Directory.Exists(managed))
+                    continue;
+                foreach (var dll in SafeGetFiles(managed, "*.dll"))
+                {
+                    sawManaged = true;
+                    var name = Path.GetFileNameWithoutExtension(dll);
+                    if (name.Equals("Unity.RenderPipelines.Core.Runtime", StringComparison.OrdinalIgnoreCase))
+                        hasCore = true;
+                    else if (name.Equals("Unity.RenderPipelines.Universal.Runtime", StringComparison.OrdinalIgnoreCase))
+                        hasUrp = true;
+                    else if (name.Equals("Unity.RenderPipelines.HighDefinition.Runtime", StringComparison.OrdinalIgnoreCase))
+                        hasHdrp = true;
+                }
+            }
+
+            if (hasUrp) return Pipeline.URP;
+            if (hasHdrp) return Pipeline.HDRP;
+            if (hasCore) return Pipeline.Custom;
+            return sawManaged ? Pipeline.BiRP : Pipeline.Unknown;
+        }
+
         // Addressables content lives in *_Data/StreamingAssets/aa. A catalog.bin is
         // produced by the newer binary catalog format; catalog.json by the classic
         // (and only currently importable) JSON format. Hash-suffixed names such as
@@ -465,6 +507,18 @@ namespace ThunderKit.Core.Windows
             {
                 case Backend.Mono: return "Mono";
                 case Backend.Il2Cpp: return "IL2CPP";
+                default: return "?";
+            }
+        }
+
+        static string PipelineLabel(Pipeline pipeline)
+        {
+            switch (pipeline)
+            {
+                case Pipeline.BiRP: return "BiRP";
+                case Pipeline.URP: return "URP";
+                case Pipeline.HDRP: return "HDRP";
+                case Pipeline.Custom: return "Custom";
                 default: return "?";
             }
         }
