@@ -197,8 +197,13 @@ namespace ThunderKit.Addressable.Tools
 
             ((ArrayList)directory.itemsSource).Sort(comparer);
 
+#if UNITY_2021_2_OR_NEWER
+            directory.Rebuild();
+            directoryContent.Rebuild();
+#else
             directory.Refresh();
             directoryContent.Refresh();
+#endif
         }
         ResoourceNameSorter comparer = new ResoourceNameSorter();
         private class ResoourceNameSorter : IComparer
@@ -218,7 +223,11 @@ namespace ThunderKit.Addressable.Tools
 
             directoryContent.itemsSource.Clear();
             Filter(directoryContent.itemsSource, locations, false);
+#if UNITY_2021_2_OR_NEWER
+            directoryContent.Rebuild();
+#else
             directoryContent.Refresh();
+#endif
         }
         private string GroupLocation(IResourceLocation g)
         {

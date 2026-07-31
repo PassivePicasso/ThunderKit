@@ -17,7 +17,12 @@ using UnityEngine.Experimental.UIElements;
 
 namespace ThunderKit.Addressable.Tools
 {
+#if UNITY_6000_3_OR_NEWER
+    [UxmlElement]
+    public partial class AddressablePreviewImage : Image
+#else
     public class AddressablePreviewImage : Image
+#endif
     {
         private const string Library = "Library";
         private const string SimplyAddress = "SimplyAddress";
@@ -29,8 +34,10 @@ namespace ThunderKit.Addressable.Tools
 
         private Texture2D texture;
 
+#if !UNITY_6000_3_OR_NEWER
         public new class UxmlFactory : UxmlFactory<AddressablePreviewImage, UxmlTraits> { }
         public new class UxmlTraits : Image.UxmlTraits { }
+#endif
 
         static AddressablePreviewImage()
         {
