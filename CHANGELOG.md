@@ -1,3 +1,21 @@
+## 9.4.3
+
+### Fixes
+
+* [AddressableBrowser](Editor/Addressable/Tools/AddressableBrowser.cs)'s search
+  toolbar no longer overlaps the display-options dropdown on Unity 6000.3+ —
+  `#search-input` now absorbs the flex/shrink so the `EnumFlagsField` and help
+  button keep their natural size instead of colliding
+
+### Community Contributions
+
+* Thanks to @jan-bures for adding conditional compilation for Unity version
+  support in Addressable tools (#123)
+  * `AddressableBrowser` now calls `Rebuild()` instead of the obsolete
+    `Refresh()` on Unity 2021.2+
+  * `AddressablePreviewImage` adopts the `[UxmlElement]` attribute system on
+    Unity 6000.3+, replacing the removed `UxmlFactory`/`UxmlTraits` pattern
+
 ## 9.4.2
 
 ### Fixes
