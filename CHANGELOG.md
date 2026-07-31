@@ -2,6 +2,28 @@
 
 ### Fixes
 
+* Updated the bundled `AssetsTools.NET` to read AssetRipper's version 2
+  `classdata.tpk` container, fixing an `Unsupported or invalid file version 2`
+  exception that failed game import outright
+  * [ClassDataManager](Editor/Core/Utilities/ClassDataManager.cs) now stages each
+    download and promotes it over the cache only once the bundled `AssetsTools.NET`
+    proves it can read it, so a future format bump can no longer replace a working
+    `classdata.tpk`
+  * A tpk this build cannot parse is never returned from `GetClassDataPath`, and
+    [ImportProjectSettings](Editor/Core/Config/Common/ImportProjectSettings.cs)
+    raises `UnsupportedClassDataException` on an unreadable package — skipping the
+    settings import instead of aborting the game import
+
+### Tests
+
+* [ClassDataManagerTests](Tests/Editor/ClassDataManagerTests.cs) now cover the
+  unreadable-tpk guard — an incompatible download leaves the cache untouched, and no
+  unusable tpk resolves to a usable path
+
+## 9.4.4
+
+### Fixes
+
 * [ImportConfiguration](Editor/Core/Config/ImportConfiguration.cs) no longer loses its
   executor list when the Editor is closed and reopened — `ConfigurationExecutors` is now
   saved after it is populated rather than before

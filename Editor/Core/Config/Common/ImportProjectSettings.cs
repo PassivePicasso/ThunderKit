@@ -127,7 +127,16 @@ namespace ThunderKit.Core.Config.Common
             };
 
             assetsManager = new AssetsManager();
-            assetsManager.LoadClassPackage(classDataPath);
+            // A tpk in a container format newer than the bundled AssetsTools.NET throws
+            // here; skip the settings import rather than failing the whole game import.
+            try
+            {
+                assetsManager.LoadClassPackage(classDataPath);
+            }
+            catch (Exception e)
+            {
+                throw new UnsupportedClassDataException($"class data at '{classDataPath}' could not be read ({e.Message}).");
+            }
 
             // Prefer the version that built the game, recorded in globalgamemanagers, over the Editor's.
             var globalGameManagersFile = assetsManager.LoadAssetsFile(globalGameManagersPath, true);
