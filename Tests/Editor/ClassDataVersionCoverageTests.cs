@@ -23,8 +23,9 @@ namespace ThunderKitTests
             Assert.That(tpkPath, Is.Not.Null.And.Not.Empty,
                 $"No classdata.tpk could be obtained for Unity {Application.unityVersion} (download failed or version unsupported).");
             Assert.That(File.Exists(tpkPath), Is.True, $"Resolved tpk path does not exist: {tpkPath}");
-            Assert.That(ClassDataManager.SupportsVersion(tpkPath, Application.unityVersion), Is.True,
-                $"Acquired classdata.tpk does not contain a class database for Unity {Application.unityVersion}.");
+            Assert.That(ClassDataManager.InspectTpk(tpkPath, Application.unityVersion),
+                Is.EqualTo(ClassDataManager.TpkState.Covered),
+                $"Acquired classdata.tpk is not readable by the bundled AssetsTools.NET, or contains no class database for Unity {Application.unityVersion}.");
         }
     }
 }

@@ -24,13 +24,40 @@ namespace ThunderKit.Core.Utilities
         static readonly string MetadataPath = Path.Combine("Library", "ThunderKit", "classdata.tpk.json");
         static readonly TimeSpan RetryThrottle = TimeSpan.FromDays(1);
 
+        // How a tpk stands relative to the bundled AssetsTools.NET and a Unity version.
+        internal enum TpkState
+        {
+            Missing,
+            // Container format newer than the bundled AssetsTools.NET, or corrupt.
+            // Unusable regardless of which Unity versions it covers.
+            Unreadable,
+            Uncovered,
+            Covered,
+        }
+
+        internal enum TpkDownloadResult
+        {
+            Failed,
+            // Fetched, but unreadable here. Discarded instead of promoted.
+            Incompatible,
+            Downloaded,
+        }
+
         internal enum ClassDataStatus
         {
             CacheSupported,
             DownloadedSupported,
             Throttled,
             UnsupportedAfterDownload,
+            DownloadIncompatible,
             DownloadFailed,
+        }
+
+        internal enum ClassDataResolution
+        {
+            UseCache,
+            UseCacheWithWarning,
+            None,
         }
 
         [Serializable]
@@ -42,14 +69,13 @@ namespace ThunderKit.Core.Utilities
         public static string GetClassDataPath()
         {
             var unityVersion = Application.unityVersion;
-            var cacheSupports = SupportsVersion(CachedTpkPath, unityVersion);
-            var throttled = IsThrottledNow(DateTime.UtcNow);
+            var cacheState = InspectTpk(CachedTpkPath, unityVersion);
 
             var status = PlanAcquisition(
-                cacheSupports,
-                throttled,
-                tryDownload: TryDownloadTpk,
-                cacheSupportsAfterDownload: () => SupportsVersion(CachedTpkPath, unityVersion));
+                cacheState,
+                IsThrottledNow(DateTime.UtcNow),
+                tryDownload: () => TryDownloadTpk(unityVersion),
+                cacheStateAfterDownload: () => InspectTpk(CachedTpkPath, unityVersion));
 
             switch (status)
             {
@@ -58,75 +84,112 @@ namespace ThunderKit.Core.Utilities
                     ClearAttemptMarker();
                     return CachedTpkPath;
 
+                case ClassDataStatus.DownloadIncompatible:
+                    WarnTpkFormatUnsupported();
+                    WriteAttemptMarker(DateTime.UtcNow);
+                    return PathFor(cacheState, unityVersion);
+
                 case ClassDataStatus.UnsupportedAfterDownload:
+                    WriteAttemptMarker(DateTime.UtcNow);
+                    return PathFor(InspectTpk(CachedTpkPath, unityVersion), unityVersion);
+
                 case ClassDataStatus.DownloadFailed:
                     WriteAttemptMarker(DateTime.UtcNow);
-                    return BestAvailableOrNull(unityVersion);
+                    return PathFor(cacheState, unityVersion);
 
                 case ClassDataStatus.Throttled:
-                    return BestAvailableOrNull(unityVersion);
+                    return PathFor(cacheState, unityVersion);
 
                 default:
                     return null;
             }
         }
 
-        // Returns the cached tpk (with a warning that it may not fully cover the running
-        // Unity version) when one exists, or null with an error when none is available.
-        static string BestAvailableOrNull(string unityVersion)
+        internal static ClassDataStatus PlanAcquisition(TpkState cacheState, bool throttled,
+            Func<TpkDownloadResult> tryDownload, Func<TpkState> cacheStateAfterDownload)
         {
-            if (File.Exists(CachedTpkPath))
-            {
-                WarnVersionNotCovered(unityVersion);
-                return CachedTpkPath;
-            }
-
-            Debug.LogError($"[ThunderKit] No classdata.tpk is available and one could not be downloaded for Unity {unityVersion}. ProjectSettings import will be skipped.");
-            return null;
-        }
-
-        internal static ClassDataStatus PlanAcquisition(bool cacheSupports, bool throttled,
-            Func<bool> tryDownload, Func<bool> cacheSupportsAfterDownload)
-        {
-            if (cacheSupports)
+            if (cacheState == TpkState.Covered)
                 return ClassDataStatus.CacheSupported;
 
             if (throttled)
                 return ClassDataStatus.Throttled;
 
-            if (!tryDownload())
-                return ClassDataStatus.DownloadFailed;
+            switch (tryDownload())
+            {
+                case TpkDownloadResult.Failed:
+                    return ClassDataStatus.DownloadFailed;
 
-            return cacheSupportsAfterDownload()
+                case TpkDownloadResult.Incompatible:
+                    return ClassDataStatus.DownloadIncompatible;
+            }
+
+            return cacheStateAfterDownload() == TpkState.Covered
                 ? ClassDataStatus.DownloadedSupported
                 : ClassDataStatus.UnsupportedAfterDownload;
         }
 
-        internal static bool SupportsVersion(string tpkPath, string unityVersion)
+        // An uncovered tpk is still worth using — SelectBestVersion falls back to the
+        // closest type data — but an unreadable one can only throw at load time.
+        internal static ClassDataResolution ResolveFromState(TpkState state)
+        {
+            switch (state)
+            {
+                case TpkState.Covered:
+                    return ClassDataResolution.UseCache;
+
+                case TpkState.Uncovered:
+                    return ClassDataResolution.UseCacheWithWarning;
+
+                default:
+                    return ClassDataResolution.None;
+            }
+        }
+
+        static string PathFor(TpkState state, string unityVersion)
+        {
+            switch (ResolveFromState(state))
+            {
+                case ClassDataResolution.UseCache:
+                    return CachedTpkPath;
+
+                case ClassDataResolution.UseCacheWithWarning:
+                    WarnVersionNotCovered(unityVersion);
+                    return CachedTpkPath;
+
+                default:
+                    Debug.LogError($"[ThunderKit] No usable class data (classdata.tpk) is available for Unity {unityVersion}. ProjectSettings import will be skipped.");
+                    return null;
+            }
+        }
+
+        internal static TpkState InspectTpk(string tpkPath, string unityVersion)
         {
             if (!File.Exists(tpkPath))
-                return false;
+                return TpkState.Missing;
+
+            List<UnityVersion> versions;
+            try
+            {
+                versions = new AssetsManager().LoadClassPackage(tpkPath)?.TpkTypeTree?.Versions;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[ThunderKit] Class data at {tpkPath} could not be read by the AssetsTools.NET bundled with this version of ThunderKit: {e.Message}");
+                return TpkState.Unreadable;
+            }
+
+            if (versions == null)
+                return TpkState.Unreadable;
+
             // Coverage is decided on major.minor only. Type trees rarely change in a
             // patch release, and our use (ProjectSettings) touches a small, stable set
             // of types, so requiring an exact patch match would reject usable tpks.
             if (!TryParseUnityVersion(unityVersion, out var major, out var minor, out _))
-                return false;
+                return TpkState.Uncovered;
 
-            try
-            {
-                var manager = new AssetsManager();
-                var package = manager.LoadClassPackage(tpkPath);
-                var versions = package?.TpkTypeTree?.Versions;
-                if (versions == null)
-                    return false;
-
-                return versions.Any(v => v.major == major && v.minor == minor);
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[ThunderKit] Failed to inspect classdata.tpk versions: {e.Message}");
-                return false;
-            }
+            return versions.Any(v => v.major == major && v.minor == minor)
+                ? TpkState.Covered
+                : TpkState.Uncovered;
         }
 
         // Picks the tpk version to build a class database from for the running Unity
@@ -233,13 +296,19 @@ namespace ThunderKit.Core.Utilities
             }
         }
 
-        static bool TryDownloadTpk()
+        // Downloads into a staging directory and promotes over the cache only after the
+        // bundled AssetsTools.NET proves it can read the result, so a tpk published in a
+        // newer container format cannot destroy a cache that still works.
+        static TpkDownloadResult TryDownloadTpk(string unityVersion)
         {
+            var stagingDir = Path.Combine(Constants.TempDir, "classdata_staging");
             try
             {
-                Debug.LogWarning("[ThunderKit] Downloading tpk archive");
+                Debug.Log("[ThunderKit] Downloading tpk archive");
                 Directory.CreateDirectory(CacheDir);
                 Directory.CreateDirectory(Constants.TempDir);
+                SafeDeleteDirectory(stagingDir);
+                Directory.CreateDirectory(stagingDir);
 
                 var tempZipPath = Path.Combine(Constants.TempDir, "classdata_download.zip");
 
@@ -248,23 +317,45 @@ namespace ThunderKit.Core.Utilities
                     client.DownloadFile(TpkDownloadUrl, tempZipPath);
                 }
 
-                if (ExtractTpkFromArchive(tempZipPath, CacheDir, CachedTpkPath) == null)
+                var stagedTpkPath = ExtractTpkFromArchive(
+                    tempZipPath, stagingDir, Path.Combine(stagingDir, "classdata.tpk"));
+                SafeDelete(tempZipPath);
+
+                if (stagedTpkPath == null)
                 {
                     Debug.LogWarning("[ThunderKit] Downloaded archive does not contain a .tpk file");
-                    return false;
+                    return TpkDownloadResult.Failed;
                 }
 
-                if (File.Exists(tempZipPath))
-                    File.Delete(tempZipPath);
+                if (InspectTpk(stagedTpkPath, unityVersion) == TpkState.Unreadable)
+                    return TpkDownloadResult.Incompatible;
 
+                PromoteToCache(stagedTpkPath);
                 Debug.Log("[ThunderKit] Successfully downloaded updated classdata.tpk");
-                return true;
+                return TpkDownloadResult.Downloaded;
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"[ThunderKit] Failed to download updated classdata.tpk: {e.Message}");
-                return false;
+                return TpkDownloadResult.Failed;
             }
+            finally
+            {
+                SafeDeleteDirectory(stagingDir);
+            }
+        }
+
+        // Copies alongside the cache and lands it with a same-directory move, so a
+        // failure part way through leaves the old tpk intact rather than truncated.
+        static void PromoteToCache(string stagedTpkPath)
+        {
+            var pendingPath = CachedTpkPath + ".new";
+            File.Copy(stagedTpkPath, pendingPath, true);
+
+            if (File.Exists(CachedTpkPath))
+                File.Delete(CachedTpkPath);
+
+            File.Move(pendingPath, CachedTpkPath);
         }
 
         internal static string ExtractTpkFromArchive(string archivePath, string destDir, string finalTpkPath)
@@ -307,6 +398,13 @@ namespace ThunderKit.Core.Utilities
                 "such failures will be reported per-setting.");
         }
 
+        static void WarnTpkFormatUnsupported()
+        {
+            Debug.LogWarning("[ThunderKit] The downloaded class data (classdata.tpk) uses a container format newer " +
+                "than the AssetsTools.NET bundled with this version of ThunderKit. The download was discarded and any " +
+                "previously cached class data is kept. Update ThunderKit to pick up support for the new format.");
+        }
+
         static void WriteAttemptMarker(DateTime nowUtc)
         {
             try
@@ -332,6 +430,19 @@ namespace ThunderKit.Core.Utilities
             {
                 if (File.Exists(path))
                     File.Delete(path);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[ThunderKit] Failed to delete {path}: {e.Message}");
+            }
+        }
+
+        static void SafeDeleteDirectory(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                    Directory.Delete(path, true);
             }
             catch (Exception e)
             {
