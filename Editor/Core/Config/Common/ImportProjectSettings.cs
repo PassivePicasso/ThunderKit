@@ -61,14 +61,24 @@ namespace ThunderKit.Core.Config.Common
             }
 
             var unityVersion = Application.unityVersion;
-            var globalGameManagersPath = Path.Combine(settings.GameDataPath, "globalgamemanagers");
+            if (!PlayerDataResolver.TryGetPlayerDataPath(settings.GameDataPath, out var playerDataPath))
+            {
+                Debug.LogError($"[ThunderKit] Skipping ProjectSettings import: no '{PlayerDataResolver.GlobalGameManagers}' " +
+                    $"or '{PlayerDataResolver.CompressedPlayerData}' found in '{settings.GameDataPath}'.");
+                return true;
+            }
             var outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Temp", "ImportedProjectSettings");
 
             try
             {
-                ExportProjectSettings(classDataPath, globalGameManagersPath, outputDirectory, unityVersion);
+                ExportProjectSettings(classDataPath, playerDataPath, outputDirectory, unityVersion);
             }
             catch (UnsupportedClassDataException e)
+            {
+                Debug.LogError($"[ThunderKit] Skipping ProjectSettings import: {e.Message}");
+                return true;
+            }
+            catch (PlayerDataResolver.MissingGlobalGameManagersException e)
             {
                 Debug.LogError($"[ThunderKit] Skipping ProjectSettings import: {e.Message}");
                 return true;
@@ -113,7 +123,7 @@ namespace ThunderKit.Core.Config.Common
         }
 
         // Internal seam decoupled from ThunderKitSettings/AssetDatabase so tests can drive it against committed fixtures (see ImportProjectSettingsTests).
-        internal List<string> ExportProjectSettings(string classDataPath, string globalGameManagersPath, string outputDirectory, string unityVersion)
+        internal List<string> ExportProjectSettings(string classDataPath, string playerDataPath, string outputDirectory, string unityVersion)
         {
             outputProjectSettingsDirectory = outputDirectory;
 
@@ -139,7 +149,7 @@ namespace ThunderKit.Core.Config.Common
             }
 
             // Prefer the version that built the game, recorded in globalgamemanagers, over the Editor's.
-            var globalGameManagersFile = assetsManager.LoadAssetsFile(globalGameManagersPath, true);
+            var globalGameManagersFile = PlayerDataResolver.LoadGlobalGameManagers(assetsManager, playerDataPath);
             var fileVersion = globalGameManagersFile.file.Metadata.UnityVersion;
             if (!string.IsNullOrEmpty(fileVersion) && ClassDataManager.TryParseUnityVersion(fileVersion, out _, out _, out _))
             {
