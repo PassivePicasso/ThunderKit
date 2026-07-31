@@ -4,8 +4,7 @@
         "ThunderKit.Core",
         "ThunderKit.Common",
         "ThunderKit.Markdown",
-        "ThunderKit.Thunderstore",
-        "nunit.framework"
+        "ThunderKit.Thunderstore"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -17,7 +16,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "AssetsTools.NET.dll"
+        "AssetsTools.NET.dll",
+        "nunit.framework.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []
