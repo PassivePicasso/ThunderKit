@@ -13,17 +13,6 @@
     [ImportProjectSettings](Editor/Core/Config/Common/ImportProjectSettings.cs)
     raises `UnsupportedClassDataException` on an unreadable package — skipping the
     settings import instead of aborting the game import
-
-### Tests
-
-* [ClassDataManagerTests](Tests/Editor/ClassDataManagerTests.cs) now cover the
-  unreadable-tpk guard — an incompatible download leaves the cache untouched, and no
-  unusable tpk resolves to a usable path
-
-## 9.4.4
-
-### Fixes
-
 * [ImportConfiguration](Editor/Core/Config/ImportConfiguration.cs) no longer loses its
   executor list when the Editor is closed and reopened — `ConfigurationExecutors` is now
   saved after it is populated rather than before
@@ -34,6 +23,9 @@
 
 ### Tests
 
+* [ClassDataManagerTests](Tests/Editor/ClassDataManagerTests.cs) now cover the
+  unreadable-tpk guard — an incompatible download leaves the cache untouched, and no
+  unusable tpk resolves to a usable path
 * Added [ImportConfigurationTests](Tests/Editor/ImportConfigurationTests.cs) covering
   executor references surviving a reload, deterministic ordering, and relinking an
   unchanged list without rewriting it
