@@ -44,6 +44,8 @@ namespace ThunderKit.Core.Data
         }
         [SerializeField, HideInInspector] private int totalImportExtensionCount = -1;
 
+        static bool executorsRelinked;
+
         [InitializeOnLoadMethod]
         static void Init()
         {
@@ -63,6 +65,11 @@ namespace ThunderKit.Core.Data
                 configInstance = RecreateSelf(configInstance);
                 SaveAssets();
             }
+            else if (!executorsRelinked)
+            {
+                configInstance.RelinkExecutors();
+            }
+            executorsRelinked = true;
 
             configInstance.ImportGame();
         }
@@ -220,7 +227,7 @@ namespace ThunderKit.Core.Data
             var settingsPath = GetAssetPath(this);
             var builder = new StringBuilder("Loaded Import Extensions");
             builder.AppendLine();
-            var existingAssetTypes = new HashSet<Type>(ConfigurationExecutors.Select(obj => obj.GetType()));
+            var existingAssetTypes = new HashSet<Type>(ConfigurationExecutors.Where(obj => obj).Select(obj => obj.GetType()));
             foreach (var t in executorTypes)
             {
                 if (existingAssetTypes.Contains(t))
@@ -241,10 +248,26 @@ namespace ThunderKit.Core.Data
             EditorUtility.SetDirty(this);
             SaveAssets();
             ImportAsset(settingsPath);
-            var assetReps = LoadAllAssetRepresentationsAtPath(settingsPath);
-            var optionalExecutors = assetReps.OfType<OptionalExecutor>().ToArray();
-            var orderedExecutors = optionalExecutors.OrderByDescending(executor => executor.Priority).ToArray();
-            ConfigurationExecutors = orderedExecutors.ToArray();
+            RelinkExecutors();
+        }
+
+        // Rebuilt from the asset because sub-assets outlive the references to them.
+        // The type name tiebreak keeps equal-priority executors ordered identically
+        // across editor versions, so the write below happens only on a real change.
+        private void RelinkExecutors()
+        {
+            var executors = LoadAllAssetRepresentationsAtPath(GetAssetPath(this))
+                .OfType<OptionalExecutor>()
+                .OrderByDescending(executor => executor.Priority)
+                .ThenBy(executor => executor.GetType().FullName, StringComparer.Ordinal)
+                .ToArray();
+
+            if (ConfigurationExecutors != null && ConfigurationExecutors.SequenceEqual(executors))
+                return;
+
+            ConfigurationExecutors = executors;
+            EditorUtility.SetDirty(this);
+            SaveAssets();
         }
 
         public void ImportGame()

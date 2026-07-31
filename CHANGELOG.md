@@ -1,3 +1,21 @@
+## 9.4.4
+
+### Fixes
+
+* [ImportConfiguration](Editor/Core/Config/ImportConfiguration.cs) no longer loses its
+  executor list when the Editor is closed and reopened — `ConfigurationExecutors` is now
+  saved after it is populated rather than before
+  * Configurations already saved without their references are repaired on load from the
+    executor sub-assets, preserving each executor's enabled state
+  * Equal-priority executors are ordered by type name, so the saved order no longer
+    depends on Unity's sub-asset ordering
+
+### Tests
+
+* Added [ImportConfigurationTests](Tests/Editor/ImportConfigurationTests.cs) covering
+  executor references surviving a reload, deterministic ordering, and relinking an
+  unchanged list without rewriting it
+
 ## 9.4.3
 
 ### New Features
