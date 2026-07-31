@@ -96,12 +96,18 @@ TemplateContainer.unity-list-view__item--selected>#addressable-asset {
 }
 .search-toolbar>#search-input
 {
-	min-width: 200px;
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 100px;
+	min-width: 100px;
 	padding-right: 4px;
+}
+.search-toolbar>#help-button {
+	flex-shrink: 0;
 }
 .search-toolbar>.enumPicker {
 	flex-grow: 0;
-	flex-shrink: 1;
+	flex-shrink: 0;
 }
 .search-toolbar>.enumPicker .unity-text-element {
 	padding-left: 4px;
