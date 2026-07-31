@@ -1,5 +1,15 @@
 ## 9.4.3
 
+### New Features
+
+* The **Installed Unity Games** window
+  ([InstalledUnityGamesWindow](Editor/Core/Windows/InstalledUnityGamesWindow.cs))
+  now reports each game's render pipeline
+  * A **Pipeline** column shows `BiRP`, `URP`, `HDRP`, `Custom`, or `?`, inferred
+    from the SRP runtime assemblies present in `*_Data/Managed`
+  * IL2CPP games report `?` since their managed assemblies are stripped to
+    metadata-only stubs
+
 ### Fixes
 
 * [AddressableBrowser](Editor/Addressable/Tools/AddressableBrowser.cs)'s search
