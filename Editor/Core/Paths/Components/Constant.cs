@@ -5,6 +5,6 @@ namespace ThunderKit.Core.Paths.Components
     public class Constant : PathComponent
     {
         public string Value;
-        protected override string GetPathInternal(PathReference output, Pipeline pipeline) => Value;
+        protected override string GetPathInternal(PathReference output, Pipeline pipeline) => System.Environment.ExpandEnvironmentVariables(Value);
     }
 }
