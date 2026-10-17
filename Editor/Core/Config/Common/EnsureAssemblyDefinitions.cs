@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
+using UnityEditor.Compilation;
+using UnityEditorInternal;
+using UnityEngine;
 
 namespace ThunderKit.Core.Config.Common
 {
@@ -18,10 +21,7 @@ namespace ThunderKit.Core.Config.Common
 
         public override bool Execute()
         {
-            var asmdefDirs = new HashSet<string>(
-                Directory.GetFiles("Assets", "*.asmdef", SearchOption.AllDirectories)
-                    .Select(f => Path.GetFullPath(Path.GetDirectoryName(f))),
-                StringComparer.OrdinalIgnoreCase);
+            var asmdefDirs = RetrieveAsmdefDirs();
 
             var orphaned = Directory.GetFiles("Assets", "*.cs", SearchOption.AllDirectories)
                 .Where(cs => !IsUnderAsmdef(Path.GetFullPath(cs), asmdefDirs))
@@ -52,6 +52,18 @@ namespace ThunderKit.Core.Config.Common
             throw new Exception(console.ToString());
         }
 
+        private HashSet<string> RetrieveAsmdefDirs()
+        {
+            IEnumerable<string> assemblyDefs = Directory.GetFiles("Assets", "*.asmdef", SearchOption.AllDirectories);
+
+            //2019.2 introduces AssemblyReferences, consider these as well if we are in 2019.2 or newer
+#if UNITY_2019_2_OR_NEWER
+            assemblyDefs = assemblyDefs.Concat(GetValidAsmRefPaths());
+#endif
+
+            return new HashSet<string>(assemblyDefs.Select(f => Path.GetFullPath(Path.GetDirectoryName(f))), StringComparer.OrdinalIgnoreCase);
+        }
+
         private static bool IsUnderAsmdef(string csFullPath, HashSet<string> asmdefDirs)
         {
             var dir = Path.GetDirectoryName(csFullPath);
@@ -64,5 +76,61 @@ namespace ThunderKit.Core.Config.Common
             }
             return false;
         }
+
+#if UNITY_2019_2_OR_NEWER
+        //C# representation of an AssemblyDefinitionReference (.asmref) json data
+        [Serializable]
+        struct AsmRef
+        {
+            //This is the only data stored in the json file, a "Reference" string. This string can either be the AssemblyDefinition name (IE: "MyAssembly"), or the GUID of the AssemblyDefinition (IE: "GUID:48ca85826e6646842b586677c033f60d").
+            [SerializeField]
+            private string reference;
+
+            /// <summary>
+            /// Returns the AssemblyDefinitionAsset GUID that this AssemblyDefinitionReference Asset contains
+            /// </summary>
+            public string GetAssemblyReferenceGUID()
+            {
+                if (string.IsNullOrWhiteSpace(reference))
+                {
+                    return "";
+                }
+
+                AssemblyDefinitionReferenceType referenceType = CompilationPipeline.GetAssemblyDefinitionReferenceType(reference);
+
+                switch (referenceType)
+                {
+                    //If the reference is being stored by name, get the AssemblyDefinitionFilePath from it's name, then the GUID via the asset path
+                    case AssemblyDefinitionReferenceType.Name:
+                        {
+                            string path = CompilationPipeline.GetAssemblyDefinitionFilePathFromAssemblyName(reference);
+                            return AssetDatabase.AssetPathToGUID(path);
+                        }
+                    //If it's being stored by GUID, just retrieve it as is.
+                    case AssemblyDefinitionReferenceType.Guid:
+                        return CompilationPipeline.AssemblyDefinitionReferenceGUIDToGUID(reference);
+                }
+
+                return "";
+            }
+        }
+
+        private IEnumerable<string> GetValidAsmRefPaths()
+        {
+            //Checks wether the AssemblyDefinitionReferenceAsset path is "Valid" (IE: it's "Assembly Definition" field is set to an AssemblyDefinitionAsset"
+            bool IsValidAsmRefFile(string asmRefFilePath)
+            {
+                AssemblyDefinitionReferenceAsset assemblyDefinitionReferenceAsset = AssetDatabase.LoadAssetAtPath<AssemblyDefinitionReferenceAsset>(asmRefFilePath);
+                AsmRef asmRef = JsonUtility.FromJson<AsmRef>(assemblyDefinitionReferenceAsset.text);
+
+                string assemblyDefinitionGUID = asmRef.GetAssemblyReferenceGUID();
+                string assemblyDefinitionPath = AssetDatabase.GUIDToAssetPath(assemblyDefinitionGUID);
+                return AssetDatabase.LoadAssetAtPath<AssemblyDefinitionAsset>(assemblyDefinitionPath);
+            }
+
+            return Directory.GetFiles("Assets", "*.asmref", SearchOption.AllDirectories)
+                .Where(IsValidAsmRefFile);
+        }
+#endif
     }
 }
