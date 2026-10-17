@@ -15,7 +15,14 @@ namespace ThunderKit.Core.Config.Common
         public override int Priority => int.MaxValue - 150;
 
         public override string Description =>
-            "Checks that all C# files in the Assets folder are covered by an Assembly Definition (.asmdef). " +
+            "Checks that all C# files in the Assets folder are covered by an Assembly Definition (.asmdef)" +
+#if UNITY_2019_2_OR_NEWER
+            ", or by an Assembly Definition Reference (.asmref) with a valid Assembly Definition reference value. " +
+#else
+            ". " +
+#endif
+            Environment.NewLine + 
+            Environment.NewLine +
             "Orphaned scripts not under any .asmdef cause Unity to compile them into Assembly-CSharp, " +
             "which can conflict with game assemblies. Disable at your own risk.";
 
@@ -39,7 +46,12 @@ namespace ThunderKit.Core.Config.Common
             if (orphaned.Count > maxListed)
                 dialog.AppendLine($"... and {orphaned.Count - maxListed} more (see Console for full list)");
             dialog.AppendLine();
-            dialog.Append("Create an .asmdef in the same folder or a parent folder of each file, or move the files under an existing .asmdef.");
+            dialog.AppendLine("You can do one of the following things:");
+            dialog.AppendLine("* Create an .asmdef in the same folder or a parent folder of each file.");
+#if UNITY_2019_2_OR_NEWER
+            dialog.AppendLine("* Create an .asmref in the same folder or a parent folder of each file, ensuring that it's referencing a valid AssemblyDefinitionAsset.");
+#endif
+            dialog.AppendLine("* Move the files under an existing .asmdef");
 
             EditorUtility.DisplayDialog("Orphaned C# Scripts Detected", dialog.ToString(), "OK");
 
