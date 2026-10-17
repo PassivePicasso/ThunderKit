@@ -4,9 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
+
+#if UNITY_2019_2_OR_NEWER
 using UnityEditor.Compilation;
 using UnityEditorInternal;
 using UnityEngine;
+#endif
 
 namespace ThunderKit.Core.Config.Common
 {
