@@ -136,6 +136,10 @@ namespace ThunderKit.Core.Config.Common
             bool IsValidAsmRefFile(string asmRefFilePath)
             {
                 AssemblyDefinitionReferenceAsset assemblyDefinitionReferenceAsset = AssetDatabase.LoadAssetAtPath<AssemblyDefinitionReferenceAsset>(asmRefFilePath);
+                //Files in folders Unity ignores (e.g. "Name~") exist on disk but are not assets
+                if (assemblyDefinitionReferenceAsset == null)
+                    return false;
+
                 AsmRef asmRef = JsonUtility.FromJson<AsmRef>(assemblyDefinitionReferenceAsset.text);
 
                 string assemblyDefinitionGUID = asmRef.GetAssemblyReferenceGUID();
