@@ -1,3 +1,13 @@
+## 9.6.0
+
+### Community Contributions
+
+* Thanks to @Nebby1999 for Assembly Definition Reference support in
+  [EnsureAssemblyDefinitions](Editor/Core/Config/Common/EnsureAssemblyDefinitions.cs) (#134)
+  * Scripts covered by an `.asmref` that references a valid `.asmdef` are no longer
+    reported as orphaned, on Unity 2019.2 and newer
+  * The orphaned scripts dialog lists creating an `.asmref` as a remedy
+
 ## 9.5.0
 
 ### New Features
